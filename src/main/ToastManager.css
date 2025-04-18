@@ -1,0 +1,7 @@
+@media (max-width: 480px) {
+  .Toastify__toast-container {
+    width: 70% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+}

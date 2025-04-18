@@ -1,0 +1,36 @@
+.client-list-container {
+  padding: 20px;
+  /* max-width: 800px; */
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.action-buttons {
+  font-size: 15px;
+  padding: 5px;
+  /* border-radius: 50px; */
+  color: var(--primary-button);
+}
+
+.action-button {
+  cursor: pointer;
+}
+
+.clientlist-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.company-action-icon {
+  margin-right: 10px;
+  font-size: var(--font-size-small);
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

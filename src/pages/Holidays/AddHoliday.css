@@ -1,0 +1,70 @@
+.Addholiday-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  grid-template-columns: 1fr;
+  padding: 20px;
+  background-color: var(--primary-text-white);
+}
+
+.Addholiday-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.Addholiday-radio-flex {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.addholiday-save-button:hover {
+  background-color: var(--button-hover);
+}
+
+.Addholiday-section {
+  width: 100%;
+  gap: 10px;
+}
+
+.Addholiday-input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 20px 0px;
+}
+
+.date-group {
+  width: 50%;
+}
+
+.Addholiday-input-flex {
+  width: 50%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+@media (max-width: 575px) {
+  .Addholiday-section {
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .Addholiday-input-container {
+    margin-top: 10px;
+    gap: 0;
+  }
+
+  .Addholiday-radio-flex {
+    gap: 5px !important;
+    display: grid;
+    padding: 0 10px;
+  }
+
+  .date-group,
+  .Addholiday-input-flex {
+    width: 100%;
+  }
+}

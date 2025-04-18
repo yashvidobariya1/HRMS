@@ -1,0 +1,29 @@
+.common-button {
+  padding: 15px 20px;
+  /* border-radius: 4px; */
+  background-color: var(--primary-button);
+  border: none;
+  cursor: pointer;
+  color: var(--sidebar-title-primary-white);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.common-button:hover {
+  background-color: var(--button-hover);
+}
+
+@media (max-width: 767px) {
+  .common-button {
+    padding: 9px 12px;
+  }
+}
+
+@media (max-width: 500px) {
+  .common-button {
+    padding: 6px 10px !important;
+  }
+}

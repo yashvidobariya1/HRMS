@@ -1,0 +1,145 @@
+.Addleave-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  grid-template-columns: 1fr;
+  padding: 20px;
+  background-color: var(--primary-text-white);
+}
+
+.addleave-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.addleave-radio-flex {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.pension-contract label,
+.pension-contract input {
+  margin: 0px !important;
+}
+
+.addlocation-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.Addleave-section {
+  width: 100%;
+  gap: 10px;
+}
+
+.pension-contract {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.addleave-input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 20px 0px;
+}
+
+.location-approval-link {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.location-approval-link input {
+  margin: 0;
+}
+
+.checkbox-country {
+  cursor: pointer;
+}
+
+.addlocation-note p {
+  color: var(--alert-yellow);
+  font-weight: 400;
+}
+
+.date-input-flex {
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+}
+
+.addleave-date-group {
+  width: 50%;
+  margin: 20px 0 0;
+}
+
+.addleave-input-flex {
+  width: 50%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.pension-leave {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.selecte-date-addleave {
+  margin: 0px;
+}
+
+.calculated-days {
+  margin: 5px 0;
+  color: var();
+}
+
+@media (max-width: 767px) {
+  .addleave-input-container,
+  .addleave-date-group {
+    margin: 10px 0;
+  }
+}
+
+@media (max-width: 575px) {
+  .Addleave-section {
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .addleave-input-container {
+    margin-top: 10px;
+    gap: 0;
+  }
+
+  .addleave-radio-flex {
+    gap: 5px !important;
+    display: grid;
+    padding: 0 10px;
+  }
+
+  .pension-contract {
+    width: 50%;
+  }
+
+  .date-input-flex {
+    flex-direction: column;
+  }
+
+  .addleave-date-group,
+  .addleave-input-flex {
+    width: 100%;
+  }
+
+  .pension-leave {
+    gap: 1px;
+  }
+}

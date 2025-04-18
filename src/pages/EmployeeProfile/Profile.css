@@ -1,0 +1,160 @@
+.profile-image img {
+  width: 120px;
+  height: 120px;
+  border-radius: 100%;
+}
+
+.profile-image {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  /* margin: 10px 0; */
+  width: calc(70% - 40px);
+  padding: 0 0 20px;
+}
+
+.profile-role p {
+  margin: 5px 0;
+  color: var(--sidebar-hover);
+}
+
+.profile-container-flex {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: var(--primary-text-white);
+}
+
+.profile-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.profile-div-section {
+  display: flex;
+  width: 70%;
+  margin-bottom: 25px;
+  gap: 15px;
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+}
+
+.profile-document-section {
+  display: flex;
+  width: 100%;
+  margin-bottom: 25px;
+  gap: 15px;
+}
+
+.profile-document {
+  margin-bottom: 25px;
+}
+
+.profile-document {
+  color: var(--primary-button);
+}
+
+.profile-input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+}
+
+.profile-addDocument-flex {
+  display: flex;
+  /* gap: 20px; */
+  justify-content: flex-start;
+  margin-top: 30px;
+  /* align-items: center; */
+}
+
+.profile-flex {
+  width: max-content;
+  padding: 15px;
+  font-size: var(--font-size-h3);
+  color: var(--primary-text-white);
+  border: none;
+  background-color: var(--primary-button);
+}
+
+@media (max-width: 992px) {
+  .profile-image img {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* .profile-image {
+    margin: 18px 0;
+  } */
+}
+
+@media (max-width: 767px) {
+  .profile-div-section {
+    width: 100%;
+  }
+
+  .profile-image {
+    width: 100%;
+    padding: 12px 0 !important;
+  }
+
+  .profile-flex {
+    padding: 12px;
+  }
+
+  .profile-document h2 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 575px) {
+  .profile-div-section {
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .profile-container {
+    margin-top: 10px;
+    gap: 0;
+  }
+
+  .profile-image {
+    /* margin: 0px !important; */
+    padding: 5px 0 !important;
+    gap: 10px;
+  }
+
+  .profile-image img {
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  .profile-flex {
+    padding: 6px;
+  }
+
+  .profile-document-section {
+    flex-direction: column;
+  }
+
+  .profile-addDocument-flex {
+    margin: 0;
+  }
+
+  .profile-document,
+  .profile-document-section {
+    margin: 5px 0;
+  }
+
+  .profile-document h2 {
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,26 @@
+.leave-list-container {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding: 20px;
+  /* height: 85vh; */
+  /* max-width: 800px; */
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.leavelist-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leavelist-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.leave-action-icon {
+  margin-right: 10px;
+  font-size: var(--font-size-small);
+}

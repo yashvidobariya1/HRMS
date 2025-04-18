@@ -1,0 +1,46 @@
+.employee-report-list-container {
+  padding: 20px;
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.employee-report-list-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.employee-report-list-download-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.employee-report-list-input-container input,
+.employee-report-list-input-container select {
+  margin: 0;
+  padding: 10px !important;
+}
+
+.employee-report-list-input-container label {
+  margin: 0;
+}
+
+@media screen and (max-width: 600px) {
+  .employee-report-list-flex {
+    display: block;
+  }
+
+  .employee-report-list-download-container {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+}

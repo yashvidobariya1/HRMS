@@ -1,0 +1,431 @@
+/* .table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.common-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0px;
+  border: 1px solid var(--neutral-light-gray);
+  table-layout: auto;
+}
+
+.common-table th,
+.common-table td {
+  padding: 14px;
+  font-size: var(--font-size-body);
+  text-align: left;
+  border-bottom: 1px solid var(--neutral-light-gray);
+  white-space: nowrap;
+}
+
+.common-table th {
+  background-color: var(--table-heading-neutral-dark-blue);
+  color: var(--sidebar-title-primary-white);
+}
+
+.dropdown-container {
+  font-size: 15px;
+  color: var(--primary-button);
+  position: relative;
+} */
+
+/* .dropdown-container {
+  position: relative;
+  display: inline-block;
+} */
+/* 
+.dropdown-menu button {
+  display: block;
+  background: none;
+  border: none;
+  padding: 5px 10px;
+  text-align: left;
+  width: 100%;
+  color: var(--sidebar-bg);
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: var(--neutral-light-gray);
+}
+
+.dropdown-menu {
+  position: absolute;
+  left: -50px;
+  background: var(--primary-text-white);
+  border: 1px solid var(--neutral-light-gray);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 10000;
+  white-space: nowrap;
+}
+
+.dropdown-menu button:disabled {
+  opacity: 0.6;
+  background-color: var(--neutral-light-gray);
+} */
+/* .dropdown-menu {
+  position: fixed; 
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; 
+  max-height: 200px; 
+  overflow-y: auto; 
+  min-width: 120px; 
+} */
+
+/* .status-circle.Pending {
+  background-color: var(--alert-yellow);
+}
+
+.status-circle.Rejected {
+  background-color: var(--alert-red);
+}
+
+.status-circle.Approved {
+  background-color: var(--alert-green);
+}
+
+.paid-leave-status {
+  padding: 5px;
+  border-radius: 3px;
+  text-align: center;
+  color: var(--primary-text-white);
+}
+
+.paid-leave-status.green {
+  background-color: var(--alert-green);
+  color: var(--sidebar-title-primary-white);
+}
+
+.paid-leave-status.red {
+  background-color: var(--alert-red);
+  color: var(--sidebar-title-primary-white);
+} */
+
+/* @media (min-width: 992px) and (max-width: 1400px) {
+  .common-table {
+    overflow-y: auto;
+  }
+
+  .employeecontract-title {
+    gap: 5px;
+  }
+
+  .company-dropdown-menu {
+    left: -15px;
+  }
+}
+
+@media (max-width: 767px) {
+  .dropdown-menu {
+    left: -45px;
+    padding: 8px;
+  }
+
+  .common-table th,
+  .common-table td {
+    padding: 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 500px) {
+  .dropdown-menu {
+    white-space: nowrap;
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .dropdown-menu button {
+    padding: 5px;
+  }
+
+  .common-table th,
+  .common-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+} */
+
+/* Table Styles */
+.custom-table {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  margin: 20px 0;
+  background-color: var(--primary-text-white);
+}
+
+.custom-table .MuiTableHead-root {
+  color: var(--sidebar-title-primary-white);
+  background-color: var(--table-heading-neutral-dark-blue);
+}
+
+/* .custom-table .css-155k23g-MuiTableCell-root {
+  color: var(--sidebar-title-primary-white) !important;
+} */
+
+.custom-table .MuiTableCell-head {
+  font-weight: bold !important;
+  color: var(--sidebar-title-primary-white);
+}
+
+.custom-table tbody,
+.MuiTableFooter-root {
+  background-color: var(--primary-text-white);
+}
+
+.custom-table td {
+  color: var(--secondary-dark-gray);
+  border-bottom: var(--neutral-light-gray);
+}
+
+.status-circle {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.custom-table .MuiPaper-root .MuiPaper-elevation {
+  margin: 10px 0;
+  border-radius: 0;
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--neutral-light-gray);
+  table-layout: auto;
+  background-color: var(--primary-text-white) !important;
+}
+
+.custom-table .MuiTableCell-root .MuiTableCell-body {
+  font-size: 15px !important;
+  /* color: var(--primary-button); */
+  color: var(--secondary-dark-gray) !important;
+  /* border-bottom: 1px solid var(--neutral-light-gray) !important; */
+}
+
+.MuiTableCell-root .MuiTableCell-body {
+  border-bottom: 1px solid var(--neutral-light-gray) !important;
+}
+
+.MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon {
+  color: var(--sidebar-title-primary-white);
+}
+
+.custom-table .MuiIconButton-root {
+  font-size: 16px !important;
+  color: var(--secondary-dark-gray) !important;
+}
+
+.custom-table .MuiTableSortLabel-root.Mui-active,
+.custom-table .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon,
+.custom-table .MuiTableSortLabel-root:hover {
+  color: var(--sidebar-title-primary-white) !important;
+}
+
+.custom-table .MuiSelect-select {
+  color: var(--secondary-dark-gray);
+}
+
+.custom-table .MuiIconButton-root.Mui-disabled {
+  color: var(--sidebar-hover) !important;
+  opacity: 0.6;
+}
+
+.custom-table .MuiIconButton-root {
+  color: var(--sidebar-hover) !important;
+}
+
+.custom-table .MuiSelect-icon {
+  color: var(--sidebar-hover) !important;
+  fill: var(--sidebar-hover);
+}
+
+.custom-table .MuiMenu-list {
+  background: var(--primary-text-white) !important;
+  border: 1px solid var(--neutral-light-gray);
+  color: var(--sidebar-bg);
+}
+
+/* .commontable-searchbar {
+  width: 250px;
+} */
+
+/* 
+.css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 7px !important;
+  height: auto !important;
+} */
+
+/* .commontable-searchbar .MuiOutlinedInput-root {
+  padding: 4px;
+  border-radius: 0px;
+  color: var(--sidebar-bg) !important;
+} */
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--neutral-light-gray) !important;
+  color: var(--sidebar-bg) !important;
+}
+
+/* .commontable-searchbar {
+  border: 1px solid var(--neutral-light-gray) !important;
+}
+
+.commontable-searchbar .MuiInputLabel-root {
+  font-size: 14px;
+  margin: 0 !important;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+} */
+
+/* .css-81qg8w {
+  height: auto !important;
+}
+
+.css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root {
+  font-size: 14px !important;
+} */
+
+.timing-entry {
+  padding: 5px 10px;
+  background-color: var(--neutral-light-gray);
+  margin-bottom: 5px;
+  border: 1px solid var(--neutral-light-gray);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.timing-entry {
+  font-weight: 500;
+  color: var(--secondary-teal);
+}
+
+.clockin {
+  color: var(--secondary-dark-gray);
+  font-weight: 500;
+}
+
+.clockout {
+  font-weight: 600;
+  color: var(--primary-button);
+}
+
+.status-circle.Pending {
+  background-color: var(--alert-yellow);
+}
+
+.status-circle.Rejected {
+  background-color: var(--alert-red);
+}
+
+.status-circle.Approved {
+  background-color: var(--alert-green);
+}
+
+.paid-leave-status {
+  padding: 5px;
+  border-radius: 3px;
+  text-align: center;
+  color: var(--primary-text-white);
+}
+
+.paid-leave-status.green {
+  background-color: var(--alert-green);
+  color: var(--sidebar-title-primary-white);
+}
+
+.paid-leave-status.red {
+  background-color: var(--alert-red);
+  color: var(--sidebar-title-primary-white);
+}
+
+.MuiTableRow-root {
+  border-bottom: none !important;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.custom-table span:active {
+  color: var(--primary-text-white);
+}
+
+.custom-table span:focus {
+  color: var(--primary-text-white);
+}
+
+@media (max-width: 768px) {
+  .custom-table {
+    font-size: 12px;
+  }
+
+  .custom-table .MuiTableCell-root {
+    padding: 12px;
+  }
+
+  .action-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* .css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input {
+    padding: 6px !important;
+  } */
+
+  /* .commontable-searchbar .MuiOutlinedInput-root {
+    padding: 3px;
+  }
+
+  .commontable-searchbar .MuiInputLabel-root {
+    font-size: 12px;
+  }
+
+  .commontable-searchbar {
+    width: 150px;
+  } */
+}
+
+@media (max-width: 600px) {
+  .custom-table .MuiTableCell-root {
+    padding: 10px;
+    font-size: 12px !important;
+  }
+
+  /* .css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root {
+    line-height: 12px !important;
+    font-size: 10px;
+  } */
+
+  /* .commontable-searchbar .MuiInputLabel-root {
+    font-size: 10px;
+  } */
+
+  /* .css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input {
+    padding: 4px !important;
+  } */
+
+  /* .commontable-searchbar .MuiInputLabel-root {
+    font-size: 10px;
+  }
+
+  .commontable-searchbar {
+    width: 50%;
+  } */
+
+  /* .css-53g0n7-MuiButtonBase-root-MuiIconButton-root{
+    font-size: 14px !important;
+  } */
+}
+
+/* @media (min-width: 600px) {
+  .css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root{
+    font-size: 14px;
+  }
+} */

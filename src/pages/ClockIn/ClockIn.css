@@ -1,0 +1,142 @@
+.active {
+  color: var(--alert-green);
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+
+.clock-in-btn {
+  padding: 10px 20px;
+  background-color: var(--secondary-teal);
+  color: var(--sidebar-title-primary-white);
+  border: none;
+  cursor: pointer;
+}
+
+.timer {
+  margin: 0 20px;
+  font-size: var(--font-size-h1);
+  font-weight: bold;
+  color: var(--sidebar-bg);
+}
+
+.clock-in-h1 {
+  text-align: center;
+  color: var(--sidebar-bg);
+}
+
+.total-working-time {
+  font-size: var(--font-size-h3);
+  color: var(--sidebar-bg);
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.clock-out-btn {
+  padding: 10px 20px;
+  background-color: var(--alert-red);
+  color: var(--sidebar-title-primary-white);
+  border: none;
+  cursor: pointer;
+}
+
+.clockin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0px;
+  /* border-radius: 4px; */
+  border: 1px solid var(--secondary-soft-gray);
+  scrollbar-width: thin;
+}
+
+.clockin-table th,
+.clockin-table td {
+  padding: 20px 10px;
+  font-size: var(--font-size-body);
+  text-align: left;
+  border-bottom: 1px solid var(--secondary-soft-gray);
+}
+
+.clockin-table th {
+  background-color: var(--neutral-dark-blue);
+  color: var(--neutral-light-gray);
+}
+
+#scanner-visible {
+  width: 100%;
+}
+
+#html5-qrcode-button-camera-stop {
+  display: none !important;
+}
+
+#scanner-visible__dashboard_section {
+  padding: 0 !important;
+}
+
+@media (min-width: 992px) and (max-width: 1400px) {
+  .clockin-table {
+    overflow-y: auto;
+  }
+
+  .clockin-table td {
+    padding: 16px;
+  }
+
+  .clockin-dropdown-menu {
+    left: -15px;
+  }
+}
+
+@media (max-width: 767px) {
+  .clockin-dropdown-menu {
+    left: -45px;
+    padding: 8px;
+  }
+
+  .clockin-table th,
+  .clockin-table td {
+    padding: 12px;
+    font-size: 12px;
+  }
+
+  .timer {
+    font-size: var(--font-size-h3);
+    margin: 0 8px;
+  }
+
+  .clock-in-btn,
+  .clock-out-btn {
+    padding: 7px;
+  }
+}
+
+@media (max-width: 500px) {
+  .clockin-dropdown-menu {
+    white-space: nowrap;
+    padding: 15px;
+    font-size: 12px;
+  }
+
+  .clockin-dropdown-menu button {
+    padding: 5px;
+  }
+
+  .clockin-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .clockin-table th,
+  .clockin-table td {
+    white-space: nowrap;
+    padding: 12px;
+    font-size: 12px;
+  }
+}

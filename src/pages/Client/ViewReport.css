@@ -1,0 +1,45 @@
+.view-report-list-container {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding: 20px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.view-report-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.view-report-title {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.view-report-download-container {
+  display: flex;
+  gap: 10px;
+}
+
+/* .view-report-download-container button {
+  width: 41px;
+  height: 41px;
+  display: flex;
+  font-size: var(--font-size-h3);
+  background-color: var(--primary-button);
+  color: var(--primary-text-white);
+  border: none;
+} */
+
+@media screen and (max-width: 600px) {
+  .view-report-flex {
+    display: block;
+  }
+
+  .view-report-download-container {
+    justify-content: end;
+  }
+}

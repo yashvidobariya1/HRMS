@@ -1,0 +1,272 @@
+.template-list-container {
+  padding: 20px;
+  /* max-width: 800px; */
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.template-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.template-title {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.template-input input,
+.template-input select {
+  margin-top: 0px !important;
+}
+
+.File-input {
+  border: none !important;
+  padding: 0 !important;
+}
+
+.custom-file-button-contract {
+  padding: 10px 20px;
+  background-color: var(--primary-button);
+  color: var(--primary-text-white);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.template-main-container h5 {
+  color: var(--alert-yellow);
+  font-size: var(--font-size-body);
+  font-weight: 400;
+}
+
+.employeecontract-action {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.template-cancel-edit-btn {
+  color: var(--primary-button) !important;
+  border: 1px solid var(--primary-button) !important;
+  cursor: pointer !important;
+  background-color: var(--primary-text-white) !important;
+  display: flex !important;
+  align-items: center !important;
+  /* margin-top: 5px; */
+}
+
+.employeecontract-action-icon {
+  margin-right: 10px;
+  font-size: var(--font-size-small);
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.template-flex-file-action {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  height: max-content;
+  justify-content: space-between;
+  /* align-items: center; */
+}
+
+.template-input {
+  width: 100%;
+}
+
+.file-input {
+  background-color: var(--primary-button);
+  color: var(--primary-text-white);
+  padding: 10px;
+}
+
+.file-input p {
+  margin: 0;
+}
+
+.template-input input {
+  width: calc(100% - 24px);
+}
+
+.template-contract-input {
+  width: 100%;
+}
+
+.template-file-contract {
+  display: flex;
+  gap: 5px;
+  height: max-content;
+  padding: 10px 15px;
+  align-items: center;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.template-custom-file-upload {
+  background-color: var(--primary-button);
+  color: var(--primary-text-white);
+  padding: 5px;
+  justify-content: center;
+  font-size: 14px;
+  align-items: center;
+  cursor: pointer;
+  width: 80px;
+  margin: 0;
+}
+
+.template-custom-file-upload:hover {
+  background-color: var(--button-hover);
+}
+
+.template-fileupload-name {
+  margin: 0px;
+  color: var(--secondary-dark-gray);
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  width: 100px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.template-upload {
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 1400px) {
+  .template-flex {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1400px) {
+  .company-employee-contract-dropdown-menu {
+    left: -15px;
+  }
+
+  .template-title {
+    gap: 5px;
+  }
+}
+
+@media (max-width: 992px) {
+  .template-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .template-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px !important;
+    width: 100%;
+  }
+
+  .Employeecontract-file {
+    padding: 6px;
+  }
+
+  .template-file-contract {
+    padding: 8px 12px;
+  }
+
+  .template-custom-file-upload {
+    padding: 4px;
+  }
+}
+
+@media (max-width: 767px) {
+  .company-employee-contract-dropdown-menu {
+    left: -45px;
+    padding: 8px;
+  }
+
+  .custom-file-button-file {
+    font-size: 11px;
+  }
+
+  .template-title {
+    gap: 10px !important;
+  }
+
+  .template-fileupload-name {
+    font-size: 12px;
+    font-size: 12px;
+    padding: 0px;
+  }
+
+  .template-custom-file-upload {
+    font-size: 12px;
+    padding: 3px;
+  }
+
+  .selected-file-name {
+    font-size: 12px;
+  }
+
+  .Employeecontract-file {
+    padding: 12px 3px;
+  }
+
+  .template-file-contract {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .template-contract-input {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .template-main-container h5,
+  .template-fileupload-name {
+    font-size: 12px;
+  }
+
+  .template-custom-file-upload {
+    padding: 4px;
+  }
+
+  .Employeecontract-file {
+    padding: 7px 3px;
+  }
+}
+
+@media (max-width: 575px) {
+  .custom-file-button-file {
+    padding: 11px !important;
+  }
+
+  .template-input input,
+  .template-contract-input {
+    width: 100%;
+  }
+
+  .template-file-contract {
+    padding: 6px 10px;
+    width: calc(100% - 20px);
+  }
+
+  .template-flex-file-action {
+    flex-direction: column !important;
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .template-flex-file-action {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

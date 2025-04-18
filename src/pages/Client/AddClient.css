@@ -1,0 +1,75 @@
+.Addclient-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: var(--primary-text-white);
+}
+
+.addclient-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.addclient-section {
+  display: flex;
+  width: 100%;
+  margin-bottom: 25px;
+  gap: 15px;
+}
+
+.addclient-input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+}
+
+.addclient-flex h1 {
+  color: var(--primary-button);
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.addclient-input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.email-action-addclient {
+  position: absolute;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.add-email-icon {
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  color: var(--primary-button);
+}
+
+.remove-email-icon {
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  color: var(--alert-red);
+}
+
+@media (max-width: 575px) {
+  .addclient-section {
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .addclient-input-container {
+    margin-top: 10px;
+    gap: 0;
+  }
+}

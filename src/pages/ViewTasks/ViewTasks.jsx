@@ -1,0 +1,519 @@
+import React, { useState, useEffect } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { GetCall, PostCall } from "../../ApiServices";
+import "./ViewTasks.css";
+import tippy from "tippy.js";
+import "tippy.js/dist/tippy.css";
+import moment from "moment";
+import { showToast } from "../../main/ToastManager";
+import DeleteConfirmation from "../../main/DeleteConfirmation";
+import CommonAddButton from "../../SeparateCom/CommonAddButton";
+import JobTitleForm from "../../SeparateCom/RoleSelect";
+import Loader from "../Helper/Loader";
+
+const ViewTasks = () => {
+  // const Navigate = useNavigate();
+  const [events, setEvents] = useState([]);
+  const [taskList, setTaskList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [selectedYear, setSelectedYear] = useState(moment().year());
+  const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
+  const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [taskId, setTaskId] = useState("");
+  const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState("");
+  const [JobTitledata, setJobTitledata] = useState([]);
+  const jobRoleId = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.jobId
+  );
+  const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  const startYear = moment(startDate).year();
+  const currentYear = moment().year();
+  const userRole = useSelector((state) => state.userInfo.userInfo.role);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const EmployeeId = searchParams.get("EmployeeId");
+  const [appliedFilters, setAppliedFilters] = useState({
+    year: moment().year(),
+    month: moment().month(),
+  });
+
+  const applyFilters = () => {
+    setAppliedFilters({
+      year: selectedYear,
+      month: selectedMonth,
+    });
+  };
+
+  const months = moment
+    .months()
+    .map((month, index) => ({
+      name: moment().month(index).format("MMM"),
+      value: index + 1,
+    }))
+    .filter(
+      (month) =>
+        selectedYear < currentYear || month.value <= moment().month() + 1
+    );
+
+  const [formData, setFormData] = useState({
+    taskDate: "",
+    taskName: "",
+    taskDescription: "",
+    startTime: "",
+    endTime: "",
+  });
+
+  const handleDateClick = (info) => {
+    setFormData({
+      taskDate: "",
+      taskName: "",
+      taskDescription: "",
+      startTime: "",
+      endTime: "",
+    });
+    const clickedDate = moment(info.dateStr).format("YYYY-MM-DD");
+    const todayDate = moment().format("YYYY-MM-DD");
+
+    if (moment(clickedDate).isBefore(todayDate)) {
+      showToast("You can not select past dates", "error");
+      return;
+    }
+
+    if (clickedDate === todayDate) {
+      showToast("You can not select today's date", "error");
+      return;
+    }
+
+    const existingEvent = taskList.find(
+      (task) => moment(task.taskDate).format("YYYY-MM-DD") === clickedDate
+    );
+
+    if (existingEvent) {
+      setFormData({
+        _id: existingEvent._id,
+        taskDate: existingEvent.taskDate,
+        taskDescription: existingEvent.taskDescription,
+        taskName: existingEvent.taskName,
+        startTime: existingEvent.startTime,
+        endTime: existingEvent.endTime,
+      });
+    } else {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        taskDate: clickedDate,
+      }));
+    }
+    setIsPopupOpen(true);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validate = () => {
+    let newErrors = {};
+    if (!formData.taskDate) newErrors.taskDate = "Task Date is required";
+    if (!formData.taskName) newErrors.taskName = "Task Name is required";
+    if (!formData.taskDescription)
+      newErrors.taskDescription = "Task Description is required";
+    if (!formData.startTime) newErrors.startTime = "Start Time is required";
+    if (!formData.endTime) newErrors.endTime = "End Time is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleAddTask = async (e) => {
+    // console.log("handle add task", e, selectedJobId);
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      setLoading(true);
+      let response;
+      const data = {
+        ...formData,
+        userId: EmployeeId ? EmployeeId : "",
+        jobId: selectedJobId ? selectedJobId : jobRoleId,
+      };
+      // console.log("formData", formData);
+      if (formData._id) {
+        response = await PostCall(`/updateTask/${formData._id}`, data);
+      } else {
+        response = await PostCall("/createTask", data);
+      }
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "success");
+        // console.log("formdata", formData);
+
+        setTaskList((prev) => {
+          if (formData._id) {
+            return prev.map((task) =>
+              task._id === formData._id ? { ...task, ...formData } : task
+            );
+          } else {
+            return [...prev, { ...formData, _id: response?.data?.taskId }];
+          }
+        });
+        getAllTasks();
+        setIsPopupOpen(false);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showToast("An error occurred", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const confirmDelete = async (id) => {
+    // console.log("id", id);
+    try {
+      setLoading(true);
+      const response = await PostCall(`/cancelTask/${id}`);
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "success");
+        setIsPopupOpen(false);
+        setShowConfirm(false);
+        // navigate(`/location/tasks/tasklist/${locationId}`);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+      setIsPopupOpen(false);
+    } catch (error) {
+      console.log("error", error);
+    }
+    getAllTasks();
+  };
+
+  const handleDeleteTask = async (id) => {
+    // console.log("delete task id", id);
+    setTaskId(id);
+    setShowConfirm(true);
+  };
+
+  const handlePopupClose = () => {
+    setIsPopupOpen(false);
+    setErrors({});
+  };
+
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    // setShowDropdownAction(null);
+  };
+
+  const handleJobPopupClose = () => {
+    setOpenJobTitleModal(true);
+  };
+
+  const handleJobTitleSelect = (selectedTitle) => {
+    setSelectedJobId(selectedTitle);
+    setOpenJobTitleModal(true);
+  };
+
+  // const handleViewTasks = () => {
+  //   if (userRole === "Superadmin") {
+  //     Navigate(`/location/tasks/tasklist/${EmployeeId}`);
+  //   } else {
+  //     Navigate(`/tasks/tasklist`);
+  //   }
+  // };
+
+  const GetJobTitleData = async () => {
+    try {
+      let response;
+      // console.log("EmployeeId", EmployeeId);
+      if (EmployeeId) {
+        response = await GetCall(`/getUserJobTitles?EmployeeId=${EmployeeId}`);
+      } else {
+        response = await GetCall(`/getUserJobTitles`);
+      }
+
+      if (response?.data?.status === 200) {
+        const { multipleJobTitle, jobTitles } = response?.data;
+        setJobTitledata(jobTitles);
+
+        if (multipleJobTitle) {
+          setOpenJobTitleModal(false);
+        } else {
+          setSelectedJobId(jobTitles[0]?.jobId);
+          setOpenJobTitleModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const getAllTasks = async () => {
+    try {
+      setLoading(true);
+      const data = {
+        userId: EmployeeId ? EmployeeId : "",
+        jobId: selectedJobId ? selectedJobId : jobRoleId,
+      };
+      const response = await PostCall(
+        `/getAllTasks?year=${selectedYear}&month=${selectedMonth}`,
+        data
+      );
+      if (response?.data?.status === 200) {
+        setTaskList(response?.data.tasks);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!EmployeeId || selectedJobId) {
+      getAllTasks();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedYear, appliedFilters, selectedJobId, EmployeeId]);
+
+  useEffect(() => {
+    const transformedEvents = taskList.map((task) => ({
+      title: task.taskName,
+      start: task.taskDate,
+      allDay: true,
+      classNames: ["task-event"],
+      extendedProps: {
+        description: `${task.taskDescription} ${task.startTime} - ${task.endTime}`,
+      },
+    }));
+
+    setEvents(transformedEvents);
+  }, [taskList]);
+
+  useEffect(() => {
+    if (EmployeeId) {
+      GetJobTitleData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [EmployeeId]);
+
+  return (
+    <div className="View-task-main">
+      {!openJobTitleModal && JobTitledata.length > 1 && (
+        <JobTitleForm
+          onClose={handleJobPopupClose}
+          jobTitledata={JobTitledata}
+          onJobTitleSelect={handleJobTitleSelect}
+        />
+      )}
+      <div className="View-task-list">
+        <h1 className="view-task-title">Tasks</h1>
+        {/* <div className="indicate-color-task">
+          <CommonAddButton
+            label={"View Tasks"}
+            //  icon={MdRateReview}
+            onClick={handleViewTasks}
+          />
+        </div> */}
+        <div className="view-task-filter-container">
+          <div className="selection-wrapper">
+            <select
+              value={selectedYear}
+              onChange={(e) => {
+                // console.log("year", e.target.value);
+                setSelectedYear(e.target.value);
+              }}
+            >
+              {[...Array(currentYear - startYear + 1)]?.map((_, index) => {
+                const year = startYear + index;
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div className="selection-wrapper">
+            <select
+              value={selectedMonth}
+              onChange={(e) => {
+                // console.log("month", e.target.value);
+                setSelectedMonth(e.target.value);
+              }}
+            >
+              {months?.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <CommonAddButton
+            label={"Filter"}
+            // icon={MdRateReview}
+            onClick={applyFilters}
+          />
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="loader-wrapper">
+          <Loader />
+        </div>
+      ) : (
+        <div>
+          <FullCalendar
+            key={selectedYear}
+            plugins={[dayGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            initialDate={moment(`${selectedYear}-${selectedMonth}`).toDate()}
+            dateClick={(info) => {
+              if (userRole === "Manager" || userRole === "Administrator") {
+                handleDateClick(info);
+              }
+            }}
+            headerToolbar={{
+              right: "next today",
+              center: "title",
+              left: "prev",
+            }}
+            buttonText={{
+              today: "Today",
+            }}
+            validRange={{
+              start: "2022-01-01",
+              end: currentYearEnd,
+            }}
+            events={events}
+            height="75vh"
+            eventDidMount={(info) => {
+              tippy(info.el, {
+                content: info.event.extendedProps.description,
+                placement: "top",
+                theme: "light-border",
+                animation: "fade",
+                delay: [100, 200],
+              });
+            }}
+            datesSet={(info) => {
+              const currentYear = info.view.currentStart.getFullYear();
+              // const currentMonth = info.view.currentStart.getMonth() + 1;
+              setSelectedYear(currentYear);
+              // setSelectedMonth(currentMonth);
+            }}
+          />
+        </div>
+      )}
+      {isPopupOpen && (
+        <div className="task-popup-overlay">
+          <div className="task-popup-box">
+            <button className="task-close-button" onClick={handlePopupClose}>
+              ×
+            </button>
+
+            <h3>{formData._id ? "Update" : "Add"} Task</h3>
+            <div className="addtask-input-container">
+              <label className="label">Date*</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.taskDate}
+                className="addtask-input"
+                onChange={handleChange}
+              />
+              {errors?.taskDate && (
+                <div className="error-text">{errors?.taskDate}</div>
+              )}
+            </div>
+            <div className="addtask-input-container">
+              <label className="label">Task Name*</label>
+              <input
+                type="text"
+                name="taskName"
+                value={formData.taskName}
+                className="addtask-input"
+                onChange={handleChange}
+              />
+              {errors?.taskName && (
+                <div className="error-text">{errors?.taskName}</div>
+              )}
+            </div>
+            <div className="addtask-input-container">
+              <label className="label">Task Description*</label>
+              <textarea
+                name="taskDescription"
+                value={formData.taskDescription}
+                className="addtask-input"
+                onChange={handleChange}
+              />
+              {errors?.taskDescription && (
+                <div className="error-text">{errors?.taskDescription}</div>
+              )}
+            </div>
+            <div className="addtask-input-container">
+              <label className="label">Start Time*</label>
+              <input
+                type="time"
+                name="startTime"
+                value={formData.startTime}
+                className="addtask-input"
+                onChange={handleChange}
+              />
+              {errors?.startTime && (
+                <div className="error-text">{errors?.startTime}</div>
+              )}
+            </div>
+            <div className="addtask-input-container">
+              <label className="label">End Time*</label>
+              <input
+                type="time"
+                name="endTime"
+                value={formData.endTime}
+                className="addtask-input"
+                onChange={handleChange}
+              />
+              {errors?.endTime && (
+                <div className="error-text">{errors?.endTime}</div>
+              )}
+            </div>
+
+            <button onClick={handleAddTask} className="task-modal-buttons">
+              {formData._id ? "Update" : "Add"}
+            </button>
+
+            {formData._id && (
+              <button
+                onClick={() => handleDeleteTask(formData._id)}
+                className="task-modal-buttons"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      {showConfirm && (
+        <DeleteConfirmation
+          confirmation={`Are you sure you want to delete task on date <b>${formData.taskDate}</b>?`}
+          onConfirm={() => confirmDelete(taskId)}
+          onCancel={cancelDelete}
+        />
+      )}
+    </div>
+  );
+};
+
+export default ViewTasks;

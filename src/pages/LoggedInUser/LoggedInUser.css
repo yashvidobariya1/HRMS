@@ -1,0 +1,37 @@
+.loggeduser-list-container {
+  padding: 20px;
+  /* max-width: 800px; */
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.loggeduserlist-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.loggeduserlist-action p {
+  margin: 0px;
+  font-weight: bold;
+  /* text-align: right; */
+  width: 100%;
+}
+
+.loggeduserlist-timeperoid {
+  padding: 12px;
+  width: 100%;
+  margin: 5px 0;
+}
+
+@media (max-width: 767px) {
+  .loggeduserlist-timeperoid {
+    padding: 5px 10px !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .loggeduserlist-action {
+    gap: 5px;
+  }
+}

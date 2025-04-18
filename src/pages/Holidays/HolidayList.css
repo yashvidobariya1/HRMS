@@ -1,0 +1,53 @@
+.Holidaylist-list-container {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding: 20px;
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.holidaylist-title {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin: 0 0 10px 0;
+}
+
+.holidaylist-title #year-select {
+  padding: 10px;
+  height: max-content;
+}
+
+.holidaylist-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.holidaylist-action {
+  display: flex;
+  gap: 20px;
+}
+
+@media (max-width: 767px) {
+  .holidaylist-title #year-select {
+    padding: 5px !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .holidaylist-title #year-select {
+    padding: 5px !important;
+  }
+
+  .holidaylist-flex {
+    flex-direction: column;
+    margin: 5px 0;
+  }
+
+  .holidaylist-title,
+  .holidaylist-action {
+    justify-content: space-between;
+    width: 100%;
+  }
+}

@@ -1,0 +1,38 @@
+.employee-list-container {
+  padding: 20px;
+  /* max-width: 800px; */
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.action-buttons {
+  font-size: 15px;
+  padding: 5px;
+  /* border-radius: 50px; */
+  color: var(--primary-button);
+}
+
+.action-button {
+  cursor: pointer;
+}
+
+.employeelist-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.employee-action-icon {
+  margin-right: 10px;
+  font-size: var(--font-size-small);
+}
+
+.rolewisepoint {
+  font-size: 15px;
+}
+
+@media (max-width: 600px) {
+  .rolewisepoint {
+    font-size: 12px;
+  }
+}

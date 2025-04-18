@@ -1,0 +1,262 @@
+.Job-main-div,
+.job-deleted-message {
+  /* display: flex; */
+  justify-content: center;
+  border: 8px solid var(--primary-button);
+  border-radius: 20px;
+  background-color: var(--primary-text-white);
+  width: calc(100% - 30%);
+}
+
+.job-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 30px;
+  gap: 30px;
+}
+
+.job-sidebar,
+.job-details {
+  background: var(--primary-text-white);
+  padding: 30px;
+}
+
+.job-sidebar {
+  flex: 1;
+  border-radius: 20px;
+  max-width: 720px;
+  display: flex;
+  border: 1px solid var(--neutral-light-gray);
+  flex-direction: column;
+}
+
+.apply-section .icon {
+  font-size: 24px;
+}
+
+.apply-section h2 {
+  font-size: 20px;
+  margin: 10px 0 5px;
+}
+
+.apply-section p {
+  font-size: 16px;
+  color: var(--sidebar-secondary-dark-gray);
+}
+
+.apply-button:hover {
+  background-color: var(--primary-button);
+}
+
+.company-section h3 {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+.company-section p {
+  font-size: 14px;
+  color: var(--sidebar-secondary-dark-gray);
+}
+
+.job-details {
+  border-radius: 20px;
+  border: 1px solid var(--neutral-light-gray);
+  width: 50%;
+}
+
+.job-details h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: var(--sidebar-secondary-dark-gray);
+}
+
+.posted-date {
+  font-size: 13px;
+  color: var(--sidebar-hover);
+  margin-bottom: 20px;
+}
+
+.job-details h2 {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.job-details p {
+  font-size: 14px;
+  color: var(--secondary-dark-gray);
+  margin-bottom: 12px;
+  line-height: 20px;
+}
+
+.job-details a {
+  color: var(--primary-button);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.job-details a:hover {
+  text-decoration: underline;
+}
+
+.job-div-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 30px;
+}
+
+.apply-section img {
+  width: 100%;
+  border-radius: 15px;
+}
+
+.info-row span {
+  font-size: 18px;
+}
+
+.info-row strong {
+  font-size: 18px;
+  padding-right: 5px;
+  color: var(--sidebar-secondary-dark-gray);
+}
+
+.job-div-flex h4 {
+  font-size: 42px;
+  color: var(--secondary-teal);
+  margin: 20px 0;
+}
+
+.job-deleted-message {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 18px;
+  color: var(--alert-red);
+}
+
+.job-deleted-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.job-deleted-message {
+  padding: 20px;
+}
+
+.company-section a {
+  font-size: 16px;
+}
+
+@media (max-width: 992px) {
+  .job-container {
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+  }
+
+  .job-sidebar,
+  .job-details {
+    width: calc(100% - 60px);
+  }
+
+  .info-row span {
+    font-size: 16px;
+  }
+
+  .job-div-flex h4 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .job-container {
+    margin: 30px 10px;
+    gap: 20px;
+  }
+
+  .job-sidebar,
+  .job-details,
+  .Addapplyjob-container {
+    padding: 10px !important;
+  }
+
+  .job-details h1 {
+    font-size: 22px;
+    margin: 7px 0;
+  }
+
+  .job-details h2 {
+    font-size: 16px;
+  }
+
+  .info-row span,
+  .info-row strong {
+    font-size: 14px;
+  }
+
+  .job-div-flex h4 {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .job-deleted-message {
+    padding: 15px;
+  }
+
+  .Job-main-div,
+  .job-deleted-message {
+    width: calc(100% - 20%);
+  }
+}
+
+@media (max-width: 600px) {
+  .job-details p,
+  .company-section p,
+  .apply-section p {
+    font-size: 12px;
+    margin: 10px 0;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .job-div-flex {
+    height: auto;
+    padding-bottom: 40px;
+    margin: 20px;
+  }
+
+  .info-row {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .Addapplyjob-container button {
+    margin: 8px 0;
+  }
+
+  .job-deleted-message {
+    padding: 10px;
+  }
+
+  .Job-main-div,
+  .job-deleted-message {
+    width: calc(100% - 10%);
+  }
+
+  .company-section a {
+    font-size: 12px;
+  }
+}

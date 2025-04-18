@@ -1,0 +1,131 @@
+.Addapplyjob-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: var(--primary-text-white);
+  margin: 30px;
+  border: 1px solid rgb(233, 231, 231);
+  border-radius: 20px;
+}
+
+.addapplyjob-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.addapplyjob-section {
+  display: flex;
+  width: 100%;
+  margin-bottom: 25px;
+  gap: 15px;
+}
+
+.addapplyjob-input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.addapplyjob-input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.add-email-icon {
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  color: var(--primary-button);
+}
+
+.remove-email-icon {
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  color: var(--alert-red);
+}
+
+.applyjob-logo-flex {
+  /* display: flex; */
+  gap: 10px;
+  align-items: center !important;
+}
+
+.applyjob-custom-file-upload {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 15px;
+  background-color: var(--primary-button);
+  color: var(--primary-text-white);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  text-align: center;
+  width: max-content;
+  /* border-radius: 4px; */
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid var(--primary-button);
+}
+
+.applyjob-upload-img {
+  background-color: var(--secondary-dark-gray);
+  color: var(--primary-text-white);
+  width: max-content;
+  text-align: center;
+  cursor: pointer;
+  margin: 0;
+  transition: all 0.3s ease-in-out;
+  /* border-radius: 4px; */
+  border: 1px solid var(--secondary-dark-gray);
+  padding: 10px;
+  height: max-content;
+}
+
+.job-hidden-file-input {
+  display: none;
+}
+
+.Addapplyjob-container h1 {
+  display: flex;
+  color: var(--primary-button);
+}
+
+@media (max-width: 1400px) {
+  .applyjob-logo-flex {
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .applyjob-upload-img {
+    padding: 6px 16px;
+    width: max-content;
+  }
+
+  .applyjob-custom-file-upload {
+    padding: 9px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 575px) {
+  .addapplyjob-section {
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .addapplyjob-input-container {
+    margin-top: 10px;
+    gap: 0;
+  }
+}
