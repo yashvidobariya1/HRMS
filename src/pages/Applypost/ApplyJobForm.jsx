@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 import "./ApplyJobForm.css";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
@@ -12,7 +12,6 @@ const ApplyJobForm = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const jobUniqueKey = searchParams.get("key");
-  const Navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -63,7 +62,13 @@ const ApplyJobForm = () => {
         );
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
-          Navigate("/applyjob");
+          setFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNumber: "",
+            resume: "",
+          });
         } else {
           showToast(response?.data?.message, "error");
         }
