@@ -19,6 +19,7 @@ const EmployeesTimesheet = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [reportPerPage, setReportPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalEmployee, setTotalEmployee] = useState([]);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
@@ -66,6 +67,7 @@ const EmployeesTimesheet = () => {
         // setStatusList(response?.data?.report);
         // setStartDate(response?.data?.report?.startDate);
         // setEndDate(response?.data?.report?.endDate);
+        setTotalEmployee(response?.data?.totalEmployees);
         setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message);
@@ -129,6 +131,7 @@ const EmployeesTimesheet = () => {
             searchQuery={searchQuery}
             isPagination="true"
             isSearchQuery={false}
+            totalData={totalEmployee}
           />
         </>
       )}
