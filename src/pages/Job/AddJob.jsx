@@ -59,7 +59,12 @@ const AddJob = () => {
     }
 
     const website = formData.companyWebSite?.trim();
-    if (website && !/^https?:\/\/[^\s$.?#].[^\s]*$/i.test(website)) {
+    if (
+      website &&
+      !/^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$/i.test(
+        website
+      )
+    ) {
       newErrors.companyWebSite = "Invalid website URL format";
     }
     setErrors(newErrors);
@@ -277,7 +282,7 @@ const AddJob = () => {
             <div className="addjob-input-container">
               <label className="label">Contact Number*</label>
               <input
-                type="number"
+                type="text"
                 className="addjob-input checkbox-country"
                 name="companyContactNumber"
                 value={formData?.companyContactNumber}

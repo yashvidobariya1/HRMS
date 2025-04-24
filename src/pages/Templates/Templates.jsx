@@ -237,10 +237,11 @@ const Templates = () => {
         if (fileUrl) {
           const res = await fetch(fileUrl);
           const blob = await res.blob();
+          const extension = fileUrl.substring(fileUrl.lastIndexOf("."));
           const link = document.createElement("a");
           const objectURL = URL.createObjectURL(blob);
           link.href = objectURL;
-          link.download = `${templateName}.pdf`;
+          link.download = `${templateName}${extension}`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);

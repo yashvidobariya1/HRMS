@@ -268,7 +268,7 @@ const AddEmployee = () => {
         } else {
           showToast(response?.data?.message, "error");
         }
-        // navigate("/employees");
+        navigate("/employees");
       } catch (error) {
         showToast(error, "error");
       } finally {
@@ -704,8 +704,8 @@ const AddEmployee = () => {
 
       case "Job Details":
         if (jobList.length <= 0) {
-          newErrors.jobList = "Atleast one Jobtype is required";
-          showToast("Atleast one Jobtype is required", "error");
+          newErrors.jobList = "Atleast one Job Type is required";
+          showToast("Atleast one Job type is required", "error");
         }
         if (editIndex !== null) {
           newErrors.jobList = "Please update Job Details";
@@ -1881,25 +1881,25 @@ const AddEmployee = () => {
                 )}
               </div>
               <div className="addemployee-input-container">
-                <label className="label">visa Valid From</label>
+                <label className="label">Visa Valid From</label>
                 <input
                   type="date"
                   name="visaValidFrom"
                   className="addemployee-input"
                   value={formData?.immigrationDetails?.visaValidFrom}
                   onChange={handleChange}
-                  placeholder="Enter visa Valid From"
+                  placeholder="Enter Visa Valid From"
                 />
               </div>
               <div className="addemployee-input-container">
-                <label className="label">visa Valid To</label>
+                <label className="label">Visa Valid To</label>
                 <input
                   type="date"
                   name="visaValidTo"
                   className="addemployee-input"
                   value={formData?.immigrationDetails?.visaValidTo}
                   onChange={handleChange}
-                  placeholder="Enter visa Valid To"
+                  placeholder="Enter Visa Valid To"
                 />
               </div>
             </div>

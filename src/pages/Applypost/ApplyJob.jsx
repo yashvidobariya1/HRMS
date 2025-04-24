@@ -99,7 +99,15 @@ const ApplyJob = () => {
                 <div className="company-section">
                   {jobDetails?.companyWebSite && <h3>Company Website</h3>}
                   {jobDetails?.companyWebSite && (
-                    <a href={jobDetails?.companyWebSite}>
+                    <a
+                      href={
+                        jobDetails?.companyWebSite?.startsWith("http")
+                          ? jobDetails.companyWebSite
+                          : `https://${jobDetails.companyWebSite}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       {jobDetails?.companyWebSite}
                     </a>
                   )}

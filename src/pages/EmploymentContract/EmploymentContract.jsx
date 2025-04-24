@@ -256,10 +256,11 @@ const EmploymentContract = () => {
         if (fileUrl) {
           const res = await fetch(fileUrl);
           const blob = await res.blob();
+          const extension = fileUrl.substring(fileUrl.lastIndexOf("."));
           const link = document.createElement("a");
           const objectURL = URL.createObjectURL(blob);
           link.href = objectURL;
-          link.download = `${contractName}.pdf`;
+          link.download = `${contractName}${extension}`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
