@@ -8,6 +8,7 @@ import ApproveRejectConfirmation from "../../main/ApproveRejectConfirmation";
 // import { useLocation, useNavigate } from "react-router";
 // import { useSelector } from "react-redux";
 import { TextField } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const LeavesRequest = () => {
   const [leaveList, setLeaveList] = useState([]);
@@ -26,7 +27,10 @@ const LeavesRequest = () => {
   const [errors, setErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [totalLeaves, settotalLeaves] = useState([]);
+  const [totalLeaves, setTotalLeaves] = useState([]);
+  const [approvedLeaveHours, setApprovedLeaveHours] = useState(0);
+  const [totalLeavesHours, setTotalLeavesHours] = useState(0);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   // const location = useLocation();
   // const queryParams = new URLSearchParams(location.search);
   // const jobId = queryParams.get("jobId");
@@ -44,6 +48,13 @@ const LeavesRequest = () => {
     "Action",
   ];
 
+  const allowedDurations = [
+    "Full-Day",
+    "Multiple",
+    "First-Half",
+    "Second-Half",
+  ];
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -52,11 +63,11 @@ const LeavesRequest = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllLeaveRequest?page=${currentPage}&limit=${leavePerPage}&search=${searchQuery}`
+        `/getAllLeaveRequest?page=${currentPage}&limit=${leavePerPage}&search=${searchQuery}&companyId=${companyId}`
       );
       if (response?.data?.status === 200) {
         setLeaveList(response?.data?.allLeaveRequests);
-        settotalLeaves(response.data?.totalLeaveRequests);
+        setTotalLeaves(response.data?.totalLeaveRequests);
         setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
@@ -84,12 +95,44 @@ const LeavesRequest = () => {
       return;
     }
 
-    if (!approvalReason && duration === "Multiple") {
-      setErrors({ approvalReason: "Approval reason is required!" });
-      return;
+    // if (!approvalReason && duration === "Multiple") {
+    //   setErrors({ approvalReason: "Approval reason is required!" });
+    //   return;
+    // }
+
+    if (!allowedDurations.includes(duration)) {
+      if (approvedLeaveHours > totalLeavesHours) {
+        // console.log("approvedLeaveHours", approvedLeaveHours);
+        setErrors({
+          approvedLeaveHours:
+            "Approval hour is not greater to requested hours!",
+        });
+        return;
+      }
+
+      if (approvedLeaveHours < 0) {
+        setErrors({
+          approvedLeaveHours: "Approval hour must greater or equal zero!",
+        });
+        return;
+      }
+
+      if (!/^\d+$/.test(approvedLeaveHours)) {
+        setErrors({
+          approvedLeaveHours: "Approval hour must be a positive number!",
+        });
+        return;
+      }
+
+      // if (!approvalReason) {
+      //   setErrors({
+      //     approvedLeaveHours: "Approval reason is required  !",
+      //   });
+      //   return;
+      // }
     }
 
-    const data = { approvalReason: approvalReason, leaves };
+    const data = { approvalReason: approvalReason, leaves, approvedLeaveHours };
     try {
       setLoading(true);
       const response = await PostCall(`/leaveRequestApprove/${id}`, data);
@@ -109,10 +152,10 @@ const LeavesRequest = () => {
   };
 
   const handleRejectSubmit = async (id) => {
-    if (!rejectionReason) {
-      setErrors({ rejectionReason: "Rejection reason is required!" });
-      return;
-    }
+    // if (!rejectionReason) {
+    //   setErrors({ rejectionReason: "Rejection reason is required!" });
+    //   return;
+    // }
     const data = { rejectionReason: rejectionReason };
     try {
       setLoading(true);
@@ -137,18 +180,20 @@ const LeavesRequest = () => {
     setEmployeeId("");
     setApprovalReason("");
     setRejectionReason("");
+    setApprovedLeaveHours(0);
     setShowConfirm(false);
     setActionType("");
     setErrors({});
   };
 
-  const HandleApprove = (id, userName, leaves, duration) => {
+  const HandleApprove = (id, userName, leaves, duration, totalLeavesHours) => {
     setEmployeeName(userName);
     setEmployeeId(id);
     setLeaves(leaves);
     // console.log("leave", leaves);
     setActionType("approve");
     setDuration(duration);
+    setTotalLeavesHours(totalLeavesHours);
     setShowConfirm(true);
   };
 
@@ -192,7 +237,7 @@ const LeavesRequest = () => {
   useEffect(() => {
     GetLeave();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, leavePerPage, searchQuery]);
+  }, [currentPage, leavePerPage, searchQuery, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -227,15 +272,16 @@ const LeavesRequest = () => {
               Name: leave.userName,
               StartDate: leave.startDate,
               SelectionDuration: leave.selectionDuration,
-              TotalLeaveDays: leave.totalLeaveDays,
-              NumberOfApproveLeaves: leave.numberOfApproveLeaves,
+              TotalLeaveDays: leave.totalRequestedLeaves,
+              NumberOfApproveLeaves: leave.totalApprovedLeaves,
               status: leave.status,
               leaveType: leave.leaveType,
               leaves: leave.leaves,
               rejectionReason: leave.rejectionReason,
               approvalReason: leave.approvalReason,
               reasonOfLeave: leave.reasonOfLeave,
-              // isPaidLeave: leave.isPaidLeave === true ? "Paid" : "Unpaid",
+              // totalLeaveHours: leave?.totalLeaveHours,
+              isPaidLeave: leave.isPaidLeave === true ? "Paid" : "Unpaid",
             }))}
             actions={{
               // showDropdownAction,
@@ -268,6 +314,8 @@ const LeavesRequest = () => {
           leaves={leaves}
           setLeaves={setLeaves}
           duration={duration}
+          approvedLeaveHours={approvedLeaveHours}
+          setApprovedLeaveHours={setApprovedLeaveHours}
         />
       )}
 
@@ -283,6 +331,10 @@ const LeavesRequest = () => {
           error={errors}
           actionType={actionType}
           leaves={leaves}
+          setLeaves={setLeaves}
+          duration={duration}
+          approvedLeaveHours={approvedLeaveHours}
+          setApprovedLeaveHours={setApprovedLeaveHours}
         />
       )}
     </div>

@@ -45,16 +45,24 @@ const Dashboard = () => {
   const [calenderloading, setcalenderloading] = useState(false);
   const [selectedLocationName, setSelectedLocationName] = useState("");
   const [selectedLocationId, setSelectedLocationId] = useState("");
-  const [selectedYear, setSelectedYear] = useState(moment().year());
+  const [selectedYear, setSelectedYear] = useState(moment().toDate());
   const currentYear = moment().year();
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   const [events, setEvents] = useState([]);
   const [locationList, setLocationList] = useState([]);
-  const [companyList, setcompanyList] = useState([]);
-  const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+  // const [companyList, setcompanyList] = useState([]);
+  // const [selectedCompanyId, setSelectedCompanyId] = useState(null);
+  // const selectedCompanyId = useSelector(
+  //   (state) => state.companySelect.companySelect
+  // );
   const [timeSheetData, setTimeSheetData] = useState([]);
   const [userGrowth, setUserGrowth] = useState([]);
   const [GraphData, setGraphData] = useState([]);
+  const [templateList, setTemplateList] = useState([]);
+  const [template, setTemplate] = useState({});
+  const [isSignatureRequired, setIsSignatureRequired] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [checked, setChecked] = useState(false);
   // const [AvailableLeave, setAvailableLeave] = useState([]);
   // const [currentMonth, setCurrentMonth] = useState("");
   const user = useSelector((state) => state.userInfo.userInfo);
@@ -67,6 +75,7 @@ const Dashboard = () => {
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const dispatch = useDispatch();
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
@@ -260,6 +269,7 @@ const Dashboard = () => {
   };
 
   const submitSignedDocument = async () => {
+    setLoading(true);
     let htmlContent = `<html>
           <head>
               <style>
@@ -278,14 +288,35 @@ const Dashboard = () => {
 
     const body = {
       base64OfTemplate: base64Doc,
-      jobId: jobRoleId,
+      // jobId: jobRoleId,
+      templateId: template?.templateId,
     };
 
     const response = await PostCall("/signedTemplate", body);
-    setLoading(true);
     if (response?.data?.status === 200) {
       setShowPopup(true);
+      setTemplate(null);
       showToast("Document signed successfully", "success");
+      DashboarDetails();
+    } else {
+      showToast(response?.data?.message, "error");
+    }
+    setLoading(false);
+  };
+
+  const submitReadOnlyDocument = async () => {
+    setLoading(true);
+    const response = await PostCall("/readTemplate", {
+      templateId: template?.templateId,
+    });
+    if (response?.data?.status === 200) {
+      showToast("Document saved successfully", "success");
+      setShowPopup(true);
+      setTemplate(null);
+      setChecked(false);
+      DashboarDetails();
+    } else {
+      showToast(response?.data?.message, "error");
     }
     setLoading(false);
   };
@@ -318,34 +349,46 @@ const Dashboard = () => {
     }
   };
 
-  const GetCompany = async () => {
-    try {
-      setLoading(true);
-      const response = await GetCall(`/getAllCompany`);
+  // const GetCompany = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await GetCall(`/getAllCompany`);
 
-      if (response?.data?.status === 200) {
-        const companies = response?.data?.companies;
-        setcompanyList(companies);
-        if (!selectedCompanyId && companies.length > 0) {
-          const defaultCompanyId = companies[0]._id;
-          // console.log("companyid", defaultCompanyId);
-          setSelectedCompanyId(defaultCompanyId);
-          DashboarDetails(defaultCompanyId);
-        }
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error fetching companies:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (response?.data?.status === 200) {
+  //       const companies = response?.data?.companies;
+  //       setcompanyList(companies);
+  //       if (!selectedCompanyId && companies.length > 0) {
+  //         const defaultCompanyId = companies[0]._id;
+  //         // console.log("companyid", defaultCompanyId);
+  //         setSelectedCompanyId(defaultCompanyId);
+  //         DashboarDetails(defaultCompanyId);
+  //       }
+  //     } else {
+  //       showToast(response?.data?.message, "error");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching companies:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleCompanyChange = (e) => {
-    const companyId = e.target.value;
-    setSelectedCompanyId(companyId);
-    DashboarDetails(companyId);
+  // const handleCompanyChange = (e) => {
+  //   const companyId = e.target.value;
+  //   setSelectedCompanyId(companyId);
+  //   DashboarDetails(companyId);
+  // };
+
+  const handleTempalateChange = (e) => {
+    // console.log("template", e.target.value);
+    const selected = templateList.find(
+      (template) => template._id === e.target.value
+    );
+    // console.log("selected", selected);
+    setTemplate(selected);
+    setDocxUrl(selected?.templateUrl);
+    setUserData(selected?.userData);
+    fetchData(selected);
   };
 
   const DashboarDetails = async (companyId) => {
@@ -362,18 +405,20 @@ const Dashboard = () => {
       }
 
       if (response?.data?.status === 200) {
-        setDashboardData(response?.data.responseData);
+        setDashboardData(response?.data?.responseData);
         setUserGrowth(response?.data.responseData?.userGrowth);
-        setGraphData(response?.data?.responseData.totalHoursAndOverTime);
-        setTimeSheetData(response?.data?.responseData.todaysClocking);
+        setGraphData(response?.data?.responseData?.totalHoursAndOverTime);
+        setTimeSheetData(response?.data?.responseData?.todaysClocking);
+        setTemplateList(response?.data?.responseData?.templates);
+        setUserData(response?.data?.userData);
         // setAvailableLeave(response?.data?.responseData?.totalAvailableLeave);
         // console.log("timesheet", timeSheetData);
-        const signed = response?.data?.responseData?.isTemplateSigned;
+        // const signed = response?.data?.responseData?.isTemplateSigned;
         // console.log("signed", signed);
-        setShowPopup(signed);
-        if (!signed) {
-          fetchData();
-        }
+        // setShowPopup(signed);
+        // if (!signed) {
+        //   fetchData();
+        // }
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -384,12 +429,24 @@ const Dashboard = () => {
     }
   };
 
-  const fetchData = async () => {
-    const response = await PostCall("/previewTemplate", { jobId: jobRoleId });
+  const fetchData = async (selectedTemplate) => {
+    setLoading(true);
+    // console.log("template", selectedTemplate);
+    const response = await PostCall("/previewTemplate", {
+      templateId: selectedTemplate?.templateId,
+    });
     if (response?.data?.status === 200) {
       setDocxUrl(response?.data?.templateUrl);
       setUserData(response?.data?.userData);
+      setIsSignatureRequired(response?.data?.isSignActionRequired);
+      setIsReadOnly(response?.data?.isTemplateReadActionRequired);
+      // setIsSignatureRequired(false);
+      // setIsReadOnly(false);
+      setShowPopup(false);
+    } else {
+      showToast(response?.data?.message, "error");
     }
+    setLoading(false);
   };
 
   const getAllHoliday = async (id) => {
@@ -423,10 +480,16 @@ const Dashboard = () => {
   };
 
   const handleTodayClick = () => {
-    const newCurrentYear = moment().year();
+    const newCurrentYear = moment().toDate();
     // setCurrentYear(newCurrentYear);
     setSelectedYear(newCurrentYear);
     // setSelectedMonth(new Date().getMonth());
+  };
+
+  const previewClose = () => {
+    setShowPopup(true);
+    setTemplate(null);
+    setChecked(false);
   };
 
   const handleLocation = (event) => {
@@ -517,19 +580,24 @@ const Dashboard = () => {
   useEffect(() => {
     if (userRole === "Superadmin") {
       GetLocations();
-      GetCompany();
+      // GetCompany();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRole]);
 
   useEffect(() => {
-    if (jobRoleId && selectedCompanyId) {
-      DashboarDetails(selectedCompanyId);
-    } else if (userRole !== "Superadmin" && jobRoleId) {
-      DashboarDetails();
+    const SetcompanyId =
+      companyId && typeof companyId === "string" && companyId.trim() !== "";
+
+    if (jobRoleId && companyId && SetcompanyId) {
+      // console.log("dashboard api call");
+      DashboarDetails(companyId);
     }
+    // else if (userRole !== "Superadmin" && jobRoleId) {
+    //   DashboarDetails();
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobRoleId]);
+  }, [jobRoleId, companyId]);
 
   // useEffect(() => {
   //   const filtered = UserGrowth?.filter(
@@ -555,18 +623,23 @@ const Dashboard = () => {
 
     loadDocx();
 
+    const container = containerRef.current;
+
     return () => {
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
+      if (container) {
+        container.innerHTML = "";
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [docxUrl, userData]);
 
   const HandleviewProfile = () => {
     navigate("/profile");
   };
+
   useEffect(() => {
     GetNotification();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -578,72 +651,82 @@ const Dashboard = () => {
       ) : (
         <>
           {!showPopup && userRole !== "Superadmin" && (
-            <div className="popup-overlay" onClick={() => setShowPopup(true)}>
-              <div
-                className="popup-content"
-                ref={pdfRef}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  className="close-btn"
-                  onClick={() => setShowPopup(true)}
-                >
-                  ×
-                </button>
-                <div>
-                  {error ? (
-                    <p style={{ color: "red" }}>{error}</p>
-                  ) : docxUrl && userData ? (
-                    <div ref={containerRef} className="docs" />
-                  ) : (
-                    <p>Loading document...</p>
-                  )}
-
-                  {!isSignatureSaved ? (
-                    <div className="signature-container">
-                      <SignatureCanvas
-                        ref={signatureRef}
-                        canvasProps={{
-                          className: "signature-canvas",
-                        }}
-                      />
-                      <CommonAddButton
-                        label="Save Signature"
-                        onClick={saveSignature}
-                      />
-                    </div>
-                  ) : (
-                    <CommonAddButton
-                      label="Submit"
-                      onClick={submitSignedDocument}
-                    />
-                  )}
-
-                  {isSignatureSaved && (
-                    <>
-                      {/* <button onClick={submitSignedDocument}>Submit</button> */}
-                      <CommonAddButton
-                        label="Submit"
-                        // icon={AiOutlineUpload}
-                        onClick={submitSignedDocument}
-                      />
-                    </>
-                  )}
+            <div className="popup-overlay" onClick={previewClose}>
+              {loading ? (
+                <div className="loader-wrapper">
+                  <Loader />
                 </div>
-              </div>
+              ) : (
+                <div
+                  className="popup-content"
+                  ref={pdfRef}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button className="close-btn" onClick={previewClose}>
+                    ×
+                  </button>
+                  <div>
+                    {error ? (
+                      <p style={{ color: "red" }}>{error}</p>
+                    ) : docxUrl && userData ? (
+                      <div ref={containerRef} className="docs" />
+                    ) : (
+                      <p>Loading document...</p>
+                    )}
+
+                    {isSignatureRequired && (
+                      <>
+                        {!isSignatureSaved ? (
+                          <div className="signature-container">
+                            <SignatureCanvas
+                              ref={signatureRef}
+                              canvasProps={{
+                                className: "signature-canvas",
+                              }}
+                            />
+                            <CommonAddButton
+                              label="Save Signature"
+                              onClick={saveSignature}
+                            />
+                          </div>
+                        ) : (
+                          <div className="submit-signature-button">
+                            <CommonAddButton
+                              label="Submit"
+                              onClick={submitSignedDocument}
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {isReadOnly && (
+                      <>
+                        <div className="isReadOnly-container">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={(e) => setChecked(e.target.checked)}
+                          />
+                          <label>I read carefully.</label>
+                        </div>
+                        <div className="save-readOnly">
+                          <button
+                            className="common-button"
+                            onClick={submitReadOnlyDocument}
+                            disabled={!checked}
+                          >
+                            Read
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
-          <div className="dashboard-company-div">
-            {userRole === "Superadmin" && companyList.length > 0 && (
-              <select value={selectedCompanyId} onChange={handleCompanyChange}>
-                {companyList.map((company) => (
-                  <option key={company._id} value={company._id}>
-                    {company.companyDetails.businessName}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+
           {/* ===========welcome profile========================== */}
           <div className="dashboard-profile-container">
             <div className="dashboard-profile">
@@ -660,6 +743,29 @@ const Dashboard = () => {
               <button onClick={HandleviewProfile}>View Profile</button>
             </div>
           </div>
+
+          {/* ===========Pending Templates========================== */}
+          {userRole !== "Superadmin" && templateList.length > 0 && (
+            <div className="dashboard-profile-container">
+              <h3>Pending Verifing Documents</h3>
+              <div className="dashboard-viewprofile">
+                <select
+                  className="JobTitle-input"
+                  value={template?._id || ""}
+                  onChange={handleTempalateChange}
+                >
+                  <option value="" disabled>
+                    Select a Template
+                  </option>
+                  {templateList?.map((template) => (
+                    <option key={template._id} value={template._id}>
+                      {template.templateName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
 
           {/* ==================attendance============================ */}
           <div

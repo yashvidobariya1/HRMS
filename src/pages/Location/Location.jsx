@@ -9,6 +9,7 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { TextField } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const Location = () => {
   const navigate = useNavigate();
@@ -23,12 +24,22 @@ const Location = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalLocations, settotalLocations] = useState([]);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
 
   const handleAction = (id) => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
 
   const GoTOAddLocation = () => {
+    if (
+      companyId === "" ||
+      companyId === undefined ||
+      companyId === null ||
+      companyId === "allCompany"
+    ) {
+      showToast("Please select a specific company", "error");
+      return;
+    }
     navigate("/location/addlocation");
   };
 
@@ -52,7 +63,7 @@ const Location = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllLocation?page=${currentPage}&limit=${locationPerPage}&search=${searchQuery}`
+        `/getAllLocation?page=${currentPage}&limit=${locationPerPage}&search=${searchQuery}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
@@ -134,7 +145,7 @@ const Location = () => {
   useEffect(() => {
     GetLocations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, locationPerPage, searchQuery]);
+  }, [currentPage, locationPerPage, searchQuery, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);

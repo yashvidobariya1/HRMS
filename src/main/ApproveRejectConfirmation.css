@@ -93,6 +93,18 @@
   color: var(--sidebar-title-primary-white);
 }
 
+.input-container-leave-hours {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.input-container-leave-hours input,
+label {
+  margin: 0;
+}
+
 @media (min-width: 992px) and (max-width: 1400px) {
   .leaves-common-table {
     overflow-y: auto;

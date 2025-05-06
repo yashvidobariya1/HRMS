@@ -14,6 +14,8 @@ const ApproveRejectConfirmation = ({
   leaves,
   setLeaves,
   duration,
+  approvedLeaveHours,
+  setApprovedLeaveHours,
 }) => {
   const handleChange = (index) => {
     const updatedLeaves = leaves?.map((leave, i) =>
@@ -21,6 +23,13 @@ const ApproveRejectConfirmation = ({
     );
     setLeaves(updatedLeaves);
   };
+
+  const allowedDurations = [
+    "Full-Day",
+    "Multiple",
+    "First-Half",
+    "Second-Half",
+  ];
 
   return (
     <div className="approvereject-overlay">
@@ -52,6 +61,18 @@ const ApproveRejectConfirmation = ({
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+        {actionType === "approve" && !allowedDurations.includes(duration) && (
+          <div className="input-container-leave-hours">
+            <label>Approve Hours :</label>
+            <input
+              type="number"
+              className="addleave-radio-flex"
+              placeholder="Enter approve hours"
+              value={approvedLeaveHours}
+              onChange={(e) => setApprovedLeaveHours(e.target.value)}
+            />
           </div>
         )}
         <textarea

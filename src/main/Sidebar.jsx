@@ -1,15 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { SidebarData } from "./Sidebardata";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./Sidebar.css";
 import { RxDashboard } from "react-icons/rx";
 // import { IoCloseCircleSharp } from "react-icons/io5";
 import { FaChevronCircleLeft } from "react-icons/fa";
+import { GetCall } from "../ApiServices";
+import { setCompanySelect } from "../store/selectCompanySlice";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const currentRole = useSelector((state) => state.userInfo.userInfo.role);
   const location = useLocation();
+  const dispatch = useDispatch();
+  const [companyList, setcompanyList] = useState([]);
+  const [selectedCompanyId, setSelectedCompanyId] = useState(
+    useSelector((state) => state.companySelect.companySelect)
+  );
 
   const filterSidebarData = (data, role) => {
     return data
@@ -21,6 +28,40 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   };
 
   const filteredSidebarData = filterSidebarData(SidebarData, currentRole);
+
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  const handleChange = (e) => {
+    const companyId = e.target.value;
+    setSelectedCompanyId(companyId);
+    dispatch(setCompanySelect(companyId));
+    // console.log("Selected company:", companyId);
+  };
+
+  const GetCompanies = async () => {
+    try {
+      const response = await GetCall(`/getallcompany`);
+
+      if (response?.data?.status === 200) {
+        const companies = response?.data?.companies;
+        setcompanyList(companies);
+        if (
+          (!selectedCompanyId ||
+            (typeof selectedCompanyId === "object" &&
+              Object.keys(selectedCompanyId).length === 0)) &&
+          companies.length > 0
+        ) {
+          const defaultCompanyId = companies[0]._id;
+          dispatch(setCompanySelect(defaultCompanyId));
+          setSelectedCompanyId(defaultCompanyId);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -50,9 +91,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   //   }
   // };
 
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  useEffect(() => {
+    GetCompanies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -66,7 +108,31 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           <div className="logo_name">
             {/* <img src="/image/login-bg.png" alt="Logo" /> */}
             <img src="/favicon.png" alt="Logo" />
-            {!isCollapsed && <span className="logo-text">City Clean London</span>}
+            {companyList.length > 0 && !isCollapsed && (
+              <>
+                {companyList.length === 1 ? (
+                  <span className="logo-text">
+                    {companyList[0].companyDetails.businessName}
+                  </span>
+                ) : (
+                  <select
+                    value={selectedCompanyId}
+                    onChange={handleChange}
+                    className="company-dropdown"
+                    // className="dropdown"
+                  >
+                    {currentRole === "Superadmin" && (
+                      <option value="allCompany">All</option>
+                    )}
+                    {companyList.map((company) => (
+                      <option key={company._id} value={company._id}>
+                        {company.companyDetails.businessName}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </>
+            )}
           </div>
         </div>
         {/* <IoCloseCircleSharp */}

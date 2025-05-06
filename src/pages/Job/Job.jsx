@@ -9,7 +9,7 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 // import { useLocation } from "react-router-dom";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { TextField } from "@mui/material";
 
 const Job = () => {
@@ -23,9 +23,9 @@ const Job = () => {
   const [jobId, setJobId] = useState("");
   const [jobPerPage, setJobPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
-  // const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalJobPost, settotalJobPost] = useState([]);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -41,6 +41,15 @@ const Job = () => {
   };
 
   const HandleAddJob = async () => {
+    if (
+      companyId === "" ||
+      companyId === undefined ||
+      companyId === null ||
+      companyId === "allCompany"
+    ) {
+      showToast("Please select a specific company", "error");
+      return;
+    }
     navigate(`/job/addjob`);
     setShowDropdownAction(null);
   };
@@ -55,13 +64,15 @@ const Job = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllJobPosts?page=${currentPage}&limit=${jobPerPage}&search=${searchQuery}`
+        `/getAllJobPosts?page=${currentPage}&limit=${jobPerPage}&search=${searchQuery}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
         setJobList(response?.data?.jobPost);
         settotalJobPost(response.data.totalJobPost);
         setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
@@ -95,11 +106,10 @@ const Job = () => {
   const tableHeaders = [
     "Title",
     "Description",
-    "Location",
+    "Client",
     "Category",
     "Apply Date",
-    "Contact",
-    "Status",
+    "Email",
     "Apply Link",
     "Action",
   ];
@@ -120,7 +130,8 @@ const Job = () => {
 
   useEffect(() => {
     GetJobs();
-  }, [currentPage, jobPerPage, searchQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, jobPerPage, searchQuery, companyId]);
 
   return (
     <div className="job-list-container">
@@ -160,11 +171,11 @@ const Job = () => {
               _id: job._id,
               Name: job?.jobTitle,
               jobDescription: job?.jobDescription,
-              jobLocation: job?.locationName,
+              clientName: job?.clientName,
               jobCategory: job?.jobCategory,
               jobApplyTo: job?.jobApplyTo,
-              Contact: job?.companyContactNumber,
-              jobStatus: job?.jobStatus,
+              useremail: job?.email,
+              // jobStatus: job?.jobStatus,
               jobPostedLink: job?.jobPostedLink,
             }))}
             actions={{

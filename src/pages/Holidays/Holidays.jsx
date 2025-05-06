@@ -369,7 +369,7 @@ const Holidays = () => {
       }
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
-        console.log("formdata", formData);
+        // console.log("formdata", formData);
 
         setAllholidayList((prev) => {
           if (formData._id) {
@@ -402,7 +402,7 @@ const Holidays = () => {
   };
 
   const confirmDelete = async (id) => {
-    console.log("id", id);
+    // console.log("id", id);
     try {
       setLoading(true);
       const response = await PostCall(`/deleteHoliday/${id}`);

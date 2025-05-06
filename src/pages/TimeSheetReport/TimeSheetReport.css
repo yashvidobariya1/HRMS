@@ -24,6 +24,16 @@
   /* margin-bottom: 10px; */
   margin: 10px 0;
   display: flex;
+  justify-content: space-between;
+}
+
+.timesheet-report-filter {
+  /* margin: 10px 0; */
+  display: flex;
+}
+
+.timeshet-employee-selection {
+  padding: 10px !important;
 }
 
 .selection-wrapper select {
@@ -144,46 +154,60 @@
   color: var(--secondary-teal);
 } */
 
-timesheet-selection-input {
+/* timesheet-selection-input {
   display: flex;
-}
+} */
 
 @media screen and (max-width: 600px) {
   .timesheet-title {
     display: block;
   }
+
   .clockin-model {
     width: 70%;
   }
+
   .clockin-out-action {
     gap: 5px;
   }
+
   .timesheet-clock-in-btn,
   .timesheet-clock-out-btn {
     padding: 15px 10px;
     font-size: 10px;
   }
+
   .clockin-out-action button {
     padding: 8px;
   }
+
   .timesheetreport-searchbar-clockin {
-    justify-content: flex-start;
+    /* justify-content: flex-start; */
     gap: 10px;
   }
+
   .timesheet-button-container {
     gap: 5px;
   }
+
   .timesheet-report-download-container {
     flex-direction: column;
   }
+
   .timesheet-input-container input,
   .timesheet-input-container select {
     width: calc(100% - 20px);
   }
+
   .timesheet-input-container select {
     width: 100%;
   }
+
   .timesheet-report-download-container button {
     margin-top: 0;
+  }
+
+  .timesheet-report-filter-container {
+    flex-direction: column;
   }
 }

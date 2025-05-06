@@ -5,6 +5,7 @@ import Loader from "../Helper/Loader";
 import CommonTable from "../../SeparateCom/CommonTable";
 import moment from "moment";
 import { TextField } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const LoggedInUser = () => {
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,7 @@ const LoggedInUser = () => {
   const [selectedTimePeriod, setSelectedTimePeriod] = useState(24);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalLoggedUser, settotalLoggedUser] = useState([]);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -35,7 +37,7 @@ const LoggedInUser = () => {
       // console.log("selectedTimePeriod", selectedTimePeriod);
 
       const response = await GetCall(
-        `/getAllLoggedInOutUsers?page=${currentPage}&limit=${loggeduserPerPage}&timePeriod=${selectedTimePeriod}?search=${searchQuery}`
+        `/getAllLoggedInOutUsers?page=${currentPage}&limit=${loggeduserPerPage}&timePeriod=${selectedTimePeriod}?search=${searchQuery}&companyId=${companyId}`
       );
 
       // console.log("response", response);
@@ -52,7 +54,7 @@ const LoggedInUser = () => {
   };
 
   const headers = [
-    "Name",
+    "User Name",
     "Role",
     // "Client IP Address",
     "Login Time",
@@ -68,7 +70,13 @@ const LoggedInUser = () => {
   useEffect(() => {
     GetUsersLogged();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, loggeduserPerPage, selectedTimePeriod, searchQuery]);
+  }, [
+    currentPage,
+    loggeduserPerPage,
+    selectedTimePeriod,
+    searchQuery,
+    companyId,
+  ]);
 
   useEffect(() => {
     setCurrentPage(1);

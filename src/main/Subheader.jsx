@@ -49,6 +49,7 @@ const pageNames = {
   addjob: "Add Job",
   editjob: "Update Job",
   applyjob: "Apply Job",
+  clients: "Clients",
 };
 
 const Subheader = () => {
@@ -57,9 +58,9 @@ const Subheader = () => {
   const location = useLocation();
 
   const selectedJob = useSelector((state) => state.jobRoleSelect.jobRoleSelect);
-  const jobRoleId = useSelector(
-    (state) => state.jobRoleSelect.jobRoleSelect.jobId
-  );
+  // const jobRoleId = useSelector(
+  //   (state) => state.jobRoleSelect.jobRoleSelect.jobId
+  // );
 
   const formatPageName = (pathname) => {
     const idPattern = /^[a-fA-F0-9]{24}$/;
@@ -99,9 +100,9 @@ const Subheader = () => {
   };
 
   useEffect(() => {
-    if (!jobRoleId) {
-      Getjobtitledata();
-    }
+    // if (!jobRoleId) {
+    Getjobtitledata();
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

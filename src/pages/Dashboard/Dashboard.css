@@ -242,12 +242,6 @@ td {
   gap: 20px;
 }
 
-.dashboard-first-section-full-flex {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
 .dashbaord-second-section,
 .dashbaord-third-section {
   display: grid;
@@ -279,13 +273,14 @@ td {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--secondary-dark-gray);
 }
 
-.Total-employee {
+/* .Total-employee {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
+} */
 
 .time-filter {
   background: var(--neutral-light-gray);
@@ -296,10 +291,10 @@ td {
   border-radius: 4px;
 }
 
-.total-employee {
+/* .total-employee {
   text-align: center;
   margin: 10px 0;
-}
+} */
 
 .Total-employee span {
   color: var(--secondary-dark-gray);
@@ -351,9 +346,6 @@ td {
   padding: 10px;
   border-radius: 4px;
   /* text-align: center; */
-}
-
-.status-box {
   color: var(--secondary-dark-gray);
 }
 
@@ -366,13 +358,6 @@ td {
   border-radius: 4px;
   cursor: pointer;
   margin: 10px 0;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--secondary-dark-gray);
 }
 
 .header h3 {
@@ -572,31 +557,6 @@ td {
   gap: 5px;
 }
 
-.dashboard-calender .fc .fc-button {
-  border-radius: 0px;
-  background-color: var(-sidebar-title-primary-white);
-  border: none;
-  color: var(--primary-text-white);
-}
-
-.dashboard-calender .fc-theme-standard td,
-.fc-theme-standard th,
-.fc-theme-standard .fc-scrollgrid {
-  border: 1px solid var(--neutral-light-gray);
-}
-
-.dashboard-calender .fc .fc-daygrid-day-number {
-  margin: 5px;
-  background-color: var(--secondary-soft-gray);
-  border-radius: 100px;
-  width: 27px;
-  height: 27px;
-  font-size: 14px;
-  justify-content: center;
-  display: flex;
-  text-align: center;
-}
-
 .dashboard-calender .fc .fc-toolbar-title {
   font-size: 16px;
   margin: 0 15px;
@@ -780,6 +740,8 @@ section.docx {
   width: 100% !important;
   height: fit-content !important;
   min-height: max-content !important;
+  overflow: auto !important;
+  padding: 0 !important;
 }
 
 .dashboard-calender .fc .fc-scrollgrid-section-footer > *,
@@ -818,6 +780,31 @@ section.docx {
   padding: 10px;
 }
 
+.isReadOnly-container {
+  display: flex;
+  align-items: center;
+  margin: 20px;
+  gap: 10px;
+}
+
+.isReadOnly-container label {
+  margin-bottom: 0;
+}
+
+.save-readOnly {
+  margin: 0 20px;
+}
+
+.save-readOnly button:disabled {
+  background-color: var(--secondary-soft-gray);
+  cursor: not-allowed;
+  color: var(--sidebar-hover);
+}
+
+.submit-signature-button {
+  margin-left: 30px;
+}
+
 @media (max-width: 1500px) {
   .dashboard-overview-container {
     flex-direction: column;
@@ -833,18 +820,13 @@ section.docx {
     width: calc(100% - 40px);
   }
 
-  .dashbaord-second-section-flex {
+  /* .dashbaord-second-section-flex {
     grid-template-columns: repeat(2, 1fr);
-  }
+  } */
 
   .dashbaord-second-section-flex .employee-status-container:nth-child(1),
   .dashboard-overview-flex-2:nth-child(1) {
     grid-column: span 1;
-  }
-
-  .dashbaord-first-section-flex,
-  .dashbaord-second-section-flex {
-    grid-template-columns: repeat(2, 1fr);
   }
 
   .dashbaord-first-section-flex {
@@ -914,7 +896,7 @@ section.docx {
 
   .dashboard-profile-container {
     /* flex-direction: column; */
-    padding: 12px;
+    padding: 15px;
     align-items: left;
   }
 
@@ -976,10 +958,6 @@ section.docx {
     grid-template-columns: repeat(1, 1fr);
   }
 
-  .dashboard-profile-container {
-    padding: 15px;
-  }
-
   .dashboard-first-section {
     gap: 15px;
   }
@@ -1017,13 +995,15 @@ section.docx {
   .dashboard-company-div select {
     padding: 8px 10px !important;
   }
+
+  .dashboard-calender .fc .fc-daygrid-day-number {
+    font-size: 12px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 @media (max-width: 600px) {
-  .dashbaord-first-section {
-    grid-template-columns: repeat(1, 1fr);
-  }
-
   .dashbaord-absence-heading h1 {
     font-size: 16px;
   }
@@ -1098,17 +1078,14 @@ section.docx {
     font-size: 12px;
   }
 
-  .dashboard-profile-container {
-    margin-bottom: 10px;
-    text-align: left;
-  }
-
   .dashboard-first-section,
   .dashbaord-second-section-flex {
     gap: 10px;
   }
 
   .dashboard-profile-container {
+    margin-bottom: 10px;
+    text-align: left;
     flex-direction: column;
     padding: 10px;
     gap: 10px;
@@ -1123,6 +1100,24 @@ section.docx {
   .dashboard-viewprofile {
     flex-direction: column;
     gap: 10px;
+  }
+
+  .dashboard-calender-selectoption {
+    flex-direction: column;
+  }
+
+  .dashboard-calender-selectoption select {
+    width: 100%;
+  }
+
+  .dashboard-calender .fc .fc-toolbar-title {
+    margin: 0;
+  }
+
+  .dashboard-calender .fc .fc-daygrid-day-number {
+    font-size: 8px;
+    width: 15px;
+    height: 15px;
   }
 }
 

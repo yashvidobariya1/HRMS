@@ -32,6 +32,12 @@ export const SidebarData = [
         allowedRoles: ["Superadmin", "Administrator"],
       },
       {
+        title: "Clients",
+        icon: <FaUserGroup />,
+        link: "/clients",
+        allowedRoles: ["Superadmin", "Administrator", "Manager"],
+      },
+      {
         title: "Employment Contract",
         icon: <TbContract />,
         link: "/employmentcontract",
@@ -122,7 +128,7 @@ export const SidebarData = [
         title: "Timesheet Report",
         icon: <BiSolidSpreadsheet />,
         link: "/timesheetreport",
-        allowedRoles: ["Administrator", "Manager", "Employee"],
+        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
       },
     ],
   },
@@ -143,4 +149,15 @@ export const SidebarData = [
       },
     ],
   },
+  // {
+  //   section: "Job Titles",
+  //   items: [
+  //     {
+  //       title: "Jobs",
+  //       icon: <FaBriefcase />,
+  //       link: "/jobtitles",
+  //       allowedRoles: ["Superadmin"],
+  //     },
+  //   ],
+  // },
 ];

@@ -90,6 +90,11 @@ const protectedRoutes = [
     roles: ["Superadmin", "Administrator"],
   },
   {
+    path: "/clients",
+    component: <Client />,
+    roles: ["Superadmin", "Administrator", "Manager"],
+  },
+  {
     path: "/settings/addCompany",
     component: <AddCompany />,
     roles: ["Superadmin"],
@@ -155,6 +160,11 @@ const protectedRoutes = [
     path: "/employees/editemployee/:id",
     component: <AddEmployee />,
     roles: ["Superadmin", "Administrator", "Manager"],
+  },
+  {
+    path: "/editemployee/:id",
+    component: <AddEmployee />,
+    roles: ["Administrator", "Manager", "Employee"],
   },
   {
     path: "/loggedinuser",
@@ -264,7 +274,7 @@ const protectedRoutes = [
   {
     path: "/timesheetreport",
     component: <TimeSheetReport />,
-    roles: ["Administrator", "Manager", "Employee"],
+    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
   },
   {
     path: "/employees/timesheetreport/:name",

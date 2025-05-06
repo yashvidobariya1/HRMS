@@ -9,7 +9,20 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 // import Pagination from "../../main/Pagination";
 import moment from "moment";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
-import { TextField } from "@mui/material";
+import { Chip, FormControlLabel, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  // InputLabel,
+  Checkbox,
+  ListItemText,
+} from "@mui/material";
 
 const Templates = () => {
   const [loading, setLoading] = useState(false);
@@ -29,6 +42,11 @@ const Templates = () => {
   const [templateName, settemplateName] = useState("");
   const [templateId, settemplateId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAssignPopup, setShowAssignPopup] = useState(false);
+  const [selectedAssignuser, setSelectedAssignuser] = useState([]);
+  const [assignUser, setassignUser] = useState([]);
+  const [signatureRequired, setSignatureRequired] = useState(false);
+
   const allowedFileTypes = [
     // "application/pdf",
     // "text/html",
@@ -162,7 +180,7 @@ const Templates = () => {
 
   const tableHeaders = [
     "Template Name",
-    "File name",
+    "File Name",
     "Uploaded By",
     "Updated Date",
     "Action",
@@ -261,25 +279,71 @@ const Templates = () => {
     }
   };
 
+  const HandleAssigntemplate = async (id) => {
+    try {
+      const response = await GetCall("/getAllUsers");
+
+      if (response?.data?.status === 200) {
+        setassignUser(response?.data?.users);
+        settemplateId(id);
+        setShowAssignPopup(true);
+        setSelectedAssignuser([]);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const handleAssignUser = async (templateId, userIds) => {
+    try {
+      setLoading(true);
+      const data = {
+        templateId,
+        userIds,
+        signatureRequired: signatureRequired,
+      };
+      const response = await PostCall(`/assignTemplate`, data);
+
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "success");
+        setShowAssignPopup(false);
+        setSelectedAssignuser([]);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const handleClosePopup = () => {
+    setShowAssignPopup(false);
+    setSelectedAssignuser([]);
+  };
+
   const templateActions = [
     // { label: "Edit", onClick: HandleEditTemplate },
     { label: "Delete", onClick: HandleDeletetemplate },
     { label: "Download", onClick: HandleDownload },
+    { label: "Assign Template", onClick: (id) => HandleAssigntemplate(id) },
   ];
 
   const handleAction = (id) => {
-    setShowDropdownAction(showDropdownAction === id ? null : id);
+  setShowDropdownAction(showDropdownAction === id ? null : id);
   };
 
-  const cancelEdit = () => {
-    setFormData({
-      templateName: "",
-      template: "",
-      templateFileName: "no file chosen",
-    });
-    settemplateId("");
-    // setSelectedCompany("");
-  };
+  // const cancelEdit = () => {
+  //   setFormData({
+  //     templateName: "",
+  //     template: "",
+  //     templateFileName: "no file chosen",
+  //   });
+  //   settemplateId("");
+  //   // setSelectedCompany("");
+  // };
 
   // useEffect(() => {
   //   getCompanyId();
@@ -376,19 +440,20 @@ const Templates = () => {
               <div className="Template-upload-main-div">
                 <div className="template-upload">
                   <CommonAddButton
-                    label={templateId ? "Update" : "Upload"}
+                    // label={templateId ? "Update" : "Upload"}
+                    label="Upload"
                     icon={AiOutlineUpload}
                     onClick={handleUpload}
                   />
 
-                  {templateId && (
+                  {/* {templateId && (
                     <button
                       onClick={cancelEdit}
                       className="template-cancel-edit-btn"
                     >
                       Cancel
                     </button>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>
@@ -396,10 +461,7 @@ const Templates = () => {
         </div>
 
         <h5>
-          Use following place holder in contract template: 'EMPLOYEE_NAME
-          EMPLOYEE_EMAIL EMPLOYEE_CONTACT_NUMBER JOB_START_DATE
-          EMPLOYEE_JOB_TITLE EMPLOYEE_JOB_ROLE WEEKLY_HOURS ANNUAL_SALARY
-          COMPANY_NAME SIGNATURE'
+          Use following place holder in Template : {process.env.REACT_APP_TEMPLATE_PLACEHOLDERS}
         </h5>
       </div>
       <TextField
@@ -450,6 +512,85 @@ const Templates = () => {
             />
           )}
         </>
+      )}
+
+      {showAssignPopup && (
+        <div className="assignuser">
+          <Dialog
+            open={showAssignPopup}
+            onClose={handleClosePopup}
+            PaperProps={{ className: "custom-dialog" }}
+          >
+            <DialogTitle>Assign Template</DialogTitle>
+            <DialogContent>
+              <FormControl fullWidth>
+                <Select
+                  multiple
+                  value={selectedAssignuser}
+                  onChange={(e) => setSelectedAssignuser(e.target.value)}
+                  MenuProps={{
+                    PaperProps: {
+                      className: "custom-select-menu",
+                    },
+                  }}
+                  displayEmpty
+                  renderValue={(selected) => {
+                    if (selected.length === 0) {
+                      return <strong>Select User</strong>;
+                    }
+                    return (
+                      <div className="Template-selection-chip">
+                        {selected.map((id) => {
+                          const user = assignUser.find((u) => u._id === id);
+                          return (
+                            <Chip key={id} label={user ? user.userName : ""} />
+                          );
+                        })}
+                      </div>
+                    );
+                  }}
+                >
+                  {assignUser.map((user) => (
+                    <MenuItem
+                      key={user._id}
+                      value={user._id}
+                      className="custom-select"
+                    >
+                      <Checkbox
+                        checked={selectedAssignuser.includes(user._id)}
+                      />
+                      <ListItemText primary={user.userName} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={signatureRequired}
+                    onChange={(e) => setSignatureRequired(e.target.checked)}
+                    name="signatureRequired"
+                    color="primary"
+                  />
+                }
+                label="Signature Require ?"
+                style={{ marginTop: "16px" }}
+              />
+            </DialogContent>
+
+            <DialogActions>
+              <Button onClick={handleClosePopup}>Cancel</Button>
+              <Button
+                onClick={() => handleAssignUser(templateId, selectedAssignuser)}
+                color="primary"
+                // disabled={!signatureRequired}
+              >
+                Assign
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
       )}
     </div>
   );

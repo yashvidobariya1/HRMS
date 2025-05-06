@@ -143,6 +143,23 @@
   gap: 10px;
 }
 
+.custom-dialog {
+  width: 700px !important;
+  max-width: 700px !important;
+  height: 300px;
+}
+
+.custom-select-menu {
+  max-height: 250px !important;
+  overflow-y: auto !important;
+}
+
+.Template-selection-chip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 @media (max-width: 1400px) {
   .template-flex {
     flex-direction: column;

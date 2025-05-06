@@ -9,6 +9,7 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 import moment from "moment";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { TextField } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const EmploymentContract = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,8 @@ const EmploymentContract = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [contractsPerPage, setContractsPerPage] = useState(50);
   const [error, setError] = useState({});
-  const [CompanyIddata, setCompanyIddata] = useState([]);
+  // const [CompanyIddata, setCompanyIddata] = useState([]);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const [selectedCompany, setSelectedCompany] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [contractName, setContractName] = useState("");
@@ -69,9 +71,6 @@ const EmploymentContract = () => {
 
   const validate = () => {
     let newErrors = {};
-    if (!selectedCompany) {
-      newErrors.companyName = "Company name is required";
-    }
 
     if (!formData.contractName) {
       newErrors.contractName = "Contract name is required";
@@ -86,12 +85,20 @@ const EmploymentContract = () => {
   };
 
   const handleUpload = async () => {
+    if (
+      companyId === "" ||
+      companyId === undefined ||
+      companyId === null ||
+      companyId === "allCompany"
+    ) {
+      showToast("Please select a specific company", "error");
+      return;
+    }
     if (validate()) {
       const data = {
         ...formData,
-        companyId: selectedCompany,
+        companyId: companyId,
       };
-      // console.log("data", data);
       try {
         setLoading(true);
         let response;
@@ -118,7 +125,7 @@ const EmploymentContract = () => {
           }
 
           setcontractId("");
-          setSelectedCompany("");
+          // setSelectedCompany("");
         } else {
           showToast(response?.data?.message, "error");
         }
@@ -133,7 +140,7 @@ const EmploymentContract = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllContract?page=${currentPage}&limit=${contractsPerPage}&search=${searchQuery}`
+        `/getAllContract?page=${currentPage}&limit=${contractsPerPage}&search=${searchQuery}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
@@ -160,23 +167,23 @@ const EmploymentContract = () => {
     });
   };
 
-  const getCompanyId = async () => {
-    try {
-      setLoading(true);
-      const response = await GetCall("/getAllCompany");
-      if (response?.data?.status === 200) {
-        setCompanyIddata(response?.data.companies);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false);
-    }
-  };
+  // const getCompanyId = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await GetCall("/getAllCompany");
+  //     if (response?.data?.status === 200) {
+  //       setCompanyIddata(response?.data.companies);
+  //     }
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleCompanyChange = (event) => {
-    setSelectedCompany(event.target.value);
-  };
+  // const handleCompanyChange = (event) => {
+  //   setSelectedCompany(event.target.value);
+  // };
 
   const tableHeaders = [
     "Contract Name",
@@ -290,28 +297,28 @@ const EmploymentContract = () => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
 
-  const cancelEdit = () => {
-    setFormData({
-      contractName: "",
-      contract: "",
-      contractFileName: "no file chosen",
-    });
-    setcontractId("");
-    setSelectedCompany("");
-  };
+  // const cancelEdit = () => {
+  //   setFormData({
+  //     contractName: "",
+  //     contract: "",
+  //     contractFileName: "no file chosen",
+  //   });
+  //   setcontractId("");
+  //   setSelectedCompany("");
+  // };
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  useEffect(() => {
-    getCompanyId();
-  }, []);
+  // useEffect(() => {
+  //   getCompanyId();
+  // }, []);
 
   useEffect(() => {
     getContracts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, contractsPerPage, searchQuery]);
+  }, [currentPage, contractsPerPage, searchQuery, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -327,7 +334,7 @@ const EmploymentContract = () => {
 
           <div className="employeecontract-title">
             <div className="Employee-flex-file-action">
-              <div className="Employeecontract-input">
+              {/* <div className="Employeecontract-input">
                 <select
                   name="companyName"
                   className="employee-contract-input"
@@ -346,7 +353,7 @@ const EmploymentContract = () => {
                 {error.companyName && (
                   <p className="error-text">{error.companyName}</p>
                 )}
-              </div>
+              </div> */}
               <div className="Employeecontract-input">
                 <input
                   type="text"
@@ -390,16 +397,17 @@ const EmploymentContract = () => {
               <div className="employeecontract-upload-main-div">
                 <div className="employeecontract-upload">
                   <CommonAddButton
-                    label={contractId ? "Update" : "Upload"}
+                    // label={contractId ? "Update" : "Upload"}
+                    label="Upload"
                     icon={AiOutlineUpload}
                     onClick={handleUpload}
                   />
 
-                  {contractId && (
+                  {/* {contractId && (
                     <button onClick={cancelEdit} className="cancel-edit-btn">
                       Cancel
                     </button>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>
@@ -407,10 +415,7 @@ const EmploymentContract = () => {
         </div>
 
         <h5>
-          Use following place holder in contract template: 'EMPLOYEE_NAME
-          EMPLOYEE_EMAIL EMPLOYEE_CONTACT_NUMBER JOB_START_DATE
-          EMPLOYEE_JOB_TITLE EMPLOYEE_JOB_ROLE WEEKLY_HOURS ANNUAL_SALARY
-          COMPANY_NAME SIGNATURE'
+          Use following place holder in Employee contract : {process.env.REACT_APP_EMPLOYEE_CONTRACT_PLACEHOLDERS}
         </h5>
       </div>
       <TextField

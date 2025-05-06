@@ -9,13 +9,15 @@ import { useSelector } from "react-redux";
 
 const AddLeaves = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const jobId = queryParams.get("jobId");
+  // const location = useLocation();
+  // const queryParams = new URLSearchParams(location.search);
+  // const jobId = queryParams.get("jobId");
+  const jobId = useSelector((state) => state.jobRoleSelect.jobRoleSelect.jobId);
   const [calculatedDays, setCalculatedDays] = useState(0);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [leaveTypes, setLeaveTypes] = useState([]);
+  const [type, setType] = useState("Day");
   // const currentDate = new Date().toISOString().split("T")[0];
   const currentDate = moment().format("YYYY-MM-DD");
   // console.log(currentDate);
@@ -27,7 +29,7 @@ const AddLeaves = () => {
   // console.log("Jobtitle", Jobtitle);
 
   const [formData, setformData] = useState({
-    selectionDuration: "Full-Day",
+    selectionDuration: "",
     startDate: "",
     endDate: "",
     leaveType: "",
@@ -60,7 +62,7 @@ const AddLeaves = () => {
   useEffect(() => {
     getAllowLeaveCount();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [jobId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,6 +70,12 @@ const AddLeaves = () => {
       ...prevFields,
       [name]: value,
     }));
+    if (name === "leaveType") {
+      const selected = leaveTypes.find((lt) => lt.leaveType === value);
+      if (selected) {
+        setType(selected.type);
+      }
+    }
   };
 
   const validate = () => {
@@ -77,9 +85,19 @@ const AddLeaves = () => {
       newErrors.leaveType = "Leave type is required";
     }
 
-    if (!formData.reasonOfLeave) {
-      newErrors.reasonOfLeave = "Reason of Leave is required";
+    if (!formData.selectionDuration) {
+      newErrors.selectionDuration = "Selection Duration is required";
+    } else if (type === "Hour") {
+      const isValidInteger = /^[1-9]\d*$/;
+      if (!isValidInteger.test(formData.selectionDuration)) {
+        newErrors.selectionDuration =
+          "Only positive whole numbers are allowed for Hour";
+      }
     }
+
+    // if (!formData.reasonOfLeave) {
+    //   newErrors.reasonOfLeave = "Reason of Leave is required";
+    // }
 
     if (!formData.startDate) {
       newErrors.startDate = "start Date is required";
@@ -272,9 +290,9 @@ const AddLeaves = () => {
               <option value="" disabled>
                 Select Leave Type
               </option>
-              {Object.keys(leaveTypes)?.map((leaveType) => (
-                <option key={leaveType} value={leaveType}>
-                  {leaveType} ({leaveTypes[leaveType]})
+              {leaveTypes?.map((leaveType) => (
+                <option key={leaveType.leaveType} value={leaveType.leaveType}>
+                  {leaveType.leaveType} ({leaveType.count} {leaveType.type})
                 </option>
               ))}
             </select>
@@ -285,20 +303,31 @@ const AddLeaves = () => {
 
           <div className="addleave-input-container">
             <label className="label">Select Duration*</label>
-            <div className="addleave-radio-flex">
-              {durationType?.map((option) => (
-                <div className="pension-contract" key={option.value}>
-                  <input
-                    type="radio"
-                    name="selectionDuration"
-                    value={option.value}
-                    checked={formData.selectionDuration === option.value}
-                    onChange={handleChange}
-                  />
-                  <label>{option.label}</label>
-                </div>
-              ))}
-            </div>
+            {type === "Day" ? (
+              <div className="addleave-radio-flex">
+                {durationType?.map((option) => (
+                  <div className="pension-contract" key={option.value}>
+                    <input
+                      type="radio"
+                      name="selectionDuration"
+                      value={option.value}
+                      checked={formData.selectionDuration === option.value}
+                      onChange={handleChange}
+                    />
+                    <label>{option.label}</label>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <input
+                type="number"
+                name="selectionDuration"
+                className="addleave-radio-flex"
+                placeholder="Enter duration in hours"
+                value={formData.selectionDuration}
+                onChange={handleChange}
+              />
+            )}
             {errors.selectionDuration && (
               <div className="error-text">{errors.selectionDuration}</div>
             )}

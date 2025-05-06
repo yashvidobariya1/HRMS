@@ -56,7 +56,7 @@ const Settings = () => {
     setShowConfirm(true);
   };
 
-  const GetCompnies = async () => {
+  const GetCompanies = async () => {
     try {
       setLoading(true);
       const response = await GetCall(
@@ -95,11 +95,11 @@ const Settings = () => {
     } catch (error) {
       console.log("error", error);
     }
-    GetCompnies();
+    GetCompanies();
   };
 
   useEffect(() => {
-    GetCompnies();
+    GetCompanies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, companiesPerPage, searchQuery]);
 

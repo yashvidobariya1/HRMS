@@ -12,7 +12,7 @@ import { TextField } from "@mui/material";
 
 const Employee = () => {
   const navigate = useNavigate();
-  const user = useSelector((state) => state.userInfo.userInfo);
+  // const user = useSelector((state) => state.userInfo.userInfo);
   const [loading, setLoading] = useState(false);
   const [employeesList, setEmployeeList] = useState([]);
   const [showDropdownAction, setShowDropdownAction] = useState(null);
@@ -25,6 +25,7 @@ const Employee = () => {
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalUsers, settotalUsers] = useState([]);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const handleAction = (id) => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
@@ -34,6 +35,15 @@ const Employee = () => {
   };
 
   const HandleAddEmployeeList = () => {
+    if (
+      companyId === "" ||
+      companyId === undefined ||
+      companyId === null ||
+      companyId === "allCompany"
+    ) {
+      showToast("Please select a specific company", "error");
+      return;
+    }
     navigate("/employees/addemployee");
   };
 
@@ -73,7 +83,7 @@ const Employee = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllUsers?page=${currentPage}&limit=${employeesPerPage}&search=${searchQuery}`
+        `/getAllUsers?page=${currentPage}&limit=${employeesPerPage}&search=${searchQuery}&companyId=${companyId}`
       );
       // console.log("Response:", response);
       if (response?.data?.status === 200) {
@@ -112,7 +122,16 @@ const Employee = () => {
     GetEmployees();
   };
 
-  const headers = ["", "Id", "Name", "Position", "Email", "Status", "Action"];
+  const headers = [
+    "",
+    "Id",
+    "Employee Name",
+    "Position",
+    "Email Id",
+    "Status",
+    "Template",
+    "Action",
+  ];
 
   const handlePerPageChange = (e) => {
     setEmployeesPerPage(e);
@@ -190,7 +209,7 @@ const Employee = () => {
   useEffect(() => {
     GetEmployees();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, employeesPerPage, searchQuery]);
+  }, [currentPage, employeesPerPage, searchQuery, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -211,12 +230,12 @@ const Employee = () => {
           <h1>Employee List</h1>
         </div>
         <div className="employeelist-action">
-          {user?.role !== "Superadmin" && (
-            <CommonAddButton
-              label="Add Employee"
-              onClick={HandleAddEmployeeList}
-            />
-          )}
+          {/* {user?.role !== "Superadmin" && ( */}
+          <CommonAddButton
+            label="Add Employee"
+            onClick={HandleAddEmployeeList}
+          />
+          {/* )} */}
         </div>
       </div>
       <TextField
@@ -243,6 +262,7 @@ const Employee = () => {
               Position: employee.position,
               Email: employee.email,
               Activeuser: employee.status,
+              Template: employee.templates,
               isActive: employee.status,
               ...(employee.roleWisePoints && {
                 roleWisePoints: employee.roleWisePoints,

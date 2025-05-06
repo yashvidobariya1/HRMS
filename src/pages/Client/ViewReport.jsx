@@ -57,10 +57,10 @@ const TimeSheetReport = () => {
   };
 
   const handleRejectSubmit = async () => {
-    if (!rejectionReason) {
-      setErrors({ rejectionReason: "Rejection reason is required!" });
-      return;
-    }
+    // if (!rejectionReason) {
+    //   setErrors({ rejectionReason: "Rejection reason is required!" });
+    //   return;
+    // }
 
     const data = {
       reportId,

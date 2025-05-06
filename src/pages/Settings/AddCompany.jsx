@@ -231,6 +231,14 @@ const AddCompany = () => {
         if (!formData.contractDetails.endDate) {
           newError.endDate = "End Date is required";
         }
+        if (!formData.contractDetails.maxEmployeesAllowed) {
+          newError.maxEmployeesAllowed = "No of allowed employees is required";
+        } else if (
+          !/^[1-9]\d*$/.test(formData.contractDetails.maxEmployeesAllowed)
+        ) {
+          newError.maxEmployeesAllowed =
+            "No of allowed employees must be a positive Number";
+        }
         break;
 
       default:
@@ -239,6 +247,17 @@ const AddCompany = () => {
 
     setErrors(newError);
     return Object.keys(newError).length === 0;
+  };
+
+  const handleStepClick = (index) => {
+    const isUpdateMode = !!id;
+    if (
+      completedSteps.includes(index) ||
+      index === currentStep ||
+      isUpdateMode
+    ) {
+      setCurrentStep(index);
+    }
   };
 
   useEffect(() => {
@@ -300,6 +319,8 @@ const AddCompany = () => {
             className={`setting-step ${index <= currentStep ? "active" : ""} ${
               completedSteps.includes(index) ? "completed" : ""
             }`}
+            onClick={() => handleStepClick(index)}
+            style={{ cursor: id ? "pointer" : "not-allowed" }}
           >
             <div className="setting-step-number">
               {completedSteps.includes(index) ? (
@@ -835,7 +856,7 @@ const AddCompany = () => {
                 )}
               </div>
               <div className="setting-container">
-                <label className="label">No of Employees Allowed</label>
+                <label className="label">No of Employees Allowed*</label>
                 <input
                   type="number"
                   name="maxEmployeesAllowed"
@@ -844,6 +865,9 @@ const AddCompany = () => {
                   placeholder="Enter No of Employees Allowed"
                   className="setting-input"
                 />
+                {errors.maxEmployeesAllowed && (
+                  <p className="error-text">{errors.maxEmployeesAllowed}</p>
+                )}
               </div>
             </div>
           </div>

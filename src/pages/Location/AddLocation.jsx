@@ -42,7 +42,7 @@ const AddLocation = () => {
       newErrors.city = "City is required";
     }
     if (!formData.locationName) {
-      newErrors.locationName = "location Name is required";
+      newErrors.locationName = "Location Name is required";
     }
     if (!formData.postcode) {
       newErrors.postcode = "Postcode is required";
@@ -52,22 +52,24 @@ const AddLocation = () => {
     }
     if (!formData.graceTime) {
       newErrors.graceTime = "Grace Time is required";
+    } else if (!/^[1-9]\d*$/.test(formData.graceTime)) {
+      newErrors.graceTime = "Grace Time must be a positive Number";
     }
     if (!formData.breakTime) {
       newErrors.breakTime = "Break Time is required";
+    } else if (!/^[1-9]\d*$/.test(formData.breakTime)) {
+      newErrors.breakTime = "Break Time must be a positive Number";
     }
-    const latLongRegex = /^\d{2}\.\d{5}$/;
+    const latLongRegex = /^-?\d{2}\.\d{5,}$/;
     if (!formData.latitude || !latLongRegex.test(formData.latitude)) {
       newErrors.latitude = "Latitude must be in format XX.XXXXX";
     }
     if (!formData.longitude || !latLongRegex.test(formData.longitude)) {
       newErrors.longitude = "Longitude must be in format XX.XXXXX";
     }
-    if (
-      !formData.radius ||
-      isNaN(formData.radius) ||
-      Number(formData.radius) <= 0
-    ) {
+    if (!formData.radius) {
+      newErrors.radius = "Radius is required";
+    } else if (!/^[1-9]\d*$/.test(formData.radius)) {
       newErrors.radius = "Radius must be a positive number in meters";
     }
 

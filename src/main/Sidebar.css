@@ -6,6 +6,9 @@
   height: calc(100vh - 115px);
   transition: left 0.3s ease, width 0.3s ease;
   background-color: var(--primary-text-white);
+  overflow-y: auto; /* 👈 Enable vertical scroll */
+  -webkit-overflow-scrolling: touch; /* 👈 Smooth momentum scroll on iOS */
+  scrollbar-width: thin;
 }
 
 .sidebar.collapsed ~ .content {
@@ -96,11 +99,12 @@
 }
 
 .nav-links {
+  margin: 0;
   padding: 0 20px;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 150px);
   scrollbar-color: var(--sidebar-neutral-light-gray) !important;
 }
 
@@ -216,6 +220,16 @@
 
 .section-title.collapsed {
   display: none;
+}
+
+.company-dropdown {
+  margin: 0;
+  padding: 8px;
+  font-weight: 800;
+  background-color: var(--sidebar-secondary-dark-gray);
+  color: var(--sidebar-title-primary-white);
+  border: 1px solid var(--sidebar-hover);
+  width: 100%;
 }
 
 @media screen and (max-width: 767px) {

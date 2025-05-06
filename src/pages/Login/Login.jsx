@@ -7,6 +7,7 @@ import { showToast } from "../../main/ToastManager";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { setUserInfo } from "../../store/userInfoSlice";
 import Loader from "../Helper/Loader";
+import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -110,6 +111,8 @@ const Login = () => {
           const userInfo = response?.data?.user;
           localStorage.setItem("token", JSON.stringify(userInfo.token));
           dispatch(setUserInfo(userInfo));
+          const isFormFilled = response?.data?.user?.isFormFilled;
+          dispatch(setEmployeeformFilled(isFormFilled));
           navigate("/dashboard");
           showToast(response?.data?.message, "success");
           localStorage.removeItem("step");

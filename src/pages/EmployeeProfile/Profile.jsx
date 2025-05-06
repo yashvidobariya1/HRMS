@@ -15,7 +15,10 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [update, setupdate] = useState(false);
-  const [file, setFile] = useState([]);
+  const [file, setFile] = useState({
+    documentType: "",
+    files: [],
+  });
   const fileInputRef = useRef(null);
   const [documentDetails, setDocumentDetails] = useState([]);
   const [oldDocument, setoldDocument] = useState([]);
@@ -157,18 +160,17 @@ const Profile = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFile((prevData) => ({
-        ...prevData,
-        document: file,
-        fileName: file.name,
+    const selectedFiles = Array.from(e.target.files);
+    if (selectedFiles.length) {
+      setFile((prev) => ({
+        ...prev,
+        document: selectedFiles,
       }));
     }
     // console.log("file", file);
   };
 
-  const handleAddDocument = () => {
+  const handleAddDocument = async () => {
     let newErrors = {};
 
     if (!file.documentType) {
@@ -200,15 +202,49 @@ const Profile = () => {
       return;
     }
 
-    const newDocument = {
-      documentType: file?.documentType,
-      document: file?.document,
-      documentName: file?.fileName,
-    };
+    // const newDocument = {
+    //   documentType: file?.documentType,
+    //   document: file?.document,
+    //   documentName: file?.fileName,
+    // };
 
-    setDocumentDetails((prevDocuments) => [...prevDocuments, newDocument]);
+    // setDocumentDetails((prevDocuments) => [...prevDocuments, newDocument]);
 
-    setFile({ documentType: "", document: "", fileName: "" });
+    // setFile({ documentType: "", document: "", fileName: "" });
+    // if (fileInputRef.current) fileInputRef.current.value = "";
+
+    // setErrors({});
+
+    const newDocuments = await Promise.all(
+      file.document.map(async (doc) => {
+        const base64 = await convertFileToBase64(doc);
+        return {
+          documentName: doc.name,
+          document: base64,
+        };
+      })
+    );
+
+    const existingIndex = documentDetails.findIndex(
+      (doc) => doc.documentType === file.documentType
+    );
+
+    let updatedDocuments;
+
+    if (existingIndex !== -1) {
+      updatedDocuments = [...documentDetails];
+      updatedDocuments[existingIndex].documents.push(...newDocuments);
+    } else {
+      updatedDocuments = [
+        ...documentDetails,
+        {
+          documentType: file.documentType,
+          documents: newDocuments,
+        },
+      ];
+    }
+    setDocumentDetails(updatedDocuments);
+    setFile({ documentType: "", document: [], fileName: "" });
     if (fileInputRef.current) fileInputRef.current.value = "";
 
     setErrors({});
@@ -507,7 +543,9 @@ const Profile = () => {
                     data={documentDetails?.map((document, id) => ({
                       _id: id,
                       name: document.documentType,
-                      document: document.documentName,
+                      document: document.documents.map(
+                        (doc) => doc.documentName
+                      ),
                       // isOldDocument: document.isOldDocument,
                     }))}
                     actions={{

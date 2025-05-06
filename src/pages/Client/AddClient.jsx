@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import "./AddClient.css";
 import { GetCall, PostCall } from "../../ApiServices";
 import Loader from "../Helper/Loader";
@@ -7,14 +7,16 @@ import { showToast } from "../../main/ToastManager";
 import { IoMdAdd } from "react-icons/io";
 import { MdRemove } from "react-icons/md";
 import countryNames from "../../Data/AllCountryList.json";
+import { useSelector } from "react-redux";
 
 const AddClient = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const companyId = searchParams.get("companyId");
+  // const location = useLocation();
+  // const searchParams = new URLSearchParams(location.search);
+  // const companyId = searchParams.get("companyId");
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   // console.log("companyid", companyId);
   const { id } = useParams();
   const [formData, setFormData] = useState({
@@ -26,6 +28,11 @@ const AddClient = () => {
     city: "",
     postCode: "",
     country: "",
+    graceTime: "",
+    breakTime: "",
+    longitude: "",
+    latitude: "",
+    radius: "",
   });
 
   // const validate = () => {
@@ -116,6 +123,28 @@ const AddClient = () => {
     }
     if (!formData.country) {
       newErrors.country = "Country is required";
+    }
+    if (!formData.graceTime) {
+      newErrors.graceTime = "Grace Time is required";
+    } else if (!/^[1-9]\d*$/.test(formData.graceTime)) {
+      newErrors.graceTime = "Grace Time must be a positive Number";
+    }
+    if (!formData.breakTime) {
+      newErrors.breakTime = "Break Time is required";
+    } else if (!/^[1-9]\d*$/.test(formData.breakTime)) {
+      newErrors.breakTime = "Break Time must be a positive Number";
+    }
+    const latLongRegex = /^-?\d{2}\.\d{5,}$/;
+    if (!formData.latitude || !latLongRegex.test(formData.latitude)) {
+      newErrors.latitude = "Latitude must be in format XX.XXXXX";
+    }
+    if (!formData.longitude || !latLongRegex.test(formData.longitude)) {
+      newErrors.longitude = "Longitude must be in format XX.XXXXX";
+    }
+    if (!formData.radius) {
+      newErrors.radius = "Radius is required";
+    } else if (!/^[1-9]\d*$/.test(formData.radius)) {
+      newErrors.radius = "Radius must be a positive number in meters";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -407,6 +436,83 @@ const AddClient = () => {
                 )}
               </div>
             </div>
+
+            <div className="addlocation-section">
+              <div className="addlocation-input-container">
+                <label className="label">Grace Time (Minutes)*</label>
+                <input
+                  type="number"
+                  name="graceTime"
+                  className="addlocation-input"
+                  value={formData?.graceTime}
+                  onChange={handleChange}
+                  placeholder="Enter grace time"
+                />
+                {errors?.graceTime && (
+                  <p className="error-text">{errors?.graceTime}</p>
+                )}
+              </div>
+              <div className="addlocation-input-container">
+                <label className="label">Break Time (Minutes)*</label>
+                <input
+                  type="number"
+                  name="breakTime"
+                  value={formData?.breakTime}
+                  className="addlocation-input"
+                  onChange={handleChange}
+                  placeholder="Enter break time"
+                />
+                {errors?.breakTime && (
+                  <p className="error-text">{errors?.breakTime}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="addlocation-section">
+              <div className="addlocation-input-container">
+                <label className="label">Latitude*</label>
+                <input
+                  type="number"
+                  name="latitude"
+                  className="addlocation-input"
+                  value={formData?.latitude}
+                  onChange={handleChange}
+                  placeholder="Enter latitude"
+                />
+                {errors?.latitude && (
+                  <p className="error-text">{errors?.latitude}</p>
+                )}
+              </div>
+              <div className="addlocation-input-container">
+                <label className="label">Longitude*</label>
+                <input
+                  type="number"
+                  name="longitude"
+                  value={formData?.longitude}
+                  className="addlocation-input"
+                  onChange={handleChange}
+                  placeholder="Enter longitude"
+                />
+                {errors?.longitude && (
+                  <p className="error-text">{errors?.longitude}</p>
+                )}
+              </div>
+              <div className="addlocation-input-container">
+                <label className="label">Area Radius (Meter)*</label>
+                <input
+                  type="number"
+                  name="radius"
+                  value={formData?.radius}
+                  className="addlocation-input"
+                  onChange={handleChange}
+                  placeholder="Enter radius"
+                />
+                {errors?.radius && (
+                  <p className="error-text">{errors?.radius}</p>
+                )}
+              </div>
+            </div>
+
             <button type="submit" className="save-button">
               {id ? "Update" : "Submit"}
             </button>

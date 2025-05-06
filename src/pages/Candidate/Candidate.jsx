@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import { GetCall } from "../../ApiServices";
 import "./Candidate.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 // import { MdOutlineLocalPostOffice } from "react-icons/md";
-import DeleteConfirmation from "../../main/DeleteConfirmation";
+// import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
 // import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { TextField } from "@mui/material";
 import { FaDownload } from "react-icons/fa6";
+import { useSelector } from "react-redux";
 
 const Candidate = () => {
   // const navigate = useNavigate();
@@ -17,13 +18,14 @@ const Candidate = () => {
   const [candidateList, setCandidateList] = useState([]);
   const [showDropdownAction, setShowDropdownAction] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [candidateName, setCandidateName] = useState("");
-  const [candidateId, setCandidateId] = useState("");
+  // const [showConfirm, setShowConfirm] = useState(false);
+  // const [candidateName, setCandidateName] = useState("");
+  // const [candidateId, setCandidateId] = useState("");
   const [candidatePerPage, setCandidatePerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalcandidatePost, settotalcandidatePost] = useState([]);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -33,23 +35,25 @@ const Candidate = () => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
 
-  const HandleDeleteCandidate = async (id, name) => {
-    setCandidateName(name);
-    setCandidateId(id);
-    setShowConfirm(true);
-  };
+  // const HandleDeleteCandidate = async (id, name) => {
+  //   setCandidateName(name);
+  //   setCandidateId(id);
+  //   setShowConfirm(true);
+  // };
 
   const GetCandidate = async () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllCandidates?page=${currentPage}&limit=${candidatePerPage}&search=${searchQuery}`
+        `/getAllCandidates?page=${currentPage}&limit=${candidatePerPage}&search=${searchQuery}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
         setCandidateList(response?.data?.candidates);
         settotalcandidatePost(response.data.totalCandidates);
         setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
@@ -57,33 +61,33 @@ const Candidate = () => {
     }
   };
 
-  const cancelDelete = () => {
-    setShowConfirm(false);
-    setShowDropdownAction(null);
-  };
+  // const cancelDelete = () => {
+  //   setShowConfirm(false);
+  //   setShowDropdownAction(null);
+  // };
 
-  const confirmDelete = async (id) => {
-    setShowConfirm(false);
-    setShowDropdownAction(null);
-    try {
-      setLoading(true);
-      const response = await PostCall(`/deleteCandidatePost/${id}`);
-      if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "success");
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.log("error", error);
-    }
-    GetCandidate();
-  };
+  // const confirmDelete = async (id) => {
+  //   setShowConfirm(false);
+  //   setShowDropdownAction(null);
+  //   try {
+  //     setLoading(true);
+  //     const response = await PostCall(`/deleteCandidatePost/${id}`);
+  //     if (response?.data?.status === 200) {
+  //       showToast(response?.data?.message, "success");
+  //     } else {
+  //       showToast(response?.data?.message, "error");
+  //     }
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  //   GetCandidate();
+  // };
 
   const tableHeaders = [
-    "First Name",
-    "Last Name",
-    "Email",
+    "First name",
+    "Last name",
+    "candidate Email",
     "Mobile Number",
     "Dowload",
     // "Action",
@@ -121,6 +125,7 @@ const Candidate = () => {
 
   useEffect(() => {
     GetCandidate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, candidatePerPage, searchQuery]);
 
   return (
@@ -150,9 +155,9 @@ const Candidate = () => {
             data={candidateList?.map((candidate) => ({
               _id: candidate._id,
               Name: candidate?.firstName,
-              candidateDescription: candidate?.lastName,
-              candidateLocation: candidate?.email,
-              candidateCategory: candidate?.phoneNumber,
+              lastname: candidate?.lastName,
+              email: candidate?.email,
+              phonenumber: candidate?.phoneNumber,
               qrcode: (
                 <div
                   className="qr-container"
@@ -189,13 +194,13 @@ const Candidate = () => {
             searchQuery={searchQuery}
             totalData={totalcandidatePost}
           />
-          {showConfirm && (
+          {/* {showConfirm && (
             <DeleteConfirmation
               confirmation={`Are you sure you want to delete <b>${candidateName}</b>?`}
               onConfirm={() => confirmDelete(candidateId)}
               onCancel={cancelDelete}
             />
-          )}
+          )} */}
         </>
       )}
     </div>

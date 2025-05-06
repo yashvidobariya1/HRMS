@@ -17,7 +17,7 @@ const ShowNotification = () => {
   const [totalPages, setTotalPages] = useState(0);
   const dispatch = useDispatch();
   const [showDropdownAction, setShowDropdownAction] = useState(null);
-  const headers = ["Name", "Type", "Message", "Time", "Read"];
+  const headers = ["User", "Type", "Message", "Time", "Read"];
   const [selectedNotification, setSelectedNotification] = useState({});
   const [openDropdown, setOpenDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -106,6 +106,7 @@ const ShowNotification = () => {
 
   useEffect(() => {
     GetNotification();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, notificationPerPage, searchQuery]);
 
   useEffect(() => {

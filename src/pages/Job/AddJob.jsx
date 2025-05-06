@@ -5,23 +5,24 @@ import { GetCall, PostCall } from "../../ApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 const AddJob = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [locationList, setLocationList] = useState([]);
+  const [clientList, setClientList] = useState([]);
   const { id } = useParams();
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const [formData, setFormData] = useState({
     jobPhoto: "", // mandatory
     jobTitle: "", // mandatory
     jobDescription: "", // mandatory
     jobCategory: "",
     jobApplyTo: "",
-    jobStatus: "", // mandatory
-    locationId: "", // mandatory
+    clientId: "",
     companyWebSite: "",
-    companyContactNumber: "",
+    email: "",
   });
 
   const validate = () => {
@@ -33,29 +34,18 @@ const AddJob = () => {
     if (!formData.jobDescription) {
       newErrors.jobDescription = "Job Description is required";
     }
-    if (!formData.jobPhoto) {
-      newErrors.jobPhoto = "Job Photo is required";
-    }
     if (!formData.jobCategory) {
       newErrors.jobCategory = "Job Category is required";
     }
-    if (!formData.jobStatus) {
-      newErrors.jobStatus = "Job Status is required";
-    }
-    if (!formData.locationId) {
-      newErrors.locationId = "Location is required";
-    }
+    // if (!formData.locationId) {
+    //   newErrors.locationId = "location Id is required";
+    // }
     if (!formData.jobApplyTo) {
       newErrors.jobApplyTo = "Job Apply To is required";
     }
-    if (!formData.companyContactNumber) {
-      newErrors.companyContactNumber = "Contact Number is required";
-    } else if (!/^\d+$/.test(formData?.companyContactNumber)) {
-      newErrors.companyContactNumber =
-        "Contact number must contain only numbers";
-    } else if (!/^\d{11}$/.test(formData?.companyContactNumber)) {
-      newErrors.companyContactNumber =
-        "Contact number must be exactly 11 digits";
+    const email = formData.email?.trim();
+    if (email && !/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(email)) {
+      newErrors.email = "Invalid email format";
     }
 
     const website = formData.companyWebSite?.trim();
@@ -82,7 +72,7 @@ const AddJob = () => {
         if (id) {
           response = await PostCall(`/updateJobPost/${id}`, formData);
         } else {
-          response = await PostCall("/createJobPost", formData);
+          response = await PostCall(`/createJobPost?companyId=${companyId}`, formData);
         }
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
@@ -131,16 +121,20 @@ const AddJob = () => {
   useEffect(() => {
     GetLocations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [companyId]);
 
   const GetLocations = async () => {
     try {
       setLoading(true);
 
-      const response = await GetCall(`/getCompanyLocationsForJobPost`);
+      const response = await GetCall(
+        `/getCompanyLocationsForJobPost?companyId=${companyId}`
+      );
 
       if (response?.data?.status === 200) {
-        setLocationList(response?.data?.locations);
+        setClientList(response?.data?.clients);
+      } else if (response?.data?.status === 404) {
+        setClientList([]);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -196,7 +190,7 @@ const AddJob = () => {
 
   return (
     <div className="Addjob-main-container">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} aria-label="Job Form">
         <div className="AddJob-container">
           <div className="addjob-section">
             <div className="addjob-input-container">
@@ -214,23 +208,24 @@ const AddJob = () => {
             </div>
 
             <div className="addjob-input-container">
-              <label className="label">Select Location*</label>
+              <label className="label">Select Client</label>
               <select
-                name="locationId"
+                name="clientId"
                 className="addjob-input"
-                value={formData.locationId}
+                value={formData.clientId}
+                data-testid="location-select"
                 onChange={handleChange}
               >
-                <option value="">Select Location</option>
-                {locationList.map((location) => (
-                  <option key={location._id} value={location._id}>
-                    {location.locationName}
+                <option value="">Select Client</option>
+                {clientList.map((clients) => (
+                  <option key={clients._id} value={clients._id}>
+                    {clients.clientName}
                   </option>
                 ))}
               </select>
-              {errors?.locationId && (
-                <p className="error-text">{errors?.locationId}</p>
-              )}
+              {/* {errors?.clientId && (
+                <p className="error-text">{errors?.clientId}</p>
+              )} */}
             </div>
 
             <div className="addjob-input-container">
@@ -280,18 +275,16 @@ const AddJob = () => {
             </div>
 
             <div className="addjob-input-container">
-              <label className="label">Contact Number*</label>
+              <label className="label">Email</label>
               <input
                 type="text"
                 className="addjob-input checkbox-country"
-                name="companyContactNumber"
-                value={formData?.companyContactNumber}
+                name="email"
+                value={formData?.email}
                 onChange={handleChange}
-                placeholder="Enter Contact Number"
+                placeholder="Enter Email"
               />
-              {errors?.companyContactNumber && (
-                <p className="error-text">{errors?.companyContactNumber}</p>
-              )}
+              {errors?.email && <p className="error-text">{errors?.email}</p>}
             </div>
           </div>
 
@@ -311,23 +304,9 @@ const AddJob = () => {
                 <p className="error-text">{errors?.jobDescription}</p>
               )}
             </div>
-            <div className="addjob-input-container">
-              <label className="label">Job Status*</label>
-              <input
-                type="text"
-                name="jobStatus"
-                value={formData?.jobStatus}
-                className="addjob-input"
-                onChange={handleChange}
-                placeholder="Enter job Status"
-              />
-              {errors?.jobStatus && (
-                <p className="error-text">{errors?.jobStatus}</p>
-              )}
-            </div>
 
             <div className="addjob-input-container">
-              <label className="label">Job Photo*</label>
+              <label className="label">Job Photo</label>
               <div className="job-logo-flex">
                 {formData?.jobPhoto && (
                   <div className="upload-aection-button">
@@ -370,9 +349,6 @@ const AddJob = () => {
                   />
                 </div>
               </div>
-              {errors.jobPhoto && (
-                <p className="error-text">{errors.jobPhoto}</p>
-              )}
             </div>
           </div>
 

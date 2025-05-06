@@ -167,7 +167,7 @@ const HolidayList = () => {
                 onChange={handleYearChange}
                 className="holiday-Year-select"
               >
-                {[...Array(currentYear - startYear + 1)]?.map((_, index) => {
+                {[...Array(currentYear - startYear + 1)].map((_, index) => {
                   const year = startYear + index;
                   return (
                     <option key={year} value={year}>

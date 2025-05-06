@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./TimeSheetReport.css";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
-import { useLocation } from "react-router";
+// import { useLocation } from "react-router";
 import { GetCall, PostCall } from "../../ApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
@@ -14,9 +14,9 @@ import CommonTable from "../../SeparateCom/CommonTable";
 // import { CropLandscapeOutlined } from "@mui/icons-material";
 import { TextField } from "@mui/material";
 const TimeSheetReport = () => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const EmployeeId = queryParams.get("EmployeeId");
+  // const location = useLocation();
+  // const queryParams = new URLSearchParams(location.search);
+  // const EmployeeId = queryParams.get("EmployeeId");
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -30,6 +30,8 @@ const TimeSheetReport = () => {
   const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
   const [timesheetReportList, setTimesheetReportList] = useState([]);
   const [JobTitledata, setJobTitledata] = useState([]);
+  const [employeeList, setEmployeeList] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
   const [selectedJobId, setSelectedJobId] = useState("");
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(startDate).year();
@@ -56,6 +58,7 @@ const TimeSheetReport = () => {
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
@@ -114,7 +117,8 @@ const TimeSheetReport = () => {
       const data = {
         ...formData,
         jobId: selectedJobId ? selectedJobId : jobRoleId,
-        userId: EmployeeId ? EmployeeId : "",
+        // userId: EmployeeId ? EmployeeId : "",
+        userId: selectedEmployee,
       };
       try {
         setLoading(true);
@@ -237,8 +241,9 @@ const TimeSheetReport = () => {
     try {
       setLoading(true);
       const filters = {
-        jobId: EmployeeId ? selectedJobId : jobRoleId,
-        userId: EmployeeId,
+        jobId: selectedEmployee ? selectedJobId : jobRoleId,
+        // userId: EmployeeId,
+        userId: selectedEmployee,
       };
 
       // console.log("filter", filters);
@@ -266,8 +271,10 @@ const TimeSheetReport = () => {
   const Getjobtitledata = async () => {
     try {
       let response;
-      if (EmployeeId) {
-        response = await GetCall(`/getUserJobTitles?EmployeeId=${EmployeeId}`);
+      if (selectedEmployee) {
+        response = await GetCall(
+          `/getUserJobTitles?EmployeeId=${selectedEmployee}`
+        );
       } else {
         response = await GetCall(`/getUserJobTitles`);
       }
@@ -342,7 +349,7 @@ const TimeSheetReport = () => {
   const handleClockInSubmit = async () => {
     const clockindata = {
       ...clockInData,
-      userId: EmployeeId,
+      userId: selectedEmployee,
       jobId: selectedJobId || jobRoleId,
     };
     // console.log("clockindata", clockindata);
@@ -364,7 +371,7 @@ const TimeSheetReport = () => {
   const handleClockOutSubmit = async () => {
     const clockoutdata = {
       ...clockOutData,
-      userId: EmployeeId,
+      userId: selectedEmployee,
       jobId: selectedJobId || jobRoleId,
     };
     // console.log("clockoutdata", clockoutdata);
@@ -388,15 +395,27 @@ const TimeSheetReport = () => {
     setEmployeeClockoutDropwdown(false);
   };
 
+  // const handleEmployeeChange = (e) => {
+  //   console.log("template", e.target.value);
+  //   const selected = employeeList.find(
+  //     (template) => template._id === e.target.value
+  //   );
+  //   console.log("selected", selected);
+  //   setTemplate(selected);
+  //   setDocxUrl(selected?.templateUrl);
+  //   setUserData(selected?.userData);
+  //   fetchData(selected);
+  // };
+
   useEffect(() => {
-    if (EmployeeId) {
+    if (selectedEmployee) {
       Getjobtitledata();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [EmployeeId]);
+  }, [selectedEmployee]);
 
   useEffect(() => {
-    if (EmployeeId) {
+    if (selectedEmployee) {
       if (selectedJobId) {
         GetTimesheetReport();
       }
@@ -406,7 +425,7 @@ const TimeSheetReport = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedJobId,
-    EmployeeId,
+    selectedEmployee,
     currentPage,
     perPage,
     jobRoleId,
@@ -417,6 +436,24 @@ const TimeSheetReport = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
+  const fetchEmployeeList = async () => {
+    try {
+      const response = await GetCall(`/getUsers?companyId=${companyId}`);
+      if (response?.data?.status === 200) {
+        setEmployeeList(response?.data?.users);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching employee list:", error);
+    }
+  };
+
+  useEffect(() => {
+    userRole !== "Employee" && fetchEmployeeList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId]);
 
   return (
     <div className="timesheet-list-container">
@@ -485,39 +522,40 @@ const TimeSheetReport = () => {
       </div>
 
       <div className="timesheet-report-filter-container">
-        <div className="selection-wrapper">
-          {/* <label>Year:</label> */}
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-          >
-            {[...Array(currentYear - startYear + 1)]?.map((_, index) => {
-              const year = startYear + index;
-              return (
-                <option key={year} value={year}>
-                  {year}
+        <div className="timesheet-report-filter">
+          <div className="selection-wrapper">
+            {/* <label>Year:</label> */}
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+            >
+              {[...Array(currentYear - startYear + 1)].map((_, index) => {
+                const year = startYear + index;
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div className="selection-wrapper">
+            {/* <label>Month:</label> */}
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            >
+              <option value="All">All</option>
+              {months?.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.name}
                 </option>
-              );
-            })}
-          </select>
-        </div>
+              ))}
+            </select>
+          </div>
 
-        <div className="selection-wrapper">
-          {/* <label>Month:</label> */}
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            <option value="All">All</option>
-            {months?.map((month) => (
-              <option key={month.value} value={month.value}>
-                {month.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* <div className="selection-wrapper">
+          {/* <div className="selection-wrapper">
           <label>Week:</label>
           <select
             value={selectedWeek}
@@ -532,11 +570,28 @@ const TimeSheetReport = () => {
           </select>
         </div> */}
 
-        <CommonAddButton
-          label={"Filter"}
-          // icon={MdRateReview}
-          onClick={applyFilters}
-        />
+          <CommonAddButton
+            label={"Filter"}
+            // icon={MdRateReview}
+            onClick={applyFilters}
+          />
+        </div>
+
+        <select
+          className="timeshet-employee-selection"
+          value={selectedEmployee}
+          // onChange={handleEmployeeChange}
+          onChange={(e) => setSelectedEmployee(e.target.value)}
+        >
+          <option value="" disabled>
+            Select Employee
+          </option>
+          {employeeList?.map((employee) => (
+            <option key={employee._id} value={employee._id}>
+              {employee.userName}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="timesheetreport-searchbar-clockin">
@@ -573,7 +628,13 @@ const TimeSheetReport = () => {
       ) : (
         <>
           <CommonTable
-            headers={["Date", "status", "Timing", "Total Hours", "OverTime"]}
+            headers={[
+              "Date",
+              "Timesheet Status",
+              "Timing",
+              "Total Hours",
+              "OverTime",
+            ]}
             data={timesheetReportList.map((timesheet) => {
               const timesheetData = timesheet.data?.timesheetData;
               const holidayData = timesheet.data?.holidayData;

@@ -254,6 +254,8 @@ import {
   TableSortLabel,
   Collapse,
   Typography,
+  FormControl,
+  Select,
 } from "@mui/material";
 import { SlOptionsVertical } from "react-icons/sl";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
@@ -359,25 +361,33 @@ const CommonTable = ({
   // };
 
   const keyMap = {
+    "Template Name": "TemplateFileName",
     "Business Name": "Name",
     "Company Code": "CompanyCode",
     "File name": "ContractFileName",
+    "File Name ": "TemplateFileName",
     Company: "CompanyName",
+    Type: "type",
+    Message: "message",
+    Time: "createdAt",
+    "Leave Date": "StartDate",
+    "Leave Type": "leaveType",
+    "Leave status": "status",
     "Updated Date": "CreatedAt",
     "Uploaded By": "UploadBy",
     "Post Code": "Postcode",
     "Contract Name": "Name",
     "Location Name": "Name",
-    "template Name": "Name",
-    ContractFileName: "TemplateFileName",
+    "Requested Leave": "TotalLeaveDays",
+    "Approved Leave": "NumberOfApproveLeaves",
     CreatedAt: "CreatedAt",
     Employee: "Name",
     leaveDate: "leaveDate",
     Duration: "SelectionDuration",
-    "Requested Leave": "TotalLeaveDays",
-    "Approved Leave": "NumberOfApproveLeaves",
     // "Leave status": "Status",
-    "Leave Type": "LeaveType",
+    Name: "ClientName",
+    User: "userName",
+    "Mobile Number": "contactNumber",
     //  "Name":"locationName",
     "Company Name": "companyName",
     "Generated On": "date",
@@ -386,6 +396,41 @@ const CommonTable = ({
     Location: "jobLocation",
     Category: "jobCategory",
     "Apply Date": "jobApplyTo",
+    "Client Email": "email",
+    Email: "useremail",
+    "Client Name": "Name",
+    "Start Date": "startDate",
+    "End Date": "endDate",
+    "Report Generated Date": "generatedDate",
+    "Login Time": "LastTimeLoggedIn",
+    "Last Access Time": "LastTimeLoggedOut",
+    Active: "IsActive",
+    Browser: "UsedBrowser",
+    Date: "absencesheetdate",
+    "Job Title": "Name",
+    "Annual Salary": "annualSalary",
+    "Joining Date": "joiningDate",
+    "Document Type": "Name",
+    "Document Name": "document",
+    "User Name": "Name",
+    "Employee Name": "Name",
+    Position: "Position",
+    "Email Id": "Name",
+    Occasion: "Name",
+    Day: "day",
+    Id: "_id",
+    Client: "clientName",
+    "First name": "Name",
+    "Last name": "lastname",
+    "Mobile Number": "phonenumber",
+    "candidate Email": "email",
+    "QRCode Value": "Name",
+    Date: "timesheetdate",
+    status: "timesheetstatus",
+    Timing: "totalTiming",
+    "Total Hours": "totalHours",
+    OverTime: "overTime",
+    "Timesheet Status": "timesheetstatus",
   };
 
   const handleSort = (key) => {
@@ -465,7 +510,15 @@ const CommonTable = ({
             <TableRow>
               {headers.map((header, index) => (
                 <TableCell key={index} sx={{ fontWeight: "bold" }}>
-                  {header === "Action" ? (
+                  {header === "Action" ||
+                  header === "Read" ||
+                  header === "Status" ||
+                  header === "Email" ||
+                  header === "Document Name" ||
+                  header === "Template" ||
+                  header === "QR Code" ||
+                  header === "Timing" ||
+                  header === "" ? (
                     header
                   ) : (
                     <TableSortLabel
@@ -640,6 +693,14 @@ const CommonTable = ({
                                     : item[key];
                                 }
 
+                                if (key === "document") {
+                                  return Array.isArray(item[key])
+                                    ? item[key].map((documentName, index) => (
+                                        <div key={index}>{documentName}</div>
+                                      ))
+                                    : item[key];
+                                }
+
                                 if (key === "jobDescription" && item[key]) {
                                   const words = item[key].split(" ");
                                   const limited = words.slice(0, 20).join(" ");
@@ -720,6 +781,56 @@ const CommonTable = ({
                                   }
                                 }
 
+                                if (key === "Template") {
+                                  const templates = item["Template"];
+
+                                  if (
+                                    !Array.isArray(templates) ||
+                                    templates.length === 0
+                                  ) {
+                                    return null;
+                                  }
+
+                                  return (
+                                    <FormControl
+                                      className="employee-template"
+                                      fullWidth
+                                    >
+                                      <Select
+                                        displayEmpty
+                                        defaultValue=""
+                                        fullWidth
+                                      >
+                                        <MenuItem
+                                          value=""
+                                          disabled
+                                          className="Employee-template-selection"
+                                        >
+                                          Select a template
+                                        </MenuItem>
+                                        {templates.map((template) => (
+                                          <MenuItem
+                                            key={template._id}
+                                            value={template._id}
+                                            onClick={() => {
+                                              const link =
+                                                document.createElement("a");
+                                              link.href = template.templateUrl;
+                                              link.download =
+                                                template.templateName;
+                                              document.body.appendChild(link);
+                                              link.click();
+                                              document.body.removeChild(link);
+                                            }}
+                                          >
+                                            {template.templateName}
+                                          </MenuItem>
+                                        ))}
+                                      </Select>
+                                    </FormControl>
+                                  );
+                                }
+
                                 return item[key];
                               })()
                             )}
@@ -768,7 +879,8 @@ const CommonTable = ({
                                       item?._id,
                                       item?.Name,
                                       item?.leaves || "",
-                                      item?.SelectionDuration || ""
+                                      item?.SelectionDuration || "",
+                                      item?.TotalLeaveDays || 0
                                     );
                                     handleMenuClose();
                                   }}

@@ -7,7 +7,7 @@ import { MdAddBusiness } from "react-icons/md";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import { TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 import Loader from "../Helper/Loader";
@@ -23,9 +23,10 @@ const Client = () => {
   const [clientId, setClientId] = useState("");
   const [clientPerPage, setClientPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const companyId = searchParams.get("companyId");
+  // const location = useLocation();
+  // const searchParams = new URLSearchParams(location.search);
+  // const companyId = searchParams.get("companyId");
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
   const [totalClient, settotalClient] = useState([]);
@@ -43,6 +44,15 @@ const Client = () => {
   };
 
   const HandleAddClient = async () => {
+    if (
+      companyId === "" ||
+      companyId === undefined ||
+      companyId === null ||
+      companyId === "allCompany"
+    ) {
+      showToast("Please select a specific company", "error");
+      return;
+    }
     navigate(`/settings/client/addclient?companyId=${companyId}`);
     setShowDropdownAction(null);
   };
@@ -57,13 +67,15 @@ const Client = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllClients?page=${currentPage}&limit=${clientPerPage}&search=${searchQuery}`
+        `/getAllClients?companyId=${companyId}&page=${currentPage}&limit=${clientPerPage}&search=${searchQuery}`
       );
 
       if (response?.data?.status === 200) {
         setClientList(response?.data?.clients);
         settotalClient(response.data.totalClients);
         setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
@@ -114,7 +126,7 @@ const Client = () => {
   const actions = [
     // { label: "Edit", onClick: HandleEditClient },
     // { label: "Delete", onClick: HandleDeleteClient },
-    { label: "Reports List", onClick: HandleReportList },
+    // { label: "Reports List", onClick: HandleReportList },
   ];
 
   const handleSearchChange = (event) => {
@@ -124,7 +136,7 @@ const Client = () => {
   useEffect(() => {
     GetClients();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, clientPerPage, searchQuery]);
+  }, [currentPage, clientPerPage, searchQuery, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -141,6 +153,10 @@ const Client = () => {
         onClick: HandleDeleteClient,
       }
     );
+  }
+
+  if (userRole === "Superadmin" || userRole === "Administartor") {
+    actions.push({ label: "Reports List", onClick: HandleReportList });
   }
 
   return (

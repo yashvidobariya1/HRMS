@@ -5,6 +5,8 @@ import userInfoReducer from "./userInfoSlice";
 import notificationCount from "./notificationCountSlice";
 import themeColor from "./themeColorSlice";
 import jobRoleSelect from "./selectJobeRoleSlice";
+import companySelect from "./selectCompanySlice";
+import employeeformFilled from "./EmployeeFormSlice";
 
 // Step 1: Combine your reducers
 const rootReducer = combineReducers({
@@ -12,13 +14,22 @@ const rootReducer = combineReducers({
   notificationCount: notificationCount,
   themeColor: themeColor,
   jobRoleSelect: jobRoleSelect,
+  companySelect: companySelect,
+  employeeformFilled: employeeformFilled,
 });
 
 // Step 2: Persist configuration
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["userInfo", "notificationCount", "themeColor", "jobRoleSelect"],
+  whitelist: [
+    "userInfo",
+    "notificationCount",
+    "themeColor",
+    "jobRoleSelect",
+    "companySelect",
+    "employeeformFilled",
+  ],
 };
 
 // Step 3: Wrap combined reducer with persistReducer

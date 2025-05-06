@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { IoAddOutline } from "react-icons/io5";
 import "./AddEmployee.css";
 import { GetCall, PostCall } from "../../ApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import { FaCheck } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
 import countryNames from "../../Data/AllCountryList.json";
+import VisaCategory from "../../Data/VisaCategory.json";
+import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
@@ -33,12 +35,23 @@ const AddEmployee = () => {
   const [editIndex, setEditIndex] = useState(null);
   const fileInputRef = useRef(null);
   const { id } = useParams();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const [companyId, setCompanyId] = useState(queryParams.get("companyId"));
-  const [file, setFile] = useState([]);
+  const dispatch = useDispatch();
+  // const location = useLocation();
+  // const queryParams = new URLSearchParams(location.search);
+  // const [companyId, setCompanyId] = useState(useSelector((state) => state.companySelect.companySelect));
+  const companyId = useSelector((state) => state.companySelect.companySelect);
+  const [isSaveForm, setIsSaveForm] = useState(false);
+  const [file, setFile] = useState({
+    documentType: "",
+    files: [],
+  });
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
+  const [sickLeaveType, setSickLeaveType] = useState("Day");
+  const [allowLeaveType, setallowLeaveType] = useState("Day");
+  const employeeFormFilled = useSelector(
+    (state) => state.employeeformFilled.employeeformFilled
+  );
   const [formData, setFormData] = useState({
     personalDetails: {
       firstName: "",
@@ -95,13 +108,13 @@ const AddEmployee = () => {
       contractType: "",
       contractDocument: "",
     },
-    // companyId,
+    companyId,
   });
 
   const [jobForm, setJobForm] = useState({
     jobTitle: "",
     jobDescription: "",
-    annualSalary: 0,
+    annualSalary: "",
     hourlyRate: 0,
     weeklyWorkingHours: 0,
     weeklyWorkingHoursPattern: "",
@@ -109,8 +122,8 @@ const AddEmployee = () => {
     joiningDate: "",
     socCode: "", //set validation
     modeOfTransfer: "",
-    sickLeavesAllow: 0,
-    leavesAllow: 0,
+    sickLeavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
+    leavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
     location: "",
     assignManager: "",
     assignClient: "",
@@ -120,10 +133,10 @@ const AddEmployee = () => {
 
   const steps = [
     "Personal Details",
+    "Job Details",
     "Address Details",
     "Kin Details",
     "Financial Details",
-    "Job Details",
     "Immigration Details",
     "Document Details",
     "Contract Details",
@@ -221,15 +234,23 @@ const AddEmployee = () => {
           let response;
           if (id) {
             response = await PostCall(`/updateUser/${id}`, data);
+            if (response?.data?.status === 200) {
+              showToast(response?.data?.message, "success");
+              dispatch(
+                setEmployeeformFilled(response?.data?.updatedUser?.isFormFilled)
+              );
+              id === user._id ? navigate("dashboard") : navigate("/employees");
+            } else {
+              showToast(response?.data?.message, "error");
+            }
           } else {
             response = await PostCall("/addUser", data);
-          }
-
-          if (response?.data?.status === 200) {
-            showToast(response?.data?.message, "success");
-            navigate("/employees");
-          } else {
-            showToast(response?.data?.message, "error");
+            if (response?.data?.status === 200) {
+              showToast(response?.data?.message, "success");
+              navigate("/employees");
+            } else {
+              showToast(response?.data?.message, "error");
+            }
           }
           setLoading(false);
         } catch (error) {
@@ -259,10 +280,14 @@ const AddEmployee = () => {
     if (isValid) {
       const data = {
         ...formData,
+        ...(isSaveForm && { isFormFilled: false }),
       };
       setLoading(true);
       try {
-        const response = await PostCall(`/updateUser/${id}`, data);
+        const response = id
+          ? await PostCall(`/updateUser/${id}`, data)
+          : await PostCall("/addUser", data);
+
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
         } else {
@@ -327,10 +352,10 @@ const AddEmployee = () => {
 
     const sectionKeys = {
       0: "personalDetails",
-      1: "addressDetails",
-      2: "kinDetails",
-      3: "financialDetails",
-      4: "jobDetails",
+      1: "jobDetails",
+      2: "addressDetails",
+      3: "kinDetails",
+      4: "financialDetails",
       5: "immigrationDetails",
       6: "documentDetails",
       7: "contractDetails",
@@ -344,6 +369,31 @@ const AddEmployee = () => {
     }
 
     let updatedValue = isCheckbox ? checked : value;
+
+    if (name === "niNumber") {
+      const previousValue = formData?.[sectionKey]?.niNumber || "";
+      const inputIsDeleting = value.length < previousValue.length;
+      // console.log("selete value", inputIsDeleting);
+      if (!inputIsDeleting) {
+        let formattedValue = value
+          .replace(/[^a-zA-Z0-9]/g, "")
+          .toUpperCase()
+          .slice(0, 9);
+
+        if (formattedValue.length > 0) {
+          formattedValue = formattedValue.replace(
+            /(.{2})(.{0,2})(.{0,2})(.{0,2})(.*)/,
+            (match, p1, p2, p3, p4, p5) => {
+              return [p1, p2, p3, p4, p5].filter(Boolean).join(" ");
+            }
+          );
+        }
+
+        updatedValue = formattedValue;
+      } else {
+        updatedValue = value;
+      }
+    }
 
     if (name === "sortCode") {
       const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
@@ -371,14 +421,11 @@ const AddEmployee = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFile((prevData) => ({
-        ...prevData,
-        document: file,
-        fileName: file.name,
-      }));
-    }
+    const selectedFiles = Array.from(e.target.files);
+    setFile((prevData) => ({
+      ...prevData,
+      files: selectedFiles,
+    }));
   };
 
   const handleInputChange = (field, value) => {
@@ -390,18 +437,107 @@ const AddEmployee = () => {
   //   setJobForm((prev) => ({ ...prev, [name]: value }));
   // };
 
+  // const handleJobChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   setJobForm((prev) => {
+  //     let updatedForm = { ...prev, [name]: value };
+
+  //     // Auto-update assignManager when role is changed
+  //     if (name === "role") {
+  //       updatedForm.assignManager = ""; // Reset assignManager when role changes
+  //     }
+
+  //     return updatedForm;
+  //   });
+  // };
+
+  // const handleJobChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   setJobForm((prev) => {
+  //     let updatedForm = { ...prev };
+
+  //     if (name === "sickLeavesAllow") {
+  //       updatedForm.sickLeavesAllow = {
+  //         leaveType: sickLeaveType,
+  //         allowedLeavesCounts: value,
+  //       };
+  //     } else if (name === "leavesAllow") {
+  //       updatedForm.leavesAllow = {
+  //         leaveType: allowLeaveType,
+  //         allowedLeavesCounts: value,
+  //       };
+  //     } else {
+  //       updatedForm[name] = value;
+  //     }
+
+  //     if (name === "role") {
+  //       updatedForm.assignManager = ""; // Reset assignManager when role changes
+  //     }
+
+  //     return updatedForm;
+  //   });
+  // };
+
+  // const handleJobChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   setJobForm((prev) => {
+  //     const updatedForm = { ...prev };
+
+  //     // Check for nested fields like "sickLeavesAllow.leaveType"
+  //     if (name.includes(".")) {
+  //       const [parentKey, childKey] = name.split(".");
+  //       updatedForm[parentKey] = {
+  //         ...prev[parentKey],
+  //         [childKey]:
+  //           childKey === "allowedLeavesCounts" ? Number(value) : value,
+  //       };
+  //     } else {
+  //       updatedForm[name] = value;
+  //     }
+
+  //     if (name === "role") {
+  //       updatedForm.assignManager = "";
+  //     }
+
+  //     return updatedForm;
+  //   });
+  // };
+
   const handleJobChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
 
     setJobForm((prev) => {
-      let updatedForm = { ...prev, [name]: value };
+      const updatedForm = { ...prev };
 
-      // Auto-update assignManager when role is changed
-      if (name === "role") {
-        updatedForm.assignManager = ""; // Reset assignManager when role changes
+      // Handle nested fields like 'sickLeavesAllow.leaveType'
+      if (name.includes(".")) {
+        const [parent, child] = name.split(".");
+        return {
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]:
+              type === "number" || child.includes("Counts")
+                ? Number(value)
+                : value,
+          },
+        };
+      } else {
+        if (name === "role") {
+          return {
+            ...prev,
+            [name]: value,
+            assignManager: "", // Reset assignManager
+          };
+        }
+        return {
+          ...prev,
+          [name]: value,
+        };
       }
-
-      return updatedForm;
     });
   };
 
@@ -429,7 +565,7 @@ const AddEmployee = () => {
     SetShowdropwornAction(null);
   };
 
-  const handleAddDocument = () => {
+  const handleAddDocument = async () => {
     let newErrors = {};
     if (!file.documentType) {
       newErrors.documentType = "Please select a document type.";
@@ -437,30 +573,41 @@ const AddEmployee = () => {
       return;
     }
 
-    if (!file.document) {
-      newErrors.document = "Please select a document.";
+    if (!file.files || file.files.length === 0) {
+      newErrors.document = "Please select at least one document.";
       setErrors(newErrors);
       return;
     }
 
-    const newDocument = {
-      // id: Date.now(),
-      documentType: file?.documentType,
-      document: file?.document,
-      documentName: file?.fileName,
-    };
+    try {
+      const base64Files = await Promise.all(
+        file.files.map((fileItem) => convertFileToBase64(fileItem))
+      );
 
-    setDocumentDetails((prevDocuments) => [...prevDocuments, newDocument]);
-    if (file.documentType) {
-      file.documentType = "";
+      const newDocument = {
+        documentType: file.documentType,
+        documents: file.files.map((fileItem, index) => ({
+          documentName: fileItem.name,
+          document: base64Files[index],
+        })),
+      };
+
+      // console.log("newDocument", newDocument);
+      setDocumentDetails((prevDocuments) => [...prevDocuments, newDocument]);
+
+      setFile({
+        documentType: "",
+        files: [],
+      });
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      setErrors({});
+    } catch (error) {
+      console.error("Error converting files to base64:", error);
     }
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-      file.document = "";
-    }
-
-    setErrors({});
   };
 
   const handleRemoveDocument = (id) => {
@@ -497,11 +644,14 @@ const AddEmployee = () => {
     if (jobForm?.role === "") {
       newErrors.role = "Role is required";
     }
-    if (jobForm?.location === "") {
-      newErrors.location = "Location is required";
-    }
-    if (jobForm?.assignManager === "") {
-      newErrors.assignManager = "Assign Manager is required";
+    // if (jobForm?.location === "") {
+    //   newErrors.location = "Location is required";
+    // }
+    // if (jobForm?.assignManager === "") {
+    //   newErrors.assignManager = "Assign Manager is required";
+    // }
+    if (jobForm?.assignClient === "") {
+      newErrors.assignClient = "Assign Client is required";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -540,8 +690,8 @@ const AddEmployee = () => {
       weeklySalary: "",
       socCode: "",
       modeOfTransfer: "",
-      sickLeavesAllow: "",
-      leavesAllow: "",
+      sickLeavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
+      leavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
       location: "",
       assignManager: "",
       assignClient: "",
@@ -622,6 +772,12 @@ const AddEmployee = () => {
           newErrors.email = "Email is required";
         } else if (!EMAIL_REGEX.test(email)) {
           newErrors.email = "Valid Email format is required";
+        }
+        const niNumber = formData?.personalDetails?.niNumber?.trim();
+        const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
+        if (niNumber && !NI_REGEX.test(niNumber)) {
+          newErrors.niNumber =
+            "Invalid NI Number format. Use format: QQ 88 77 77 A";
         }
         if (!formData.personalDetails?.sendRegistrationLink) {
           newErrors.sendRegistrationLink =
@@ -766,7 +922,7 @@ const AddEmployee = () => {
         setDocumentDetails(User?.data?.user?.documentDetails);
         setFormData(User?.data?.user);
         setJobList(User?.data?.user?.jobDetails);
-        setCompanyId(User?.data?.user?.companyId);
+        // setCompanyId(User?.data?.user?.companyId);
         // console.log("setCompanyId", setCompanyId);
       } else {
         showToast(User?.data?.message, "error");
@@ -800,7 +956,21 @@ const AddEmployee = () => {
     }));
   };
 
+  const handleStepClick = (index) => {
+    const isUpdateMode = !!id;
+    if (
+      completedSteps.includes(index) ||
+      index === currentStep ||
+      isUpdateMode
+    ) {
+      setCurrentStep(index);
+    }
+  };
+
   useEffect(() => {
+    if (id === user._id && employeeFormFilled) {
+      return navigate("/dashboard");
+    }
     if (id) {
       GetEmployeeDetails(id);
     }
@@ -823,10 +993,10 @@ const AddEmployee = () => {
     try {
       setLoading(true);
       let Company;
-      if (companyId) {
+      const SetcompanyId =
+        companyId && typeof companyId === "string" && companyId.trim() !== "";
+      if (companyId && SetcompanyId) {
         Company = await GetCall(`/getCompanyLocations?companyId=${companyId}`);
-      } else {
-        Company = await GetCall(`/getCompanyLocations`);
       }
       if (Company?.data?.status === 200) {
         setLocations(Company?.data?.companiesAllLocations);
@@ -871,6 +1041,12 @@ const AddEmployee = () => {
   // }, [jobForm.role, assignee]);
 
   useEffect(() => {
+    if (!employeeFormFilled) {
+      setCurrentStep(2);
+    }
+  }, [employeeFormFilled]);
+
+  useEffect(() => {
     if (!jobForm.location || !jobForm.role) return;
 
     const selectedLocation = locations.find(
@@ -883,9 +1059,16 @@ const AddEmployee = () => {
     let filtered = [];
 
     if (jobForm.role === "Employee") {
-      filtered = currentAssignees.filter((a) => a.role === "Manager");
+      filtered = currentAssignees.filter(
+        (a) =>
+          a.role === "Superadmin" ||
+          a.role === "Administrator" ||
+          a.role === "Manager"
+      );
     } else if (jobForm.role === "Manager") {
-      filtered = currentAssignees.filter((a) => a.role === "Administrator");
+      filtered = currentAssignees.filter(
+        (a) => a.role === "Superadmin" || a.role === "Administrator"
+      );
     } else if (jobForm.role === "Administrator") {
       filtered = currentAssignees.filter((a) => a.role === "Superadmin");
     }
@@ -898,6 +1081,7 @@ const AddEmployee = () => {
         "error"
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobForm.location, jobForm.role, locations]);
 
   if (loading) {
@@ -913,6 +1097,17 @@ const AddEmployee = () => {
             className={`addemployee-step ${
               index <= currentStep ? "active" : ""
             } ${completedSteps.includes(index) ? "completed" : ""}`}
+            onClick={() => {
+              if (employeeFormFilled || (!employeeFormFilled && index === 2)) {
+                handleStepClick(index);
+              }
+            }}
+            style={{
+              cursor:
+                employeeFormFilled || (!employeeFormFilled && index === 2)
+                  ? "pointer"
+                  : "not-allowed",
+            }}
           >
             <div className="Addemployee-step-number">
               {completedSteps.includes(index) ? (
@@ -1109,277 +1304,6 @@ const AddEmployee = () => {
         )}
 
         {currentStep === 1 && (
-          <div className="addemployee-flex">
-            <h1>Address Details</h1>
-            <div className="addemployee-section">
-              <div className="addemployee-input-container">
-                <label className="label">Address*</label>
-                <textarea
-                  type="text"
-                  name="address"
-                  value={formData?.addressDetails?.address}
-                  onChange={handleChange}
-                  className="addemployee-input"
-                  placeholder="Enter Address"
-                  rows="4"
-                />
-                {errors?.address && (
-                  <p className="error-text">{errors?.address}</p>
-                )}
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Address Line2</label>
-                <input
-                  type="text"
-                  name="addressLine2"
-                  className="addemployee-input"
-                  value={formData?.addressDetails?.addressLine2}
-                  onChange={handleChange}
-                  placeholder="Enter Address Line 2"
-                />
-              </div>
-            </div>
-
-            <div className="addemployee-section">
-              <div className="addemployee-input-container">
-                <label className="label">City*</label>
-                <input
-                  type="text"
-                  name="city"
-                  className="addemployee-input"
-                  value={formData?.addressDetails?.city}
-                  onChange={handleChange}
-                  placeholder="Enter City"
-                />
-                {errors?.city && <p className="error-text">{errors?.city}</p>}
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Post Code*</label>
-                <input
-                  type="text"
-                  name="postCode"
-                  className="addemployee-input"
-                  placeholder="Enter Post Code"
-                  value={formData?.addressDetails?.postCode}
-                  onChange={handleChange}
-                />
-                {errors?.postCode && (
-                  <p className="error-text">{errors?.postCode}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 2 && (
-          <div className="addemployee-flex">
-            <h1>Kin Details</h1>
-            <div className="addemployee-section">
-              <div className="addemployee-input-container">
-                <label className="label">Kin Name*</label>
-                <input
-                  type="text"
-                  name="kinName"
-                  value={formData?.kinDetails?.kinName}
-                  onChange={handleChange}
-                  className="addemployee-input"
-                  placeholder="Enter Kin Name"
-                />
-                {errors?.kinName && (
-                  <p className="error-text">{errors?.kinName}</p>
-                )}
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Relationship To You</label>
-                <input
-                  type="text"
-                  name="relationshipToYou"
-                  className="addemployee-input"
-                  value={formData?.kinDetails?.relationshipToYou}
-                  onChange={handleChange}
-                  placeholder="Enter Relationship"
-                />
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Post Code*</label>
-                <input
-                  type="text"
-                  name="postCode"
-                  className="addemployee-input"
-                  placeholder="Enter Post Code"
-                  value={formData?.kinDetails?.postCode}
-                  onChange={handleChange}
-                />
-                {errors?.kinPostCode && (
-                  <p className="error-text">{errors?.kinPostCode}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="addemployee-section">
-              <div className="addemployee-input-container">
-                <label className="label">Address*</label>
-                <textarea
-                  type="address"
-                  name="address"
-                  className="addemployee-input"
-                  rows="3"
-                  value={formData?.kinDetails?.address}
-                  onChange={handleChange}
-                  placeholder="Enter Address"
-                />
-                {errors?.kinAddress && (
-                  <p className="error-text">{errors?.kinAddress}</p>
-                )}
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Emergency Contact Number*</label>
-                <input
-                  type="tel"
-                  name="emergencyContactNumber"
-                  className="addemployee-input"
-                  value={formData?.kinDetails?.emergencyContactNumber}
-                  onChange={handleChange}
-                  placeholder="Enter Emergency Contact Number"
-                />
-                {errors.emergencyContactNumber && (
-                  <p className="error-text">{errors?.emergencyContactNumber}</p>
-                )}
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  className="addemployee-input"
-                  value={formData?.kinDetails?.email}
-                  onChange={handleChange}
-                  placeholder="Enter Email"
-                />
-                {errors?.kinemail && (
-                  <p className="error-text">{errors?.kinemail}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 3 && (
-          <div className="addemployee-flex">
-            <h1>Financial Details</h1>
-            <div className="addemployee-section">
-              <div className="addemployee-input-container">
-                <label className="label">Bank Name*</label>
-                <input
-                  type="text"
-                  name="bankName"
-                  value={formData?.financialDetails?.bankName}
-                  onChange={handleChange}
-                  className="addemployee-input"
-                  placeholder="Enter Bank Name"
-                />
-                {errors.bankName && (
-                  <p className="error-text">{errors?.bankName}</p>
-                )}
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Name Of Account Holder*</label>
-                <input
-                  type="text"
-                  name="holderName"
-                  className="addemployee-input"
-                  value={formData?.financialDetails?.holderName}
-                  onChange={handleChange}
-                  placeholder="Enter Name Of Account Holder"
-                />
-                {errors?.holderName && (
-                  <p className="error-text">{errors?.holderName}</p>
-                )}
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Sort Code*</label>
-                <input
-                  type="text"
-                  name="sortCode"
-                  className="addemployee-input"
-                  placeholder="Enter Sort Code"
-                  value={formData?.financialDetails?.sortCode}
-                  onChange={handleChange}
-                />
-                {errors?.sortCode && (
-                  <p className="error-text">{errors?.sortCode}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="addemployee-section">
-              <div className="addemployee-input-container">
-                <label className="label">Account Number*</label>
-                <input
-                  type="text"
-                  name="accountNumber"
-                  className="addemployee-input"
-                  value={formData?.financialDetails?.accountNumber}
-                  onChange={handleChange}
-                  placeholder="Enter Account Number"
-                />
-                {errors?.accountNumber && (
-                  <p className="error-text">{errors?.accountNumber}</p>
-                )}
-              </div>
-              <div className="addemployee-input-container">
-                <label className="label">Payroll Frequency*</label>
-                <select
-                  name="payrollFrequency"
-                  data-testid="payrollFrequency-select"
-                  className="addemployee-input"
-                  value={formData?.financialDetails?.payrollFrequency}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Payroll Frequency</option>
-                  <option value="weekly">WEEKLY</option>
-                  <option value="monthly">MONTHLY</option>
-                  <option value="yearly">YEARLY</option>
-                </select>
-                {errors?.payrollFrequency && (
-                  <p className="error-text">{errors?.payrollFrequency}</p>
-                )}
-              </div>
-
-              <div className="addemployee-input-container ">
-                <label className="label">Pension*</label>
-                <div className="addemployee-radio-flex">
-                  <div className="pension-employee">
-                    <label>Opt In</label>
-                    <input
-                      type="radio"
-                      name="pension"
-                      data-testid="Pension-select"
-                      value="optin"
-                      checked={formData?.financialDetails?.pension === "optin"}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="pension-employee">
-                    <label>Opt Out</label>
-                    <input
-                      type="radio"
-                      name="pension"
-                      value="optout"
-                      checked={formData?.financialDetails?.pension === "optout"}
-                      onChange={handleChange}
-                    />
-                    {errors?.pension && (
-                      <p className="error-text">{errors?.pension}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentStep === 4 && (
           <div>
             <div className="addemployee-flex">
               <h1>Job Details</h1>
@@ -1540,25 +1464,65 @@ const AddEmployee = () => {
                 </div>
                 <div className="addemployee-input-container">
                   <label className="label">No. Of sick leaves allowed</label>
-                  <input
-                    type="number"
-                    name="sickLeavesAllow"
-                    className="addemployee-input"
-                    value={jobForm?.sickLeavesAllow}
-                    onChange={handleJobChange}
-                    placeholder="Enter No. Of sick leaves allowed"
-                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <input
+                      type="number"
+                      name="sickLeavesAllow.allowedLeavesCounts"
+                      className="addemployee-input"
+                      value={jobForm?.sickLeavesAllow?.allowedLeavesCounts}
+                      onChange={handleJobChange}
+                      placeholder="Enter No. Of sick leaves allowed"
+                    />
+                    <select
+                      // value={sickLeaveType}
+                      name="sickLeavesAllow.leaveType"
+                      value={jobForm?.sickLeavesAllow?.leaveType}
+                      // onChange={(e) => setSickLeaveType(e.target.value)}
+                      onChange={handleJobChange}
+                      className="addemployee-input"
+                      style={{ width: "120px" }}
+                    >
+                      <option value="Day">Day</option>
+                      <option value="Hour">Hour</option>
+                    </select>
+                  </div>
                 </div>
                 <div className="addemployee-input-container">
                   <label className="label">No. Of leaves allowed</label>
-                  <input
-                    type="number"
-                    name="leavesAllow"
-                    className="addemployee-input"
-                    value={jobForm?.leavesAllow}
-                    onChange={handleJobChange}
-                    placeholder="Enter No. Of leaves allowed"
-                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <input
+                      type="number"
+                      name="leavesAllow.allowedLeavesCounts"
+                      className="addemployee-input"
+                      value={jobForm?.leavesAllow?.allowedLeavesCounts}
+                      onChange={handleJobChange}
+                      placeholder="Enter No. Of leaves allowed"
+                    />
+                    <select
+                      name="leavesAllow.leaveType"
+                      // value={allowLeaveType}
+                      value={jobForm?.leavesAllow?.leaveType}
+                      // onChange={(e) => setallowLeaveType(e.target.value)}
+                      onChange={handleJobChange}
+                      className="addemployee-input"
+                      style={{ width: "120px" }}
+                    >
+                      <option value="Day">Day</option>
+                      <option value="Hour">Hour</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div className="addemployee-section">
@@ -1586,7 +1550,7 @@ const AddEmployee = () => {
                   {errors?.role && <p className="error-text">{errors?.role}</p>}
                 </div>
                 <div className="addemployee-input-container">
-                  <label className="label">Location*</label>
+                  <label className="label">Location</label>
                   <select
                     name="location"
                     value={jobForm?.location}
@@ -1608,7 +1572,7 @@ const AddEmployee = () => {
                   )}
                 </div>
                 <div className="addemployee-input-container">
-                  <label className="label">Assign Manager*</label>
+                  <label className="label">Assign Manager</label>
                   <select
                     name="assignManager"
                     value={jobForm?.assignManager}
@@ -1661,7 +1625,7 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-section">
                 <div className="addemployee-input-container">
-                  <label className="label">Assign Client</label>
+                  <label className="label">Assign Client*</label>
                   <select
                     name="assignClient"
                     value={jobForm?.assignClient}
@@ -1680,9 +1644,9 @@ const AddEmployee = () => {
                       <option value="">No clients available</option>
                     )}
                   </select>
-                  {/* {errors?.assignClient && (
+                  {errors?.assignClient && (
                     <p className="error-text">{errors?.assignClient}</p>
-                  )} */}
+                  )}
                 </div>
                 <div className="addemployee-input-container">
                   <label className="label">Assign Template</label>
@@ -1728,7 +1692,7 @@ const AddEmployee = () => {
                 ]}
                 data={jobList?.map((job, i) => ({
                   _id: i,
-                  name: job.jobTitle,
+                  Name: job.jobTitle,
                   annualSalary: job.annualSalary,
                   joiningDate: job.joiningDate,
                 }))}
@@ -1748,6 +1712,277 @@ const AddEmployee = () => {
                   onCancel={cancelDelete}
                 />
               )}
+            </div>
+          </div>
+        )}
+
+        {currentStep === 2 && (
+          <div className="addemployee-flex">
+            <h1>Address Details</h1>
+            <div className="addemployee-section">
+              <div className="addemployee-input-container">
+                <label className="label">Address*</label>
+                <textarea
+                  type="text"
+                  name="address"
+                  value={formData?.addressDetails?.address}
+                  onChange={handleChange}
+                  className="addemployee-input"
+                  placeholder="Enter Address"
+                  rows="4"
+                />
+                {errors?.address && (
+                  <p className="error-text">{errors?.address}</p>
+                )}
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Address Line2</label>
+                <input
+                  type="text"
+                  name="addressLine2"
+                  className="addemployee-input"
+                  value={formData?.addressDetails?.addressLine2}
+                  onChange={handleChange}
+                  placeholder="Enter Address Line 2"
+                />
+              </div>
+            </div>
+
+            <div className="addemployee-section">
+              <div className="addemployee-input-container">
+                <label className="label">City*</label>
+                <input
+                  type="text"
+                  name="city"
+                  className="addemployee-input"
+                  value={formData?.addressDetails?.city}
+                  onChange={handleChange}
+                  placeholder="Enter City"
+                />
+                {errors?.city && <p className="error-text">{errors?.city}</p>}
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Post Code*</label>
+                <input
+                  type="text"
+                  name="postCode"
+                  className="addemployee-input"
+                  placeholder="Enter Post Code"
+                  value={formData?.addressDetails?.postCode}
+                  onChange={handleChange}
+                />
+                {errors?.postCode && (
+                  <p className="error-text">{errors?.postCode}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 3 && (
+          <div className="addemployee-flex">
+            <h1>Kin Details</h1>
+            <div className="addemployee-section">
+              <div className="addemployee-input-container">
+                <label className="label">Kin Name*</label>
+                <input
+                  type="text"
+                  name="kinName"
+                  value={formData?.kinDetails?.kinName}
+                  onChange={handleChange}
+                  className="addemployee-input"
+                  placeholder="Enter Kin Name"
+                />
+                {errors?.kinName && (
+                  <p className="error-text">{errors?.kinName}</p>
+                )}
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Relationship To You</label>
+                <input
+                  type="text"
+                  name="relationshipToYou"
+                  className="addemployee-input"
+                  value={formData?.kinDetails?.relationshipToYou}
+                  onChange={handleChange}
+                  placeholder="Enter Relationship"
+                />
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Post Code*</label>
+                <input
+                  type="text"
+                  name="postCode"
+                  className="addemployee-input"
+                  placeholder="Enter Post Code"
+                  value={formData?.kinDetails?.postCode}
+                  onChange={handleChange}
+                />
+                {errors?.kinPostCode && (
+                  <p className="error-text">{errors?.kinPostCode}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="addemployee-section">
+              <div className="addemployee-input-container">
+                <label className="label">Address*</label>
+                <textarea
+                  type="address"
+                  name="address"
+                  className="addemployee-input"
+                  rows="3"
+                  value={formData?.kinDetails?.address}
+                  onChange={handleChange}
+                  placeholder="Enter Address"
+                />
+                {errors?.kinAddress && (
+                  <p className="error-text">{errors?.kinAddress}</p>
+                )}
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Emergency Contact Number*</label>
+                <input
+                  type="tel"
+                  name="emergencyContactNumber"
+                  className="addemployee-input"
+                  value={formData?.kinDetails?.emergencyContactNumber}
+                  onChange={handleChange}
+                  placeholder="Enter Emergency Contact Number"
+                />
+                {errors.emergencyContactNumber && (
+                  <p className="error-text">{errors?.emergencyContactNumber}</p>
+                )}
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  className="addemployee-input"
+                  value={formData?.kinDetails?.email}
+                  onChange={handleChange}
+                  placeholder="Enter Email"
+                />
+                {errors?.kinemail && (
+                  <p className="error-text">{errors?.kinemail}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 4 && (
+          <div className="addemployee-flex">
+            <h1>Financial Details</h1>
+            <div className="addemployee-section">
+              <div className="addemployee-input-container">
+                <label className="label">Bank Name*</label>
+                <input
+                  type="text"
+                  name="bankName"
+                  value={formData?.financialDetails?.bankName}
+                  onChange={handleChange}
+                  className="addemployee-input"
+                  placeholder="Enter Bank Name"
+                />
+                {errors.bankName && (
+                  <p className="error-text">{errors?.bankName}</p>
+                )}
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Name Of Account Holder*</label>
+                <input
+                  type="text"
+                  name="holderName"
+                  className="addemployee-input"
+                  value={formData?.financialDetails?.holderName}
+                  onChange={handleChange}
+                  placeholder="Enter Name Of Account Holder"
+                />
+                {errors?.holderName && (
+                  <p className="error-text">{errors?.holderName}</p>
+                )}
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Sort Code*</label>
+                <input
+                  type="text"
+                  name="sortCode"
+                  className="addemployee-input"
+                  placeholder="Enter Sort Code"
+                  value={formData?.financialDetails?.sortCode}
+                  onChange={handleChange}
+                />
+                {errors?.sortCode && (
+                  <p className="error-text">{errors?.sortCode}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="addemployee-section">
+              <div className="addemployee-input-container">
+                <label className="label">Account Number*</label>
+                <input
+                  type="text"
+                  name="accountNumber"
+                  className="addemployee-input"
+                  value={formData?.financialDetails?.accountNumber}
+                  onChange={handleChange}
+                  placeholder="Enter Account Number"
+                />
+                {errors?.accountNumber && (
+                  <p className="error-text">{errors?.accountNumber}</p>
+                )}
+              </div>
+              <div className="addemployee-input-container">
+                <label className="label">Payroll Frequency*</label>
+                <select
+                  name="payrollFrequency"
+                  data-testid="payrollFrequency-select"
+                  className="addemployee-input"
+                  value={formData?.financialDetails?.payrollFrequency}
+                  onChange={handleChange}
+                >
+                  <option value="">Select Payroll Frequency</option>
+                  <option value="weekly">WEEKLY</option>
+                  <option value="monthly">MONTHLY</option>
+                  <option value="yearly">YEARLY</option>
+                </select>
+                {errors?.payrollFrequency && (
+                  <p className="error-text">{errors?.payrollFrequency}</p>
+                )}
+              </div>
+
+              <div className="addemployee-input-container ">
+                <label className="label">Pension*</label>
+                <div className="addemployee-radio-flex">
+                  <div className="pension-employee">
+                    <label>Opt In</label>
+                    <input
+                      type="radio"
+                      name="pension"
+                      data-testid="Pension-select"
+                      value="optin"
+                      checked={formData?.financialDetails?.pension === "optin"}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="pension-employee">
+                    <label>Opt Out</label>
+                    <input
+                      type="radio"
+                      name="pension"
+                      value="optout"
+                      checked={formData?.financialDetails?.pension === "optout"}
+                      onChange={handleChange}
+                    />
+                    {errors?.pension && (
+                      <p className="error-text">{errors?.pension}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -1843,7 +2078,7 @@ const AddEmployee = () => {
                   <option value="" disabled>
                     Select Visa Category
                   </option>
-                  {countryNames.map((country) => (
+                  {VisaCategory.map((country) => (
                     <option key={country} value={country}>
                       {country}
                     </option>
@@ -2015,8 +2250,8 @@ const AddEmployee = () => {
                   headers={["Document Type", "Document Name", "Action"]}
                   data={documentDetails?.map((document, id) => ({
                     _id: id,
-                    name: document.documentType,
-                    document: document.documentName,
+                    Name: document.documentType,
+                    document: document.documents.map((doc) => doc.documentName),
                   }))}
                   actions={{
                     // ShowdropwornAction,
@@ -2152,9 +2387,20 @@ const AddEmployee = () => {
         </button>
       </div> */}
 
+      {!id && currentStep !== 0 && currentStep !== steps.length - 1 && (
+        <div className="addemployee-check-save">
+          <input
+            type="checkbox"
+            checked={isSaveForm}
+            onChange={(e) => setIsSaveForm(e.target.checked)}
+          />
+          <p>You want to save Form?</p>
+        </div>
+      )}
+
       {currentStep < steps.length && (
         <div className="addemployee-next-button">
-          <button onClick={prevStep} disabled={currentStep === 0}>
+          <button onClick={prevStep} disabled={!employeeFormFilled}>
             Previous
           </button>
           <button onClick={nextStep}>
@@ -2164,8 +2410,39 @@ const AddEmployee = () => {
                 : "Submit"
               : "Next"}
           </button>
-          {id && currentStep !== steps.length - 1 && (
+          {/* {currentStep !== 0 &&
+            id &&
+            currentStep !== steps.length - 1 &&
+            employeeFormFilled && (
+              <button onClick={handleSaveClick}>Save</button>
+            )}
+          {currentStep !== 0 &&
+            currentStep !== steps.length - 1 &&
+            !id &&
+            employeeFormFilled && (
+              <button onClick={handleSaveClick}>Save1</button>
+            )} */}
+          {/* {currentStep !== 0 &&
+            currentStep !== steps.length - 1 &&
+            employeeFormFilled && (
+              <button onClick={handleSaveClick}>Save</button>
+            )} */}
+          {/* {((currentStep !== 0 &&
+            currentStep !== steps.length - 1 &&
+            employeeFormFilled) ||
+            (currentStep === 0 && id && employeeFormFilled)) && (
             <button onClick={handleSaveClick}>Save</button>
+          )} */}
+          {((currentStep !== 0 &&
+            currentStep !== steps.length - 1 &&
+            employeeFormFilled) ||
+            (currentStep === 0 && id && !isSaveForm)) && (
+            <button
+              onClick={handleSaveClick}
+              disabled={!(isSaveForm || (id && employeeFormFilled))}
+            >
+              Save
+            </button>
           )}
         </div>
       )}
