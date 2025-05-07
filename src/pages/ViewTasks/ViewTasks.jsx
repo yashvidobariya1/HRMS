@@ -72,6 +72,7 @@ const ViewTasks = () => {
   });
 
   const handleDateClick = (info) => {
+    console.log("save click");
     setFormData({
       taskDate: "",
       taskName: "",
@@ -132,7 +133,7 @@ const ViewTasks = () => {
   };
 
   const handleAddTask = async (e) => {
-    // console.log("handle add task", e, selectedJobId);
+    console.log("handle add task", e, selectedJobId);
     e.preventDefault();
     if (!validate()) return;
 
@@ -381,7 +382,11 @@ const ViewTasks = () => {
             initialView="dayGridMonth"
             initialDate={moment(`${selectedYear}-${selectedMonth}`).toDate()}
             dateClick={(info) => {
-              if (userRole === "Manager" || userRole === "Administrator") {
+              if (
+                userRole === "Manager" ||
+                userRole === "Administrator" ||
+                userRole === "Superadmin"
+              ) {
                 handleDateClick(info);
               }
             }}

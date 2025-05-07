@@ -104,7 +104,7 @@
 .clockin-model {
   background-color: var(--primary-text-white);
   padding: 20px;
-  /* border-radius: 8px; */
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 10px rgba(var(--secondary-soft-gray-rgb), 0.6);
@@ -130,7 +130,7 @@
   padding: 8px 16px;
   font-size: var(--font-size-body);
   border: none;
-  /* border-radius: 12px; */
+  border-radius: 4px;
   cursor: pointer;
 }
 

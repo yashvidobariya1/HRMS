@@ -57,6 +57,7 @@
   height: 41px;
   font-size: var(--font-size-h3);
   background-color: var(--primary-button);
+  border-radius: 4px;
   color: var(--primary-text-white);
   border: none;
   margin-top: 20px;
@@ -86,6 +87,7 @@
   padding: 10px 20px;
   background-color: var(--secondary-teal);
   color: var(--sidebar-title-primary-white);
+  border-radius: 4px;
   border: none;
   cursor: pointer;
 }
@@ -94,6 +96,7 @@
   padding: 10px 20px;
   background-color: var(--alert-red);
   color: var(--sidebar-title-primary-white);
+  border-radius: 4px;
   border: none;
   cursor: pointer;
 }

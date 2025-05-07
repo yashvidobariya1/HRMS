@@ -431,6 +431,9 @@ const CommonTable = ({
     "Total Hours": "totalHours",
     OverTime: "overTime",
     "Timesheet Status": "timesheetstatus",
+    "ClockIn Time": "clockin",
+    "ClockOut Time": "clockout",
+    "Working Time": "workingTime",
   };
 
   const handleSort = (key) => {

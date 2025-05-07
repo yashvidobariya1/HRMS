@@ -78,7 +78,7 @@
   color: var(--neutral-light-gray);
   border: 1px solid transparent;
   padding: 13px 20px;
-  /* border-radius: 8px; */
+  border-radius: 4px;
   font-size: var(--font-size-body);
   cursor: pointer;
   width: 100%;

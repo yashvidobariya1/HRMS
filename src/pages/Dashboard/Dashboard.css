@@ -13,6 +13,7 @@
   padding: 30px;
   border: 1px solid var(--neutral-light-gray);
   margin-bottom: 20px;
+  border-radius: 4px;
 }
 
 .dashboard-profile,
@@ -160,6 +161,7 @@
 .dashboard-overview-flex-2 {
   /* width: 32.5%; */
   border: 1px solid var(--neutral-light-gray);
+  border-radius: 4px;
 }
 
 .dashboard-absence-today {
@@ -167,11 +169,19 @@
 }
 
 .dashboard-absence-table table {
+  /* border: 1px solid var(--neutral-light-gray);
+  border-radius: 4px;
+  border-collapse: separate; 
+  border-spacing: 0;
+  overflow: hidden;
+  width: 100%; */
   width: 100%;
-  border-collapse: collapse;
+  border-radius: 4px;
+  border-collapse: separate;
+  border-spacing: 0;
   margin: 10px 0;
   border: 1px solid var(--neutral-light-gray);
-  table-layout: auto;
+  /* table-layout: auto; */
 }
 
 .dashboard-absence-table table th,
@@ -439,6 +449,7 @@ td {
 .apply-btn {
   background: var(--primary-button);
   color: var(--primary-text-white);
+  border-radius: 4px;
   padding: 8px 10px;
   border: none;
   cursor: pointer;
@@ -492,6 +503,7 @@ td {
   position: relative;
   border: 1px solid var(--neutral-light-gray);
   box-shadow: 0px 1px 1px 1px rgba(198, 198, 198, 0.2);
+  border-radius: 4px;
 }
 
 .dashboard-box-icon-list {
@@ -514,8 +526,15 @@ td {
 .dashboard-calender {
   /* width: calc(100% - 40px); */
   border: 1px solid var(--neutral-light-gray);
+  border-radius: 4px;
   padding: 20px;
   /* height: 200px; */
+}
+
+.dashboard-calender .fc-theme-standard .fc-scrollgrid,
+.dashboard-calender .fc-theme-standard td,
+.dashboard-calender .fc-theme-standard th {
+  border-radius: 4px;
 }
 
 .dashboard-calender h1 {
@@ -532,6 +551,7 @@ td {
   background-color: var(--primary-button);
   border: none;
   color: var(--primary-text-white);
+  border-radius: 4px;
 }
 
 .dashboard-calender .fc .fc-daygrid-day-number {
@@ -578,6 +598,7 @@ td {
 }
 
 .dashboard-calender-selectoption select {
+  border-radius: 4px;
   padding: 10px 15px !important;
   margin: 0;
 }
@@ -764,6 +785,7 @@ section.docx {
   background-color: var(--secondary-dark-gray);
   color: var(--primary-text-white);
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .dashboard-viewprofile {
@@ -1009,7 +1031,7 @@ section.docx {
   }
 
   .dashboard-first-section {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .dashbaord-first-section-flex {
@@ -1125,5 +1147,9 @@ section.docx {
   .dashboard-calender .fc .fc-toolbar.fc-header-toolbar {
     flex-direction: column;
     gap: 5px;
+  }
+
+  .dashboard-first-section {
+    grid-template-columns: repeat(1, 1fr);
   }
 }

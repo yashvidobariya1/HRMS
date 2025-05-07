@@ -12,6 +12,7 @@ import { clearJobRoleSelect } from "../store/selectJobeRoleSlice";
 import { PostCall } from "../ApiServices";
 import { showToast } from "./ToastManager";
 import Loader from "../pages/Helper/Loader";
+import { TextField, MenuItem } from "@mui/material";
 
 const Header = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
@@ -34,14 +35,18 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  const handleThemeChange = (e) => {
-    const selectedTheme = e.target.value;
-    setTheme(selectedTheme);
-    dispatch(setThemeColor(selectedTheme));
-    document.documentElement.setAttribute("data-theme", selectedTheme);
-    setIsDropdownOpen(false);
-  };
+  // const handleThemeChange = (e) => {
+  //   const selectedTheme = e.target.value;
+  //   console.log("selection item", selectedTheme);
+  //   setTheme(selectedTheme);
+  //   dispatch(setThemeColor(selectedTheme));
+  //   document.documentElement.setAttribute("data-theme", selectedTheme);
+  //   setIsDropdownOpen(false);
+  // };
 
+  const handleThemeChange = (e) => {
+    alert("(change");
+  };
   const handleLogout = async () => {
     try {
       setLoading(true);
@@ -135,7 +140,7 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
                 >
                   <li>Change Password</li>
                 </Link>
-                <li>
+                {/* <li>
                   Theme{" "}
                   <select
                     className="header-theme"
@@ -145,6 +150,20 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
                   </select>
+                </li> */}
+                <li>
+                  Theme{" "}
+                  <TextField
+                    select
+                    value={theme}
+                    onChange={handleThemeChange}
+                    variant="standard"
+                    size="small"
+                    sx={{ minWidth: 100 }}
+                  >
+                    <MenuItem value="light">Light</MenuItem>
+                    <MenuItem value="dark">Dark</MenuItem>
+                  </TextField>
                 </li>
                 <Link to="/login" onClick={handleLogout}>
                   <li>Logout</li>

@@ -111,6 +111,7 @@
 }
 
 .template-custom-file-upload {
+  border-radius: 4px;
   background-color: var(--primary-button);
   color: var(--primary-text-white);
   padding: 5px;

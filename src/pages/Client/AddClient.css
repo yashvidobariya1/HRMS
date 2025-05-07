@@ -9,6 +9,8 @@
   width: 100%;
   box-sizing: border-box;
   border: 1px solid var(--neutral-light-gray);
+  padding-right: 40px;
+  border-radius: 4px;
 }
 
 .addclient-section {
@@ -34,11 +36,6 @@
   align-items: center;
   position: relative;
   width: 100%;
-}
-
-.addclient-input {
-  width: 100%;
-  padding-right: 40px;
 }
 
 .email-action-addclient {
