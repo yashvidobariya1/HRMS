@@ -15,6 +15,7 @@ const LoggedInUser = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState(24);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalLoggedUser, settotalLoggedUser] = useState([]);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const handlePageChange = (pageNumber) => {
@@ -74,12 +75,23 @@ const LoggedInUser = () => {
     currentPage,
     loggeduserPerPage,
     selectedTimePeriod,
-    searchQuery,
+    debouncedSearch,
+    ,
     companyId,
   ]);
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   return (

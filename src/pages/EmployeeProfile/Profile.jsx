@@ -8,6 +8,7 @@ import { IoAddOutline } from "react-icons/io5";
 // import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
 import Loader from "../Helper/Loader";
+import { MenuItem, Select } from "@mui/material";
 
 const Profile = () => {
   // const user = useSelector((state) => state.userInfo.userInfo.user);
@@ -379,7 +380,7 @@ const Profile = () => {
           <div className="profile-div-section">
             <div className="profile-container">
               <label className="label">Gender*</label>
-              <select
+              {/* <select
                 name="gender"
                 value={user?.gender || ""}
                 onChange={handleChange}
@@ -392,14 +393,39 @@ const Profile = () => {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
-              </select>
+              </select> */}
+              <Select
+                name="gender"
+                value={user?.gender || ""}
+                onChange={handleChange}
+                disabled={!update}
+                className="profile-input-dropdown"
+                displayEmpty
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      width: 200,
+                      textOverflow: "ellipsis",
+                      maxHeight: 200,
+                      whiteSpace: "nowrap",
+                    },
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select Marital Status
+                </MenuItem>
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </Select>
               {errors.gender && (
                 <div className="error-text">{errors.gender}</div>
               )}
             </div>
             <div className="profile-container">
               <label className="label">Marital Status*</label>
-              <select
+              {/* <select
                 name="maritalStatus"
                 value={user?.maritalStatus || ""}
                 onChange={handleChange}
@@ -413,7 +439,33 @@ const Profile = () => {
                 <option value="Married">Married</option>
                 <option value="Divorced">Divorced</option>
                 <option value="Widowed">Widowed</option>
-              </select>
+              </select> */}
+              <Select
+                name="maritalStatus"
+                value={user?.maritalStatus || ""}
+                onChange={handleChange}
+                disabled={!update}
+                className="profile-input-dropdown"
+                displayEmpty
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      width: 200,
+                      textOverflow: "ellipsis",
+                      maxHeight: 200,
+                      whiteSpace: "nowrap",
+                    },
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select Marital Status
+                </MenuItem>
+                <MenuItem value="Single">Single</MenuItem>
+                <MenuItem value="Married">Married</MenuItem>
+                <MenuItem value="Divorced">Divorced</MenuItem>
+                <MenuItem value="Widowed">Widowed</MenuItem>
+              </Select>
               {errors.maritalStatus && (
                 <div className="error-text">{errors.maritalStatus}</div>
               )}
@@ -486,7 +538,7 @@ const Profile = () => {
               <div className="profile-document-section">
                 <div className="profile-input-container">
                   <label className="label">Document Type</label>
-                  <select
+                  {/* <select
                     name="documentType"
                     className="profile-input"
                     data-testid="documentType-select"
@@ -501,7 +553,36 @@ const Profile = () => {
                     <option value="Immigration">Immigration</option>
                     <option value="Address Proof">Address Proof</option>
                     <option value="Passport">Passport</option>
-                  </select>
+                  </select> */}
+                  <Select
+                    name="documentType"
+                    className="profile-input-dropdown"
+                    data-testid="documentType-select"
+                    value={file?.documentType}
+                    displayEmpty
+                    disabled={!update}
+                    onChange={(e) =>
+                      handleInputChange("documentType", e?.target?.value)
+                    }
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 200, // same as Select
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxHeight: 192,
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Document Type
+                    </MenuItem>
+                    <MenuItem value="ID Proof">ID Proof</MenuItem>
+                    <MenuItem value="Immigration">Immigration</MenuItem>
+                    <MenuItem value="Address Proof">Address Proof</MenuItem>
+                    <MenuItem value="Passport">Passport</MenuItem>
+                  </Select>
                   {errors?.documentType && (
                     <p className="error-text">{errors?.documentType}</p>
                   )}
@@ -515,7 +596,7 @@ const Profile = () => {
                     type="file"
                     name="document"
                     data-testid="Document-select"
-                    className="addemployee-input"
+                    className="profile-input-upload"
                     onChange={handleFileChange}
                     disabled={!update}
                     ref={fileInputRef}

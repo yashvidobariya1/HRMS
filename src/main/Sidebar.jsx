@@ -8,7 +8,7 @@ import { RxDashboard } from "react-icons/rx";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import { GetCall } from "../ApiServices";
 import { setCompanySelect } from "../store/selectCompanySlice";
-import { TextField, MenuItem } from "@mui/material";
+import { Select, MenuItem, Tooltip } from "@mui/material";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const currentRole = useSelector((state) => state.userInfo.userInfo.role);
@@ -131,24 +131,44 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                   //     </option>
                   //   ))}
                   // </select>
-                  <TextField
-                    select
-                    // label="Select Company"
+                  <Select
                     value={selectedCompanyId}
-                    className="Selection"
                     onChange={handleChange}
-                    fullWidth
-                    size="small"
+                    className="company-dropdown"
+                    // className="dropdown"
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 200, // same as Select
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxHeight: 192,
+                        },
+                      },
+                    }}
                   >
                     {currentRole === "Superadmin" && (
                       <MenuItem value="allCompany">All</MenuItem>
                     )}
                     {companyList.map((company) => (
-                      <MenuItem key={company._id} value={company._id}>
+                      // <Tooltip
+                      //   title={company.companyDetails.businessName}
+                      //   key={company._id}
+                      // >
+                      <MenuItem
+                        key={company._id}
+                        value={company._id}
+                        style={{
+                          // overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
                         {company.companyDetails.businessName}
                       </MenuItem>
+                      // {/* </Tooltip> */}
                     ))}
-                  </TextField>
+                  </Select>
                 )}
               </>
             )}

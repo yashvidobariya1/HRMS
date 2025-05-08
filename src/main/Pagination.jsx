@@ -4,6 +4,7 @@ import {
   MdOutlineArrowBackIos,
   MdOutlineArrowForwardIos,
 } from "react-icons/md";
+import { MenuItem, Select } from "@mui/material";
 
 const Pagination = ({
   currentPage,
@@ -41,7 +42,7 @@ const Pagination = ({
   return (
     <div className="pagination-container">
       <div className="contracts-per-page">
-        <select
+        {/* <select
           value={showPerPage}
           onChange={handlePerPageChange}
           className="Contract-select-data-input"
@@ -49,7 +50,17 @@ const Pagination = ({
           <option value={5}>5</option>
           <option value={10}>10</option>
           <option value={15}>15</option>
-        </select>
+        </select> */}
+        <Select
+          labelId="per-page-select-label"
+          value={showPerPage}
+          onChange={handlePerPageChange}
+          label="Rows per page"
+        >
+          <MenuItem value={5}>5</MenuItem>
+          <MenuItem value={10}>10</MenuItem>
+          <MenuItem value={15}>15</MenuItem>
+        </Select>
       </div>
 
       <button

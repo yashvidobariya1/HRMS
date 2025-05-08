@@ -34,8 +34,27 @@
   opacity: 90%;
 }
 
-.Roleselcet-input {
+.Roleselcet-input-dropdown {
+  margin: 0;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: 4px;
+  color: var(--secondary-dark-gray);
   width: 100%;
+  outline: none;
+}
+
+.Roleselcet-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  text-align: left;
+  outline: none;
+}
+
+.Roleselcet-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
 }
 
 .roleselect-modal h1 {

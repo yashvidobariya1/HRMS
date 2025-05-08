@@ -25,6 +25,7 @@ const Settings = () => {
   const [companiesPerPage, setCompaniesPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [totalCompany, settotalCompany] = useState([]);
 
@@ -45,10 +46,10 @@ const Settings = () => {
     setShowDropdownAction(null);
   };
 
-  const HandleAddEmployee = async (id) => {
-    navigate(`/employees/addemployee?companyId=${id}`);
-    setShowDropdownAction(null);
-  };
+  // const HandleAddEmployee = async (id) => {
+  //   navigate(`/employees/addemployee?companyId=${id}`);
+  //   setShowDropdownAction(null);
+  // };
 
   const HandleDeleteCompany = async (id, name) => {
     setCompanyName(name);
@@ -60,7 +61,7 @@ const Settings = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getallcompany?page=${currentPage}&limit=${companiesPerPage}&search=${searchQuery}`
+        `/getallcompany?page=${currentPage}&limit=${companiesPerPage}&search=${debouncedSearch}`
       );
 
       if (response?.data?.status === 200) {
@@ -107,6 +108,16 @@ const Settings = () => {
     setCurrentPage(1);
   }, [searchQuery]);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   const tableHeaders = ["Business Name", "Company Code", "City", "Action"];
 
   const handleSettingPerPageChange = (e) => {
@@ -118,15 +129,15 @@ const Settings = () => {
   //   navigate(`/settings/generateqrcode?companyId=${id}`);
   // };
 
-  const HandleClientList = (id) => {
-    navigate(`/settings/client/?companyId=${id}`);
-  };
+  // const HandleClientList = (id) => {
+  //   navigate(`/settings/client/?companyId=${id}`);
+  // };
 
   const settingactions = [
     // { label: "Edit", onClick: HandleEditCompany },
     // { label: "Delete", onClick: HandleDeleteCompany },
-    { label: "Add Employee", onClick: HandleAddEmployee },
-    { label: "Client list", onClick: HandleClientList },
+    // { label: "Add Employee", onClick: HandleAddEmployee },
+    // { label: "Client list", onClick: HandleClientList },
     // { label: "QRCode", onClick: HandleGenerateQrCode },
   ];
 

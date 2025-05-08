@@ -33,6 +33,7 @@ import htmlDocx from "html-docx-js/dist/html-docx";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { setNotificationCount } from "../../store/notificationCountSlice";
 import { useDispatch } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
 
 const Dashboard = () => {
   const pdfRef = useRef(null);
@@ -1116,20 +1117,44 @@ const Dashboard = () => {
                 <div className="dashboard-calender">
                   <div className="dashboard-calender-selectoption">
                     {userRole === "Superadmin" && (
-                      <select
+                      // <select
+                      //   value={selectedLocationName}
+                      //   onChange={handleLocation}
+                      // >
+                      //   <option value="">Select Location</option>
+                      //   {locationList.map((location, index) => (
+                      //     <option key={index} value={location?.id}>
+                      //       {location?.locationName}
+                      //     </option>
+                      //   ))}
+                      // </select>
+                      <Select
+                        id="location-select"
+                        className="dashboard-dropdown"
                         value={selectedLocationName}
                         onChange={handleLocation}
+                        displayEmpty
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              width: 200,
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              maxHeight: 200,
+                            },
+                          },
+                        }}
                       >
-                        <option value="">Select Location</option>
+                        <MenuItem value="" disabled>Select Location</MenuItem>
                         {locationList.map((location, index) => (
-                          <option key={index} value={location?.id}>
+                          <MenuItem key={index} value={location?.id}>
                             {location?.locationName}
-                          </option>
+                          </MenuItem>
                         ))}
-                      </select>
+                      </Select>
                     )}
 
-                    <select
+                    {/* <select
                       id="dashboard-year-select"
                       value={selectedYear}
                       onChange={handleYearChange}
@@ -1140,7 +1165,31 @@ const Dashboard = () => {
                           {year}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
+                    <Select
+                      id="dashboard-year-select"
+                      className="dashboard-dropdown"
+                      value={selectedYear}
+                      onChange={handleYearChange}
+                      displayEmpty
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            width: "max-content",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            maxHeight: 200,
+                          },
+                        },
+                      }}
+                    >
+                      {/* <MenuItem value="" disable>Select Year</MenuItem> */}
+                      {allowedYears?.map((year, index) => (
+                        <MenuItem key={index} value={year}>
+                          {year}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </div>
                   <FullCalendar
                     key={selectedYear}

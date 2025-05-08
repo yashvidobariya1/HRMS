@@ -12,6 +12,7 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import countryNames from "../../Data/AllCountryList.json";
 import VisaCategory from "../../Data/VisaCategory.json";
 import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
+import { MenuItem, Select } from "@mui/material";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
@@ -127,7 +128,7 @@ const AddEmployee = () => {
     location: "",
     assignManager: "",
     assignClient: "",
-    templateId: "",
+    // templateId: "",
     role: "",
   });
 
@@ -695,7 +696,7 @@ const AddEmployee = () => {
       location: "",
       assignManager: "",
       assignClient: "",
-      templateId: "",
+      // templateId: "",
       role: "",
     });
     setErrors({});
@@ -1185,7 +1186,7 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Select Gender*</label>
-                <select
+                {/* <select
                   className="addemployee-input"
                   name="gender"
                   data-testid="gender-select"
@@ -1198,7 +1199,32 @@ const AddEmployee = () => {
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                   <option value="other">Other</option>
-                </select>
+                </select> */}
+                <Select
+                  className="addemployee-input-dropdown"
+                  name="gender"
+                  data-testid="gender-select"
+                  value={formData?.personalDetails?.gender}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Gender
+                  </MenuItem>
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
                 {errors?.gender && (
                   <p className="error-text">{errors?.gender}</p>
                 )}
@@ -1206,7 +1232,7 @@ const AddEmployee = () => {
 
               <div className="addemployee-input-container">
                 <label className="label">Marital Status*</label>
-                <select
+                {/* <select
                   name="maritalStatus"
                   className="addemployee-input"
                   data-testid="marital Status"
@@ -1221,7 +1247,34 @@ const AddEmployee = () => {
                   <option value="Married">Married</option>
                   <option value="Divorced">Divorced</option>
                   <option value="Widowed">Widowed</option>
-                </select>
+                </select> */}
+                <Select
+                  name="maritalStatus"
+                  className="addemployee-input-dropdown"
+                  data-testid="marital Status"
+                  value={formData?.personalDetails?.maritalStatus}
+                  onChange={handleChange}
+                  placeholder="Enter maritalStatus"
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Marital Status
+                  </MenuItem>
+                  <MenuItem value="Single">Single</MenuItem>
+                  <MenuItem value="Married">Married</MenuItem>
+                  <MenuItem value="Divorced">Divorced</MenuItem>
+                  <MenuItem value="Widowed">Widowed</MenuItem>
+                </Select>
                 {errors?.maritalStatus && (
                   <p className="error-text">{errors?.maritalStatus}</p>
                 )}
@@ -1448,8 +1501,8 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-section">
                 <div className="addemployee-input-container">
-                  <label className="label">Mode Of Transfe</label>
-                  <select
+                  <label className="label">Mode Of Transfer</label>
+                  {/* <select
                     name="modeOfTransfer"
                     data-testid="modeOfTransfer-select"
                     value={jobForm?.modeOfTransfer}
@@ -1460,7 +1513,33 @@ const AddEmployee = () => {
                     <option value="netbanking">Net Banking</option>
                     <option value="upi">UPI</option>
                     <option value="creditcard">Credit Card</option>
-                  </select>
+                  </select> */}
+                  <Select
+                    name="modeOfTransfer"
+                    data-testid="modeOfTransfer-select"
+                    value={jobForm?.modeOfTransfer}
+                    onChange={handleJobChange}
+                    className="addemployee-input-dropdown"
+                    displayEmpty
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 200,
+                          textOverflow: "ellipsis",
+                          maxHeight: 200,
+                          whiteSpace: "nowrap",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      {" "}
+                      Select Mode Of Transfe
+                    </MenuItem>
+                    <MenuItem value="netbanking">Net Banking</MenuItem>
+                    <MenuItem value="upi">UPI</MenuItem>
+                    <MenuItem value="creditcard">Credit Card</MenuItem>
+                  </Select>
                 </div>
                 <div className="addemployee-input-container">
                   <label className="label">No. Of sick leaves allowed</label>
@@ -1479,7 +1558,7 @@ const AddEmployee = () => {
                       onChange={handleJobChange}
                       placeholder="Enter No. Of sick leaves allowed"
                     />
-                    <select
+                    {/* <select
                       // value={sickLeaveType}
                       name="sickLeavesAllow.leaveType"
                       value={jobForm?.sickLeavesAllow?.leaveType}
@@ -1490,7 +1569,29 @@ const AddEmployee = () => {
                     >
                       <option value="Day">Day</option>
                       <option value="Hour">Hour</option>
-                    </select>
+                    </select> */}
+                    <Select
+                      name="sickLeavesAllow.leaveType"
+                      value={jobForm?.sickLeavesAllow?.leaveType}
+                      // onChange={(e) => setSickLeaveType(e.target.value)}
+                      onChange={handleJobChange}
+                      className="addemployee-input-dropdown"
+                      style={{ width: "120px" }}
+                      displayEmpty
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            width: 80,
+                            textOverflow: "ellipsis",
+                            maxHeight: 200,
+                            whiteSpace: "nowrap",
+                          },
+                        },
+                      }}
+                    >
+                      <MenuItem value="Day">Day</MenuItem>
+                      <MenuItem value="Hour">Hour</MenuItem>
+                    </Select>
                   </div>
                 </div>
                 <div className="addemployee-input-container">
@@ -1510,7 +1611,7 @@ const AddEmployee = () => {
                       onChange={handleJobChange}
                       placeholder="Enter No. Of leaves allowed"
                     />
-                    <select
+                    {/* <select
                       name="leavesAllow.leaveType"
                       // value={allowLeaveType}
                       value={jobForm?.leavesAllow?.leaveType}
@@ -1521,14 +1622,37 @@ const AddEmployee = () => {
                     >
                       <option value="Day">Day</option>
                       <option value="Hour">Hour</option>
-                    </select>
+                    </select> */}
+                    <Select
+                      name="leavesAllow.leaveType"
+                      // value={allowLeaveType}
+                      value={jobForm?.leavesAllow?.leaveType}
+                      // onChange={(e) => setallowLeaveType(e.target.value)}
+                      onChange={handleJobChange}
+                      className="addemployee-input-dropdown"
+                      style={{ width: "120px" }}
+                      displayEmpty
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            width: 80,
+                            textOverflow: "ellipsis",
+                            maxHeight: 200,
+                            whiteSpace: "nowrap",
+                          },
+                        },
+                      }}
+                    >
+                      <MenuItem value="Day">Day</MenuItem>
+                      <MenuItem value="Hour">Hour</MenuItem>
+                    </Select>
                   </div>
                 </div>
               </div>
               <div className="addemployee-section">
                 <div className="addemployee-input-container">
                   <label className="label">Role*</label>
-                  <select
+                  {/* <select
                     name="role"
                     value={jobForm?.role}
                     onChange={handleJobChange}
@@ -1546,12 +1670,43 @@ const AddEmployee = () => {
                     {user.role === "Superadmin" && (
                       <option value="Administrator">Administrator</option>
                     )}
-                  </select>
+                  </select> */}
+                  <Select
+                    id="role-select"
+                    name="role"
+                    value={jobForm?.role || ""}
+                    onChange={handleJobChange}
+                    data-testid="role-select"
+                    className="addemployee-input-dropdown"
+                    displayEmpty
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 200,
+                          textOverflow: "ellipsis",
+                          maxHeight: 200,
+                          whiteSpace: "nowrap",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Role
+                    </MenuItem>
+                    <MenuItem value="Employee">Employee</MenuItem>
+                    {(user.role === "Superadmin" ||
+                      user.role === "Administrator") && (
+                      <MenuItem value="Manager">Manager</MenuItem>
+                    )}
+                    {user.role === "Superadmin" && (
+                      <MenuItem value="Administrator">Administrator</MenuItem>
+                    )}
+                  </Select>
                   {errors?.role && <p className="error-text">{errors?.role}</p>}
                 </div>
                 <div className="addemployee-input-container">
                   <label className="label">Location</label>
-                  <select
+                  {/* <select
                     name="location"
                     value={jobForm?.location}
                     data-testid="location-select"
@@ -1566,14 +1721,41 @@ const AddEmployee = () => {
                         {location?.locationName}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
+                  <Select
+                    name="location"
+                    value={jobForm?.location}
+                    data-testid="location-select"
+                    onChange={handleJobChange}
+                    className="addemployee-input-dropdown"
+                    displayEmpty
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 200,
+                          textOverflow: "ellipsis",
+                          maxHeight: 200,
+                          whiteSpace: "nowrap",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Location
+                    </MenuItem>
+                    {locations?.map((location) => (
+                      <MenuItem value={location?._id} key={location?._id}>
+                        {location?.locationName}
+                      </MenuItem>
+                    ))}
+                  </Select>
                   {errors?.location && (
                     <p className="error-text">{errors?.location}</p>
                   )}
                 </div>
                 <div className="addemployee-input-container">
                   <label className="label">Assign Manager</label>
-                  <select
+                  {/* <select
                     name="assignManager"
                     value={jobForm?.assignManager}
                     onChange={handleJobChange}
@@ -1595,7 +1777,32 @@ const AddEmployee = () => {
                         No assignee available
                       </option>
                     )}
-                  </select>
+                  </select> */}
+                  <Select
+                    name="assignManager"
+                    value={jobForm?.assignManager}
+                    onChange={handleJobChange}
+                    className="addemployee-input-dropdown"
+                    data-testid="assignManager-select"
+                    disabled={!jobForm?.location}
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      Select Manager
+                    </MenuItem>
+
+                    {filteredAssignees?.length > 0 ? (
+                      filteredAssignees.map((assignee) => (
+                        <MenuItem value={assignee._id} key={assignee._id}>
+                          {assignee.name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem value="" disabled>
+                        No assignee available
+                      </MenuItem>
+                    )}
+                  </Select>
                   {errors?.assignManager && (
                     <p className="error-text">{errors?.assignManager}</p>
                   )}
@@ -1626,7 +1833,7 @@ const AddEmployee = () => {
               <div className="addemployee-section">
                 <div className="addemployee-input-container">
                   <label className="label">Assign Client*</label>
-                  <select
+                  {/* <select
                     name="assignClient"
                     value={jobForm?.assignClient}
                     onChange={handleJobChange}
@@ -1643,12 +1850,35 @@ const AddEmployee = () => {
                     ) : (
                       <option value="">No clients available</option>
                     )}
-                  </select>
+                  </select> */}
+                  <Select
+                    name="assignClient"
+                    value={jobForm?.assignClient}
+                    onChange={handleJobChange}
+                    data-testid="assignClient-select"
+                    className="addemployee-input-dropdown"
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      Select Client
+                    </MenuItem>
+                    {clients?.length > 0 ? (
+                      clients.map((client) => (
+                        <MenuItem value={client._id} key={client._id}>
+                          {client?.name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem value="" disabled>
+                        No clients available
+                      </MenuItem>
+                    )}
+                  </Select>
                   {errors?.assignClient && (
                     <p className="error-text">{errors?.assignClient}</p>
                   )}
                 </div>
-                <div className="addemployee-input-container">
+                {/* <div className="addemployee-input-container">
                   <label className="label">Assign Template</label>
                   <select
                     name="templateId"
@@ -1667,10 +1897,10 @@ const AddEmployee = () => {
                       <option value="">No templates available</option>
                     )}
                   </select>
-                  {/* {errors?.templateId && (
+                  {errors?.templateId && (
                     <p className="error-text">{errors?.templateId}</p>
-                  )} */}
-                </div>
+                  )}
+                </div> */}
               </div>
               <div className="addemployee-next-button">
                 <button onClick={handleAddJob}>
@@ -1937,7 +2167,7 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Payroll Frequency*</label>
-                <select
+                {/* <select
                   name="payrollFrequency"
                   data-testid="payrollFrequency-select"
                   className="addemployee-input"
@@ -1948,7 +2178,33 @@ const AddEmployee = () => {
                   <option value="weekly">WEEKLY</option>
                   <option value="monthly">MONTHLY</option>
                   <option value="yearly">YEARLY</option>
-                </select>
+                </select> */}
+                <Select
+                  name="payrollFrequency"
+                  data-testid="payrollFrequency-select"
+                  className="addemployee-input-dropdown"
+                  value={formData?.financialDetails?.payrollFrequency}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        maxHeight: 200,
+                        whiteSpace: "nowrap",
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Payroll Frequency
+                  </MenuItem>
+                  <MenuItem value="" disabled>Select Payroll Frequency</MenuItem>
+                  <MenuItem value="weekly">WEEKLY</MenuItem>
+                  <MenuItem value="monthly">MONTHLY</MenuItem>
+                  <MenuItem value="yearly">YEARLY</MenuItem>
+                </Select>
                 {errors?.payrollFrequency && (
                   <p className="error-text">{errors?.payrollFrequency}</p>
                 )}
@@ -2007,7 +2263,7 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Country Of Issue*</label>
-                <select
+                {/* <select
                   name="countryOfIssue"
                   className="addemployee-input"
                   data-testid="countryOfIssue-select"
@@ -2022,7 +2278,34 @@ const AddEmployee = () => {
                       {country}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  name="countryOfIssue"
+                  className="addemployee-input-dropdown"
+                  data-testid="countryOfIssue-select"
+                  value={formData?.immigrationDetails?.countryOfIssue}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Country
+                  </MenuItem>
+                  {countryNames.map((country, index) => (
+                    <MenuItem key={index} value={country}>
+                      {country}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {errors?.countryOfIssue && (
                   <p className="error-text">{errors?.countryOfIssue}</p>
                 )}
@@ -2046,7 +2329,7 @@ const AddEmployee = () => {
             <div className="addemployee-section">
               <div className="addemployee-input-container">
                 <label className="label">Nationality*</label>
-                <select
+                {/* <select
                   name="nationality"
                   className="addemployee-input"
                   data-testid="nationality-select"
@@ -2061,14 +2344,41 @@ const AddEmployee = () => {
                       {country}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  name="nationality"
+                  className="addemployee-input-dropdown"
+                  data-testid="nationality-select"
+                  value={formData?.immigrationDetails?.nationality}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Country Of Issue
+                  </MenuItem>
+                  {countryNames.map((country, index) => (
+                    <MenuItem key={index} value={country}>
+                      {country}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {errors?.nationality && (
                   <p className="error-text">{errors?.nationality}</p>
                 )}
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Visa Category</label>
-                <select
+                {/* <select
                   name="visaCategory"
                   className="addemployee-input"
                   data-testid="visaCategory-select"
@@ -2083,7 +2393,34 @@ const AddEmployee = () => {
                       {country}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  name="visaCategory"
+                  className="addemployee-input-dropdown"
+                  data-testid="visaCategory-select"
+                  value={formData?.immigrationDetails?.visaCategory}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Visa Category
+                  </MenuItem>
+                  {VisaCategory.map((country) => (
+                    <MenuItem key={country} value={country}>
+                      {country}
+                    </MenuItem>
+                  ))}
+                </Select>
               </div>
               <div className="addemployee-input-container">
                 <label className="label">BRP Number</label>
@@ -2200,7 +2537,7 @@ const AddEmployee = () => {
             <div className="addemployee-section">
               <div className="addemployee-input-container">
                 <label className="label">Document Type</label>
-                <select
+                {/* <select
                   name="documentType"
                   className="addemployee-input"
                   data-testid="documentType-select"
@@ -2214,7 +2551,35 @@ const AddEmployee = () => {
                   <option value="Immigration">Immigration</option>
                   <option value="Address Proof">Address Proof</option>
                   <option value="Passport">Passport</option>
-                </select>
+                </select> */}
+                <Select
+                  name="documentType"
+                  className="addemployee-input-dropdown"
+                  data-testid="documentType-select"
+                  value={file?.documentType}
+                  onChange={(e) =>
+                    handleInputChange("documentType", e?.target?.value)
+                  }
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        maxHeight: 200,
+                        whiteSpace: "nowrap",
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Document Type
+                  </MenuItem>
+                  <MenuItem value="ID Proof">ID Proof</MenuItem>
+                  <MenuItem value="Immigration">Immigration</MenuItem>
+                  <MenuItem value="Address Proof">Address Proof</MenuItem>
+                  <MenuItem value="Passport">Passport</MenuItem>
+                </Select>
                 {errors?.documentType && (
                   <p className="error-text">{errors?.documentType}</p>
                 )}
@@ -2316,7 +2681,7 @@ const AddEmployee = () => {
             <div className="addemployee-section">
               <div className="addemployee-input-container">
                 <label className="label">Contract Type</label>
-                <select
+                {/* <select
                   className="addemployee-input"
                   name="contractType"
                   data-testid="contractType-select"
@@ -2343,12 +2708,51 @@ const AddEmployee = () => {
                       {contract.contractType}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  name="contractType"
+                  data-testid="contractType-select"
+                  className="addemployee-input-dropdown"
+                  displayEmpty
+                  value={formData?.contractDetails?.contractType || ""}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        maxHeight: 200,
+                        whiteSpace: "nowrap",
+                      },
+                    },
+                  }}
+                  onChange={(e) => {
+                    handleChange(e);
+                    const selectedContract = contracts.find(
+                      (contract) => contract._id === e.target.value
+                    );
+                    setFormData((prev) => ({
+                      ...prev,
+                      contractDetails: {
+                        ...prev.contractDetails,
+                        contractDocument: selectedContract
+                          ? selectedContract.contractDocument
+                          : "",
+                      },
+                    }));
+                  }}
+                >
+                  <MenuItem value="" disabled>Select Contract Type</MenuItem>
+                  {contracts?.map((contract) => (
+                    <MenuItem value={contract?._id} key={contract?._id}>
+                      {contract.contractType}
+                    </MenuItem>
+                  ))}
+                </Select>
               </div>
 
               <div className="addemployee-input-container">
                 <label className="label">Contract Document</label>
-                <select
+                {/* <select
                   name="contractDocument"
                   className="addemployee-input"
                   data-testid="contractDocument-select"
@@ -2371,7 +2775,41 @@ const AddEmployee = () => {
                         {contract.contractDocument}
                       </option>
                     ))}
-                </select>
+                </select> */}
+                <Select
+                  name="contractDocument"
+                  className="addemployee-input-dropdown"
+                  data-testid="contractDocument-select"
+                  value={formData?.contractDetails?.contractDocument || ""}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        maxHeight: 200,
+                        whiteSpace: "nowrap",
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Contract Document
+                  </MenuItem>
+                  {contracts
+                    ?.filter(
+                      (contract) =>
+                        contract._id === formData?.contractDetails?.contractType
+                    )
+                    ?.map((contract) => (
+                      <MenuItem
+                        value={contract.contractDocument}
+                        key={contract._id}
+                      >
+                        {contract.contractDocument}
+                      </MenuItem>
+                    ))}
+                </Select>
               </div>
             </div>
           </div>

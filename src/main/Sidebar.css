@@ -6,8 +6,8 @@
   height: calc(100vh - 115px);
   transition: left 0.3s ease, width 0.3s ease;
   background-color: var(--primary-text-white);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-y: auto; /* 👈 Enable vertical scroll */
+  -webkit-overflow-scrolling: touch; /* 👈 Smooth momentum scroll on iOS */
   scrollbar-width: thin;
 }
 
@@ -91,11 +91,6 @@
   font-weight: 600;
   margin-left: 10px;
   transition: opacity 0.3s ease;
-  display: inline-block;
-  max-width: 20ch;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .text img {
@@ -237,6 +232,20 @@
   color: var(--sidebar-title-primary-white);
   border: 1px solid var(--sidebar-hover);
   width: 100%;
+  max-width: 205px;
+  outline: none;
+}
+
+.company-dropdown .MuiSelect-select {
+  padding: 0;
+  background-color: var(--sidebar-secondary-dark-gray);
+  color: var(--sidebar-title-primary-white);
+  border: none;
+  outline: none;
+}
+
+.company-dropdown .MuiSelect-icon {
+  color: var(--sidebar-title-primary-white);
 }
 
 @media screen and (max-width: 767px) {
@@ -299,6 +308,10 @@
 
   .sidebar-Toggle-menu {
     display: block;
+  }
+
+  .company-dropdown {
+    padding: 3px;
   }
 }
 

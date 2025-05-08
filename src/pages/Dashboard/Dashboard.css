@@ -827,6 +827,27 @@ section.docx {
   margin-left: 30px;
 }
 
+.dashboard-dropdown {
+  margin: 0;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: 4px;
+  color: var(--secondary-dark-gray);
+  outline: none;
+}
+
+.dashboard-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.dashboard-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media (max-width: 1500px) {
   .dashboard-overview-container {
     flex-direction: column;
@@ -1140,6 +1161,14 @@ section.docx {
     font-size: 8px;
     width: 15px;
     height: 15px;
+  }
+
+  .dashboard-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .dashboard-dropdown {
+    padding: 7px;
   }
 }
 

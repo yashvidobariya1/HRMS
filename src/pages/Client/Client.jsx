@@ -29,6 +29,7 @@ const Client = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalClient, settotalClient] = useState([]);
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -67,7 +68,7 @@ const Client = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllClients?companyId=${companyId}&page=${currentPage}&limit=${clientPerPage}&search=${searchQuery}`
+        `/getAllClients?companyId=${companyId}&page=${currentPage}&limit=${clientPerPage}&search=${debouncedSearch}`
       );
 
       if (response?.data?.status === 200) {
@@ -136,10 +137,20 @@ const Client = () => {
   useEffect(() => {
     GetClients();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, clientPerPage, searchQuery, companyId]);
+  }, [currentPage, clientPerPage, debouncedSearch, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   if (userRole === "Superadmin") {

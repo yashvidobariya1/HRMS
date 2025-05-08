@@ -8,6 +8,7 @@ import { IoMdAdd } from "react-icons/io";
 import { MdRemove } from "react-icons/md";
 import countryNames from "../../Data/AllCountryList.json";
 import { useSelector } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
 
 const AddClient = () => {
   const navigate = useNavigate();
@@ -400,7 +401,7 @@ const AddClient = () => {
             <div className="addclient-section">
               <div className="addclient-input-container">
                 <label className="label">Country*</label>
-                <select
+                {/* <select
                   data-testid="country-select"
                   className="addclient-input checkbox-country"
                   name="country"
@@ -415,7 +416,46 @@ const AddClient = () => {
                       {country}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  data-testid="country-select"
+                  className="addclient-input checkbox-country"
+                  name="country"
+                  value={formData?.country}
+                  onChange={handleChange}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200, // same as Select
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 192,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Country Of Issue
+                  </MenuItem>
+                  {countryNames.map((country, id) => (
+                    // <Tooltip
+                    //   title={company.companyDetails.businessName}
+                    //   key={company._id}
+                    // >
+                    <MenuItem
+                      key={id}
+                      value={country}
+                      style={{
+                        // overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {country}
+                    </MenuItem>
+                    // {/* </Tooltip> */}
+                  ))}
+                </Select>
                 {errors?.country && (
                   <p className="error-text">{errors?.country}</p>
                 )}

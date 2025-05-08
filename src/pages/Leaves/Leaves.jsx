@@ -28,6 +28,7 @@ const Leaves = () => {
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
@@ -53,7 +54,7 @@ const Leaves = () => {
       // console.log("select jobtitle", jobRoleId);
       setLoading(true);
       const response = await PostCall(
-        `/getAllOwnLeaves?page=${currentPage}&limit=${leavePerPage}&search=${searchQuery}`,
+        `/getAllOwnLeaves?page=${currentPage}&limit=${leavePerPage}&search=${debouncedSearch}`,
         { jobId: jobRoleId }
       );
 
@@ -172,10 +173,20 @@ const Leaves = () => {
     GetLeave();
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, leavePerPage, jobRoleId, searchQuery]);
+  }, [currentPage, leavePerPage, jobRoleId, debouncedSearch]);
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   return (

@@ -1,7 +1,9 @@
 import React from "react";
 import { FaUsers } from "react-icons/fa6";
 // import { RxDashboard } from "react-icons/rx";
-import { IoSettingsOutline } from "react-icons/io5";
+// import { IoSettingsOutline } from "react-icons/io5";
+import { FaUserTie } from "react-icons/fa6";
+import { PiBuildingOfficeFill } from "react-icons/pi";
 import { TbContract } from "react-icons/tb";
 import { TiLocationOutline } from "react-icons/ti";
 import { RiBookletLine } from "react-icons/ri";
@@ -26,14 +28,14 @@ export const SidebarData = [
       //   allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
       // },
       {
-        title: "Settings",
-        icon: <IoSettingsOutline />,
+        title: "Company",
+        icon: <PiBuildingOfficeFill />,
         link: "/settings",
         allowedRoles: ["Superadmin", "Administrator"],
       },
       {
         title: "Clients",
-        icon: <FaUserGroup />,
+        icon: <FaUserTie />,
         link: "/clients",
         allowedRoles: ["Superadmin", "Administrator", "Manager"],
       },

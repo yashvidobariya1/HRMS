@@ -259,4 +259,12 @@ tr {
   p {
     font-size: 14px;
   }
+
+  .selection-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .selection-dropdown {
+    padding: 7px;
+  }
 }

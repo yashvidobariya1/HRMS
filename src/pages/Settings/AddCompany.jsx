@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router";
 import "./AddCompany.css";
 import Loader from "../Helper/Loader";
 import countryNames from "../../Data/AllCountryList.json";
+import { MenuItem, Select } from "@mui/material";
 
 const AddCompany = () => {
   const { id } = useParams();
@@ -506,7 +507,7 @@ const AddCompany = () => {
             <div className="setting-section">
               <div className="setting-container">
                 <label className="label">Country*</label>
-                <select
+                {/* <select
                   name="country"
                   value={formData?.companyDetails?.country}
                   onChange={handleChange}
@@ -520,7 +521,33 @@ const AddCompany = () => {
                       {country}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  name="country"
+                  className="selection-dropdown"
+                  value={formData?.companyDetails?.country}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Country
+                  </MenuItem>
+                  {countryNames.map((country, index) => (
+                    <MenuItem key={index} value={country}>
+                      {country}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {errors.country && (
                   <p className="error-text">{errors.country}</p>
                 )}
@@ -528,7 +555,7 @@ const AddCompany = () => {
 
               <div className="setting-container">
                 <label className="label">Timezone*</label>
-                <select
+                {/* <select
                   name="timeZone"
                   className="setting-input"
                   value={formData?.companyDetails?.timeZone}
@@ -541,7 +568,32 @@ const AddCompany = () => {
                   <option value="GMT+2">GMT+2</option>
                   <option value="GMT+3">GMT+3</option>
                   <option value="GMT+4">GMT+4</option>
-                </select>
+                </select> */}
+                <Select
+                  name="timeZone"
+                  className="selection-dropdown"
+                  value={formData?.companyDetails?.timeZone}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        maxHeight: 200,
+                        whiteSpace: "nowrap",
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Timezone
+                  </MenuItem>
+                  <MenuItem value="GMT+1">GMT+1</MenuItem>
+                  <MenuItem value="GMT+2">GMT+2</MenuItem>
+                  <MenuItem value="GMT+3">GMT+3</MenuItem>
+                  <MenuItem value="GMT+4">GMT+4</MenuItem>
+                </Select>
                 {errors.timeZone && (
                   <p className="error-text">{errors.timeZone}</p>
                 )}
@@ -625,7 +677,7 @@ const AddCompany = () => {
                 <label className="label">
                   Assign company admin to receive notification
                 </label>
-                <select
+                {/* <select
                   name="adminToReceiveNotification"
                   className="setting-input"
                   value={formData?.companyDetails?.adminToReceiveNotification}
@@ -638,7 +690,33 @@ const AddCompany = () => {
                   <option value="Administrator">Administrator</option>
                   <option value="Admin 2">Admin 2</option>
                   <option value="Admin">Admin</option>
-                </select>
+                </select> */}
+                <Select
+                  name="adminToReceiveNotification"
+                  className="selection-dropdown"
+                  value={formData?.companyDetails?.adminToReceiveNotification}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    {" "}
+                    Select Company Admin
+                  </MenuItem>
+                  <MenuItem value="Admin 1">Admin 1</MenuItem>
+                  <MenuItem value="Administrator">Administrator</MenuItem>
+                  <MenuItem value="Admin 2">Admin 2</MenuItem>
+                  <MenuItem value="Admin">Admin</MenuItem>
+                </Select>
               </div>
               <div className="setting-container">
                 <label className="label">
@@ -683,7 +761,7 @@ const AddCompany = () => {
                 <label className="label">
                   Employee setting-payroll frequency
                 </label>
-                <select
+                {/* <select
                   name="payrollFrequency"
                   value={formData?.employeeSettings?.payrollFrequency}
                   onChange={handleChange}
@@ -695,7 +773,31 @@ const AddCompany = () => {
                   <option value="Weekly">Weekly</option>
                   <option value="Monthly">Monthly</option>
                   <option value="Yearly">Yearly</option>
-                </select>
+                </select> */}
+                <Select
+                  name="payrollFrequency"
+                  value={formData?.employeeSettings?.payrollFrequency}
+                  onChange={handleChange}
+                  className="selection-dropdown"
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Payroll Frequency
+                  </MenuItem>
+                  <MenuItem value="Weekly">Weekly</MenuItem>
+                  <MenuItem value="Monthly">Monthly</MenuItem>
+                  <MenuItem value="Yearly">Yearly</MenuItem>
+                </Select>
               </div>
               <div className="setting-container">
                 <label className="label">
@@ -765,7 +867,7 @@ const AddCompany = () => {
             <div className="setting-section">
               <div className="setting-container">
                 <label className="label">Holiday Year</label>
-                <select
+                {/* <select
                   name="holidayYear"
                   value={formData?.employeeSettings?.holidayYear}
                   onChange={handleChange}
@@ -777,7 +879,28 @@ const AddCompany = () => {
                   <option value="Jan-Dec">Jan-Dec</option>
                   <option value="Dec-Mar">Dec-Mar</option>
                   <option value="Mar-Jun">Mar-Jun</option>
-                </select>
+                </select> */}
+                <Select
+                  name="holidayYear"
+                  value={formData?.employeeSettings?.holidayYear}
+                  onChange={handleChange}
+                  className="selection-dropdown"
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="Jan-Dec">Jan-Dec</MenuItem>
+                  <MenuItem value="Dec-Mar">Dec-Mar</MenuItem>
+                  <MenuItem value="Mar-Jun">Mar-Jun</MenuItem>
+                </Select>
               </div>
               <div className="setting-container">
                 <label className="label">

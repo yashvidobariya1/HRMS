@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 const EmployeesTimesheet = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [searchQuery, setSearchQuery] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [reportDetails, setReportDetails] = useState({});
   const [showDropdownAction, setShowDropdownAction] = useState(null);
@@ -128,7 +128,6 @@ const EmployeesTimesheet = () => {
             showPerPage={reportPerPage}
             onPerPageChange={handlereportPerPageChange}
             handleAction={handleAction}
-            searchQuery={searchQuery}
             isPagination="true"
             isSearchQuery={false}
             totalData={totalEmployee}

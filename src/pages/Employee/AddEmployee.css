@@ -99,6 +99,28 @@
   border: 1px solid var(--neutral-light-gray);
 }
 
+.addemployee-input-dropdown {
+  margin-top: 5px;
+  padding: 13px;
+  font-weight: 800;
+  border-radius: 4px;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.addemployee-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.addemployee-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 .addemployee-section {
   display: flex;
   width: 100%;
@@ -282,6 +304,10 @@ textarea::placeholder {
   .flex {
     padding: 12px;
   }
+
+  .addemployee-input-dropdown {
+    padding: 11px;
+  }
 }
 
 @media (max-width: 575px) {
@@ -316,5 +342,13 @@ textarea::placeholder {
 
   .flex {
     padding: 6px;
+  }
+
+  .addemployee-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .addemployee-input-dropdown {
+    padding: 7px;
   }
 }

@@ -12,7 +12,7 @@ import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
 // import { CropLandscapeOutlined } from "@mui/icons-material";
-import { TextField } from "@mui/material";
+import { MenuItem, Select, TextField } from "@mui/material";
 const TimeSheetReport = () => {
   // const location = useLocation();
   // const queryParams = new URLSearchParams(location.search);
@@ -64,6 +64,7 @@ const TimeSheetReport = () => {
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   // const [selectedWeek, setSelectedWeek] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [appliedFilters, setAppliedFilters] = useState({
     year: currentYear,
     month: currentMonth,
@@ -251,7 +252,7 @@ const TimeSheetReport = () => {
       const { year, month } = appliedFilters;
 
       const response = await PostCall(
-        `/getTimesheetReport?page=${currentPage}&limit=${perPage}&year=${year}&month=${month}&search=${searchQuery}`,
+        `/getTimesheetReport?page=${currentPage}&limit=${perPage}&year=${year}&month=${month}&search=${debouncedSearch}`,
         filters
       );
 
@@ -430,11 +431,21 @@ const TimeSheetReport = () => {
     perPage,
     jobRoleId,
     appliedFilters,
-    searchQuery,
+    debouncedSearch,
   ]);
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   const fetchEmployeeList = async () => {
@@ -500,7 +511,7 @@ const TimeSheetReport = () => {
             </div>
             <div className="timesheet-input-container">
               <label className="label">Format*</label>
-              <select
+              {/* <select
                 name="format"
                 className="timesheet-input"
                 value={formData?.format}
@@ -511,7 +522,30 @@ const TimeSheetReport = () => {
                 </option>
                 <option value="pdf">PDF</option>
                 <option value="excel">Excel</option>
-              </select>
+              </select> */}
+              <Select
+                name="format"
+                className="timesheet-input-dropdown"
+                value={formData?.format}
+                onChange={handleChange}
+                displayEmpty
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      width: 200,
+                      textOverflow: "ellipsis",
+                      maxHeight: 200,
+                      whiteSpace: "nowrap",
+                    },
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select format
+                </MenuItem>
+                <MenuItem value="pdf">PDF</MenuItem>
+                <MenuItem value="excel">Excel</MenuItem>
+              </Select>
               {errors?.format && <p className="error-text">{errors?.format}</p>}
             </div>
             <button onClick={downloadTimesheetReport}>
@@ -525,7 +559,7 @@ const TimeSheetReport = () => {
         <div className="timesheet-report-filter">
           <div className="selection-wrapper">
             {/* <label>Year:</label> */}
-            <select
+            {/* <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
             >
@@ -537,12 +571,37 @@ const TimeSheetReport = () => {
                   </option>
                 );
               })}
-            </select>
+            </select> */}
+            <Select
+              className="timesheet-input-dropdown"
+              value={selectedYear}
+              displayEmpty
+              onChange={(e) => setSelectedYear(e.target.value)}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 200,
+                    textOverflow: "ellipsis",
+                    maxHeight: 200,
+                    whiteSpace: "nowrap",
+                  },
+                },
+              }}
+            >
+              {[...Array(currentYear - startYear + 1)].map((_, index) => {
+                const year = startYear + index;
+                return (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                );
+              })}
+            </Select>
           </div>
 
           <div className="selection-wrapper">
             {/* <label>Month:</label> */}
-            <select
+            {/* <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
             >
@@ -552,7 +611,19 @@ const TimeSheetReport = () => {
                   {month.name}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              className="timesheet-input-dropdown"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            >
+              <MenuItem value="All">All</MenuItem>
+              {months?.map((month) => (
+                <MenuItem key={month.value} value={month.value}>
+                  {month.name}
+                </MenuItem>
+              ))}
+            </Select>
           </div>
 
           {/* <div className="selection-wrapper">

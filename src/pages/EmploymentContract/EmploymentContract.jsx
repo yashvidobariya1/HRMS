@@ -25,11 +25,11 @@ const EmploymentContract = () => {
   const [error, setError] = useState({});
   // const [CompanyIddata, setCompanyIddata] = useState([]);
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const [selectedCompany, setSelectedCompany] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [contractName, setContractName] = useState("");
   const [contractId, setcontractId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalContracts, settotalContracts] = useState([]);
   const allowedFileTypes = [
     // "application/pdf",
@@ -140,7 +140,7 @@ const EmploymentContract = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllContract?page=${currentPage}&limit=${contractsPerPage}&search=${searchQuery}&companyId=${companyId}`
+        `/getAllContract?page=${currentPage}&limit=${contractsPerPage}&search=${debouncedSearch}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
@@ -318,10 +318,20 @@ const EmploymentContract = () => {
   useEffect(() => {
     getContracts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, contractsPerPage, searchQuery, companyId]);
+  }, [currentPage, contractsPerPage, debouncedSearch, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   return (
@@ -415,7 +425,8 @@ const EmploymentContract = () => {
         </div>
 
         <h5>
-          Use following place holder in Employee contract : {process.env.REACT_APP_EMPLOYEE_CONTRACT_PLACEHOLDERS}
+          Use following place holder in Employee contract :{" "}
+          {process.env.REACT_APP_EMPLOYEE_CONTRACT_PLACEHOLDERS}
         </h5>
       </div>
       <TextField

@@ -14,6 +14,7 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 import Loader from "../Helper/Loader";
+import { MenuItem, Select } from "@mui/material";
 
 const ViewTasks = () => {
   // const Navigate = useNavigate();
@@ -328,7 +329,7 @@ const ViewTasks = () => {
         </div> */}
         <div className="view-task-filter-container">
           <div className="selection-wrapper">
-            <select
+            {/* <select
               value={selectedYear}
               onChange={(e) => {
                 // console.log("year", e.target.value);
@@ -343,11 +344,36 @@ const ViewTasks = () => {
                   </option>
                 );
               })}
-            </select>
+            </select> */}
+            <Select
+              className="viewtask-dropdown"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 120,
+                    textOverflow: "ellipsis",
+                    maxHeight: 200,
+                    whiteSpace: "nowrap",
+                  },
+                },
+              }}
+            >
+              {[...Array(currentYear - startYear + 1)].map((_, index) => {
+                const year = startYear + index;
+                return (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                );
+              })}
+            </Select>
           </div>
 
           <div className="selection-wrapper">
-            <select
+            {/* <select
               value={selectedMonth}
               onChange={(e) => {
                 // console.log("month", e.target.value);
@@ -359,7 +385,32 @@ const ViewTasks = () => {
                   {month.name}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              value={selectedMonth}
+              className="viewtask-dropdown"
+              onChange={(e) => {
+                // console.log("month", e.target.value);
+                setSelectedMonth(e.target.value);
+              }}
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 120,
+                    textOverflow: "ellipsis",
+                    maxHeight: 200,
+                    whiteSpace: "nowrap",
+                  },
+                },
+              }}
+            >
+              {months?.map((month) => (
+                <MenuItem key={month.value} value={month.value}>
+                  {month.name}
+                </MenuItem>
+              ))}
+            </Select>
           </div>
 
           <CommonAddButton
