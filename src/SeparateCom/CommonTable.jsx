@@ -434,6 +434,7 @@ const CommonTable = ({
     "ClockIn Time": "clockin",
     "ClockOut Time": "clockout",
     "Working Time": "workingTime",
+    "job Titles Name": "Name",
   };
 
   const handleSort = (key) => {

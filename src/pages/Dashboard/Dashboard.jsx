@@ -46,8 +46,8 @@ const Dashboard = () => {
   const [calenderloading, setcalenderloading] = useState(false);
   const [selectedLocationName, setSelectedLocationName] = useState("");
   const [selectedLocationId, setSelectedLocationId] = useState("");
-  const [selectedYear, setSelectedYear] = useState(moment().toDate());
-  const currentYear = moment().year();
+  const [selectedYear, setSelectedYear] = useState("");
+  const [currentYear, setCurrentYear] = useState(moment().year());
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   const [events, setEvents] = useState([]);
   const [locationList, setLocationList] = useState([]);
@@ -481,8 +481,8 @@ const Dashboard = () => {
   };
 
   const handleTodayClick = () => {
-    const newCurrentYear = moment().toDate();
-    // setCurrentYear(newCurrentYear);
+    const newCurrentYear = moment().year();
+    setSelectedYear(newCurrentYear.toString());
     setSelectedYear(newCurrentYear);
     // setSelectedMonth(new Date().getMonth());
   };
@@ -1129,7 +1129,6 @@ const Dashboard = () => {
                       //   ))}
                       // </select>
                       <Select
-                        id="location-select"
                         className="dashboard-dropdown"
                         value={selectedLocationName}
                         onChange={handleLocation}
@@ -1145,9 +1144,9 @@ const Dashboard = () => {
                           },
                         }}
                       >
-                        <MenuItem value="" disabled>Select Location</MenuItem>
+                        <MenuItem value="">Select Location</MenuItem>
                         {locationList.map((location, index) => (
-                          <MenuItem key={index} value={location?.id}>
+                          <MenuItem key={index} value={location?.locationName}>
                             {location?.locationName}
                           </MenuItem>
                         ))}
@@ -1168,14 +1167,14 @@ const Dashboard = () => {
                     </select> */}
                     <Select
                       id="dashboard-year-select"
-                      className="dashboard-dropdown"
                       value={selectedYear}
+                      className="dashboard-dropdown"
                       onChange={handleYearChange}
                       displayEmpty
                       MenuProps={{
                         PaperProps: {
                           style: {
-                            width: "max-content",
+                            width: 100,
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
                             maxHeight: 200,
@@ -1183,9 +1182,11 @@ const Dashboard = () => {
                         },
                       }}
                     >
-                      {/* <MenuItem value="" disable>Select Year</MenuItem> */}
-                      {allowedYears?.map((year, index) => (
-                        <MenuItem key={index} value={year}>
+                      <MenuItem value="" disabled>
+                        Select year
+                      </MenuItem>
+                      {allowedYears.map((year, i) => (
+                        <MenuItem key={i} value={year}>
                           {year}
                         </MenuItem>
                       ))}
@@ -1201,7 +1202,7 @@ const Dashboard = () => {
                       left: "prev",
                     }}
                     validRange={{
-                      start: "2022-01-01",
+                      start: "2025-01-01",
                       end: currentYearEnd,
                     }}
                     customButtons={{

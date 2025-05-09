@@ -45,6 +45,8 @@ import ViewReport from "./pages/Client/ViewReport";
 import ViewTasks from "./pages/ViewTasks/ViewTasks";
 import AddJob from "./pages/Job/AddJob";
 import ApplyJob from "./pages/Applypost/ApplyJob";
+import JobTitles from "./pages/JobTitles/JobTitles";
+import AddJobTitles from "./pages/JobTitles/AddJobTitles";
 
 // Layout wrapper
 function MainLayout({ children, path }) {
@@ -340,6 +342,21 @@ const protectedRoutes = [
     path: "viewtasks",
     component: <ViewTasks />,
     roles: ["Employee"],
+  },
+  {
+    path: "/jobtitles",
+    component: <JobTitles />,
+    roles: ["Superadmin"],
+  },
+  {
+    path: "/jobtitles/addjobtitles",
+    component: <AddJobTitles />,
+    roles: ["Superadmin"],
+  },
+  {
+    path: "/jobtitles/editjobtitles/:id",
+    component: <AddJobTitles />,
+    roles: ["Superadmin"],
   },
 ];
 

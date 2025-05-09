@@ -26,6 +26,7 @@ const ViewTasks = () => {
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
+  // const currentMonthEnd = moment().endOf("month").format("YYYY-MM-DD");
   const [showConfirm, setShowConfirm] = useState(false);
   const [taskId, setTaskId] = useState("");
   const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
@@ -450,7 +451,7 @@ const ViewTasks = () => {
               today: "Today",
             }}
             validRange={{
-              start: "2022-01-01",
+              start: "2025-01-01",
               end: currentYearEnd,
             }}
             events={events}
@@ -466,9 +467,9 @@ const ViewTasks = () => {
             }}
             datesSet={(info) => {
               const currentYear = info.view.currentStart.getFullYear();
-              // const currentMonth = info.view.currentStart.getMonth() + 1;
+              const currentMonth = info.view.currentStart.getMonth() + 1;
               setSelectedYear(currentYear);
-              // setSelectedMonth(currentMonth);
+              setSelectedMonth(currentMonth);
             }}
           />
         </div>

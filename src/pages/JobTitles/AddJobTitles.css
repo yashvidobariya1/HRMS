@@ -1,0 +1,45 @@
+.Addjobtitle-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: var(--primary-text-white);
+}
+
+.Addjobtitle-input {
+  width: 100%;
+  box-sizing: border-box;
+  /* border: 1px solid var(--neutral-light-gray); */
+  padding-right: 40px;
+  border-radius: 4px;
+}
+
+.Addjobtitle-section {
+  display: flex;
+  width: 100%;
+  margin-bottom: 25px;
+  gap: 15px;
+}
+
+.Addjobtitle-input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+}
+
+.Addjobtitle-flex h1 {
+  color: var(--primary-button);
+}
+
+@media (max-width: 575px) {
+  .Addjobtitle-section {
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .Addjobtitle-input-container {
+    margin-top: 10px;
+    gap: 0;
+  }
+}

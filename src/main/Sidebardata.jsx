@@ -9,7 +9,7 @@ import { TiLocationOutline } from "react-icons/ti";
 import { RiBookletLine } from "react-icons/ri";
 import { FaUserGroup } from "react-icons/fa6";
 import { HiMiniArrowLeftStartOnRectangle } from "react-icons/hi2";
-import { FaTasks, FaUmbrellaBeach } from "react-icons/fa";
+import { FaBriefcase, FaTasks, FaUmbrellaBeach } from "react-icons/fa";
 import { TbReportSearch } from "react-icons/tb";
 import { TbClockHour7 } from "react-icons/tb";
 import { LiaHourglassStartSolid } from "react-icons/lia";
@@ -151,15 +151,15 @@ export const SidebarData = [
       },
     ],
   },
-  // {
-  //   section: "Job Titles",
-  //   items: [
-  //     {
-  //       title: "Jobs",
-  //       icon: <FaBriefcase />,
-  //       link: "/jobtitles",
-  //       allowedRoles: ["Superadmin"],
-  //     },
-  //   ],
-  // },
+  {
+    section: "Job Titles",
+    items: [
+      {
+        title: "Jobs",
+        icon: <FaBriefcase />,
+        link: "/jobtitles",
+        allowedRoles: ["Superadmin"],
+      },
+    ],
+  },
 ];

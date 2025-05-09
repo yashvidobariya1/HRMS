@@ -592,16 +592,32 @@ const Profile = () => {
                 </div>
                 <div className="profile-input-container">
                   <label className="label">Document</label>
-                  <input
-                    type="file"
-                    name="document"
-                    data-testid="Document-select"
-                    className="profile-input-upload"
-                    onChange={handleFileChange}
-                    disabled={!update}
-                    ref={fileInputRef}
-                    multiple
-                  />
+                  <div className="profile-file-contract">
+                    <label
+                      htmlFor="file-upload"
+                      className="profile-custom-file-upload"
+                    >
+                      Choose File
+                    </label>
+                    <input
+                      type="file"
+                      id="file-upload"
+                      name="document"
+                      data-testid="Document-select"
+                      onChange={handleFileChange}
+                      disabled={!update}
+                      style={{ display: "none" }}
+                      ref={fileInputRef}
+                      multiple
+                    />
+                    {file?.document?.length > 0 && (
+                      <div className="profile-fileupload-name">
+                        {file?.document?.map((file, index) => (
+                          <p key={index}>{file.name}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {errors?.document && (
                     <p className="error-text">{errors?.document}</p>
                   )}

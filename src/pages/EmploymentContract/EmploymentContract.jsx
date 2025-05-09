@@ -376,7 +376,7 @@ const EmploymentContract = () => {
                   <p className="error-text">{error.contractName}</p>
                 )}
               </div>
-              <div className="Employeecontract-input ">
+              <div className="Employeecontract-input">
                 <div className="file-contract">
                   <label
                     htmlFor="file-upload"
@@ -390,6 +390,7 @@ const EmploymentContract = () => {
                     accept={allowedFileTypes}
                     onChange={handleFileChange}
                     ref={fileInputRef}
+                    data-max-files="10"
                     style={{ display: "none" }}
                     multiple
                   />

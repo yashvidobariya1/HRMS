@@ -6,6 +6,7 @@ import { GetCall } from "../ApiServices";
 import { setJobRoleSelect } from "../store/selectJobeRoleSlice";
 import "./Subheader.css";
 import { MenuItem, Select } from "@mui/material";
+import JobTitles from "../pages/JobTitles/JobTitles";
 
 const pageNames = {
   dashboard: "Dashboard",
@@ -51,6 +52,8 @@ const pageNames = {
   editjob: "Update Job",
   applyjob: "Apply Job",
   clients: "Clients",
+  jobtitles: "Job Titles",
+  addjobtitles: "Add Job Title",
 };
 
 const Subheader = () => {

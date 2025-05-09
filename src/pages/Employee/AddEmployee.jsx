@@ -12,7 +12,7 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import countryNames from "../../Data/AllCountryList.json";
 import VisaCategory from "../../Data/VisaCategory.json";
 import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
-import { MenuItem, Select } from "@mui/material";
+import { Checkbox, MenuItem, Select } from "@mui/material";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
@@ -42,14 +42,16 @@ const AddEmployee = () => {
   // const [companyId, setCompanyId] = useState(useSelector((state) => state.companySelect.companySelect));
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const [isSaveForm, setIsSaveForm] = useState(false);
+  const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
   const [file, setFile] = useState({
     documentType: "",
     files: [],
   });
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
-  const [sickLeaveType, setSickLeaveType] = useState("Day");
-  const [allowLeaveType, setallowLeaveType] = useState("Day");
+  // const [sickLeaveType, setSickLeaveType] = useState("Day");
+  // const [allowLeaveType, setallowLeaveType] = useState("Day");
+  const [jobTitlesList, setjobTitlesList] = useState([]);
   const employeeFormFilled = useSelector(
     (state) => state.employeeformFilled.employeeformFilled
   );
@@ -130,6 +132,7 @@ const AddEmployee = () => {
     assignClient: "",
     // templateId: "",
     role: "",
+    jobDetails: isWorkFromOffice,
   });
 
   const steps = [
@@ -645,16 +648,15 @@ const AddEmployee = () => {
     if (jobForm?.role === "") {
       newErrors.role = "Role is required";
     }
-    // if (jobForm?.location === "") {
-    //   newErrors.location = "Location is required";
-    // }
+    if (isWorkFromOffice && !jobForm?.location) {
+      newErrors.location = "Location is required when working from office";
+    }
     // if (jobForm?.assignManager === "") {
     //   newErrors.assignManager = "Assign Manager is required";
     // }
-    if (jobForm?.assignClient === "") {
+    if (!isWorkFromOffice && !jobForm?.assignClient) {
       newErrors.assignClient = "Assign Client is required";
     }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -695,7 +697,7 @@ const AddEmployee = () => {
       leavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
       location: "",
       assignManager: "",
-      assignClient: "",
+      assignClient: [],
       // templateId: "",
       role: "",
     });
@@ -914,6 +916,22 @@ const AddEmployee = () => {
     },
   ];
 
+  const GetjobTitles = async () => {
+    try {
+      setLoading(true);
+      const response = await GetCall(`/getAllJobTitles`);
+
+      if (response?.data?.status === 200) {
+        setjobTitlesList(response?.data?.jobTitles);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const GetEmployeeDetails = async (id) => {
     try {
       setLoading(true);
@@ -1084,6 +1102,10 @@ const AddEmployee = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobForm.location, jobForm.role, locations]);
+
+  useEffect(() => {
+    GetjobTitles();
+  }, []);
 
   if (loading) {
     return <Loader />;
@@ -1363,14 +1385,40 @@ const AddEmployee = () => {
               <div className="addemployee-section">
                 <div className="addemployee-input-container">
                   <label className="label">Job Title*</label>
-                  <input
+                  {/* <input
                     type="text"
                     name="jobTitle"
                     value={jobForm?.jobTitle}
                     onChange={handleJobChange}
                     className="addemployee-input"
                     placeholder="Enter Job Title"
-                  />
+                  /> */}
+                  <Select
+                    name="jobTitle"
+                    value={jobForm?.jobTitle}
+                    onChange={handleJobChange}
+                    className="addemployee-input-dropdown"
+                    displayEmpty
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 200,
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxHeight: 200,
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select job Title
+                    </MenuItem>
+                    {jobTitlesList.map((jobtitle, index) => (
+                      <MenuItem key={index} value={jobtitle.name}>
+                        {jobtitle.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
                   {errors?.jobTitle && (
                     <p className="error-text">{errors?.jobTitle}</p>
                   )}
@@ -1705,7 +1753,9 @@ const AddEmployee = () => {
                   {errors?.role && <p className="error-text">{errors?.role}</p>}
                 </div>
                 <div className="addemployee-input-container">
-                  <label className="label">Location</label>
+                  <label className="label">
+                    Location{isWorkFromOffice ? "*" : ""}
+                  </label>
                   {/* <select
                     name="location"
                     value={jobForm?.location}
@@ -1832,7 +1882,9 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-section">
                 <div className="addemployee-input-container">
-                  <label className="label">Assign Client*</label>
+                  <label className="label">
+                    Assign Client {!isWorkFromOffice ? "*" : ""}
+                  </label>
                   {/* <select
                     name="assignClient"
                     value={jobForm?.assignClient}
@@ -1853,19 +1905,49 @@ const AddEmployee = () => {
                   </select> */}
                   <Select
                     name="assignClient"
-                    value={jobForm?.assignClient}
-                    onChange={handleJobChange}
+                    multiple
+                    value={jobForm?.assignClient || []}
+                    onChange={(event) =>
+                      handleJobChange({
+                        target: {
+                          name: "assignClient",
+                          value: event.target.value,
+                        },
+                      })
+                    }
                     data-testid="assignClient-select"
                     className="addemployee-input-dropdown"
                     displayEmpty
+                    renderValue={(selected) => {
+                      if (selected.length === 0) {
+                        return <>Select Client</>;
+                      }
+                      const selectedNames = clients
+                        ?.filter((client) => selected.includes(client._id))
+                        .map((client) => client.name)
+                        .join(", ");
+                      return selectedNames;
+                    }}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 200,
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxHeight: 200,
+                        },
+                      },
+                    }}
                   >
-                    <MenuItem value="" disabled>
-                      Select Client
-                    </MenuItem>
                     {clients?.length > 0 ? (
                       clients.map((client) => (
                         <MenuItem value={client._id} key={client._id}>
-                          {client?.name}
+                          <Checkbox
+                            checked={jobForm?.assignClient?.includes(
+                              client._id
+                            )}
+                          />
+                          {client.name}
                         </MenuItem>
                       ))
                     ) : (
@@ -1874,9 +1956,18 @@ const AddEmployee = () => {
                       </MenuItem>
                     )}
                   </Select>
+
                   {errors?.assignClient && (
                     <p className="error-text">{errors?.assignClient}</p>
                   )}
+                  <div className="addemployee-check-save">
+                    <input
+                      type="checkbox"
+                      checked={isWorkFromOffice}
+                      onChange={(e) => setisWorkFromOffice(e.target.checked)}
+                    />
+                    <p>Office Work?</p>
+                  </div>
                 </div>
                 {/* <div className="addemployee-input-container">
                   <label className="label">Assign Template</label>
@@ -2200,7 +2291,9 @@ const AddEmployee = () => {
                   <MenuItem value="" disabled>
                     Select Payroll Frequency
                   </MenuItem>
-                  <MenuItem value="" disabled>Select Payroll Frequency</MenuItem>
+                  <MenuItem value="" disabled>
+                    Select Payroll Frequency
+                  </MenuItem>
                   <MenuItem value="weekly">WEEKLY</MenuItem>
                   <MenuItem value="monthly">MONTHLY</MenuItem>
                   <MenuItem value="yearly">YEARLY</MenuItem>
@@ -2741,7 +2834,9 @@ const AddEmployee = () => {
                     }));
                   }}
                 >
-                  <MenuItem value="" disabled>Select Contract Type</MenuItem>
+                  <MenuItem value="" disabled>
+                    Select Contract Type
+                  </MenuItem>
                   {contracts?.map((contract) => (
                     <MenuItem value={contract?._id} key={contract?._id}>
                       {contract.contractType}
