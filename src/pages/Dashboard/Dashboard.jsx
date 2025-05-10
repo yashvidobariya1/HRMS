@@ -47,7 +47,7 @@ const Dashboard = () => {
   const [selectedLocationName, setSelectedLocationName] = useState("");
   const [selectedLocationId, setSelectedLocationId] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
-  const [currentYear, setCurrentYear] = useState(moment().year());
+  const currentYear = moment().year();
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   const [events, setEvents] = useState([]);
   const [locationList, setLocationList] = useState([]);
@@ -482,7 +482,7 @@ const Dashboard = () => {
 
   const handleTodayClick = () => {
     const newCurrentYear = moment().year();
-    setSelectedYear(newCurrentYear.toString());
+    // setCurrentYear(newCurrentYear);
     setSelectedYear(newCurrentYear);
     // setSelectedMonth(new Date().getMonth());
   };
@@ -1195,7 +1195,7 @@ const Dashboard = () => {
                   <FullCalendar
                     key={selectedYear}
                     plugins={[dayGridPlugin, interactionPlugin]}
-                    initialDate={moment(`${selectedYear}`).toDate()}
+                    // initialDate={moment(`${selectedYear}`).toDate()}
                     headerToolbar={{
                       right: "next today",
                       center: "title",

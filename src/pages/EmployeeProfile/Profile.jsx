@@ -520,7 +520,7 @@ const Profile = () => {
                   data={oldDocument?.map((doc, id) => ({
                     _id: id,
                     name: doc.documentType,
-                    document: doc.documentName,
+                    document: doc.documents?.map((d) => d.documentName),
                   }))}
                   actions={{
                     actionsList: actions,

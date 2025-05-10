@@ -129,10 +129,10 @@ const AddEmployee = () => {
     leavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
     location: "",
     assignManager: "",
-    assignClient: "",
+    assignClient: [],
     // templateId: "",
     role: "",
-    jobDetails: isWorkFromOffice,
+    isWorkFromOffice: isWorkFromOffice,
   });
 
   const steps = [
@@ -224,6 +224,8 @@ const AddEmployee = () => {
         return doc;
       })
     );
+    console.log("Original documentDetails", documentDetails);
+    console.log("Updated documentDetails", updatedDocumentDetails);
 
     const isValid = validate();
     if (isValid) {
@@ -231,6 +233,7 @@ const AddEmployee = () => {
         ...formData,
         documentDetails: updatedDocumentDetails,
       };
+      console.log("data", data);
 
       if (currentStep === steps.length - 1) {
         try {
@@ -596,7 +599,7 @@ const AddEmployee = () => {
         })),
       };
 
-      // console.log("newDocument", newDocument);
+      console.log("newDocument", newDocument);
       setDocumentDetails((prevDocuments) => [...prevDocuments, newDocument]);
 
       setFile({
@@ -700,11 +703,15 @@ const AddEmployee = () => {
       assignClient: [],
       // templateId: "",
       role: "",
+      isWorkFromOffice: false,
     });
+    setisWorkFromOffice(false);
     setErrors({});
   };
 
   const handleEditJob = (index) => {
+    const selectedJob = jobList[index];
+    setisWorkFromOffice(selectedJob.isWorkFromOffice);
     // console.log("manager", assignee, jobForm);
     // setFormData({ jobDetails: { ...jobList[index] } });
     setJobForm(jobList[index]);
@@ -1911,7 +1918,7 @@ const AddEmployee = () => {
                       handleJobChange({
                         target: {
                           name: "assignClient",
-                          value: event.target.value,
+                          value: isWorkFromOffice ? [] : event.target.value,
                         },
                       })
                     }
@@ -1960,11 +1967,21 @@ const AddEmployee = () => {
                   {errors?.assignClient && (
                     <p className="error-text">{errors?.assignClient}</p>
                   )}
-                  <div className="addemployee-check-save">
+                  <div className="addemployee-assign-check">
                     <input
                       type="checkbox"
                       checked={isWorkFromOffice}
-                      onChange={(e) => setisWorkFromOffice(e.target.checked)}
+                      name="isWorkFromOffice"
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setisWorkFromOffice(isChecked);
+
+                        setJobForm((prevForm) => ({
+                          ...prevForm,
+                          isWorkFromOffice: isChecked,
+                          assignClient: isChecked ? [] : prevForm.assignClient,
+                        }));
+                      }}
                     />
                     <p>Office Work?</p>
                   </div>
@@ -2288,9 +2305,6 @@ const AddEmployee = () => {
                     },
                   }}
                 >
-                  <MenuItem value="" disabled>
-                    Select Payroll Frequency
-                  </MenuItem>
                   <MenuItem value="" disabled>
                     Select Payroll Frequency
                   </MenuItem>
@@ -2679,7 +2693,7 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Document</label>
-                <input
+                {/* <input
                   type="file"
                   name="document"
                   data-testid="Document-select"
@@ -2687,7 +2701,34 @@ const AddEmployee = () => {
                   onChange={handleFileChange}
                   ref={fileInputRef}
                   multiple
-                />
+                /> */}
+                <div className="addemployee-file-contract">
+                  <label
+                    htmlFor="file-upload"
+                    className="addemployee-custom-file-upload"
+                  >
+                    Choose File
+                  </label>
+                  <input
+                    type="file"
+                    id="file-upload"
+                    name="document"
+                    data-testid="Document-select"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                    multiple
+                    className="addemployee-input"
+                    style={{ display: "none" }}
+                  />
+                  {file?.files?.length > 0 && (
+                    <div className="addemployee-fileupload-name">
+                      {file.files.map((file, index) => (
+                        <p key={index}>{file.name}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {errors?.document && (
                   <p className="error-text">{errors?.document}</p>
                 )}

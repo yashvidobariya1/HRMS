@@ -149,7 +149,10 @@
 
 .profile-fileupload-name p {
   margin: 0;
+  font-weight: 300;
+  font-size: 12px;
 }
+
 .profile-custom-file-upload:hover {
   background-color: var(--button-hover);
 }

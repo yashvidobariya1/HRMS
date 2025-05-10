@@ -273,7 +273,14 @@ textarea::placeholder {
   margin-bottom: 20px;
 }
 
-.addemployee-check-save p {
+.addemployee-assign-check {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.addemployee-check-save p,
+.addemployee-assign-check p {
   font-weight: 600;
   margin: 0 0 0 10px;
 }
@@ -321,6 +328,12 @@ textarea::placeholder {
 
 .addemployee-custom-file-upload:hover {
   background-color: var(--button-hover);
+}
+
+.addemployee-fileupload-name p {
+  margin: 0;
+  font-weight: 300;
+  font-size: 12px;
 }
 
 @media (max-width: 992px) {
