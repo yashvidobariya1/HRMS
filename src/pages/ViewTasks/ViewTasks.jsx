@@ -451,7 +451,7 @@ const ViewTasks = () => {
               today: "Today",
             }}
             validRange={{
-              start: "2025-01-01",
+              start: startDate,
               end: currentYearEnd,
             }}
             events={events}

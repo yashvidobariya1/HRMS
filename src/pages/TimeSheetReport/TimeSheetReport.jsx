@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
 // import { CropLandscapeOutlined } from "@mui/icons-material";
 import { MenuItem, Select, TextField } from "@mui/material";
+import AssignClient from "../../SeparateCom/AssignClient";
 const TimeSheetReport = () => {
   // const location = useLocation();
   // const queryParams = new URLSearchParams(location.search);
@@ -33,6 +34,9 @@ const TimeSheetReport = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [selectedJobId, setSelectedJobId] = useState("");
+  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [Clientdata, setClientdata] = useState([]);
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(startDate).year();
   const currentYear = moment().year();
@@ -352,8 +356,9 @@ const TimeSheetReport = () => {
       ...clockInData,
       userId: selectedEmployee,
       jobId: selectedJobId || jobRoleId,
+      clientId: selectedClientId,
     };
-    // console.log("clockindata", clockindata);
+    console.log("clockindata", clockindata);
     try {
       const response = await PostCall(`/clockInForEmployee`, clockindata);
       if (response?.data?.status === 200) {
@@ -374,6 +379,7 @@ const TimeSheetReport = () => {
       ...clockOutData,
       userId: selectedEmployee,
       jobId: selectedJobId || jobRoleId,
+      clientId: selectedClientId,
     };
     // console.log("clockoutdata", clockoutdata);
     try {
@@ -461,10 +467,48 @@ const TimeSheetReport = () => {
     }
   };
 
+  const GetClientdata = async () => {
+    try {
+      const response = await PostCall(`/getUsersAssignClients`, {
+        jobId: selectedJobId,
+      });
+
+      if (response?.data?.status === 200) {
+        const clientId = response.data.assignClients;
+        console.log("job title", clientId);
+        setClientdata(clientId);
+
+        if (clientId.length > 1) {
+          setopenClietnSelectModal(false);
+        } else {
+          setSelectedClientId(clientId[0]?.clientId);
+          setopenClietnSelectModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handlePopupCloseForclient = () => {
+    setopenClietnSelectModal(true);
+  };
+
+  const handleClientSelect = (selectedTitle) => {
+    setSelectedClientId(selectedTitle);
+    setopenClietnSelectModal(true);
+  };
+
   useEffect(() => {
     userRole !== "Employee" && fetchEmployeeList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId]);
+
+  useEffect(() => {
+    if (selectedJobId) {
+      GetClientdata();
+    }
+  }, [selectedJobId, jobRoleId]);
 
   return (
     <div className="timesheet-list-container">
@@ -473,6 +517,13 @@ const TimeSheetReport = () => {
           onClose={handlePopupClose}
           jobTitledata={JobTitledata}
           onJobTitleSelect={handleJobTitleSelect}
+        />
+      )}
+      {!openClietnSelectModal && Clientdata.length > 1 && (
+        <AssignClient
+          onClose={handlePopupCloseForclient}
+          Clientdata={Clientdata}
+          onClientSelect={handleClientSelect}
         />
       )}
       <div className="timesheet-flex">

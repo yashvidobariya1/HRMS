@@ -40,7 +40,7 @@ const Client = () => {
   };
 
   const HandleEditClient = async (id) => {
-    navigate(`/settings/client/editclient/${id}`);
+    navigate(`/clients/editclient/${id}`);
     setShowDropdownAction(null);
   };
 
@@ -54,7 +54,7 @@ const Client = () => {
       showToast("Please select a specific company", "error");
       return;
     }
-    navigate(`/settings/client/addclient?companyId=${companyId}`);
+    navigate(`/clients/addclient?companyId=${companyId}`);
     setShowDropdownAction(null);
   };
 
@@ -121,7 +121,7 @@ const Client = () => {
   };
 
   const HandleReportList = async (id) => {
-    navigate(`/settings/client/reportlist?clientId=${id}`);
+    navigate(`/clients/reportlist?clientId=${id}`);
   };
 
   const actions = [

@@ -174,7 +174,7 @@ const AddClient = () => {
           const redirectCompanyid = id
             ? formData.companyId || companyId
             : companyId;
-          navigate(`/settings/client/?companyId=${redirectCompanyid}`);
+          navigate(`/clients/?companyId=${redirectCompanyid}`);
         } else {
           showToast(response?.data?.message, "error");
         }
@@ -423,10 +423,11 @@ const AddClient = () => {
                   name="country"
                   value={formData?.country}
                   onChange={handleChange}
+                  displayEmpty
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        width: 200, // same as Select
+                        width: 200,
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         maxHeight: 192,
@@ -437,23 +438,10 @@ const AddClient = () => {
                   <MenuItem value="" disabled>
                     Select Country Of Issue
                   </MenuItem>
-                  {countryNames.map((country, id) => (
-                    // <Tooltip
-                    //   title={company.companyDetails.businessName}
-                    //   key={company._id}
-                    // >
-                    <MenuItem
-                      key={id}
-                      value={country}
-                      style={{
-                        // overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
+                  {countryNames.map((country, index) => (
+                    <MenuItem key={index} value={country}>
                       {country}
                     </MenuItem>
-                    // {/* </Tooltip> */}
                   ))}
                 </Select>
                 {errors?.country && (

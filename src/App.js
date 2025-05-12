@@ -106,28 +106,28 @@ const protectedRoutes = [
     component: <AddCompany />,
     roles: ["Superadmin"],
   },
+  // {
+  //   path: "/settings/client",
+  //   component: <Client />,
+  //   roles: ["Superadmin", "Administrator"],
+  // },
   {
-    path: "/settings/client",
-    component: <Client />,
-    roles: ["Superadmin", "Administrator"],
-  },
-  {
-    path: "/settings/client/addclient",
+    path: "/clients/addclient",
     component: <AddClient />,
     roles: ["Superadmin"],
   },
   {
-    path: "/settings/client/editclient/:id",
+    path: "/clients/editclient/:id",
     component: <AddClient />,
     roles: ["Superadmin"],
   },
   {
-    path: "/settings/client/reportlist",
+    path: "/clients/reportlist",
     component: <ReportList />,
     roles: ["Superadmin", "Administrator"],
   },
   {
-    path: "/settings/client/reportlist/viewstatus",
+    path: "/clients/reportlist/viewstatus",
     component: <ViewStatus />,
     roles: ["Superadmin", "Administrator"],
   },

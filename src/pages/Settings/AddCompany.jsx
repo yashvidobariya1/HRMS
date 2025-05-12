@@ -525,7 +525,7 @@ const AddCompany = () => {
                 <Select
                   name="country"
                   className="selection-dropdown"
-                  value={formData?.companyDetails?.country}
+                  value={formData.companyDetails.country}
                   onChange={handleChange}
                   displayEmpty
                   MenuProps={{
