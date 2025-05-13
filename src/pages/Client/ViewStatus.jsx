@@ -5,6 +5,7 @@ import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ViewStatus = () => {
   const [loading, setLoading] = useState(false);
@@ -14,6 +15,7 @@ const ViewStatus = () => {
   const [totalPages, setTotalPages] = useState(0);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const reportId = searchParams.get("reportId");
   const [totalEmployees, settotalEmployees] = useState([]);
   const handlePageChange = (pageNumber) => {
@@ -37,7 +39,7 @@ const ViewStatus = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getReport/${reportId}?page=${currentPage}&limit=${reportPerPage}`
+        `/getReport/${reportId}?page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}`
       );
       if (response?.data?.status === 200) {
         setStatusList(response?.data?.report?.employees);
@@ -55,7 +57,7 @@ const ViewStatus = () => {
   useEffect(() => {
     GetEmployeesStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, reportPerPage]);
+  }, [currentPage, reportPerPage, companyId]);
 
   return (
     <div className="status-list-container">

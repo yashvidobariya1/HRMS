@@ -24,6 +24,7 @@ const Job = () => {
   const [jobPerPage, setJobPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalJobPost, settotalJobPost] = useState([]);
   const companyId = useSelector((state) => state.companySelect.companySelect);
 
@@ -64,7 +65,7 @@ const Job = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllJobPosts?page=${currentPage}&limit=${jobPerPage}&search=${searchQuery}&companyId=${companyId}`
+        `/getAllJobPosts?page=${currentPage}&limit=${jobPerPage}&search=${debouncedSearch}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
@@ -131,7 +132,17 @@ const Job = () => {
   useEffect(() => {
     GetJobs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, jobPerPage, searchQuery, companyId]);
+  }, [currentPage, jobPerPage, debouncedSearch, companyId]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   return (
     <div className="job-list-container">

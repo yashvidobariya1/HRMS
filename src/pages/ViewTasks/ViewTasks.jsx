@@ -14,6 +14,7 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 import Loader from "../Helper/Loader";
+import { MenuItem, Select } from "@mui/material";
 
 const ViewTasks = () => {
   // const Navigate = useNavigate();
@@ -25,6 +26,7 @@ const ViewTasks = () => {
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
+  // const currentMonthEnd = moment().endOf("month").format("YYYY-MM-DD");
   const [showConfirm, setShowConfirm] = useState(false);
   const [taskId, setTaskId] = useState("");
   const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
@@ -72,6 +74,7 @@ const ViewTasks = () => {
   });
 
   const handleDateClick = (info) => {
+    console.log("save click");
     setFormData({
       taskDate: "",
       taskName: "",
@@ -132,7 +135,7 @@ const ViewTasks = () => {
   };
 
   const handleAddTask = async (e) => {
-    // console.log("handle add task", e, selectedJobId);
+    console.log("handle add task", e, selectedJobId);
     e.preventDefault();
     if (!validate()) return;
 
@@ -327,7 +330,7 @@ const ViewTasks = () => {
         </div> */}
         <div className="view-task-filter-container">
           <div className="selection-wrapper">
-            <select
+            {/* <select
               value={selectedYear}
               onChange={(e) => {
                 // console.log("year", e.target.value);
@@ -342,11 +345,36 @@ const ViewTasks = () => {
                   </option>
                 );
               })}
-            </select>
+            </select> */}
+            <Select
+              className="viewtask-dropdown"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 120,
+                    textOverflow: "ellipsis",
+                    maxHeight: 200,
+                    whiteSpace: "nowrap",
+                  },
+                },
+              }}
+            >
+              {[...Array(currentYear - startYear + 1)].map((_, index) => {
+                const year = startYear + index;
+                return (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                );
+              })}
+            </Select>
           </div>
 
           <div className="selection-wrapper">
-            <select
+            {/* <select
               value={selectedMonth}
               onChange={(e) => {
                 // console.log("month", e.target.value);
@@ -358,7 +386,32 @@ const ViewTasks = () => {
                   {month.name}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              value={selectedMonth}
+              className="viewtask-dropdown"
+              onChange={(e) => {
+                // console.log("month", e.target.value);
+                setSelectedMonth(e.target.value);
+              }}
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 120,
+                    textOverflow: "ellipsis",
+                    maxHeight: 200,
+                    whiteSpace: "nowrap",
+                  },
+                },
+              }}
+            >
+              {months?.map((month) => (
+                <MenuItem key={month.value} value={month.value}>
+                  {month.name}
+                </MenuItem>
+              ))}
+            </Select>
           </div>
 
           <CommonAddButton
@@ -381,7 +434,11 @@ const ViewTasks = () => {
             initialView="dayGridMonth"
             initialDate={moment(`${selectedYear}-${selectedMonth}`).toDate()}
             dateClick={(info) => {
-              if (userRole === "Manager" || userRole === "Administrator") {
+              if (
+                userRole === "Manager" ||
+                userRole === "Administrator" ||
+                userRole === "Superadmin"
+              ) {
                 handleDateClick(info);
               }
             }}
@@ -394,7 +451,7 @@ const ViewTasks = () => {
               today: "Today",
             }}
             validRange={{
-              start: "2022-01-01",
+              start: startDate,
               end: currentYearEnd,
             }}
             events={events}
@@ -410,9 +467,9 @@ const ViewTasks = () => {
             }}
             datesSet={(info) => {
               const currentYear = info.view.currentStart.getFullYear();
-              // const currentMonth = info.view.currentStart.getMonth() + 1;
+              const currentMonth = info.view.currentStart.getMonth() + 1;
               setSelectedYear(currentYear);
-              // setSelectedMonth(currentMonth);
+              setSelectedMonth(currentMonth);
             }}
           />
         </div>

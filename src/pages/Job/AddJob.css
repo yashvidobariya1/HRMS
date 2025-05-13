@@ -68,7 +68,7 @@ button {
   font-size: var(--font-size-body);
   font-weight: 600;
   text-align: center;
-  /* border-radius: 4px; */
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   border: 1px solid var(--primary-button);
@@ -82,7 +82,7 @@ button {
   cursor: pointer;
   margin: 0;
   transition: all 0.3s ease-in-out;
-  /* border-radius: 4px; */
+  border-radius: 4px;
   border: 1px solid var(--secondary-dark-gray);
   padding: 6px 0;
   height: max-content;
@@ -90,6 +90,28 @@ button {
 
 .job-hidden-file-input {
   display: none;
+}
+
+.addjob-input-dropdown {
+  margin-top: 5px;
+  padding: 13px;
+  font-weight: 800;
+  border-radius: 4px;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.addjob-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.addjob-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
 }
 
 @media (max-width: 1400px) {
@@ -110,6 +132,10 @@ button {
     padding: 9px;
     font-size: 12px;
   }
+
+  .addjob-input-dropdown {
+    padding: 11px;
+  }
 }
 
 @media (max-width: 575px) {
@@ -122,5 +148,13 @@ button {
   .addjob-input-container {
     margin-top: 10px;
     gap: 0;
+  }
+
+  .addjob-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .addjob-input-dropdown {
+    padding: 7px;
   }
 }

@@ -33,6 +33,8 @@ import htmlDocx from "html-docx-js/dist/html-docx";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { setNotificationCount } from "../../store/notificationCountSlice";
 import { useDispatch } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
+import { BsHourglassSplit } from "react-icons/bs";
 
 const Dashboard = () => {
   const pdfRef = useRef(null);
@@ -45,7 +47,8 @@ const Dashboard = () => {
   const [calenderloading, setcalenderloading] = useState(false);
   const [selectedLocationName, setSelectedLocationName] = useState("");
   const [selectedLocationId, setSelectedLocationId] = useState("");
-  const [selectedYear, setSelectedYear] = useState(moment().toDate());
+  const [selectedYear, setSelectedYear] = useState(moment().year());
+  const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYear = moment().year();
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   const [events, setEvents] = useState([]);
@@ -80,8 +83,9 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(startDate).year();
+  const calendarRef = useRef(null);
   const allowedYears = Array.from(
-    { length: currentYear - startYear + 1 },
+    { length: currentYear - startYear + 4 },
     (_, i) => startYear + i
   );
 
@@ -456,10 +460,10 @@ const Dashboard = () => {
       // console.log("locationId", id);
       if (userRole === "Superadmin" && id) {
         response = await GetCall(
-          `/getAllHolidays?locationId=${id}&year=${currentYear}`
+          `/getAllHolidays?locationId=${id}&year=${selectedYear}`
         );
       } else {
-        response = await GetCall(`/getAllHolidays?year=${currentYear}`);
+        response = await GetCall(`/getAllHolidays?year=${selectedYear}`);
       }
 
       if (response?.data?.status === 200) {
@@ -477,13 +481,25 @@ const Dashboard = () => {
   const handleYearChange = (event) => {
     const newYear = parseInt(event.target.value, 10);
     setSelectedYear(newYear);
+
+    const calendarApi = calendarRef.current.getApi();
+    const newDate = moment(`${newYear}-${selectedMonth}`, "YYYY-MM")
+      .startOf("month")
+      .toDate();
+    calendarApi.gotoDate(newDate);
   };
 
   const handleTodayClick = () => {
-    const newCurrentYear = moment().toDate();
-    // setCurrentYear(newCurrentYear);
-    setSelectedYear(newCurrentYear);
-    // setSelectedMonth(new Date().getMonth());
+    const now = moment();
+    const currentYear = now.year();
+    const currentMonth = now.month() + 1;
+
+    setSelectedYear(currentYear);
+    setSelectedMonth(currentMonth);
+
+    // Move calendar to today
+    const calendarApi = calendarRef.current.getApi();
+    calendarApi.today(); // Navigates to today's date
   };
 
   const previewClose = () => {
@@ -575,7 +591,7 @@ const Dashboard = () => {
       getAllHoliday();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLocationId, userRole]);
+  }, [selectedLocationId, userRole, selectedYear]);
 
   useEffect(() => {
     if (userRole === "Superadmin") {
@@ -938,13 +954,21 @@ const Dashboard = () => {
                                     : "-"}
                                 </td>
                                 <td>
-                                  {clock.clockOut
-                                    ? moment(clock.clockOut).format(
-                                        "MM/DD/YYYY h:mm:ss A"
-                                      )
-                                    : "-"}
+                                  {clock.clockOut ? (
+                                    moment(clock.clockOut).format(
+                                      "MM/DD/YYYY h:mm:ss A"
+                                    )
+                                  ) : (
+                                    <b className="active">Active</b>
+                                  )}
                                 </td>
-                                <td>{clock.totalTiming}</td>
+                                <td>
+                                  {clock.totalTiming !== "0" ? (
+                                    clock.totalTiming
+                                  ) : (
+                                    <BsHourglassSplit />
+                                  )}
+                                </td>
                               </tr>
                             ))
                           )
@@ -1116,20 +1140,43 @@ const Dashboard = () => {
                 <div className="dashboard-calender">
                   <div className="dashboard-calender-selectoption">
                     {userRole === "Superadmin" && (
-                      <select
+                      // <select
+                      //   value={selectedLocationName}
+                      //   onChange={handleLocation}
+                      // >
+                      //   <option value="">Select Location</option>
+                      //   {locationList.map((location, index) => (
+                      //     <option key={index} value={location?.id}>
+                      //       {location?.locationName}
+                      //     </option>
+                      //   ))}
+                      // </select>
+                      <Select
+                        className="dashboard-dropdown"
                         value={selectedLocationName}
                         onChange={handleLocation}
+                        displayEmpty
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              width: 200,
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              maxHeight: 200,
+                            },
+                          },
+                        }}
                       >
-                        <option value="">Select Location</option>
+                        <MenuItem value="">Select Location</MenuItem>
                         {locationList.map((location, index) => (
-                          <option key={index} value={location?.id}>
+                          <MenuItem key={index} value={location?.locationName}>
                             {location?.locationName}
-                          </option>
+                          </MenuItem>
                         ))}
-                      </select>
+                      </Select>
                     )}
 
-                    <select
+                    {/* <select
                       id="dashboard-year-select"
                       value={selectedYear}
                       onChange={handleYearChange}
@@ -1140,19 +1187,48 @@ const Dashboard = () => {
                           {year}
                         </option>
                       ))}
-                    </select>
+                    </select> */}
+                    <Select
+                      id="dashboard-year-select"
+                      value={selectedYear}
+                      className="dashboard-dropdown"
+                      onChange={handleYearChange}
+                      displayEmpty
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            width: 100,
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            maxHeight: 200,
+                          },
+                        },
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        Select year
+                      </MenuItem>
+                      {allowedYears.map((year, i) => (
+                        <MenuItem key={i} value={year}>
+                          {year}
+                        </MenuItem>
+                      ))}
+                    </Select>
                   </div>
                   <FullCalendar
                     key={selectedYear}
+                    ref={calendarRef}
                     plugins={[dayGridPlugin, interactionPlugin]}
-                    initialDate={moment(`${selectedYear}`).toDate()}
+                    initialDate={moment(
+                      `${selectedYear}-${selectedMonth}`
+                    ).toDate()}
                     headerToolbar={{
                       right: "next today",
                       center: "title",
                       left: "prev",
                     }}
                     validRange={{
-                      start: "2022-01-01",
+                      start: startDate,
                       end: currentYearEnd,
                     }}
                     customButtons={{
@@ -1163,6 +1239,13 @@ const Dashboard = () => {
                     }}
                     initialView="dayGridMonth"
                     events={events}
+                    datesSet={(info) => {
+                      const currentYear = info.view.currentStart.getFullYear();
+                      const currentMonth =
+                        info.view.currentStart.getMonth() + 1;
+                      setSelectedMonth(currentMonth);
+                      setSelectedYear(currentYear);
+                    }}
                   />
                 </div>
               )}

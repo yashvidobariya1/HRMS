@@ -1,4 +1,4 @@
-.roleselect-overlay {
+.clientSelect-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -12,7 +12,7 @@
   padding: 20px;
 }
 
-.roleselect-modal {
+.clientSelect-modal {
   background-color: var(--primary-text-white);
   padding: 20px;
   border-radius: 4px;
@@ -22,7 +22,7 @@
   width: 100%;
 }
 
-.rolemodal-buttons {
+.assignclient-buttons {
   margin: 15px;
   padding: 8px 16px;
   font-size: var(--font-size-body);
@@ -34,7 +34,7 @@
   opacity: 90%;
 }
 
-.Roleselcet-input-dropdown {
+.ClientSelect-input-dropdown {
   margin: 0;
   padding: 12px;
   font-weight: 800;
@@ -44,7 +44,7 @@
   outline: none;
 }
 
-.Roleselcet-input-dropdown .MuiSelect-select {
+.ClientSelect-input-dropdown .MuiSelect-select {
   padding: 0px;
   color: var(--secondary-dark-gray) !important;
   border: none;
@@ -53,14 +53,14 @@
   outline: none;
 }
 
-.Roleselcet-input-dropdown .MuiSelect-icon {
+.ClientSelect-input-dropdown .MuiSelect-icon {
   color: var(--secondary-dark-gray);
 }
 
-.roleselect-modal h1 {
+.clientSelect-modal h1 {
   color: var(--primary-button);
 }
 
-.role-select-error {
+.client-select-error {
   text-align: left !important;
 }

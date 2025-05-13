@@ -73,6 +73,7 @@
 }
 
 .logo-details img {
+  border-radius: 4px;
   height: 40px;
   width: 40px;
 }
@@ -129,7 +130,7 @@
   gap: 20px;
   padding: 8px;
   color: var(--sidebar-title-primary-white);
-  /* border-radius: 5px; */
+  border-radius: 4px;
   transition: 0.3s ease;
 }
 
@@ -226,10 +227,25 @@
   margin: 0;
   padding: 8px;
   font-weight: 800;
+  border-radius: 4px;
   background-color: var(--sidebar-secondary-dark-gray);
   color: var(--sidebar-title-primary-white);
   border: 1px solid var(--sidebar-hover);
   width: 100%;
+  max-width: 205px;
+  outline: none;
+}
+
+.company-dropdown .MuiSelect-select {
+  padding: 0;
+  background-color: var(--sidebar-secondary-dark-gray);
+  color: var(--sidebar-title-primary-white);
+  border: none;
+  outline: none;
+}
+
+.company-dropdown .MuiSelect-icon {
+  color: var(--sidebar-title-primary-white);
 }
 
 @media screen and (max-width: 767px) {
@@ -292,6 +308,10 @@
 
   .sidebar-Toggle-menu {
     display: block;
+  }
+
+  .company-dropdown {
+    padding: 3px;
   }
 }
 

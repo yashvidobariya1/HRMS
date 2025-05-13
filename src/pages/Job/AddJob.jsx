@@ -6,6 +6,7 @@ import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
 
 const AddJob = () => {
   const navigate = useNavigate();
@@ -72,7 +73,10 @@ const AddJob = () => {
         if (id) {
           response = await PostCall(`/updateJobPost/${id}`, formData);
         } else {
-          response = await PostCall(`/createJobPost?companyId=${companyId}`, formData);
+          response = await PostCall(
+            `/createJobPost?companyId=${companyId}`,
+            formData
+          );
         }
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
@@ -209,7 +213,7 @@ const AddJob = () => {
 
             <div className="addjob-input-container">
               <label className="label">Select Client</label>
-              <select
+              {/* <select
                 name="clientId"
                 className="addjob-input"
                 value={formData.clientId}
@@ -222,7 +226,34 @@ const AddJob = () => {
                     {clients.clientName}
                   </option>
                 ))}
-              </select>
+              </select> */}
+              <Select
+                name="clientId"
+                className="addjob-input-dropdown"
+                value={formData.clientId}
+                data-testid="location-select"
+                onChange={handleChange}
+                displayEmpty
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      width: 200,
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      maxHeight: 200,
+                    },
+                  },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select Client
+                </MenuItem>
+                {clientList.map((clients) => (
+                  <MenuItem key={clients._id} value={clients._id}>
+                    {clients.clientName}
+                  </MenuItem>
+                ))}
+              </Select>
               {/* {errors?.clientId && (
                 <p className="error-text">{errors?.clientId}</p>
               )} */}

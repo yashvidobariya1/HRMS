@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { IoIosMenu } from "react-icons/io";
 import { MdOutlineNotificationsActive } from "react-icons/md";
 import "./Header.css";
@@ -12,6 +12,7 @@ import { clearJobRoleSelect } from "../store/selectJobeRoleSlice";
 import { PostCall } from "../ApiServices";
 import { showToast } from "./ToastManager";
 import Loader from "../pages/Helper/Loader";
+import { Select, MenuItem, Menu, ListItemText } from "@mui/material";
 
 const Header = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
@@ -23,15 +24,19 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
   const Notificationscount = useSelector(
     (state) => state.notificationCount.notificationCount
   );
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
+  const handleOpenDropdown = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseDropdown = () => {
+    setAnchorEl(null);
   };
 
   const handleThemeChange = (e) => {
@@ -39,7 +44,6 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
     setTheme(selectedTheme);
     dispatch(setThemeColor(selectedTheme));
     document.documentElement.setAttribute("data-theme", selectedTheme);
-    setIsDropdownOpen(false);
   };
 
   const handleLogout = async () => {
@@ -65,25 +69,9 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
     }
   };
 
-  const handleClickOutside = useCallback(
-    (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    },
-    [dropdownRef]
-  );
-
   const HandleShowNotification = () => {
     navigate("/notification");
   };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [handleClickOutside]);
 
   useEffect(() => {
     setTheme(themeColor);
@@ -119,39 +107,63 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
             <img
               src={process.env.PUBLIC_URL + "/image/profile.png"}
               alt="Profile"
-              onClick={toggleDropdown}
+              onClick={handleOpenDropdown}
             />
           </span>
 
-          {isDropdownOpen && (
-            <div className="profile-dropdown-menu" ref={dropdownRef}>
-              <ul>
-                <Link to="/profile" onClick={() => setIsDropdownOpen(false)}>
-                  <li>Profile</li>
-                </Link>
-                <Link
-                  to="/changepassword"
-                  onClick={() => setIsDropdownOpen(false)}
-                >
-                  <li>Change Password</li>
-                </Link>
-                <li>
-                  Theme{" "}
-                  <select
-                    className="header-theme"
-                    value={theme}
-                    onChange={handleThemeChange}
-                  >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                  </select>
-                </li>
-                <Link to="/login" onClick={handleLogout}>
-                  <li>Logout</li>
-                </Link>
-              </ul>
-            </div>
-          )}
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            className="header-dropdown"
+            onClose={handleCloseDropdown}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                navigate("/profile");
+                handleCloseDropdown();
+              }}
+            >
+              Profile
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate("/changepassword");
+                handleCloseDropdown();
+              }}
+            >
+              Change Password
+            </MenuItem>
+            <MenuItem disableRipple>
+              <ListItemText>Theme</ListItemText>
+              <Select
+                value={theme}
+                onChange={(e) => {
+                  handleThemeChange(e);
+                }}
+                variant="standard"
+                disableUnderline
+              >
+                <MenuItem value="light">Light</MenuItem>
+                <MenuItem value="dark">Dark</MenuItem>
+              </Select>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleLogout();
+                handleCloseDropdown();
+              }}
+            >
+              Logout
+            </MenuItem>
+          </Menu>
         </div>
       )}
     </section>

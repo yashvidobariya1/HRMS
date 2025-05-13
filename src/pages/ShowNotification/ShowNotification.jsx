@@ -21,13 +21,14 @@ const ShowNotification = () => {
   const [selectedNotification, setSelectedNotification] = useState({});
   const [openDropdown, setOpenDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalNotifications, settotalNotifications] = useState([]);
 
   const GetNotification = async () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getNotifications?page=${currentPage}&limit=${notificationPerPage}&search=${searchQuery}`
+        `/getNotifications?page=${currentPage}&limit=${notificationPerPage}&search=${debouncedSearch}`
       );
       if (response?.data?.status === 200) {
         setNotifications(response.data.notifications);
@@ -107,10 +108,20 @@ const ShowNotification = () => {
   useEffect(() => {
     GetNotification();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, notificationPerPage, searchQuery]);
+  }, [currentPage, notificationPerPage, debouncedSearch]);
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   return (
