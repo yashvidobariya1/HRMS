@@ -220,7 +220,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 575px) {
   .job-details p,
   .company-section p,
   .apply-section p {

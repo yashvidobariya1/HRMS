@@ -106,13 +106,13 @@
   gap: 5px;
   height: max-content;
   padding: 10px 15px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   align-items: center;
   border: 1px solid var(--neutral-light-gray);
 }
 
 .contract-custom-file-upload {
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   background-color: var(--primary-button);
   color: var(--primary-text-white);
   padding: 5px;
@@ -226,7 +226,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 575px) {
   .employee-contract-input {
     width: 100% !important;
     box-sizing: border-box;

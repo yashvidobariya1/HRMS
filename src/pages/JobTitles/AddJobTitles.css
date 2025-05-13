@@ -10,7 +10,7 @@
   box-sizing: border-box;
   /* border: 1px solid var(--neutral-light-gray); */
   padding-right: 40px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 
 .Addjobtitle-section {

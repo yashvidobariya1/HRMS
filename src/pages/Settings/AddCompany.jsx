@@ -373,13 +373,7 @@ const AddCompany = () => {
                       <img
                         src={formData?.companyDetails?.companyLogo}
                         alt="Company Logo"
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          marginTop: "10px",
-                          border: "1px solid rgb(207, 205, 205)",
-                          padding: "10px",
-                        }}
+                        className="company-logo-uplaod"
                       />
                       <p
                         className="setting-upload-img"

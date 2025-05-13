@@ -27,7 +27,7 @@ const HolidayList = () => {
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   // console.log("id", locationId);
   const [totalHoliday, setTotalHoliday] = useState([]);
-
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const handleAction = (id) => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
@@ -65,7 +65,7 @@ const HolidayList = () => {
     try {
       setLoading(true);
 
-      let url = `/getAllHolidays?page=${currentPage}&limit=${holidayPerPage}`;
+      let url = `/getAllHolidays?page=${currentPage}&limit=${holidayPerPage}&companyId=${companyId}`;
       if (locationId) {
         url += `&locationId=${locationId}`;
       }
@@ -153,7 +153,7 @@ const HolidayList = () => {
   useEffect(() => {
     getAllHoliday();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, holidayPerPage, selectedYear]);
+  }, [currentPage, holidayPerPage, selectedYear, companyId]);
 
   return (
     <div className="Holidaylist-list-container">

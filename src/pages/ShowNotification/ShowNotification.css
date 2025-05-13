@@ -57,7 +57,7 @@
   color: var(--secondary-dark-gray);
   border: none;
   padding: 6px 10px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   background-color: transparent;
 }
@@ -124,7 +124,7 @@
   background-color: var(--primary-text-white);
   cursor: pointer;
   border: 1px solid var(--neutral-light-gray);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   gap: 8px;
   padding: 5px;
   color: var(--sidebar-bg);

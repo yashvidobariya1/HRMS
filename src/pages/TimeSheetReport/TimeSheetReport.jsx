@@ -468,10 +468,15 @@ const TimeSheetReport = () => {
   };
 
   const GetClientdata = async () => {
+    const payload = {
+      jobId: selectedJobId,
+    };
+
+    if (userRole === "Superadmin") {
+      payload.userId = selectedEmployee;
+    }
     try {
-      const response = await PostCall(`/getUsersAssignClients`, {
-        jobId: selectedJobId,
-      });
+      const response = await PostCall(`/getUsersAssignClients`, payload);
 
       if (response?.data?.status === 200) {
         const clientId = response.data.assignClients;

@@ -160,12 +160,12 @@
   scrollbar-width: thin;
   margin: 20px 0;
   background-color: var(--primary-text-white);
-  border-radius: 4px;
+  border-radius: var(--border-radius) !important;
 }
 
 .custom-table table {
   border-collapse: separate;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 
 .custom-table .MuiTableHead-root {
@@ -201,7 +201,7 @@
   margin-right: 10px;
 }
 
-.custom-table .MuiPaper-root .MuiPaper-elevation {
+/* .custom-table .MuiPaper-root .MuiPaper-elevation {
   margin: 10px 0;
   border-radius: 0;
   width: 100%;
@@ -209,7 +209,15 @@
   border: 1px solid var(--neutral-light-gray);
   table-layout: auto;
   background-color: var(--primary-text-white) !important;
+} */
+
+/* .action-button .MuiMenu-list ul {
+  border-radius: 20px !important;
 }
+
+.action-button .MuiPaper-rounded {
+  border-radius: 20px !important;
+} */
 
 .custom-table .MuiTableCell-root .MuiTableCell-body {
   font-size: 15px !important;
@@ -369,7 +377,7 @@
 }
 
 .custom-table .MuiPaper-root .MuiPaper-elevation {
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 
 .employee-template .MuiSelect-select {
@@ -416,7 +424,7 @@
   } */
 }
 
-@media (max-width: 600px) {
+@media (max-width: 575px) {
   .custom-table .MuiTableCell-root {
     padding: 10px;
     font-size: 12px !important;
