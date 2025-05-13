@@ -4,7 +4,7 @@ import "./LoggedInUser.css";
 import Loader from "../Helper/Loader";
 import CommonTable from "../../SeparateCom/CommonTable";
 import moment from "moment";
-import { TextField } from "@mui/material";
+import { MenuItem, Select, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 
 const LoggedInUser = () => {
@@ -102,14 +102,36 @@ const LoggedInUser = () => {
         </div>
         <div className="loggeduserlist-action">
           <p>Time Period</p>
-          <select
+          {/* <select
             value={selectedTimePeriod}
             onChange={handleTimePeriodChange}
             className="loggeduserlist-timeperoid"
           >
             <option value="24">24 Hours</option>
             <option value="48">48 Hours</option>
-          </select>
+          </select> */}
+          <Select
+            value={selectedTimePeriod}
+            onChange={handleTimePeriodChange}
+            className="loggeduserlist-timeperoid-dropdown"
+            displayEmpty
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  width: 100,
+                  textOverflow: "ellipsis",
+                  maxHeight: 200,
+                  whiteSpace: "nowrap",
+                },
+              },
+            }}
+          >
+            <MenuItem value="" disabled>
+              Select Time Period
+            </MenuItem>
+            <MenuItem value="24">24 Hours</MenuItem>
+            <MenuItem value="48">48 Hours</MenuItem>
+          </Select>
         </div>
       </div>
       <TextField

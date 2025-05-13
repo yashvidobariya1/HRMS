@@ -59,7 +59,7 @@
   font-weight: 800;
   border-radius: 4px;
   color: var(--secondary-dark-gray);
-  width: 100%;
+  /* width: 100%; */
   outline: none;
 }
 

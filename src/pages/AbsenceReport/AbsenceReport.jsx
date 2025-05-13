@@ -189,7 +189,7 @@ const AbsenceReport = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    width: 200, // same as Select
+                    width: 80,
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                     maxHeight: 192,
@@ -222,15 +222,14 @@ const AbsenceReport = () => {
             </select> */}
 
             <Select
-              labelId="month-select-label"
               className="absence-dropdown"
               value={selectedMonth}
+              displayEmpty
               onChange={(e) => setSelectedMonth(e.target.value)}
-              label="Month"
               MenuProps={{
                 PaperProps: {
                   style: {
-                    width: 200, // same as Select
+                    width: 80,
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                     maxHeight: 192,

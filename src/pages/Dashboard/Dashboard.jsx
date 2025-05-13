@@ -34,6 +34,7 @@ import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { setNotificationCount } from "../../store/notificationCountSlice";
 import { useDispatch } from "react-redux";
 import { MenuItem, Select } from "@mui/material";
+import { BsHourglassSplit } from "react-icons/bs";
 
 const Dashboard = () => {
   const pdfRef = useRef(null);
@@ -953,13 +954,21 @@ const Dashboard = () => {
                                     : "-"}
                                 </td>
                                 <td>
-                                  {clock.clockOut
-                                    ? moment(clock.clockOut).format(
-                                        "MM/DD/YYYY h:mm:ss A"
-                                      )
-                                    : "-"}
+                                  {clock.clockOut ? (
+                                    moment(clock.clockOut).format(
+                                      "MM/DD/YYYY h:mm:ss A"
+                                    )
+                                  ) : (
+                                    <b className="active">Active</b>
+                                  )}
                                 </td>
-                                <td>{clock.totalTiming}</td>
+                                <td>
+                                  {clock.totalTiming !== "0" ? (
+                                    clock.totalTiming
+                                  ) : (
+                                    <BsHourglassSplit />
+                                  )}
+                                </td>
                               </tr>
                             ))
                           )

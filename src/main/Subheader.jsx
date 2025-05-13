@@ -144,10 +144,10 @@ const Subheader = () => {
             MenuProps={{
               PaperProps: {
                 style: {
-                  width: 200,
+                  width: 80,
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
-                  maxHeight: 200,
+                  maxHeight: 80,
                 },
               },
             }}

@@ -1986,6 +1986,8 @@ const AddEmployee = () => {
                     <p>Office Work?</p>
                   </div>
                 </div>
+                <div className="addemployee-input-container"></div>
+                <div className="addemployee-input-container"></div>
                 {/* <div className="addemployee-input-container">
                   <label className="label">Assign Template</label>
                   <select

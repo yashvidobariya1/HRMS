@@ -583,7 +583,7 @@ const TimeSheetReport = () => {
                 MenuProps={{
                   PaperProps: {
                     style: {
-                      width: 200,
+                      width: 120,
                       textOverflow: "ellipsis",
                       maxHeight: 200,
                       whiteSpace: "nowrap",
@@ -631,7 +631,7 @@ const TimeSheetReport = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    width: 200,
+                    width: 80,
                     textOverflow: "ellipsis",
                     maxHeight: 200,
                     whiteSpace: "nowrap",
@@ -699,21 +699,48 @@ const TimeSheetReport = () => {
           />
         </div>
 
-        <select
-          className="timeshet-employee-selection"
-          value={selectedEmployee}
-          // onChange={handleEmployeeChange}
-          onChange={(e) => setSelectedEmployee(e.target.value)}
-        >
-          <option value="" disabled>
-            Select Employee
-          </option>
-          {employeeList?.map((employee) => (
-            <option key={employee._id} value={employee._id}>
-              {employee.userName}
-            </option>
-          ))}
-        </select>
+        {userRole !== "Employee" && (
+          // <select
+          //   className="timeshet-employee-selection"
+          //   value={selectedEmployee}
+          //   onChange={(e) => setSelectedEmployee(e.target.value)}
+          // >
+          //   <option value="" disabled>
+          //     Select Employee
+          //   </option>
+          //   {employeeList?.map((employee) => (
+          //     <option key={employee._id} value={employee._id}>
+          //       {employee.userName}
+          //     </option>
+          //   ))}
+          // </select>
+
+          <Select
+            className="timesheet-input-dropdown"
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
+            displayEmpty
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  width: 150,
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxHeight: 200,
+                },
+              },
+            }}
+          >
+            <MenuItem value="" disabled>
+              Select Employee
+            </MenuItem>
+            {employeeList.map((employee) => (
+              <MenuItem key={employee._id} value={employee._id}>
+                {employee.userName}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
       </div>
 
       <div className="timesheetreport-searchbar-clockin">

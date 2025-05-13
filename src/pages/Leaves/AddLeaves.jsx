@@ -6,6 +6,7 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import "./AddLeaves.css";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
 
 const AddLeaves = () => {
   const navigate = useNavigate();
@@ -280,7 +281,7 @@ const AddLeaves = () => {
         <form onSubmit={handleSubmit} className="addleave-flex">
           <div className="addleave-input-container date-group">
             <label className="label">Leave Type*</label>
-            <select
+            {/* <select
               className="addleave-input"
               name="leaveType"
               data-testid="leave-type"
@@ -295,7 +296,34 @@ const AddLeaves = () => {
                   {leaveType.leaveType} ({leaveType.count} {leaveType.type})
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              className="addleave-input-dorpdown"
+              name="leaveType"
+              data-testid="leave-type"
+              value={formData.leaveType}
+              onChange={handleChange}
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 200,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 200,
+                  },
+                },
+              }}
+            >
+              <MenuItem value="" disabled>
+                Select Leave
+              </MenuItem>
+              {leaveTypes.map((leaveType) => (
+                <MenuItem key={leaveType.leaveType} value={leaveType.leaveType}>
+                  {leaveType.leaveType} ({leaveType.count} {leaveType.type})
+                </MenuItem>
+              ))}
+            </Select>
             {errors.leaveType && (
               <div className="error-text">{errors.leaveType}</div>
             )}
