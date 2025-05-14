@@ -269,29 +269,22 @@ const Holidays = () => {
     (_, i) => startYear + i
   );
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
 
-  const { locationId, id } = useParams();
-  // console.log("locationid", locationId);
-  // console.log("id", id);
   const Navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     date: "",
     occasion: "",
-    locationId: id,
+    companyId,
   });
 
   const getAllHoliday = async () => {
     try {
       setLoading(true);
-      let response;
-      if (id) {
-        response = await GetCall(
-          `/getAllHolidays?locationId=${id}&year=${currentYear}`
-        );
-      } else {
-        response = await GetCall(`/getAllHolidays?year=${currentYear}`);
-      }
+      const response = await GetCall(
+        `/getAllHolidays?companyId=${companyId}&year=${selectedYear}`
+      );
       if (response?.data?.status === 200) {
         setAllholidayList(response?.data.holidays);
       } else {
@@ -326,7 +319,6 @@ const Holidays = () => {
       setFormData({
         _id: existingEvent._id,
         companyId: existingEvent.companyId,
-        locationId: existingEvent.locationId,
         date: existingEvent.date,
         occasion: existingEvent.occasion,
       });
@@ -335,7 +327,7 @@ const Holidays = () => {
         _id: "",
         date: clickedDate,
         occasion: "",
-        locationId: id,
+        companyId,
       });
     }
 
@@ -362,6 +354,7 @@ const Holidays = () => {
     try {
       setLoading(true);
       let response;
+      console.log("formData", formData);
       if (formData._id) {
         response = await PostCall(`/updateHoliday/${formData._id}`, formData);
       } else {
@@ -384,7 +377,7 @@ const Holidays = () => {
         });
         await getAllHoliday();
         setIsPopupOpen(false);
-        setFormData({ date: "", occasion: "", locationId });
+        setFormData({ date: "", occasion: "" });
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -410,14 +403,13 @@ const Holidays = () => {
         showToast(response?.data?.message, "success");
         setIsPopupOpen(false);
         setShowConfirm(false);
-        // navigate(`/location/holidays/holidaylist/${locationId}`);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
       setIsPopupOpen(false);
     } catch (error) {
-      // console.log("error", error);
+      console.log("error", error);
     }
     getAllHoliday();
   };
@@ -438,17 +430,13 @@ const Holidays = () => {
   };
 
   const handleViewHoliday = () => {
-    if (userRole === "Superadmin") {
-      Navigate(`/location/holidays/holidaylist/${id}`);
-    } else {
-      Navigate(`/holidays/holidaylist`);
-    }
+    Navigate(`/holidays/holidaylist`);
   };
 
   useEffect(() => {
     getAllHoliday();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedYear]);
+  }, [selectedYear, companyId]);
 
   useEffect(() => {
     const transformedEvents = AllholidayList.map((holiday) => ({
@@ -517,7 +505,7 @@ const Holidays = () => {
               left: "prev",
             }}
             validRange={{
-              start: "2022-01-01",
+              start: startDate,
               end: currentYearEnd,
             }}
             buttonText={{
@@ -535,8 +523,8 @@ const Holidays = () => {
               });
             }}
             datesSet={(info) => {
-              const currentYear = info.view.currentStart.getFullYear();
-              setSelectedYear(currentYear);
+              // const currentYear = info.view.currentStart.getFullYear();
+              setSelectedYear(selectedYear);
             }}
           />
         </div>

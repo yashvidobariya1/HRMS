@@ -39,7 +39,7 @@ const ReportList = () => {
   };
 
   const HandleViewStatus = async (id) => {
-    navigate(`/settings/client/reportlist/viewstatus?reportId=${id}`);
+    navigate(`/clients/reportlist/viewstatus?reportId=${id}`);
   };
 
   const tableHeaders = [

@@ -674,7 +674,7 @@ const CommonTable = ({
                                   }}
                                   onClick={() => window.open(item[key])}
                                 >
-                                  Link
+                                  Apply Link
                                 </p>
                               </>
                             ) : (

@@ -29,7 +29,7 @@ const AddEmployee = () => {
   const [contracts, setContracts] = useState([]);
   const [filteredAssignees, setFilteredAssignees] = useState([]);
   const [clients, setClients] = useState([]);
-  const [templates, setTemplates] = useState([]);
+  // const [templates, setTemplates] = useState([]);
   const [documentDetails, setDocumentDetails] = useState([]);
   const [jobList, setJobList] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -47,9 +47,9 @@ const AddEmployee = () => {
   });
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
-  const [sickLeaveType, setSickLeaveType] = useState("Day");
-  const [allowLeaveType, setallowLeaveType] = useState("Day");
-  const employeeFormFilled = useSelector(
+  // const [sickLeaveType, setSickLeaveType] = useState("Day");
+  // const [allowLeaveType, setallowLeaveType] = useState("Day");
+  const employeeFormFilled = useSelector( 
     (state) => state.employeeformFilled.employeeformFilled
   );
   const [formData, setFormData] = useState({
@@ -127,7 +127,7 @@ const AddEmployee = () => {
     location: "",
     assignManager: "",
     assignClient: "",
-    templateId: "",
+    // templateId: "",
     role: "",
   });
 
@@ -695,7 +695,7 @@ const AddEmployee = () => {
       location: "",
       assignManager: "",
       assignClient: "",
-      templateId: "",
+      // templateId: "",
       role: "",
     });
     setErrors({});
@@ -1002,7 +1002,7 @@ const AddEmployee = () => {
         setLocations(Company?.data?.companiesAllLocations);
         setContracts(Company?.data?.contracts);
         setClients(Company?.data?.clients);
-        setTemplates(Company?.data?.templates);
+        // setTemplates(Company?.data?.templates);
       } else {
         showToast(Company?.data?.message, "error");
       }
@@ -1648,7 +1648,7 @@ const AddEmployee = () => {
                     <p className="error-text">{errors?.assignClient}</p>
                   )}
                 </div>
-                <div className="addemployee-input-container">
+                {/* <div className="addemployee-input-container">
                   <label className="label">Assign Template</label>
                   <select
                     name="templateId"
@@ -1667,10 +1667,10 @@ const AddEmployee = () => {
                       <option value="">No templates available</option>
                     )}
                   </select>
-                  {/* {errors?.templateId && (
+                  {errors?.templateId && (
                     <p className="error-text">{errors?.templateId}</p>
-                  )} */}
-                </div>
+                  )}
+                </div> */}
               </div>
               <div className="addemployee-next-button">
                 <button onClick={handleAddJob}>

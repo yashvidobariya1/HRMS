@@ -8,6 +8,7 @@ import { RxDashboard } from "react-icons/rx";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import { GetCall } from "../ApiServices";
 import { setCompanySelect } from "../store/selectCompanySlice";
+import { Select, MenuItem, Tooltip } from "@mui/material";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const currentRole = useSelector((state) => state.userInfo.userInfo.role);
@@ -115,21 +116,58 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                     {companyList[0].companyDetails.businessName}
                   </span>
                 ) : (
-                  <select
+                  // <select
+                  //   value={selectedCompanyId}
+                  //   onChange={handleChange}
+                  //   className="company-dropdown"
+                  //   // className="dropdown"
+                  // >
+                  //   {currentRole === "Superadmin" && (
+                  //     <option value="allCompany">All</option>
+                  //   )}
+                  //   {companyList.map((company) => (
+                  //     <option key={company._id} value={company._id}>
+                  //       {company.companyDetails.businessName}
+                  //     </option>
+                  //   ))}
+                  // </select>
+                  <Select
                     value={selectedCompanyId}
                     onChange={handleChange}
                     className="company-dropdown"
                     // className="dropdown"
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 200, // same as Select
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        },
+                      },
+                    }}
                   >
                     {currentRole === "Superadmin" && (
-                      <option value="allCompany">All</option>
+                      <MenuItem value="allCompany">All</MenuItem>
                     )}
                     {companyList.map((company) => (
-                      <option key={company._id} value={company._id}>
-                        {company.companyDetails.businessName}
-                      </option>
+                      // <Tooltip
+                      //   title={company.companyDetails.businessName}
+                      //   key={company._id}
+                      // >
+                        <MenuItem
+                          key={company._id}
+                          value={company._id}
+                          style={{
+                            // overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {company.companyDetails.businessName}
+                        </MenuItem>
+                      // {/* </Tooltip> */}
                     ))}
-                  </select>
+                  </Select>
                 )}
               </>
             )}

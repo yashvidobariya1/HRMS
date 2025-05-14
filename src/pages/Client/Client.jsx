@@ -39,7 +39,7 @@ const Client = () => {
   };
 
   const HandleEditClient = async (id) => {
-    navigate(`/settings/client/editclient/${id}`);
+    navigate(`/clients/editclient/${id}`);
     setShowDropdownAction(null);
   };
 
@@ -53,7 +53,7 @@ const Client = () => {
       showToast("Please select a specific company", "error");
       return;
     }
-    navigate(`/settings/client/addclient?companyId=${companyId}`);
+    navigate(`/clients/addclient?companyId=${companyId}`);
     setShowDropdownAction(null);
   };
 
@@ -120,7 +120,7 @@ const Client = () => {
   };
 
   const HandleReportList = async (id) => {
-    navigate(`/settings/client/reportlist?clientId=${id}`);
+    navigate(`/clients/reportlist?clientId=${id}`);
   };
 
   const actions = [
@@ -131,6 +131,11 @@ const Client = () => {
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
+  };
+
+  const HandleGenerateQrCode = (id) => {
+    // console.log("id", id);
+    navigate(`/clients/generateqrcode?clientId=${id}`);
   };
 
   useEffect(() => {
@@ -155,8 +160,11 @@ const Client = () => {
     );
   }
 
-  if (userRole === "Superadmin" || userRole === "Administartor") {
-    actions.push({ label: "Reports List", onClick: HandleReportList });
+  if (userRole === "Superadmin" || userRole === "Administrator") {
+    actions.push(
+      { label: "QRCode", onClick: HandleGenerateQrCode },
+      { label: "Reports List", onClick: HandleReportList }
+    );
   }
 
   return (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Loader from "../Helper/Loader";
 import { GetCall, PostCall } from "../../ApiServices";
 import { showToast } from "../../main/ToastManager";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import "./AddLeaves.css";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -194,7 +194,7 @@ const AddLeaves = () => {
       setLoading(true);
       let response;
       if (id) {
-        response = await PostCall(`/updateLeaveRequest/${id}`, { formData });
+        response = await PostCall(`/updateLeaveRequest/${id}`, formData);
       } else {
         response = await PostCall("/leaveRequest", {
           ...formData,

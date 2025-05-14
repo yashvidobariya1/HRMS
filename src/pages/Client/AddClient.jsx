@@ -173,7 +173,7 @@ const AddClient = () => {
           const redirectCompanyid = id
             ? formData.companyId || companyId
             : companyId;
-          navigate(`/settings/client/?companyId=${redirectCompanyid}`);
+          navigate(`/clients/?companyId=${redirectCompanyid}`);
         } else {
           showToast(response?.data?.message, "error");
         }

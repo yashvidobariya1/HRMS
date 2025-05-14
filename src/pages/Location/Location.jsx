@@ -117,10 +117,10 @@ const Location = () => {
     navigate(`/location/generateqrcode?locationId=${id}`);
   };
 
-  const HandleViewHoliday = (id) => {
-    // console.log("id", id);
-    navigate(`/location/holidays/${id}`);
-  };
+  // const HandleViewHoliday = (id) => {
+  //   // console.log("id", id);
+  //   navigate(`/location/holidays/${id}`);
+  // };
 
   const actionsList = [
     {
@@ -132,10 +132,10 @@ const Location = () => {
       onClick: HandleDeleteLocation,
     },
     { label: "QRCode", onClick: HandleGenerateQrCode },
-    {
-      label: "Holiday",
-      onClick: HandleViewHoliday,
-    },
+    // {
+    //   label: "Holiday",
+    //   onClick: HandleViewHoliday,
+    // },
   ];
 
   const handleSearchChange = (event) => {

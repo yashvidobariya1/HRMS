@@ -33,6 +33,7 @@ import htmlDocx from "html-docx-js/dist/html-docx";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { setNotificationCount } from "../../store/notificationCountSlice";
 import { useDispatch } from "react-redux";
+import { Select, MenuItem } from "@mui/material";
 
 const Dashboard = () => {
   const pdfRef = useRef(null);
@@ -103,8 +104,8 @@ const Dashboard = () => {
 
   const routeMap = {
     totalEmployees: "/employees",
-    totalCompanies: "/settings",
-    totalClients: "/settings/client",
+    totalCompanies: "/company",
+    totalClients: "/clients",
     totalContracts: "/employmentcontract",
     totalLocations: "/location",
     totalTemplates: "/templates",
@@ -335,6 +336,7 @@ const Dashboard = () => {
 
         if (userData) {
           Object.keys(userData).forEach((key) => {
+            console.log("key", key, "value", userData[key]);
             content = content.replace(
               new RegExp(`{${key}}`, "g"),
               userData[key]
@@ -749,7 +751,7 @@ const Dashboard = () => {
             <div className="dashboard-profile-container">
               <h3>Pending Verifing Documents</h3>
               <div className="dashboard-viewprofile">
-                <select
+                {/* <select
                   className="JobTitle-input"
                   value={template?._id || ""}
                   onChange={handleTempalateChange}
@@ -762,7 +764,23 @@ const Dashboard = () => {
                       {template.templateName}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  displayEmpty
+                  defaultValue=""
+                  className="JobTitle-input"
+                  value={template?._id || ""}
+                  onChange={handleTempalateChange}
+                >
+                  <MenuItem value="" disabled>
+                    Select a Template
+                  </MenuItem>
+                  {templateList?.map((template) => (
+                    <MenuItem key={template._id} value={template._id}>
+                      {template.templateName}
+                    </MenuItem>
+                  ))}
+                </Select>
               </div>
             </div>
           )}

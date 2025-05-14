@@ -394,7 +394,7 @@ const ViewTasks = () => {
               today: "Today",
             }}
             validRange={{
-              start: "2022-01-01",
+              start: startDate,
               end: currentYearEnd,
             }}
             events={events}
@@ -410,9 +410,9 @@ const ViewTasks = () => {
             }}
             datesSet={(info) => {
               const currentYear = info.view.currentStart.getFullYear();
-              // const currentMonth = info.view.currentStart.getMonth() + 1;
+              const currentMonth = info.view.currentStart.getMonth() + 1;
               setSelectedYear(currentYear);
-              // setSelectedMonth(currentMonth);
+              setSelectedMonth(currentMonth);
             }}
           />
         </div>
