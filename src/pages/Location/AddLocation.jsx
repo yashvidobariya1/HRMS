@@ -5,6 +5,7 @@ import { GetCall, PostCall } from "../../ApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import countryNames from "../../Data/AllCountryList.json";
+import { MenuItem, Select } from "@mui/material";
 
 const AddLocation = () => {
   const navigate = useNavigate();
@@ -185,7 +186,7 @@ const AddLocation = () => {
             <div className="addlocation-section">
               <div className="addlocation-input-container">
                 <label className="label">Company Name*</label>
-                <select
+                {/* <select
                   name="companyName"
                   data-testid="company-select"
                   className="addlocation-input"
@@ -202,7 +203,35 @@ const AddLocation = () => {
                       </option>
                     );
                   })}
-                </select>
+                </select> */}
+                <Select
+                  id="company-select"
+                  name="companyName"
+                  data-testid="company-select-dropdown"
+                  className="checkbox-country"
+                  value={formData?.companyId || ""}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Company
+                  </MenuItem>
+                  {companyList?.map((company) => (
+                    <MenuItem key={company?._id} value={company?._id}>
+                      {company?.companyDetails?.businessName}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {errors?.companyId && (
                   <p className="error-text">{errors?.companyId}</p>
                 )}
@@ -292,21 +321,32 @@ const AddLocation = () => {
 
               <div className="addlocation-input-container">
                 <label className="label">Country*</label>
-                <select
+                <Select
                   className="addlocation-input checkbox-country"
                   name="country"
                   value={formData?.country}
                   onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 200,
+                      },
+                    },
+                  }}
                 >
-                  <option value="" disabled>
+                  <MenuItem value="" disabled>
                     Select country
-                  </option>
-                  {countryNames.map((country) => (
-                    <option key={country} value={country}>
+                  </MenuItem>
+                  {countryNames.map((country, index) => (
+                    <MenuItem key={index} value={country}>
                       {country}
-                    </option>
+                    </MenuItem>
                   ))}
-                </select>
+                </Select>
                 {errors?.country && (
                   <p className="error-text">{errors?.country}</p>
                 )}

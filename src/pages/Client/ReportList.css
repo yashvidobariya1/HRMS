@@ -32,41 +32,70 @@
 
 .report-list-input-container input,
 .report-list-input-container select {
+  border-radius: var(--border-radius);
   margin: 0;
   padding: 10px !important;
 }
 
 .report-list-download-container button {
-  margin-top: 22px;
+  margin-top: 19px;
   padding: 12px 15px;
+}
+
+.report-list-input-dropdown {
+  margin: 0;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  /* width: 100%; */
+  outline: none;
+}
+
+.report-list-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.report-list-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
+@media screen and (max-width: 992px) {
+  .report-list-download-container button {
+    margin-top: 17px;
+  }
 }
 
 @media screen and (max-width: 767px) {
   .report-list-download-container button {
-    margin-top: 18px !important;
-    /* padding: 12px 15px; */
+    margin-top: 14px;
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 575px) {
   .report-list-flex {
     display: block;
   }
-}
 
-@media screen and (max-width: 500px) {
   .report-list-download-container button {
-    margin: 0;
-    padding: 12px 10px !important;
+    padding: 11px 10px !important;
+  }
+
+  .report-list-download-container button {
+    margin-top: 19px;
   }
 }
 
 @media screen and (max-width: 450px) {
   .report-list-download-container button {
-    margin: 0 !important;
+    max-height: 38px;
   }
 
   .report-list-download-container {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
 }

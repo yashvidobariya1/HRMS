@@ -24,6 +24,7 @@ const Employee = () => {
   const [totalPages, setTotalPages] = useState(0);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalUsers, settotalUsers] = useState([]);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const handleAction = (id) => {
@@ -60,12 +61,12 @@ const Employee = () => {
     setShowConfirm(true);
   };
 
-  const HandleEmployeeTimesheet = async (id, name) => {
-    // setEmployeeName(name);
-    // setEmployeeId(id);
-    navigate(`/employees/timesheetreport/${name}?EmployeeId=${id}`);
-    setShowDropdownAction(null);
-  };
+  // const HandleEmployeeTimesheet = async (id, name) => {
+  //   // setEmployeeName(name);
+  //   // setEmployeeId(id);
+  //   navigate(`/employees/timesheetreport/${name}?EmployeeId=${id}`);
+  //   setShowDropdownAction(null);
+  // };
 
   const HandleViewHours = async (id, name) => {
     navigate(`/employees/viewhours/${name}?EmployeeId=${id}`);
@@ -83,7 +84,7 @@ const Employee = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllUsers?page=${currentPage}&limit=${employeesPerPage}&search=${searchQuery}&companyId=${companyId}`
+        `/getAllUsers?page=${currentPage}&limit=${employeesPerPage}&search=${debouncedSearch}&companyId=${companyId}`
       );
       // console.log("Response:", response);
       if (response?.data?.status === 200) {
@@ -167,10 +168,10 @@ const Employee = () => {
       label: "Delete",
       onClick: HandleDeleteEmployee,
     },
-    {
-      label: "TimeSheet",
-      onClick: HandleEmployeeTimesheet,
-    },
+    // {
+    //   label: "TimeSheet",
+    //   onClick: HandleEmployeeTimesheet,
+    // },
     {
       label: "View Hours",
       onClick: HandleViewHours,
@@ -209,10 +210,20 @@ const Employee = () => {
   useEffect(() => {
     GetEmployees();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, employeesPerPage, searchQuery, companyId]);
+  }, [currentPage, employeesPerPage, debouncedSearch, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   return (

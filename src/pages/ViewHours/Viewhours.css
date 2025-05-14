@@ -356,6 +356,7 @@
 
 .View-hour-main .fc .fc-button-primary {
   background-color: var(--primary-button);
+  border-radius: var(--border-radius);
   border: 0;
 }
 
@@ -380,10 +381,10 @@
 }
 
 .View-hour-main .fc-theme-standard .fc-scrollgrid,
-.View-hour-main .fc-theme-standard td,
+/* .View-hour-main .fc-theme-standard td, */
 .View-hour-main .fc-theme-standard th {
   border: 1px solid var(--neutral-light-gray);
-  /* font-weight: bold; */
+  border-radius: var(--border-radius);
   font-size: var(--font-size-h4);
   overflow-x: auto;
 }
@@ -406,6 +407,7 @@
 .View-hour-main .fc .fc-button-primary:not(:disabled):active {
   background-color: var(--sidebar-bg);
   color: var(--secondary-soft-gray);
+  border-radius: var(--border-radius);
   /* padding:  0px 10px; */
 }
 
@@ -418,6 +420,7 @@
 .View-hour-main .fc-direction-rtl .fc-daygrid-event.fc-event-start {
   margin-right: 8px;
   margin-left: 8px;
+  border-radius: var(--border-radius);
 }
 
 .View-hour-main .fc .fc-button-primary:hover {
@@ -507,7 +510,7 @@
   height: 15px;
   display: inline-block;
   margin-right: 8px;
-  border-radius: 2px;
+  border-radius: var(--border-radius);
 }
 
 .indicate-color {
@@ -542,6 +545,14 @@
 
 .View-hour-main .fc-daygrid-day-events .fc-daygrid-block-event .fc-event-title {
   padding: 3px;
+}
+
+.View-hour-main
+  .fc-direction-ltr
+  .fc-button-group
+  > .fc-button:not(:last-child),
+.fc-direction-ltr .fc-button-group > .fc-button:not(:first-child) {
+  border-radius: var(--border-radius);
 }
 
 @media (max-width: 767px) {

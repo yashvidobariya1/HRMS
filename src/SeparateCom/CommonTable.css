@@ -160,11 +160,18 @@
   scrollbar-width: thin;
   margin: 20px 0;
   background-color: var(--primary-text-white);
+  border-radius: var(--border-radius) !important;
+}
+
+.custom-table table {
+  border-collapse: separate;
+  border-radius: var(--border-radius);
 }
 
 .custom-table .MuiTableHead-root {
   color: var(--sidebar-title-primary-white);
   background-color: var(--table-heading-neutral-dark-blue);
+  border-collapse: separate;
 }
 
 /* .custom-table .css-155k23g-MuiTableCell-root {
@@ -194,7 +201,7 @@
   margin-right: 10px;
 }
 
-.custom-table .MuiPaper-root .MuiPaper-elevation {
+/* .custom-table .MuiPaper-root .MuiPaper-elevation {
   margin: 10px 0;
   border-radius: 0;
   width: 100%;
@@ -202,7 +209,15 @@
   border: 1px solid var(--neutral-light-gray);
   table-layout: auto;
   background-color: var(--primary-text-white) !important;
+} */
+
+/* .action-button .MuiMenu-list ul {
+  border-radius: 20px !important;
 }
+
+.action-button .MuiPaper-rounded {
+  border-radius: 20px !important;
+} */
 
 .custom-table .MuiTableCell-root .MuiTableCell-body {
   font-size: 15px !important;
@@ -361,6 +376,23 @@
   color: var(--primary-text-white);
 }
 
+.custom-table .MuiPaper-root .MuiPaper-elevation {
+  border-radius: var(--border-radius);
+}
+
+.employee-template .MuiSelect-select {
+  padding: 8px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+  width: 120px;
+}
+
+.employee-template .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media (max-width: 768px) {
   .custom-table {
     font-size: 12px;
@@ -382,7 +414,7 @@
   /* .commontable-searchbar .MuiOutlinedInput-root {
     padding: 3px;
   }
-
+                   
   .commontable-searchbar .MuiInputLabel-root {
     font-size: 12px;
   }
@@ -392,10 +424,16 @@
   } */
 }
 
-@media (max-width: 600px) {
+@media (max-width: 575px) {
   .custom-table .MuiTableCell-root {
     padding: 10px;
     font-size: 12px !important;
+  }
+
+  .employee-template .MuiSelect-select {
+    padding: 4px;
+    font-size: 12px;
+    width: 100px;
   }
 
   /* .css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root {

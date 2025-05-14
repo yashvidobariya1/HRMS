@@ -37,9 +37,32 @@
   color: var(--secondary-dark-gray) !important;
 }
 
-.JobTitle-input {
+/* .JobTitle-input {
   padding: 5px 5px;
   margin-top: 0px;
+} */
+
+.JobTitle-input-dropdown {
+  margin: 0;
+  padding: 5px 10px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  max-width: max-content;
+  outline: none;
+}
+
+.JobTitle-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.JobTitle-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
 }
 
 @media screen and (max-width: 767px) {
@@ -53,7 +76,7 @@
     width: 100%;
   }
 
-  .JobTitle-input {
+  .JobTitle-input-dropdown {
     padding: 3px !important;
   }
 }

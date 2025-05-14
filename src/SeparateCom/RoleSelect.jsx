@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./RoleSelect.css";
+import { MenuItem, Select } from "@mui/material";
 
 const JobTitleForm = ({ onClose, jobTitledata, onJobTitleSelect }) => {
   const [jobTitle, setJobTitle] = useState("");
@@ -22,7 +23,7 @@ const JobTitleForm = ({ onClose, jobTitledata, onJobTitleSelect }) => {
       <form onSubmit={handleSubmit} className="roleselect-modal">
         <h1>Select Job Role</h1>
         <div className="jobtitleselect">
-          <select
+          {/* <select
             className="Roleselcet-input"
             value={jobTitle}
             onChange={(e) => {
@@ -38,7 +39,35 @@ const JobTitleForm = ({ onClose, jobTitledata, onJobTitleSelect }) => {
                 {title.jobName}
               </option>
             ))}
-          </select>
+          </select> */}
+          <Select
+            className="Roleselcet-input-dropdown"
+            value={jobTitle}
+            onChange={(e) => {
+              setJobTitle(e.target.value);
+              setError("");
+            }}
+            displayEmpty
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  width: 200,
+                  textOverflow: "ellipsis",
+                  maxHeight: 200,
+                  whiteSpace: "nowrap",
+                },
+              },
+            }}
+          >
+            <MenuItem value="" disabled>
+              Select a Job Title
+            </MenuItem>
+            {jobTitledata?.map((title, index) => (
+              <MenuItem key={index} value={title.jobId}>
+                {title.jobName}
+              </MenuItem>
+            ))}
+          </Select>
           {error && <p className="error-text role-select-error">{error}</p>}
         </div>
         <button type="submit" className="rolemodal-buttons">

@@ -25,6 +25,7 @@ const Settings = () => {
   const [companiesPerPage, setCompaniesPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [totalCompany, settotalCompany] = useState([]);
 
@@ -37,16 +38,11 @@ const Settings = () => {
   };
 
   const HandleAddCompanyList = () => {
-    navigate("/settings/addCompany");
+    navigate("/company/addCompany");
   };
 
   const HandleEditCompany = async (id) => {
-    navigate(`/settings/editcompany/${id}`);
-    setShowDropdownAction(null);
-  };
-
-  const HandleAddEmployee = async (id) => {
-    navigate(`/employees/addemployee?companyId=${id}`);
+    navigate(`/company/editcompany/${id}`);
     setShowDropdownAction(null);
   };
 
@@ -60,7 +56,7 @@ const Settings = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getallcompany?page=${currentPage}&limit=${companiesPerPage}&search=${searchQuery}`
+        `/getallcompany?page=${currentPage}&limit=${companiesPerPage}&search=${debouncedSearch}`
       );
 
       if (response?.data?.status === 200) {
@@ -87,7 +83,7 @@ const Settings = () => {
       const response = await PostCall(`/deleteCompany/${id}`);
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
-        navigate("/settings");
+        navigate("/company");
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -107,6 +103,16 @@ const Settings = () => {
     setCurrentPage(1);
   }, [searchQuery]);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   const tableHeaders = ["Business Name", "Company Code", "City", "Action"];
 
   const handleSettingPerPageChange = (e) => {
@@ -114,21 +120,11 @@ const Settings = () => {
     setCurrentPage(1);
   };
 
-  // const HandleGenerateQrCode = (id) => {
-  //   navigate(`/settings/generateqrcode?companyId=${id}`);
+  // const HandleViewHoliday = (id) => {
+  //   navigate(`/company/holidays/${id}`);
   // };
 
-  const HandleClientList = (id) => {
-    navigate(`/settings/client/?companyId=${id}`);
-  };
-
-  const settingactions = [
-    // { label: "Edit", onClick: HandleEditCompany },
-    // { label: "Delete", onClick: HandleDeleteCompany },
-    { label: "Add Employee", onClick: HandleAddEmployee },
-    { label: "Client list", onClick: HandleClientList },
-    // { label: "QRCode", onClick: HandleGenerateQrCode },
-  ];
+  const settingactions = [];
 
   if (userRole === "Superadmin") {
     settingactions.push(
@@ -142,6 +138,13 @@ const Settings = () => {
       }
     );
   }
+
+  // if (userRole === "Superadmin" || userRole === "Administrator") {
+  //   settingactions.push({
+  //     label: "Holidays",
+  //     onClick: HandleViewHoliday,
+  //   });
+  // }
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);

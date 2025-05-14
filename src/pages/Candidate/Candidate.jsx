@@ -24,6 +24,7 @@ const Candidate = () => {
   const [candidatePerPage, setCandidatePerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalcandidatePost, settotalcandidatePost] = useState([]);
   const companyId = useSelector((state) => state.companySelect.companySelect);
 
@@ -45,7 +46,7 @@ const Candidate = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllCandidates?page=${currentPage}&limit=${candidatePerPage}&search=${searchQuery}&companyId=${companyId}`
+        `/getAllCandidates?page=${currentPage}&limit=${candidatePerPage}&search=${debouncedSearch}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
@@ -87,8 +88,8 @@ const Candidate = () => {
   const tableHeaders = [
     "First name",
     "Last name",
-    "candidate Email",
-    "Mobile Number",
+    "Candidate Email",
+    "Contact",
     "Dowload",
     // "Action",
   ];
@@ -126,7 +127,17 @@ const Candidate = () => {
   useEffect(() => {
     GetCandidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, candidatePerPage, searchQuery]);
+  }, [currentPage, candidatePerPage, debouncedSearch]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   return (
     <div className="candidate-list-container">

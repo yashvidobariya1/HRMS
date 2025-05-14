@@ -101,10 +101,36 @@
   color: var();
 }
 
+.addleave-input-dorpdown {
+  margin-top: 5px;
+  padding: 13px;
+  font-weight: 800;
+  border-radius: var(--border-radius);
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.addleave-input-dorpdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.addleave-input-dorpdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media (max-width: 767px) {
   .addleave-input-container,
   .addleave-date-group {
     margin: 10px 0;
+  }
+
+  .addleave-input-dropdown {
+    padding: 11px;
   }
 }
 
@@ -141,5 +167,13 @@
 
   .pension-leave {
     gap: 1px;
+  }
+
+  .addleave-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .addleave-input-dropdown {
+    padding: 7px;
   }
 }

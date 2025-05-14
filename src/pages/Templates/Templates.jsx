@@ -23,6 +23,7 @@ import {
   Checkbox,
   ListItemText,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const Templates = () => {
   const [loading, setLoading] = useState(false);
@@ -47,6 +48,8 @@ const Templates = () => {
   const [assignUser, setassignUser] = useState([]);
   const [signatureRequired, setSignatureRequired] = useState(false);
 
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const allowedFileTypes = [
     // "application/pdf",
     // "text/html",
@@ -151,7 +154,7 @@ const Templates = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllTemplates?page=${currentPage}&limit=${templatePerPage}&search=${searchQuery}`
+        `/getAllTemplates?page=${currentPage}&limit=${templatePerPage}&search=${debouncedSearch}`
       );
 
       if (response?.data?.status === 200) {
@@ -281,7 +284,7 @@ const Templates = () => {
 
   const HandleAssigntemplate = async (id) => {
     try {
-      const response = await GetCall("/getAllUsers");
+      const response = await GetCall(`/getAllUsers?companyId=${companyId}`);
 
       if (response?.data?.status === 200) {
         setassignUser(response?.data?.users);
@@ -332,7 +335,7 @@ const Templates = () => {
   ];
 
   const handleAction = (id) => {
-  setShowDropdownAction(showDropdownAction === id ? null : id);
+    setShowDropdownAction(showDropdownAction === id ? null : id);
   };
 
   // const cancelEdit = () => {
@@ -354,9 +357,19 @@ const Templates = () => {
   };
 
   useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
     getTemplate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, templatePerPage, searchQuery]);
+  }, [currentPage, templatePerPage, debouncedSearch]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -461,7 +474,8 @@ const Templates = () => {
         </div>
 
         <h5>
-          Use following place holder in Template : {process.env.REACT_APP_TEMPLATE_PLACEHOLDERS}
+          Use following place holder in Template :{" "}
+          {process.env.REACT_APP_TEMPLATE_PLACEHOLDERS}
         </h5>
       </div>
       <TextField
@@ -527,6 +541,7 @@ const Templates = () => {
                 <Select
                   multiple
                   value={selectedAssignuser}
+                  className="template-input-dropdwon"
                   onChange={(e) => setSelectedAssignuser(e.target.value)}
                   MenuProps={{
                     PaperProps: {

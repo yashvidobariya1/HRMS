@@ -24,14 +24,48 @@
   margin: 5px 0;
 }
 
+.loggeduserlist-timeperoid-dropdown {
+  margin-top: 5px;
+  padding: 13px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.loggeduserlist-timeperoid-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.loggeduserlist-timeperoid-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media (max-width: 767px) {
   .loggeduserlist-timeperoid {
     padding: 5px 10px !important;
+  }
+
+  .loggeduserlist-timeperoid-dropdown {
+    padding: 11px;
   }
 }
 
 @media (max-width: 575px) {
   .loggeduserlist-action {
     gap: 5px;
+  }
+
+  .loggeduserlist-timeperoid-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .loggeduserlist-timeperoid-dropdown {
+    padding: 7px;
   }
 }

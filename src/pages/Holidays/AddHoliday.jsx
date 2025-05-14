@@ -10,17 +10,15 @@ import moment from "moment";
 
 const AddHoliday = () => {
   const navigate = useNavigate();
-  const { locationId, id } = useParams();
+  const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  // const currentDate = new Date().toISOString().split("T")[0];
   const currentDate = moment().format("YYYY-MM-DD");
-  // const currentDate = moment().format("L");
-  const userRole = useSelector((state) => state.userInfo.userInfo.role);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const [formData, setFormData] = useState({
     date: "",
     occasion: "",
-    locationId,
+    companyId,
   });
 
   const handleChange = (e) => {
@@ -70,19 +68,13 @@ const AddHoliday = () => {
 
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
-        if (userRole === "Superadmin") {
-          // console.log("locationid", locationId);
-          navigate(`/location/holidays/holidaylist/${formData.locationId}`);
-        } else {
-          // console.log("without locationid", locationId);
-          navigate(`/holidays/holidaylist`);
-        }
+        navigate(`/holidays/holidaylist`);
       } else {
-        showToast(response?.data?.message, "error-text");
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error:", error);
-      showToast("An error occurred", "error-text");
+      showToast("An error occurred", "error");
     } finally {
       setLoading(false);
     }

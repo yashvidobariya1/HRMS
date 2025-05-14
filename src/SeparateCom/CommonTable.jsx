@@ -406,7 +406,7 @@ const CommonTable = ({
     "Last Access Time": "LastTimeLoggedOut",
     Active: "IsActive",
     Browser: "UsedBrowser",
-    Date: "absencesheetdate",
+    "Absence Date": "absencesheetdate",
     "Job Title": "Name",
     "Annual Salary": "annualSalary",
     "Joining Date": "joiningDate",
@@ -422,8 +422,8 @@ const CommonTable = ({
     Client: "clientName",
     "First name": "Name",
     "Last name": "lastname",
-    "Mobile Number": "phonenumber",
-    "candidate Email": "email",
+    "Contact": "phonenumber",
+    "Candidate Email": "email",
     "QRCode Value": "Name",
     Date: "timesheetdate",
     status: "timesheetstatus",
@@ -431,6 +431,11 @@ const CommonTable = ({
     "Total Hours": "totalHours",
     OverTime: "overTime",
     "Timesheet Status": "timesheetstatus",
+    "ClockIn Time": "clockin",
+    "ClockOut Time": "clockout",
+    "Working Time": "workingTime",
+    "Job Title Name": "Name",
+    "Client name": "clientName"
   };
 
   const handleSort = (key) => {
@@ -674,7 +679,7 @@ const CommonTable = ({
                                   }}
                                   onClick={() => window.open(item[key])}
                                 >
-                                  Link
+                                  Apply Link
                                 </p>
                               </>
                             ) : (
@@ -850,6 +855,11 @@ const CommonTable = ({
                               Boolean(anchorEl) && selectedRow === item?._id
                             }
                             onClose={handleMenuClose}
+                            PaperProps={{
+                              style: {
+                                borderRadius: "var(--border-radius)",
+                              },
+                            }}
                           >
                             {actions?.actionsList
                               .filter(
@@ -863,6 +873,7 @@ const CommonTable = ({
                               )
                               .map((action, id) => (
                                 <MenuItem
+                                  className="action-button"
                                   key={id}
                                   disabled={
                                     (["Approved", "Rejected"].includes(

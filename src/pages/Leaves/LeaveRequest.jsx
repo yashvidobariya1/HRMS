@@ -27,6 +27,7 @@ const LeavesRequest = () => {
   const [errors, setErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalLeaves, setTotalLeaves] = useState([]);
   const [approvedLeaveHours, setApprovedLeaveHours] = useState(0);
   const [totalLeavesHours, setTotalLeavesHours] = useState(0);
@@ -63,7 +64,7 @@ const LeavesRequest = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllLeaveRequest?page=${currentPage}&limit=${leavePerPage}&search=${searchQuery}&companyId=${companyId}`
+        `/getAllLeaveRequest?page=${currentPage}&limit=${leavePerPage}&search=${debouncedSearch}&companyId=${companyId}`
       );
       if (response?.data?.status === 200) {
         setLeaveList(response?.data?.allLeaveRequests);
@@ -241,6 +242,16 @@ const LeavesRequest = () => {
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   return (

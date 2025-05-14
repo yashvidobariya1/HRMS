@@ -5,10 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { GetCall } from "../ApiServices";
 import { setJobRoleSelect } from "../store/selectJobeRoleSlice";
 import "./Subheader.css";
+import { MenuItem, Select } from "@mui/material";
+import JobTitles from "../pages/JobTitles/JobTitles";
 
 const pageNames = {
   dashboard: "Dashboard",
   settings: "Settings",
+  company: "Company",
   addCompany: "Add Company",
   editcompany: "Update Company",
   contact: "Contact",
@@ -50,6 +53,8 @@ const pageNames = {
   editjob: "Update Job",
   applyjob: "Apply Job",
   clients: "Clients",
+  jobtitles: "Job Titles",
+  addjobtitles: "Add Job Title",
 };
 
 const Subheader = () => {
@@ -119,20 +124,41 @@ const Subheader = () => {
       <div className="home-subheader-content">
         <p className="page-title">{formatPageName(location.pathname)}</p>
         {jobTitleData.length > 1 && (
-          <select
-            className="JobTitle-input"
+          // <select
+          //   className="JobTitle-input"
+          //   value={selectedJob?.jobName || ""}
+          //   onChange={handleJobTitleChange}
+          // >
+          //   <option value="" disabled>
+          //     Select a Job Title
+          //   </option>
+          //   {jobTitleData?.map((title) => (
+          //     <option key={title.jobId} value={title.jobName}>
+          //       {title.jobName}
+          //     </option>
+          //   ))}
+          // </select>
+          <Select
+            className="JobTitle-input-dropdown"
             value={selectedJob?.jobName || ""}
             onChange={handleJobTitleChange}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  width: 80,
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxHeight: 80,
+                },
+              },
+            }}
           >
-            <option value="" disabled>
-              Select a Job Title
-            </option>
-            {jobTitleData?.map((title) => (
-              <option key={title.jobId} value={title.jobName}>
+            {jobTitleData.map((title) => (
+              <MenuItem key={title.jobId} value={title.jobName}>
                 {title.jobName}
-              </option>
+              </MenuItem>
             ))}
-          </select>
+          </Select>
         )}
       </div>
     </section>

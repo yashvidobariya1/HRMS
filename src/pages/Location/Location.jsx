@@ -23,6 +23,7 @@ const Location = () => {
   const [locationPerPage, setLocationPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalLocations, settotalLocations] = useState([]);
   const companyId = useSelector((state) => state.companySelect.companySelect);
 
@@ -63,7 +64,7 @@ const Location = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllLocation?page=${currentPage}&limit=${locationPerPage}&search=${searchQuery}&companyId=${companyId}`
+        `/getAllLocation?page=${currentPage}&limit=${locationPerPage}&search=${debouncedSearch}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
@@ -117,10 +118,10 @@ const Location = () => {
     navigate(`/location/generateqrcode?locationId=${id}`);
   };
 
-  const HandleViewHoliday = (id) => {
-    // console.log("id", id);
-    navigate(`/location/holidays/${id}`);
-  };
+  // const HandleViewHoliday = (id) => {
+  //   // console.log("id", id);
+  //   navigate(`/location/holidays/${id}`);
+  // };
 
   const actionsList = [
     {
@@ -132,10 +133,10 @@ const Location = () => {
       onClick: HandleDeleteLocation,
     },
     { label: "QRCode", onClick: HandleGenerateQrCode },
-    {
-      label: "Holiday",
-      onClick: HandleViewHoliday,
-    },
+    // {
+    //   label: "Holiday",
+    //   onClick: HandleViewHoliday,
+    // },
   ];
 
   const handleSearchChange = (event) => {
@@ -145,10 +146,20 @@ const Location = () => {
   useEffect(() => {
     GetLocations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, locationPerPage, searchQuery, companyId]);
+  }, [currentPage, locationPerPage, debouncedSearch, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   return (

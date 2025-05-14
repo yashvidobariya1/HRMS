@@ -31,6 +31,28 @@
   border: 1px solid var(--neutral-light-gray);
 }
 
+.profile-input-dropdown {
+  margin-top: 5px;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.profile-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.profile-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 .profile-div-section {
   display: flex;
   width: 70%;
@@ -57,6 +79,7 @@
 }
 
 .profile-document {
+  width: 100%;
   color: var(--primary-button);
 }
 
@@ -64,14 +87,13 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-width: 150px;
 }
 
 .profile-addDocument-flex {
   display: flex;
   /* gap: 20px; */
   justify-content: flex-start;
-  margin-top: 30px;
+  margin-top: 19px;
   /* align-items: center; */
 }
 
@@ -80,8 +102,67 @@
   padding: 15px;
   font-size: var(--font-size-h3);
   color: var(--primary-text-white);
+  border-radius: var(--border-radius);
   border: none;
   background-color: var(--primary-button);
+}
+
+.profile-input-upload {
+  padding: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.profile-file-contract {
+  display: flex;
+  gap: 5px;
+  height: max-content;
+  margin-top: 5px;
+  padding: 10px 15px;
+  min-width: 200px;
+  align-items: center;
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
+}
+
+.profile-custom-file-upload {
+  border-radius: var(--border-radius);
+  background-color: var(--primary-button);
+  color: var(--primary-text-white);
+  padding: 5px;
+  justify-content: center;
+  font-size: 14px;
+  align-items: center;
+  cursor: pointer;
+  width: 80px;
+  margin: 0;
+}
+
+.profile-fileupload-name {
+  margin: 0px;
+  color: var(--secondary-dark-gray);
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  width: 150px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.profile-fileupload-name p {
+  margin: 0;
+  font-weight: 300;
+  font-size: 12px;
+  width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-custom-file-upload:hover {
+  background-color: var(--button-hover);
 }
 
 @media (max-width: 992px) {
@@ -156,5 +237,13 @@
 
   .profile-document h2 {
     font-size: 14px;
+  }
+
+  .profile-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .profile-input-dropdown {
+    padding: 7px;
   }
 }

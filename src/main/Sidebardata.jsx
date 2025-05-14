@@ -1,13 +1,15 @@
 import React from "react";
 import { FaUsers } from "react-icons/fa6";
 // import { RxDashboard } from "react-icons/rx";
-import { IoSettingsOutline } from "react-icons/io5";
+// import { IoSettingsOutline } from "react-icons/io5";
+import { FaUserTie } from "react-icons/fa6";
+import { PiBuildingOfficeFill } from "react-icons/pi";
 import { TbContract } from "react-icons/tb";
 import { TiLocationOutline } from "react-icons/ti";
 import { RiBookletLine } from "react-icons/ri";
 import { FaUserGroup } from "react-icons/fa6";
 import { HiMiniArrowLeftStartOnRectangle } from "react-icons/hi2";
-import { FaTasks, FaUmbrellaBeach } from "react-icons/fa";
+import { FaBriefcase, FaTasks, FaUmbrellaBeach } from "react-icons/fa";
 import { TbReportSearch } from "react-icons/tb";
 import { TbClockHour7 } from "react-icons/tb";
 import { LiaHourglassStartSolid } from "react-icons/lia";
@@ -26,16 +28,22 @@ export const SidebarData = [
       //   allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
       // },
       {
-        title: "Settings",
-        icon: <IoSettingsOutline />,
-        link: "/settings",
+        title: "Company",
+        icon: <PiBuildingOfficeFill />,
+        link: "/company",
         allowedRoles: ["Superadmin", "Administrator"],
       },
       {
         title: "Clients",
-        icon: <FaUserGroup />,
+        icon: <FaUserTie />,
         link: "/clients",
-        allowedRoles: ["Superadmin", "Administrator", "Manager"],
+        allowedRoles: ["Superadmin", "Administrator"],
+      },
+      {
+        title: "Client Reports",
+        icon: <FaUserTie />,
+        link: "/reportlist",
+        allowedRoles: ["Superadmin", "Administrator"],
       },
       {
         title: "Employment Contract",
@@ -93,7 +101,7 @@ export const SidebarData = [
         title: "Holidays",
         icon: <FaUmbrellaBeach />,
         link: "/holidays",
-        allowedRoles: ["Administrator", "Manager", "Employee"],
+        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
       },
       {
         title: "Absence Report",
@@ -149,15 +157,15 @@ export const SidebarData = [
       },
     ],
   },
-  // {
-  //   section: "Job Titles",
-  //   items: [
-  //     {
-  //       title: "Jobs",
-  //       icon: <FaBriefcase />,
-  //       link: "/jobtitles",
-  //       allowedRoles: ["Superadmin"],
-  //     },
-  //   ],
-  // },
+  {
+    section: "Job Titles",
+    items: [
+      {
+        title: "Jobs",
+        icon: <FaBriefcase />,
+        link: "/jobtitles",
+        allowedRoles: ["Superadmin"],
+      },
+    ],
+  },
 ];
