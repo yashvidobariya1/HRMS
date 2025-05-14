@@ -117,9 +117,12 @@
   display: flex;
   gap: 5px;
   height: max-content;
+  margin-top: 5px;
   padding: 10px 15px;
+  min-width: 200px;
   align-items: center;
   border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
 }
 
 .profile-custom-file-upload {
@@ -151,6 +154,10 @@
   margin: 0;
   font-weight: 300;
   font-size: 12px;
+  width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-custom-file-upload:hover {

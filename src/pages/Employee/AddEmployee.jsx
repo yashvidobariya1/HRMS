@@ -777,6 +777,15 @@ const AddEmployee = () => {
         } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
           newErrors.phone = "Phone number must be exactly 11 digits";
         }
+        const phone = formData.personalDetails?.homeTelephone;
+        if (phone) {
+          if (!/^\d+$/.test(phone)) {
+            newErrors.homeTelephone = "Home telephone must contain only digits";
+          } else if (phone.length !== 11) {
+            newErrors.homeTelephone =
+              "Home telephone must be exactly 11 digits";
+          }
+        }
         const email = formData?.personalDetails?.email;
         if (!email) {
           newErrors.email = "Email is required";

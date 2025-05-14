@@ -7,6 +7,7 @@ import "./AddLeaves.css";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { MenuItem, Select } from "@mui/material";
+import AssignClient from "../../SeparateCom/AssignClient";
 
 const AddLeaves = () => {
   const navigate = useNavigate();
@@ -14,6 +15,9 @@ const AddLeaves = () => {
   // const queryParams = new URLSearchParams(location.search);
   // const jobId = queryParams.get("jobId");
   const jobId = useSelector((state) => state.jobRoleSelect.jobRoleSelect.jobId);
+  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [Clientdata, setClientdata] = useState([]);
   const [calculatedDays, setCalculatedDays] = useState(0);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -26,6 +30,9 @@ const AddLeaves = () => {
   const { id } = useParams();
   const Jobtitle = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobName
+  );
+  const jobRoleId = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
   // console.log("Jobtitle", Jobtitle);
 
@@ -200,6 +207,7 @@ const AddLeaves = () => {
         response = await PostCall("/leaveRequest", {
           ...formData,
           jobId,
+          clientId: selectedClientId,
         });
       }
 
@@ -213,6 +221,38 @@ const AddLeaves = () => {
     } catch (error) {
       console.log("error-text", error);
     }
+  };
+
+  const GetClientdata = async () => {
+    try {
+      const response = await PostCall(`/getUsersAssignClients`, {
+        jobId: jobRoleId,
+      });
+
+      if (response?.data?.status === 200) {
+        const jobTitles = response.data.assignClients;
+        console.log("job title", jobTitles);
+        setClientdata(jobTitles);
+
+        if (jobTitles.length > 1) {
+          setopenClietnSelectModal(false);
+        } else {
+          setSelectedClientId(jobTitles[0]?.clientId);
+          setopenClietnSelectModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handlePopupClose = () => {
+    setopenClietnSelectModal(true);
+  };
+
+  const handleClientSelect = (selectedTitle) => {
+    setSelectedClientId(selectedTitle);
+    setopenClietnSelectModal(true);
   };
 
   useEffect(() => {
@@ -271,12 +311,23 @@ const AddLeaves = () => {
   //   }
   // };
 
+  useEffect(() => {
+    GetClientdata();
+  }, [jobRoleId]);
+
   if (loading) {
     return <Loader />;
   }
 
   return (
     <div className="Addleave-container">
+      {!openClietnSelectModal && Clientdata.length > 1 && (
+        <AssignClient
+          onClose={handlePopupClose}
+          Clientdata={Clientdata}
+          onClientSelect={handleClientSelect}
+        />
+      )}
       <div className="Addleave-step-content">
         <form onSubmit={handleSubmit} className="addleave-flex">
           <div className="addleave-input-container date-group">

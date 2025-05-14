@@ -235,7 +235,7 @@
 
 // =================fullcalender=====================
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -250,6 +250,7 @@ import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import Loader from "../Helper/Loader";
+import { MenuItem, Select } from "@mui/material";
 
 const Holidays = () => {
   const [events, setEvents] = useState([]);
@@ -261,9 +262,12 @@ const Holidays = () => {
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   const [showConfirm, setShowConfirm] = useState(false);
   const [holidayId, setholidayId] = useState("");
+  // const startDate = "2022-01-01";
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const startYear = moment(startDate).year();
   const currentYear = moment().year();
+  const calendarRef = useRef(null);
   const allowedYears = Array.from(
     { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
@@ -447,6 +451,19 @@ const Holidays = () => {
     }
   };
 
+  const handleTodayClick = () => {
+    const now = moment();
+    const currentYear = now.year();
+    const currentMonth = now.month() + 1;
+    setSelectedYear(currentYear);
+    setSelectedMonth(currentMonth);
+
+    if (calendarRef.current) {
+      calendarRef.current.getApi().today();
+      setSelectedYear(currentYear);
+    }
+  };
+
   useEffect(() => {
     getAllHoliday();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -471,7 +488,7 @@ const Holidays = () => {
       {(userRole === "Superadmin" || userRole === "Administrator") && (
         <div className="View-holiday-list">
           <div className="Holiday-select-dopdown">
-            <select
+            {/* <select
               id="year-select"
               value={selectedYear}
               onChange={handleYearChange}
@@ -482,7 +499,33 @@ const Holidays = () => {
                   {year}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              id="year-select"
+              value={selectedYear}
+              onChange={handleYearChange}
+              className="holiday-year-dropdown"
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 100,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 200,
+                  },
+                },
+              }}
+            >
+              <MenuItem value="" disabled>
+                Select year
+              </MenuItem>
+              {allowedYears.map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
           </div>
 
           <div className="indicate-color-holiday">
@@ -503,7 +546,11 @@ const Holidays = () => {
         <div>
           <FullCalendar
             key={selectedYear}
+            ref={calendarRef}
             plugins={[dayGridPlugin, interactionPlugin]}
+            initialDate={moment(
+              `${selectedYear}-${String(selectedMonth).padStart(2, "0")}-01`
+            ).toDate()}
             initialView="dayGridMonth"
             dateClick={(info) => {
               if (userRole === "Superadmin" || userRole === "Administrator") {
@@ -517,6 +564,12 @@ const Holidays = () => {
               right: "next today",
               center: "title",
               left: "prev",
+            }}
+            customButtons={{
+              today: {
+                text: "Today",
+                click: handleTodayClick,
+              },
             }}
             validRange={{
               start: startDate,
@@ -537,7 +590,7 @@ const Holidays = () => {
               });
             }}
             datesSet={(info) => {
-              const currentYear = info.view.currentStart.getFullYear();
+              setSelectedMonth(selectedMonth);
               setSelectedYear(selectedYear);
             }}
           />

@@ -117,7 +117,7 @@ const JobTitles = () => {
     }
   };
 
-  const headers = ["job Titles Name", "Status", "Action"];
+  const headers = ["Job Title Name", "Status", "Action"];
 
   const handlePerPageChange = (e) => {
     // setjobTitlesPerPage(parseInt(e.target.value, 10));
@@ -176,7 +176,7 @@ const JobTitles = () => {
         </div>
         <div className="jobTitleslist-action">
           <CommonAddButton
-            label="Add jobTitles"
+            label="Add Job Titles"
             icon={FaLocationDot}
             onClick={GoTOAddjobTitles}
           />

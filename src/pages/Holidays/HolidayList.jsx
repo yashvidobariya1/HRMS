@@ -178,11 +178,21 @@ const HolidayList = () => {
                 })}
               </select> */}
               <Select
-                labelId="year-select-label"
                 id="year-select"
                 value={selectedYear}
                 onChange={handleYearChange}
-                label="Year"
+                className="holiday-year-select"
+                displayEmpty
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      width: 100,
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      maxHeight: 200,
+                    },
+                  },
+                }}
               >
                 {[...Array(currentYear - startYear + 1)].map((_, index) => {
                   const year = startYear + index;

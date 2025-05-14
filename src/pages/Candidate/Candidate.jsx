@@ -89,7 +89,7 @@ const Candidate = () => {
     "First name",
     "Last name",
     "candidate Email",
-    "Mobile Number",
+    "Mobile number",
     "Dowload",
     // "Action",
   ];

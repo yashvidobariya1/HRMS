@@ -406,7 +406,7 @@ const CommonTable = ({
     "Last Access Time": "LastTimeLoggedOut",
     Active: "IsActive",
     Browser: "UsedBrowser",
-    Date: "absencesheetdate",
+    "Absence Date": "absencesheetdate",
     "Job Title": "Name",
     "Annual Salary": "annualSalary",
     "Joining Date": "joiningDate",
@@ -422,7 +422,7 @@ const CommonTable = ({
     Client: "clientName",
     "First name": "Name",
     "Last name": "lastname",
-    "Mobile Number": "phonenumber",
+    "Mobile number": "phonenumber",
     "candidate Email": "email",
     "QRCode Value": "Name",
     Date: "timesheetdate",
@@ -434,7 +434,7 @@ const CommonTable = ({
     "ClockIn Time": "clockin",
     "ClockOut Time": "clockout",
     "Working Time": "workingTime",
-    "job Titles Name": "Name",
+    "Job Title Name": "Name",
   };
 
   const handleSort = (key) => {

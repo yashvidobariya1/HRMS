@@ -50,7 +50,7 @@ const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYear = moment().year();
-  const currentYearEnd = moment().endOf("year");
+  const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   // const currentYearEnd = "2027-01-01";
   const [events, setEvents] = useState([]);
   const [locationList, setLocationList] = useState([]);
@@ -82,11 +82,12 @@ const Dashboard = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const dispatch = useDispatch();
-  const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  // const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  const startDate = "2022-01-01";
   const startYear = moment(startDate).year();
   const calendarRef = useRef(null);
   const allowedYears = Array.from(
-    { length: currentYear - startYear + 4 },
+    { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
   );
 
@@ -480,10 +481,10 @@ const Dashboard = () => {
   };
 
   const handleYearChange = (event) => {
-    console.log("new year", event.target.value);
+    // console.log("new year", event.target.value);
     const newYear = parseInt(event.target.value, 10);
     setSelectedYear(newYear);
-    console.log("set year", selectedYear);
+    // console.log("set year", selectedYear);
   };
 
   const handleTodayClick = () => {
@@ -492,6 +493,11 @@ const Dashboard = () => {
     const currentMonth = now.month() + 1;
     setSelectedYear(currentYear);
     setSelectedMonth(currentMonth);
+
+    if (calendarRef.current) {
+      calendarRef.current.getApi().today();
+      setSelectedYear(currentYear);
+    }
   };
 
   const previewClose = () => {
@@ -1216,7 +1222,10 @@ const Dashboard = () => {
                     ref={calendarRef}
                     plugins={[dayGridPlugin, interactionPlugin]}
                     initialDate={moment(
-                      `${selectedYear}-${selectedMonth}`
+                      `${selectedYear}-${String(selectedMonth).padStart(
+                        2,
+                        "0"
+                      )}-01`
                     ).toDate()}
                     headerToolbar={{
                       right: "next today",
@@ -1225,7 +1234,7 @@ const Dashboard = () => {
                     }}
                     validRange={{
                       start: startDate,
-                      end: "2027",
+                      end: currentYearEnd,
                     }}
                     customButtons={{
                       today: {
@@ -1239,6 +1248,7 @@ const Dashboard = () => {
                       // const currentYear = info.view.currentStart.getFullYear();
                       // const currentMonth =
                       //   info.view.currentStart.getMonth() + 1;
+
                       setSelectedMonth(selectedMonth);
                       setSelectedYear(selectedYear);
                     }}
