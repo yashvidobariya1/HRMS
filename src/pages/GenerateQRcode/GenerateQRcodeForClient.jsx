@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import { FaDownload } from "react-icons/fa6";
-import "./GenerateQRcode.css";
+import "./GenerateQRcodeForClient.css";
 import { GetCall, PostCall } from "../../ApiServices";
 import { useLocation } from "react-router";
 import { showToast } from "../../main/ToastManager";
@@ -12,11 +12,11 @@ import moment from "moment";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { useSelector } from "react-redux";
 
-const GenerateQRcode = () => {
+const GenerateQRcodeForClient = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const locationId = queryParams.get("locationId");
+  const clientId = queryParams.get("clientId");
   const [showDropdownAction, setShowDropdownAction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -32,11 +32,11 @@ const GenerateQRcode = () => {
     moment().format("YYYYMMDDHHmmssSSS") + Math.floor(Math.random() * 1000)
   }`;
   const [totalQRCodes, settotalQRCodes] = useState([]);
-  console.log("locationId", locationId);
+  console.log("clientId", clientId);
 
   const tableHeaders = [
     "QRCode Value",
-    "Location Name",
+    "Client Name",
     "Company Name",
     "Status",
     "Generated On",
@@ -68,7 +68,7 @@ const GenerateQRcode = () => {
           try {
             setLoading(true);
             const response = await PostCall(
-              `/generateQRCodeForLocation/${locationId}`,
+              `/generateQRCodeForClient/${clientId}`,
               formdata
             );
             // console.log("response", response);
@@ -95,7 +95,7 @@ const GenerateQRcode = () => {
   };
 
   const confirmDelete = async (id) => {
-    setShowConfirm(false); // inactive - active
+    setShowConfirm(false);
     setShowDropdownAction(null);
     try {
       setLoading(true);
@@ -132,11 +132,11 @@ const GenerateQRcode = () => {
     setCurrentPage(1);
   };
 
-  const handleDownloadBase64 = (e, qrURL, locationName, companyName) => {
+  const handleDownloadBase64 = (e, qrURL, clientName, companyName) => {
     e.preventDefault();
 
     const timestamp = moment().format("YYYYMMDD-HHmmss");
-    const fileName = `${locationName}-${companyName}-${timestamp}.png`.replace(
+    const fileName = `${clientName}-${companyName}-${timestamp}.png`.replace(
       /\s+/g,
       "_"
     );
@@ -160,7 +160,7 @@ const GenerateQRcode = () => {
     try {
       setLoading(true);
       const QRs = await GetCall(
-        `/getAllQRCodesForLocation/${locationId}?page=${currentPage}&limit=${qrPerPage}&companyId=${companyId}`
+        `/getAllQRCodesForClient/${clientId}?page=${currentPage}&limit=${qrPerPage}&companyId=${companyId}`
       );
       // console.log(QRs)
       if (QRs?.data?.status === 200) {
@@ -179,17 +179,17 @@ const GenerateQRcode = () => {
   };
 
   useEffect(() => {
-    if (locationId) {
+    if (clientId) {
       GetAllQRs();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationId, currentPage, qrPerPage, companyId]);
+  }, [clientId, currentPage, qrPerPage, companyId]);
 
   return (
-    <div className="qr-generator-container">
-      <div className="qr-generator-section">
+    <div className="client-qr-generator-container">
+      <div className="client-qr-generator-section">
         <h1>QR Code Generator</h1>
-        <div className="generate-qr-button">
+        <div className="client-generate-qr-button">
           {/* <button onClick={handleGenerateQRCode}>Generate QR Code</button> */}
           <CommonAddButton
             label="Generate QR Code"
@@ -205,31 +205,35 @@ const GenerateQRcode = () => {
       ) : (
         <>
           <div className="qr-code" ref={qrCodeRef}>
-            <QRCode className="location-generated-code" value={uniqueQRName} />
+            <QRCode className="client-generated-code" value={uniqueQRName} />
           </div>
           <CommonTable
             headers={tableHeaders}
             data={QRcodeList?.map((qr) => ({
               _id: qr?._id,
               Name: qr?.qrValue,
-              LocationName: qr?.locationName,
+              ClientName: qr?.clientName,
               companyName: qr?.companyName,
               isactive: qr?.isActive ? "Active" : "Inactive",
               date: moment(qr?.createdAt).format("DD-MM-YYYY"),
               qrcode: (
                 <div
-                  className="qr-container"
+                  className="client-qr-container"
                   onClick={(event) =>
                     handleDownloadBase64(
                       event,
                       qr.qrURL,
-                      qr?.locationName,
+                      qr?.clientName,
                       qr?.companyName
                     )
                   }
                 >
-                  <img src={qr.qrURL} alt="QR Code" className="qr-image" />
-                  <FaDownload className="download-icon" />
+                  <img
+                    src={qr.qrURL}
+                    alt="QR Code"
+                    className="client-qr-image"
+                  />
+                  <FaDownload className="client-qr-download-icon" />
                 </div>
               ),
             }))}
@@ -259,4 +263,4 @@ const GenerateQRcode = () => {
   );
 };
 
-export default GenerateQRcode;
+export default GenerateQRcodeForClient;

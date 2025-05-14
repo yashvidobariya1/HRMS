@@ -9,7 +9,6 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { TextField } from "@mui/material";
-import { useSelector } from "react-redux";
 
 const JobTitles = () => {
   const navigate = useNavigate();
@@ -25,7 +24,6 @@ const JobTitles = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totaljobTitless, settotaljobTitless] = useState([]);
-  // const companyId = useSelector((state) => state.companySelect.companySelect);
 
   const handleAction = (id) => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
@@ -117,7 +115,7 @@ const JobTitles = () => {
     }
   };
 
-  const headers = ["job Titles Name", "Status", "Action"];
+  const headers = ["Job Title Name", "Status", "Action"];
 
   const handlePerPageChange = (e) => {
     // setjobTitlesPerPage(parseInt(e.target.value, 10));
@@ -172,7 +170,7 @@ const JobTitles = () => {
     <div className="jobTitles-list-container">
       <div className="jobTitleslist-flex">
         <div className="jobTitleslist-title">
-          <h1>jobTitles List</h1>
+          <h1>Job Title List</h1>
         </div>
         <div className="jobTitleslist-action">
           <CommonAddButton
@@ -183,7 +181,7 @@ const JobTitles = () => {
         </div>
       </div>
       <TextField
-        label="Search jobTitles"
+        label="Search Job Titles"
         variant="outlined"
         size="small"
         value={searchQuery}

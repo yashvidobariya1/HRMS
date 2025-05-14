@@ -120,10 +120,6 @@ const Client = () => {
     setCurrentPage(1);
   };
 
-  const HandleReportList = async (id) => {
-    navigate(`/clients/reportlist?clientId=${id}`);
-  };
-
   const actions = [
     // { label: "Edit", onClick: HandleEditClient },
     // { label: "Delete", onClick: HandleDeleteClient },
@@ -132,6 +128,11 @@ const Client = () => {
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
+  };
+
+  const HandleGenerateQrCode = (id) => {
+    // console.log("id", id);
+    navigate(`/clients/generateqrcode?clientId=${id}`);
   };
 
   useEffect(() => {
@@ -166,8 +167,8 @@ const Client = () => {
     );
   }
 
-  if (userRole === "Superadmin" || userRole === "Administartor") {
-    actions.push({ label: "Reports List", onClick: HandleReportList });
+  if (userRole === "Superadmin" || userRole === "Administrator") {
+    actions.push({ label: "QRCode", onClick: HandleGenerateQrCode });
   }
 
   return (

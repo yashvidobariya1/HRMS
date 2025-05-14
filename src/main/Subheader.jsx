@@ -11,6 +11,7 @@ import JobTitles from "../pages/JobTitles/JobTitles";
 const pageNames = {
   dashboard: "Dashboard",
   settings: "Settings",
+  company: "Company",
   addCompany: "Add Company",
   editcompany: "Update Company",
   contact: "Contact",

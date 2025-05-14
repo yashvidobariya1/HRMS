@@ -227,15 +227,6 @@ tr {
 }
 
 @media (min-width: 768px) and (max-width: 992px) {
-  input,
-  select,
-  textarea {
-    padding: 12px !important;
-    margin-top: 10px;
-    /* border-radius: 10px; */
-    font-size: var(--font-size-small) !important;
-  }
-
   label {
     font-size: var(--font-size-small);
   }

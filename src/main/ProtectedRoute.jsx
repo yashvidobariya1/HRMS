@@ -2,11 +2,16 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
+  const token = localStorage.getItem("token");
   const userInfo = useSelector((state) => state.userInfo.userInfo);
 
   const employeeFormFilled = useSelector(
     (state) => state.employeeformFilled.employeeformFilled
   );
+
+  if (!token) {
+    return <Navigate to="/login" />;
+  }
 
   if (
     employeeFormFilled === false &&

@@ -235,11 +235,11 @@
 
 // =================fullcalender=====================
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { GetCall, PostCall } from "../../ApiServices";
 import "./Holidays.css";
@@ -250,6 +250,7 @@ import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import Loader from "../Helper/Loader";
+import { MenuItem, Select } from "@mui/material";
 
 const Holidays = () => {
   const [events, setEvents] = useState([]);
@@ -263,6 +264,8 @@ const Holidays = () => {
   const [holidayId, setholidayId] = useState("");
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(startDate).year();
+  const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
+  const calendarRef = useRef(null);
   const currentYear = moment().year();
   const allowedYears = Array.from(
     { length: currentYear - startYear + 1 },
@@ -270,30 +273,24 @@ const Holidays = () => {
   );
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const { locationId, id } = useParams();
-  // console.log("locationid", locationId);
-  // console.log("id", id);
   const Navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     date: "",
     occasion: "",
-    locationId: id,
+    companyId,
   });
 
   const getAllHoliday = async () => {
     try {
       setLoading(true);
-      let response;
-      if (id) {
-        response = await GetCall(
-          `/getAllHolidays?locationId=${id}&year=${selectedYear}&companyId=${companyId}`
-        );
-      } else {
-        response = await GetCall(`/getAllHolidays?year=${currentYear}`);
-      }
+      const response = await GetCall(
+        `/getAllHolidays?companyId=${companyId}&year=${selectedYear}`
+      );
       if (response?.data?.status === 200) {
         setAllholidayList(response?.data.holidays);
+      } else if (response?.data?.status === 400) {
+        showToast(response?.data?.message, "warning");
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -326,7 +323,6 @@ const Holidays = () => {
       setFormData({
         _id: existingEvent._id,
         companyId: existingEvent.companyId,
-        locationId: existingEvent.locationId,
         date: existingEvent.date,
         occasion: existingEvent.occasion,
       });
@@ -335,11 +331,23 @@ const Holidays = () => {
         _id: "",
         date: clickedDate,
         occasion: "",
-        locationId: id,
+        companyId,
       });
     }
 
     setIsPopupOpen(true);
+  };
+
+  const handleTodayClick = () => {
+    const now = moment();
+    const currentYear = now.year();
+    const currentMonth = now.month() + 1;
+    setSelectedYear(currentYear);
+    setSelectedMonth(currentMonth);
+    if (calendarRef.current) {
+      calendarRef.current.getApi().today();
+      setSelectedYear(currentYear);
+    }
   };
 
   const handleChange = (e) => {
@@ -362,6 +370,7 @@ const Holidays = () => {
     try {
       setLoading(true);
       let response;
+      console.log("formData", formData);
       if (formData._id) {
         response = await PostCall(`/updateHoliday/${formData._id}`, formData);
       } else {
@@ -384,7 +393,7 @@ const Holidays = () => {
         });
         await getAllHoliday();
         setIsPopupOpen(false);
-        setFormData({ date: "", occasion: "", locationId });
+        setFormData({ date: "", occasion: "" });
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -412,14 +421,13 @@ const Holidays = () => {
         showToast(response?.data?.message, "success");
         setIsPopupOpen(false);
         setShowConfirm(false);
-        // navigate(`/location/holidays/holidaylist/${locationId}`);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
       setIsPopupOpen(false);
     } catch (error) {
-      // console.log("error", error);
+      console.log("error", error);
     }
     getAllHoliday();
   };
@@ -440,17 +448,13 @@ const Holidays = () => {
   };
 
   const handleViewHoliday = () => {
-    if (userRole === "Superadmin") {
-      Navigate(`/location/holidays/holidaylist/${id}`);
-    } else {
-      Navigate(`/holidays/holidaylist`);
-    }
+    Navigate(`/holidays/holidaylist`);
   };
 
   useEffect(() => {
     getAllHoliday();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedYear]);
+  }, [selectedYear, companyId]);
 
   useEffect(() => {
     const transformedEvents = AllholidayList.map((holiday) => ({
@@ -471,7 +475,7 @@ const Holidays = () => {
       {(userRole === "Superadmin" || userRole === "Administrator") && (
         <div className="View-holiday-list">
           <div className="Holiday-select-dopdown">
-            <select
+            {/* <select
               id="year-select"
               value={selectedYear}
               onChange={handleYearChange}
@@ -482,7 +486,33 @@ const Holidays = () => {
                   {year}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              id="year-select"
+              value={selectedYear}
+              onChange={handleYearChange}
+              className="holiday-year-dropdown"
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 100,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 200,
+                  },
+                },
+              }}
+            >
+              <MenuItem value="" disabled>
+                Select year
+              </MenuItem>
+              {allowedYears.map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
           </div>
 
           <div className="indicate-color-holiday">
@@ -503,7 +533,11 @@ const Holidays = () => {
         <div>
           <FullCalendar
             key={selectedYear}
+            ref={calendarRef}
             plugins={[dayGridPlugin, interactionPlugin]}
+            initialDate={moment(
+              `${selectedYear}-${String(selectedMonth).padStart(2, "0")}-01`
+            ).toDate()}
             initialView="dayGridMonth"
             dateClick={(info) => {
               if (userRole === "Superadmin" || userRole === "Administrator") {
@@ -522,6 +556,12 @@ const Holidays = () => {
               start: startDate,
               end: currentYearEnd,
             }}
+            customButtons={{
+              today: {
+                text: "Today",
+                click: handleTodayClick,
+              },
+            }}
             buttonText={{
               today: "Today",
             }}
@@ -537,8 +577,9 @@ const Holidays = () => {
               });
             }}
             datesSet={(info) => {
-              const currentYear = info.view.currentStart.getFullYear();
+              // const currentYear = info.view.currentStart.getFullYear();
               setSelectedYear(selectedYear);
+              setSelectedMonth(selectedMonth);
             }}
           />
         </div>

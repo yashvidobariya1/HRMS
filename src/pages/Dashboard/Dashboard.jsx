@@ -33,7 +33,7 @@ import htmlDocx from "html-docx-js/dist/html-docx";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { setNotificationCount } from "../../store/notificationCountSlice";
 import { useDispatch } from "react-redux";
-import { MenuItem, Select } from "@mui/material";
+import { Select, MenuItem } from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
 
 const Dashboard = () => {
@@ -50,7 +50,7 @@ const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYear = moment().year();
-  const currentYearEnd = moment().endOf("year");
+  const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   // const currentYearEnd = "2027-01-01";
   const [events, setEvents] = useState([]);
   const [locationList, setLocationList] = useState([]);
@@ -86,7 +86,7 @@ const Dashboard = () => {
   const startYear = moment(startDate).year();
   const calendarRef = useRef(null);
   const allowedYears = Array.from(
-    { length: currentYear - startYear + 4 },
+    { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
   );
 
@@ -108,8 +108,8 @@ const Dashboard = () => {
 
   const routeMap = {
     totalEmployees: "/employees",
-    totalCompanies: "/settings",
-    totalClients: "/settings/client",
+    totalCompanies: "/company",
+    totalClients: "/clients",
     totalContracts: "/employmentcontract",
     totalLocations: "/location",
     totalTemplates: "/templates",
@@ -340,6 +340,7 @@ const Dashboard = () => {
 
         if (userData) {
           Object.keys(userData).forEach((key) => {
+            console.log("key", key, "value", userData[key]);
             content = content.replace(
               new RegExp(`{${key}}`, "g"),
               userData[key]
@@ -480,10 +481,8 @@ const Dashboard = () => {
   };
 
   const handleYearChange = (event) => {
-    console.log("new year", event.target.value);
     const newYear = parseInt(event.target.value, 10);
     setSelectedYear(newYear);
-    console.log("set year", selectedYear);
   };
 
   const handleTodayClick = () => {
@@ -492,6 +491,11 @@ const Dashboard = () => {
     const currentMonth = now.month() + 1;
     setSelectedYear(currentYear);
     setSelectedMonth(currentMonth);
+
+    if (calendarRef.current) {
+      calendarRef.current.getApi().today();
+      setSelectedYear(currentYear);
+    }
   };
 
   const previewClose = () => {
@@ -761,7 +765,7 @@ const Dashboard = () => {
             <div className="dashboard-profile-container">
               <h3>Pending Verifing Documents</h3>
               <div className="dashboard-viewprofile">
-                <select
+                {/* <select
                   className="JobTitle-input"
                   value={template?._id || ""}
                   onChange={handleTempalateChange}
@@ -774,7 +778,23 @@ const Dashboard = () => {
                       {template.templateName}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  displayEmpty
+                  defaultValue=""
+                  className="JobTitle-input"
+                  value={template?._id || ""}
+                  onChange={handleTempalateChange}
+                >
+                  <MenuItem value="" disabled>
+                    Select a Template
+                  </MenuItem>
+                  {templateList?.map((template) => (
+                    <MenuItem key={template._id} value={template._id}>
+                      {template.templateName}
+                    </MenuItem>
+                  ))}
+                </Select>
               </div>
             </div>
           )}
@@ -1216,7 +1236,10 @@ const Dashboard = () => {
                     ref={calendarRef}
                     plugins={[dayGridPlugin, interactionPlugin]}
                     initialDate={moment(
-                      `${selectedYear}-${selectedMonth}`
+                      `${selectedYear}-${String(selectedMonth).padStart(
+                        2,
+                        "0"
+                      )}-01`
                     ).toDate()}
                     headerToolbar={{
                       right: "next today",
@@ -1225,7 +1248,7 @@ const Dashboard = () => {
                     }}
                     validRange={{
                       start: startDate,
-                      end: "2027",
+                      end: currentYearEnd,
                     }}
                     customButtons={{
                       today: {

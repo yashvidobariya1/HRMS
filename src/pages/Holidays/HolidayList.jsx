@@ -23,11 +23,11 @@ const HolidayList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [holidayPerPage, setholidayPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
-  const { locationId } = useParams();
+  // const { locationId } = useParams();
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   // console.log("id", locationId);
   const [totalHoliday, setTotalHoliday] = useState([]);
-  const companyId = useSelector((state) => state.companySelect.companySelect);
   const handleAction = (id) => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
@@ -47,11 +47,7 @@ const HolidayList = () => {
   };
 
   const HandleEditHoliday = async (id) => {
-    if (userRole === "Superadmin") {
-      navigate(`/location/holidays/editholiday/${id}`);
-    } else {
-      navigate(`/holidays/editholiday/${id}`);
-    }
+    navigate(`/holidays/editholiday/${id}`);
     setShowDropdownAction(null);
   };
 
@@ -65,15 +61,9 @@ const HolidayList = () => {
     try {
       setLoading(true);
 
-      let url = `/getAllHolidays?page=${currentPage}&limit=${holidayPerPage}&companyId=${companyId}`;
-      if (locationId) {
-        url += `&locationId=${locationId}`;
-      }
-      if (selectedYear) {
-        url += `&year=${selectedYear}`;
-      }
-
-      const response = await GetCall(url);
+      const response = await GetCall(
+        `/getAllHolidays?page=${currentPage}&limit=${holidayPerPage}&year=${selectedYear}&companyId=${companyId}`
+      );
       if (response?.data?.status === 200) {
         setAllholidayList(response?.data.holidays);
         setTotalHoliday(response.data.totalHolidays);
@@ -118,11 +108,11 @@ const HolidayList = () => {
   }
 
   const GoToAddHoliday = () => {
-    if (userRole === "Superadmin") {
-      navigate(`/location/holidays/addholiday/${locationId}`);
-    } else {
-      navigate(`/holidays/addholiday`);
-    }
+    // if (userRole === "Superadmin") {
+    //   navigate(`/location/holidays/addholiday/${locationId}`);
+    // } else {
+    navigate(`/holidays/addholiday`);
+    // }
   };
 
   const handlePerPageChange = (e) => {
@@ -143,11 +133,11 @@ const HolidayList = () => {
   ];
 
   const HandleBack = () => {
-    if (userRole === "Superadmin") {
-      navigate(`/location/holidays/${locationId}`);
-    } else {
-      navigate("/holidays");
-    }
+    // if (userRole === "Superadmin") {
+    //   navigate(`/location/holidays/${locationId}`);
+    // } else {
+    navigate("/holidays");
+    // }
   };
 
   useEffect(() => {

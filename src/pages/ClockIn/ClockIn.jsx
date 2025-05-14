@@ -794,7 +794,8 @@ const CheckIn = () => {
   const handleClockIn = async () => {
     if (!location.lat || !location.long) {
       showToast(
-        "Unable to fetch your location. Please check your location settings."
+        "Unable to fetch your location. Please check your location settings.",
+        "error"
       );
       return;
     }
@@ -979,6 +980,7 @@ const CheckIn = () => {
       setLoading(true);
       const response = await PostCall(`/getOwnTodaysTimesheet`, {
         jobId: jobRoleId,
+        clientId: selectedClientId,
       });
 
       if (response?.data?.status === 200) {
@@ -1203,7 +1205,7 @@ const CheckIn = () => {
     fetchTimesheet();
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobRoleId]);
+  }, [jobRoleId, selectedClientId, elapsedTime]);
 
   useEffect(() => {
     GetClientdata();

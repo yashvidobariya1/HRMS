@@ -30,14 +30,20 @@ export const SidebarData = [
       {
         title: "Company",
         icon: <PiBuildingOfficeFill />,
-        link: "/settings",
+        link: "/company",
         allowedRoles: ["Superadmin", "Administrator"],
       },
       {
         title: "Clients",
         icon: <FaUserTie />,
         link: "/clients",
-        allowedRoles: ["Superadmin", "Administrator", "Manager"],
+        allowedRoles: ["Superadmin", "Administrator"],
+      },
+      {
+        title: "Client Reports",
+        icon: <FaUserTie />,
+        link: "/reportlist",
+        allowedRoles: ["Superadmin", "Administrator"],
       },
       {
         title: "Employment Contract",
@@ -95,7 +101,7 @@ export const SidebarData = [
         title: "Holidays",
         icon: <FaUmbrellaBeach />,
         link: "/holidays",
-        allowedRoles: ["Administrator", "Manager", "Employee"],
+        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
       },
       {
         title: "Absence Report",

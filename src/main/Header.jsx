@@ -13,6 +13,8 @@ import { PostCall } from "../ApiServices";
 import { showToast } from "./ToastManager";
 import Loader from "../pages/Helper/Loader";
 import { Select, MenuItem, Menu, ListItemText } from "@mui/material";
+import { clearCompanySelect } from "../store/selectCompanySlice";
+import { clearEmployeeformFilled } from "../store/EmployeeFormSlice";
 
 const Header = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
@@ -56,6 +58,8 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
         dispatch(clearNotificationCount());
         dispatch(clearThemeColor());
         dispatch(clearJobRoleSelect());
+        dispatch(clearCompanySelect());
+        dispatch(clearEmployeeformFilled());
         persistor.pause();
         await persistor.purge();
         persistor.persist();

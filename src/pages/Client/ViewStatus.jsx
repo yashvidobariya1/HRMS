@@ -6,6 +6,7 @@ import { showToast } from "../../main/ToastManager";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { TextField } from "@mui/material";
 
 const ViewStatus = () => {
   const [loading, setLoading] = useState(false);
@@ -18,11 +19,14 @@ const ViewStatus = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const reportId = searchParams.get("reportId");
   const [totalEmployees, settotalEmployees] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const allStatusPending = statusList.every(
+  const allStatusPending = statusList?.every(
     (item) => item.status === "Pending"
   );
 
@@ -35,11 +39,15 @@ const ViewStatus = () => {
     setCurrentPage(1);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
   const GetEmployeesStatus = async () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getReport/${reportId}?page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}`
+        `/getReport/${reportId}?page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}&search=${debouncedSearch}`
       );
       if (response?.data?.status === 200) {
         setStatusList(response?.data?.report?.employees);
@@ -59,12 +67,33 @@ const ViewStatus = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, reportPerPage, companyId]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
   return (
     <div className="status-list-container">
       <div className="status-list-flex">
         <div className="status-list-title">
           <h1>View Status</h1>
         </div>
+        <TextField
+          label="Search View status"
+          variant="outlined"
+          size="small"
+          value={searchQuery}
+          className="common-searchbar"
+          onChange={handleSearchChange}
+        />
       </div>
 
       {loading ? (
