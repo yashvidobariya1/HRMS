@@ -123,12 +123,12 @@ const protectedRoutes = [
     roles: ["Superadmin"],
   },
   {
-    path: "/clients/reportlist",
+    path: "/reportlist",
     component: <ReportList />,
     roles: ["Superadmin", "Administrator"],
   },
   {
-    path: "/clients/reportlist/viewstatus",
+    path: "/reportlist/viewstatus",
     component: <ViewStatus />,
     roles: ["Superadmin", "Administrator"],
   },

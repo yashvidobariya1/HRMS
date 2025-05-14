@@ -657,7 +657,7 @@ const AddEmployee = () => {
     // if (jobForm?.assignManager === "") {
     //   newErrors.assignManager = "Assign Manager is required";
     // }
-    if (!isWorkFromOffice && !jobForm?.assignClient) {
+    if (!isWorkFromOffice && jobForm?.assignClient.length == 0) {
       newErrors.assignClient = "Assign Client is required";
     }
     if (Object.keys(newErrors).length > 0) {

@@ -120,10 +120,6 @@ const Client = () => {
     setCurrentPage(1);
   };
 
-  const HandleReportList = async (id) => {
-    navigate(`/clients/reportlist?clientId=${id}`);
-  };
-
   const actions = [
     // { label: "Edit", onClick: HandleEditClient },
     // { label: "Delete", onClick: HandleDeleteClient },
@@ -172,10 +168,7 @@ const Client = () => {
   }
 
   if (userRole === "Superadmin" || userRole === "Administrator") {
-    actions.push(
-      { label: "QRCode", onClick: HandleGenerateQrCode },
-      { label: "Reports List", onClick: HandleReportList }
-    );
+    actions.push({ label: "QRCode", onClick: HandleGenerateQrCode });
   }
 
   return (

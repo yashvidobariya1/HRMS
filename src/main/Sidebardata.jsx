@@ -37,7 +37,13 @@ export const SidebarData = [
         title: "Clients",
         icon: <FaUserTie />,
         link: "/clients",
-        allowedRoles: ["Superadmin", "Administrator", "Manager"],
+        allowedRoles: ["Superadmin", "Administrator"],
+      },
+      {
+        title: "Client Reports",
+        icon: <FaUserTie />,
+        link: "/reportlist",
+        allowedRoles: ["Superadmin", "Administrator"],
       },
       {
         title: "Employment Contract",

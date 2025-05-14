@@ -6,9 +6,10 @@ import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import CommonTable from "../../SeparateCom/CommonTable";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { MenuItem, Select, TextField } from "@mui/material";
 
 const ReportList = () => {
   const navigate = useNavigate();
@@ -18,6 +19,10 @@ const ReportList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [reportPerPage, setReportPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
+  const [clientList, setClientList] = useState([]);
+  const [selectedClient, setSelectedClient] = useState("allClients");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [minDate, setMinDate] = useState(
     moment(process.env.REACT_APP_START_DATE).format("YYYY-MM-DD")
   );
@@ -27,9 +32,9 @@ const ReportList = () => {
     endDate: "",
   });
   const [errors, setErrors] = useState({});
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const clientId = searchParams.get("clientId");
+  // const location = useLocation();
+  // const searchParams = new URLSearchParams(location.search);
+  // const clientId = searchParams.get("clientId");
   const [totalReports, setTotalReports] = useState([]);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const handlePageChange = (pageNumber) => {
@@ -41,10 +46,12 @@ const ReportList = () => {
   };
 
   const HandleViewStatus = async (id) => {
-    navigate(`/clients/reportlist/viewstatus?reportId=${id}`);
+    // navigate(`/clients/reportlist/viewstatus?reportId=${id}`);
+    navigate(`/reportlist/viewstatus?reportId=${id}`);
   };
 
   const tableHeaders = [
+    "Client name",
     "Start Date",
     "End Date",
     "Report Generated Date",
@@ -67,6 +74,10 @@ const ReportList = () => {
     }));
   };
 
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
   const validate = () => {
     let newErrors = {};
     if (!formData.startDate) {
@@ -83,7 +94,7 @@ const ReportList = () => {
     if (validate()) {
       const data = {
         ...formData,
-        clientId,
+        selectedClient,
       };
       try {
         setLoading(true);
@@ -99,11 +110,28 @@ const ReportList = () => {
     }
   };
 
+  const GetAllClients = async () => {
+    try {
+      setLoading(true);
+      const response = await GetCall(
+        `/getAllClients?companyId=${companyId}&page=${currentPage}&limit=${reportPerPage}`
+      );
+      if (response?.data?.status === 200) {
+        setClientList(response?.data?.clients);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const GetReports = async () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllReports?clientId=${clientId}&page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}`
+        `/getAllReports?clientId=${selectedClient}&page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}&search=${debouncedSearch}`
       );
 
       if (response?.data?.status === 200) {
@@ -120,9 +148,33 @@ const ReportList = () => {
   };
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
     GetReports();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, reportPerPage, companyId, selectedClient, debouncedSearch]);
+
+  useEffect(() => {
+    GetAllClients();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, reportPerPage, companyId]);
+
+  useEffect(() => {
+    setSelectedClient("allClients");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId]);
 
   return (
     <div className="report-list-container">
@@ -137,8 +189,8 @@ const ReportList = () => {
               type="date"
               name="startDate"
               className="report-list-input"
-              // value={formData?.startDate}
-              value={formData.startDate ? formData.startDate : ""}
+              value={formData?.startDate}
+              // value={formData.startDate ? formData.startDate : ""}
               onChange={handleChange}
               min={minDate}
               max={maxDate}
@@ -153,8 +205,8 @@ const ReportList = () => {
               type="date"
               name="endDate"
               className="report-list-input"
-              // value={formData?.endDate}
-              value={formData.endDate ? formData.endDate : ""}
+              value={formData?.endDate}
+              // value={formData.endDate ? formData.endDate : ""}
               onChange={handleChange}
               min={minDate}
               max={maxDate}
@@ -171,6 +223,40 @@ const ReportList = () => {
         </div>
       </div>
 
+      <div className="report-list-flex">
+        <TextField
+          label="Search Report List"
+          variant="outlined"
+          size="small"
+          value={searchQuery}
+          className="common-searchbar"
+          onChange={handleSearchChange}
+        />
+        <Select
+          className="report-list-input-dropdown"
+          value={selectedClient}
+          onChange={(e) => setSelectedClient(e.target.value)}
+          displayEmpty
+          MenuProps={{
+            PaperProps: {
+              style: {
+                width: 150,
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxHeight: 200,
+              },
+            },
+          }}
+        >
+          <MenuItem value="allClients">All Clients</MenuItem>
+          {clientList.map((client) => (
+            <MenuItem key={client._id} value={client._id}>
+              {client.clientName}
+            </MenuItem>
+          ))}
+        </Select>
+      </div>
+
       {loading ? (
         <div className="loader-wrapper">
           <Loader />
@@ -181,6 +267,7 @@ const ReportList = () => {
             headers={tableHeaders}
             data={reportList?.map((report) => ({
               _id: report._id,
+              clientName: report?.clientName,
               startDate: report?.startDate,
               endDate: report?.endDate,
               generatedDate: moment(report?.createdAt).format(

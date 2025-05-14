@@ -235,11 +235,11 @@
 
 // =================fullcalender=====================
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { GetCall, PostCall } from "../../ApiServices";
 import "./Holidays.css";
@@ -250,6 +250,7 @@ import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import Loader from "../Helper/Loader";
+import { MenuItem, Select } from "@mui/material";
 
 const Holidays = () => {
   const [events, setEvents] = useState([]);
@@ -263,6 +264,8 @@ const Holidays = () => {
   const [holidayId, setholidayId] = useState("");
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(startDate).year();
+  const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
+  const calendarRef = useRef(null);
   const currentYear = moment().year();
   const allowedYears = Array.from(
     { length: currentYear - startYear + 1 },
@@ -286,6 +289,8 @@ const Holidays = () => {
       );
       if (response?.data?.status === 200) {
         setAllholidayList(response?.data.holidays);
+      } else if (response?.data?.status === 400) {
+        showToast(response?.data?.message, "warning");
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -331,6 +336,18 @@ const Holidays = () => {
     }
 
     setIsPopupOpen(true);
+  };
+
+  const handleTodayClick = () => {
+    const now = moment();
+    const currentYear = now.year();
+    const currentMonth = now.month() + 1;
+    setSelectedYear(currentYear);
+    setSelectedMonth(currentMonth);
+    if (calendarRef.current) {
+      calendarRef.current.getApi().today();
+      setSelectedYear(currentYear);
+    }
   };
 
   const handleChange = (e) => {
@@ -458,7 +475,7 @@ const Holidays = () => {
       {(userRole === "Superadmin" || userRole === "Administrator") && (
         <div className="View-holiday-list">
           <div className="Holiday-select-dopdown">
-            <select
+            {/* <select
               id="year-select"
               value={selectedYear}
               onChange={handleYearChange}
@@ -469,7 +486,33 @@ const Holidays = () => {
                   {year}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              id="year-select"
+              value={selectedYear}
+              onChange={handleYearChange}
+              className="holiday-year-dropdown"
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 100,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 200,
+                  },
+                },
+              }}
+            >
+              <MenuItem value="" disabled>
+                Select year
+              </MenuItem>
+              {allowedYears.map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
           </div>
 
           <div className="indicate-color-holiday">
@@ -490,7 +533,11 @@ const Holidays = () => {
         <div>
           <FullCalendar
             key={selectedYear}
+            ref={calendarRef}
             plugins={[dayGridPlugin, interactionPlugin]}
+            initialDate={moment(
+              `${selectedYear}-${String(selectedMonth).padStart(2, "0")}-01`
+            ).toDate()}
             initialView="dayGridMonth"
             dateClick={(info) => {
               if (userRole === "Superadmin" || userRole === "Administrator") {
@@ -509,6 +556,12 @@ const Holidays = () => {
               start: startDate,
               end: currentYearEnd,
             }}
+            customButtons={{
+              today: {
+                text: "Today",
+                click: handleTodayClick,
+              },
+            }}
             buttonText={{
               today: "Today",
             }}
@@ -526,6 +579,7 @@ const Holidays = () => {
             datesSet={(info) => {
               // const currentYear = info.view.currentStart.getFullYear();
               setSelectedYear(selectedYear);
+              setSelectedMonth(selectedMonth);
             }}
           />
         </div>

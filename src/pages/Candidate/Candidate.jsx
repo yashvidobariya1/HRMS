@@ -88,8 +88,8 @@ const Candidate = () => {
   const tableHeaders = [
     "First name",
     "Last name",
-    "candidate Email",
-    "Mobile Number",
+    "Candidate Email",
+    "Contact",
     "Dowload",
     // "Action",
   ];

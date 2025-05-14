@@ -256,7 +256,7 @@ const TimeSheetReport = () => {
       const { year, month } = appliedFilters;
 
       const response = await PostCall(
-        `/getTimesheetReport?page=${currentPage}&limit=${perPage}&year=${year}&month=${month}&search=${debouncedSearch}`,
+        `/getTimesheetReport?page=${currentPage}&limit=${perPage}&year=${year}&month=${month}&search=${debouncedSearch}&clientId=${selectedClientId}`,
         filters
       );
 
@@ -438,6 +438,7 @@ const TimeSheetReport = () => {
     jobRoleId,
     appliedFilters,
     debouncedSearch,
+    selectedClientId,
   ]);
 
   useEffect(() => {
@@ -470,11 +471,12 @@ const TimeSheetReport = () => {
   const GetClientdata = async () => {
     const payload = {
       jobId: selectedJobId,
+      userId: selectedEmployee,
     };
 
-    if (userRole === "Superadmin") {
-      payload.userId = selectedEmployee;
-    }
+    // if (userRole === "Superadmin" ) {
+    // payload.userId = selectedEmployee;
+    // }
     try {
       const response = await PostCall(`/getUsersAssignClients`, payload);
 
