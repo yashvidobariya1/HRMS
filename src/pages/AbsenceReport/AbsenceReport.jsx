@@ -9,6 +9,7 @@ import moment from "moment";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
+import { MenuItem, Select } from "@mui/material";
 
 const AbsenceReport = () => {
   const location = useLocation();
@@ -168,7 +169,7 @@ const AbsenceReport = () => {
         </div>
         <div className="absencesheet-report-filter-container">
           <div className="selection-wrapper">
-            <select
+            {/* <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
             >
@@ -180,11 +181,35 @@ const AbsenceReport = () => {
                   </option>
                 );
               })}
-            </select>
+            </select> */}
+            <Select
+              value={selectedYear}
+              className="absence-dropdown"
+              onChange={(e) => setSelectedYear(e.target.value)}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 80,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 192,
+                  },
+                },
+              }}
+            >
+              {[...Array(currentYear - startYear + 1)].map((_, index) => {
+                const year = startYear + index;
+                return (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                );
+              })}
+            </Select>
           </div>
 
           <div className="selection-wrapper">
-            <select
+            {/* <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
             >
@@ -194,7 +219,31 @@ const AbsenceReport = () => {
                   {month.name}
                 </option>
               ))}
-            </select>
+            </select> */}
+
+            <Select
+              className="absence-dropdown"
+              value={selectedMonth}
+              displayEmpty
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 80,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 192,
+                  },
+                },
+              }}
+            >
+              <MenuItem value="All">All</MenuItem>
+              {months?.map((month) => (
+                <MenuItem key={month.value} value={month.value}>
+                  {month.name}
+                </MenuItem>
+              ))}
+            </Select>
           </div>
 
           <CommonAddButton

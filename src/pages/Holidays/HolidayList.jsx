@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./HolidayList.css";
 import { MdAssignmentAdd } from "react-icons/md";
+import { MenuItem, Select } from "@mui/material";
 
 const HolidayList = () => {
   const navigate = useNavigate();
@@ -27,7 +28,6 @@ const HolidayList = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   // console.log("id", locationId);
   const [totalHoliday, setTotalHoliday] = useState([]);
-
   const handleAction = (id) => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
@@ -152,7 +152,7 @@ const HolidayList = () => {
           <h1>Holiday List</h1>
           {(userRole === "Superadmin" || userRole === "Administrator") && (
             <>
-              <select
+              {/* <select
                 id="year-select"
                 value={selectedYear}
                 onChange={handleYearChange}
@@ -166,7 +166,23 @@ const HolidayList = () => {
                     </option>
                   );
                 })}
-              </select>
+              </select> */}
+              <Select
+                labelId="year-select-label"
+                id="year-select"
+                value={selectedYear}
+                onChange={handleYearChange}
+                label="Year"
+              >
+                {[...Array(currentYear - startYear + 1)].map((_, index) => {
+                  const year = startYear + index;
+                  return (
+                    <MenuItem key={year} value={year}>
+                      {year}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
             </>
           )}
         </div>

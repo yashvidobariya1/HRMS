@@ -270,7 +270,6 @@ const Holidays = () => {
   );
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const companyId = useSelector((state) => state.companySelect.companySelect);
-
   const Navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -390,8 +389,10 @@ const Holidays = () => {
   };
 
   const handleYearChange = (event) => {
+    console.log("event", event.target.value);
     const newYear = parseInt(event.target.value, 10);
     setSelectedYear(newYear);
+    console.log("newYear", newYear);
   };
 
   const confirmDelete = async (id) => {

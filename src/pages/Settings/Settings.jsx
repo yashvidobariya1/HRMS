@@ -25,6 +25,7 @@ const Settings = () => {
   const [companiesPerPage, setCompaniesPerPage] = useState(50);
   const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [totalCompany, settotalCompany] = useState([]);
 
@@ -55,7 +56,7 @@ const Settings = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getallcompany?page=${currentPage}&limit=${companiesPerPage}&search=${searchQuery}`
+        `/getallcompany?page=${currentPage}&limit=${companiesPerPage}&search=${debouncedSearch}`
       );
 
       if (response?.data?.status === 200) {
@@ -100,6 +101,16 @@ const Settings = () => {
 
   useEffect(() => {
     setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [searchQuery]);
 
   const tableHeaders = ["Business Name", "Company Code", "City", "Action"];

@@ -1,0 +1,29 @@
+.jobTitles-list-container {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding: 20px;
+  /* height: 85vh; */
+  /* max-width: 800px; */
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.jobTitles-action-button {
+  cursor: pointer;
+  color: var(--primary-button);
+}
+
+.jobTitleslist-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.jobTitles-action-icon {
+  margin-right: 10px;
+  font-size: var(--font-size-small);
+}
+
+.jobTitles-dropdown-container {
+  position: relative;
+}

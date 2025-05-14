@@ -41,5 +41,6 @@
   background-color: var(--primary-button);
   border: none;
   color: var(--primary-text-white);
+  border-radius: var(--border-radius);
   gap: 2px;
 }

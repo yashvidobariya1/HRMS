@@ -13,6 +13,7 @@
   padding: 30px;
   border: 1px solid var(--neutral-light-gray);
   margin-bottom: 20px;
+  border-radius: var(--border-radius);
 }
 
 .dashboard-profile,
@@ -76,7 +77,7 @@
   padding: 20px;
   background-color: var(--primary-text-white);
   position: relative;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--neutral-light-gray);
   /* box-shadow: 0px 1px 1px 1px rgba(198, 198, 198, 0.2); */
 }
@@ -160,6 +161,7 @@
 .dashboard-overview-flex-2 {
   /* width: 32.5%; */
   border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
 }
 
 .dashboard-absence-today {
@@ -167,11 +169,19 @@
 }
 
 .dashboard-absence-table table {
+  /* border: 1px solid var(--neutral-light-gray);
+  border-radius: 4px;
+  border-collapse: separate; 
+  border-spacing: 0;
+  overflow: hidden;
+  width: 100%; */
   width: 100%;
-  border-collapse: collapse;
+  border-radius: var(--border-radius);
+  border-collapse: separate;
+  border-spacing: 0;
   margin: 10px 0;
   border: 1px solid var(--neutral-light-gray);
-  table-layout: auto;
+  /* table-layout: auto; */
 }
 
 .dashboard-absence-table table th,
@@ -184,6 +194,14 @@ td {
 .dashboard-absence-table table th {
   background-color: var(--table-heading-neutral-dark-blue);
   color: var(--sidebar-title-primary-white);
+}
+
+.dashboard-absence-table table th:first-child {
+  border-top-left-radius: var(--border-radius);
+}
+
+.dashboard-absence-table table th:last-child {
+  border-top-right-radius: var(--border-radius);
 }
 
 .dashbaord-absence-table table {
@@ -260,9 +278,8 @@ td {
 .employee-status-container {
   background: var(--primary-text-white);
   padding: 20px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--neutral-light-gray);
-  border-radius: 4px;
 }
 
 .employee-status-container h1 {
@@ -288,7 +305,7 @@ td {
   border: none;
   padding: 5px 10px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 
 /* .total-employee {
@@ -344,7 +361,7 @@ td {
 .status-box {
   border: 1px solid var(--neutral-light-gray);
   padding: 10px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   /* text-align: center; */
   color: var(--secondary-dark-gray);
 }
@@ -355,7 +372,7 @@ td {
   color: var(--secondary-dark-gray);
   background: var(--neutral-light-gray);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   margin: 10px 0;
 }
@@ -367,7 +384,7 @@ td {
 
 .header select {
   padding: 5px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--neutral-light-gray);
   cursor: pointer;
   margin: 0;
@@ -399,7 +416,7 @@ td {
   text-align: left;
   padding: 15px;
   border: 1px solid var(--neutral-light-gray);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 
 .stat span {
@@ -439,6 +456,7 @@ td {
 .apply-btn {
   background: var(--primary-button);
   color: var(--primary-text-white);
+  border-radius: var(--border-radius);
   padding: 8px 10px;
   border: none;
   cursor: pointer;
@@ -455,7 +473,7 @@ td {
   margin: auto;
   background: var(--primary-text-white);
   padding: 20px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
@@ -492,6 +510,7 @@ td {
   position: relative;
   border: 1px solid var(--neutral-light-gray);
   box-shadow: 0px 1px 1px 1px rgba(198, 198, 198, 0.2);
+  border-radius: var(--border-radius);
 }
 
 .dashboard-box-icon-list {
@@ -514,8 +533,15 @@ td {
 .dashboard-calender {
   /* width: calc(100% - 40px); */
   border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
   padding: 20px;
   /* height: 200px; */
+}
+
+.dashboard-calender .fc-theme-standard .fc-scrollgrid,
+/* .dashboard-calender .fc-theme-standard td, */
+.dashboard-calender .fc-theme-standard th {
+  border-radius: var(--border-radius);
 }
 
 .dashboard-calender h1 {
@@ -532,6 +558,7 @@ td {
   background-color: var(--primary-button);
   border: none;
   color: var(--primary-text-white);
+  border-radius: var(--border-radius);
 }
 
 .dashboard-calender .fc .fc-daygrid-day-number {
@@ -578,6 +605,7 @@ td {
 }
 
 .dashboard-calender-selectoption select {
+  border-radius: var(--border-radius);
   padding: 10px 15px !important;
   margin: 0;
 }
@@ -764,6 +792,7 @@ section.docx {
   background-color: var(--secondary-dark-gray);
   color: var(--primary-text-white);
   cursor: pointer;
+  border-radius: var(--border-radius);
 }
 
 .dashboard-viewprofile {
@@ -803,6 +832,27 @@ section.docx {
 
 .submit-signature-button {
   margin-left: 30px;
+}
+
+.dashboard-dropdown {
+  margin: 0;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  outline: none;
+}
+
+.dashboard-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.dashboard-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
 }
 
 @media (max-width: 1500px) {
@@ -1003,13 +1053,13 @@ section.docx {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 575px) {
   .dashbaord-absence-heading h1 {
     font-size: 16px;
   }
 
   .dashboard-first-section {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .dashbaord-first-section-flex {
@@ -1119,11 +1169,23 @@ section.docx {
     width: 15px;
     height: 15px;
   }
+
+  .dashboard-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .dashboard-dropdown {
+    padding: 7px;
+  }
 }
 
 @media (max-width: 320px) {
   .dashboard-calender .fc .fc-toolbar.fc-header-toolbar {
     flex-direction: column;
     gap: 5px;
+  }
+
+  .dashboard-first-section {
+    grid-template-columns: repeat(1, 1fr);
   }
 }

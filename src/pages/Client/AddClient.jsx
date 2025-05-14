@@ -8,6 +8,7 @@ import { IoMdAdd } from "react-icons/io";
 import { MdRemove } from "react-icons/md";
 import countryNames from "../../Data/AllCountryList.json";
 import { useSelector } from "react-redux";
+import { MenuItem, Select } from "@mui/material";
 
 const AddClient = () => {
   const navigate = useNavigate();
@@ -400,7 +401,7 @@ const AddClient = () => {
             <div className="addclient-section">
               <div className="addclient-input-container">
                 <label className="label">Country*</label>
-                <select
+                {/* <select
                   data-testid="country-select"
                   className="addclient-input checkbox-country"
                   name="country"
@@ -415,7 +416,34 @@ const AddClient = () => {
                       {country}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  data-testid="country-select"
+                  className="addclient-input checkbox-country"
+                  name="country"
+                  value={formData?.country}
+                  onChange={handleChange}
+                  displayEmpty
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        maxHeight: 192,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Country Of Issue
+                  </MenuItem>
+                  {countryNames.map((country, index) => (
+                    <MenuItem key={index} value={country}>
+                      {country}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {errors?.country && (
                   <p className="error-text">{errors?.country}</p>
                 )}

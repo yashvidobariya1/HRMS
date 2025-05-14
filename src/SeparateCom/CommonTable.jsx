@@ -431,6 +431,10 @@ const CommonTable = ({
     "Total Hours": "totalHours",
     OverTime: "overTime",
     "Timesheet Status": "timesheetstatus",
+    "ClockIn Time": "clockin",
+    "ClockOut Time": "clockout",
+    "Working Time": "workingTime",
+    "job Titles Name": "Name",
   };
 
   const handleSort = (key) => {
@@ -850,6 +854,11 @@ const CommonTable = ({
                               Boolean(anchorEl) && selectedRow === item?._id
                             }
                             onClose={handleMenuClose}
+                            PaperProps={{
+                              style: {
+                                borderRadius: "var(--border-radius)",
+                              },
+                            }}
                           >
                             {actions?.actionsList
                               .filter(
@@ -863,6 +872,7 @@ const CommonTable = ({
                               )
                               .map((action, id) => (
                                 <MenuItem
+                                  className="action-button"
                                   key={id}
                                   disabled={
                                     (["Approved", "Rejected"].includes(

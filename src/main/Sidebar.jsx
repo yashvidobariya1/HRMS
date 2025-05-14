@@ -142,6 +142,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                           width: 200, // same as Select
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          maxHeight: 192,
                         },
                       },
                     }}
@@ -154,17 +155,17 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                       //   title={company.companyDetails.businessName}
                       //   key={company._id}
                       // >
-                        <MenuItem
-                          key={company._id}
-                          value={company._id}
-                          style={{
-                            // overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {company.companyDetails.businessName}
-                        </MenuItem>
+                      <MenuItem
+                        key={company._id}
+                        value={company._id}
+                        style={{
+                          // overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {company.companyDetails.businessName}
+                      </MenuItem>
                       // {/* </Tooltip> */}
                     ))}
                   </Select>

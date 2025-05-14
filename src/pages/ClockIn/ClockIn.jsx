@@ -529,6 +529,7 @@ import { useSelector } from "react-redux";
 // import JobTitleForm from "../../SeparateCom/RoleSelect";
 import CommonTable from "../../SeparateCom/CommonTable";
 import QrScanner from "qr-scanner";
+import AssignClient from "../../SeparateCom/AssignClient";
 
 const CheckIn = () => {
   const userId = useSelector((state) => state.userInfo.userInfo._id);
@@ -546,6 +547,9 @@ const CheckIn = () => {
   const [location, setLocation] = useState({ lat: null, long: null });
   // const [scanResult, setScanResult] = useState("");
   const [isScannerVisible, setIsScannerVisible] = useState(true);
+  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [Clientdata, setClientdata] = useState([]);
   // const [hasCameraPermission, setHasCameraPermission] = useState(false);
   // const [isScannerVisible, setIsScannerVisible] = useState(false);
   const jobRoleId = useSelector(
@@ -829,6 +833,7 @@ const CheckIn = () => {
       jobId: jobRoleId,
       qrValue: scanResult, // Include the scanned QR code result
       isMobile,
+      clientId: selectedClientId,
     };
     // console.log("body", body);
 
@@ -885,6 +890,7 @@ const CheckIn = () => {
       jobId: jobRoleId,
       qrValue: scanResult,
       isMobile,
+      clientId: selectedClientId,
     };
     try {
       setLoading(true);
@@ -1100,6 +1106,38 @@ const CheckIn = () => {
     setTimerInterval(interval);
   };
 
+  const GetClientdata = async () => {
+    try {
+      const response = await PostCall(`/getUsersAssignClients`, {
+        jobId: jobRoleId,
+      });
+
+      if (response?.data?.status === 200) {
+        const jobTitles = response.data.assignClients;
+        console.log("job title", jobTitles);
+        setClientdata(jobTitles);
+
+        if (jobTitles.length > 1) {
+          setopenClietnSelectModal(false);
+        } else {
+          setSelectedClientId(jobTitles[0]?.clientId);
+          setopenClietnSelectModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handlePopupClose = () => {
+    setopenClietnSelectModal(true);
+  };
+
+  const handleClientSelect = (selectedTitle) => {
+    setSelectedClientId(selectedTitle);
+    setopenClietnSelectModal(true);
+  };
+
   useEffect(() => {
     // console.log("ismobile==>", isMobile);
     // const savedStartTime = localStorage.getItem("startTime");
@@ -1168,6 +1206,10 @@ const CheckIn = () => {
   }, [jobRoleId]);
 
   useEffect(() => {
+    GetClientdata();
+  }, [jobRoleId]);
+
+  useEffect(() => {
     if (startTime) {
       localStorage.setItem("startTime", startTime);
       localStorage.setItem("elapsedTime", elapsedTime);
@@ -1216,13 +1258,14 @@ const CheckIn = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      {/* {!openJobTitleModal && JobTitledata.length > 1 && (
-        <JobTitleForm
+      {!openClietnSelectModal && Clientdata.length > 1 && (
+        <AssignClient
           onClose={handlePopupClose}
-          jobTitledata={JobTitledata}
-          onJobTitleSelect={handleJobTitleSelect}
+          Clientdata={Clientdata}
+          onClientSelect={handleClientSelect}
         />
-      )} */}
+      )}
+
       <h1 className="clock-in-h1">{moment().format("llll")}</h1>
 
       {isMobile && isScannerVisible && <div id="scanner-visible"></div>}

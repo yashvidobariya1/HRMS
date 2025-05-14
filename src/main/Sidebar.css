@@ -73,6 +73,7 @@
 }
 
 .logo-details img {
+  border-radius: var(--border-radius);
   height: 40px;
   width: 40px;
 }
@@ -129,7 +130,7 @@
   gap: 20px;
   padding: 8px;
   color: var(--sidebar-title-primary-white);
-  /* border-radius: 5px; */
+  border-radius: var(--border-radius);
   transition: 0.3s ease;
 }
 
@@ -226,6 +227,7 @@
   margin: 0;
   padding: 8px;
   font-weight: 800;
+  border-radius: var(--border-radius) !important;
   background-color: var(--sidebar-secondary-dark-gray);
   color: var(--sidebar-title-primary-white);
   border: 1px solid var(--sidebar-hover);

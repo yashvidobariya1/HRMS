@@ -32,6 +32,7 @@
 
 .report-list-input-container input,
 .report-list-input-container select {
+  border-radius: var(--border-radius);
   margin: 0;
   padding: 10px !important;
 }

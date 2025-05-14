@@ -31,7 +31,7 @@
   font-size: 15px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 575px) {
   .rolewisepoint {
     font-size: 12px;
   }

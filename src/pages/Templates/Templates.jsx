@@ -541,6 +541,7 @@ const Templates = () => {
                 <Select
                   multiple
                   value={selectedAssignuser}
+                  className="template-input-dropdwon"
                   onChange={(e) => setSelectedAssignuser(e.target.value)}
                   MenuProps={{
                     PaperProps: {

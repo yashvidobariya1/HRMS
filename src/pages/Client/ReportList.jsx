@@ -8,6 +8,7 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 const ReportList = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const ReportList = () => {
   const searchParams = new URLSearchParams(location.search);
   const clientId = searchParams.get("clientId");
   const [totalReports, setTotalReports] = useState([]);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -101,7 +103,7 @@ const ReportList = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllReports?clientId=${clientId}&page=${currentPage}&limit=${reportPerPage}`
+        `/getAllReports?clientId=${clientId}&page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
@@ -120,7 +122,7 @@ const ReportList = () => {
   useEffect(() => {
     GetReports();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, reportPerPage]);
+  }, [currentPage, reportPerPage, companyId]);
 
   return (
     <div className="report-list-container">
