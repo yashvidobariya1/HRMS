@@ -50,7 +50,8 @@ const Dashboard = () => {
   const [selectedYear, setSelectedYear] = useState(moment().year());
   const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYear = moment().year();
-  const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
+  const currentYearEnd = moment().endOf("year");
+  // const currentYearEnd = "2027-01-01";
   const [events, setEvents] = useState([]);
   const [locationList, setLocationList] = useState([]);
   // const [companyList, setcompanyList] = useState([]);
@@ -460,7 +461,7 @@ const Dashboard = () => {
       // console.log("locationId", id);
       if (userRole === "Superadmin" && id) {
         response = await GetCall(
-          `/getAllHolidays?locationId=${id}&year=${selectedYear}`
+          `/getAllHolidays?locationId=${id}&year=${selectedYear}&companyId=${companyId}`
         );
       } else {
         response = await GetCall(`/getAllHolidays?year=${selectedYear}`);
@@ -479,27 +480,18 @@ const Dashboard = () => {
   };
 
   const handleYearChange = (event) => {
+    console.log("new year", event.target.value);
     const newYear = parseInt(event.target.value, 10);
     setSelectedYear(newYear);
-
-    const calendarApi = calendarRef.current.getApi();
-    const newDate = moment(`${newYear}-${selectedMonth}`, "YYYY-MM")
-      .startOf("month")
-      .toDate();
-    calendarApi.gotoDate(newDate);
+    console.log("set year", selectedYear);
   };
 
   const handleTodayClick = () => {
     const now = moment();
     const currentYear = now.year();
     const currentMonth = now.month() + 1;
-
     setSelectedYear(currentYear);
     setSelectedMonth(currentMonth);
-
-    // Move calendar to today
-    const calendarApi = calendarRef.current.getApi();
-    calendarApi.today(); // Navigates to today's date
   };
 
   const previewClose = () => {
@@ -591,7 +583,11 @@ const Dashboard = () => {
       getAllHoliday();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLocationId, userRole, selectedYear]);
+  }, [
+    // selectedLocationId,
+    userRole,
+    selectedYear,
+  ]);
 
   useEffect(() => {
     if (userRole === "Superadmin") {
@@ -1229,7 +1225,7 @@ const Dashboard = () => {
                     }}
                     validRange={{
                       start: startDate,
-                      end: currentYearEnd,
+                      end: "2027",
                     }}
                     customButtons={{
                       today: {
@@ -1240,11 +1236,11 @@ const Dashboard = () => {
                     initialView="dayGridMonth"
                     events={events}
                     datesSet={(info) => {
-                      const currentYear = info.view.currentStart.getFullYear();
-                      const currentMonth =
-                        info.view.currentStart.getMonth() + 1;
-                      setSelectedMonth(currentMonth);
-                      setSelectedYear(currentYear);
+                      // const currentYear = info.view.currentStart.getFullYear();
+                      // const currentMonth =
+                      //   info.view.currentStart.getMonth() + 1;
+                      setSelectedMonth(selectedMonth);
+                      setSelectedYear(selectedYear);
                     }}
                   />
                 </div>

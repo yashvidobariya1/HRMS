@@ -207,7 +207,7 @@ const AddLocation = () => {
                 <Select
                   id="company-select"
                   name="companyName"
-                  data-testid="company-select"
+                  data-testid="company-select-dropdown"
                   className="checkbox-country"
                   value={formData?.companyId || ""}
                   onChange={handleChange}
@@ -321,7 +321,7 @@ const AddLocation = () => {
 
               <div className="addlocation-input-container">
                 <label className="label">Country*</label>
-                <select
+                <Select
                   className="addlocation-input checkbox-country"
                   name="country"
                   value={formData?.country}
@@ -338,15 +338,15 @@ const AddLocation = () => {
                     },
                   }}
                 >
-                  <option value="" disabled>
+                  <MenuItem value="" disabled>
                     Select country
-                  </option>
-                  {countryNames.map((country) => (
-                    <option key={country} value={country}>
+                  </MenuItem>
+                  {countryNames.map((country, index) => (
+                    <MenuItem key={index} value={country}>
                       {country}
-                    </option>
+                    </MenuItem>
                   ))}
-                </select>
+                </Select>
                 {errors?.country && (
                   <p className="error-text">{errors?.country}</p>
                 )}

@@ -93,6 +93,7 @@ p {
   --font-size-h3: 18px;
   --font-size-body: 16px;
   --font-size-small: 14px;
+  --border-radius: 4px;
 }
 
 [data-theme="dark"] {
@@ -129,6 +130,7 @@ p {
   --font-size-h3: 18px;
   --font-size-body: 16px;
   --font-size-small: 14px;
+  --border-radius: 4px;
 }
 
 label {
@@ -147,7 +149,7 @@ textarea {
   border: 1px solid var(--neutral-light-gray);
   color: var(--secondary-dark-gray);
   font-size: var(--font-size-small);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   background-color: var(--primary-text-white);
 }
 
@@ -175,7 +177,7 @@ tr {
   border: none;
   background-color: var(--primary-button);
   color: var(--sidebar-title-primary-white);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   font-size: var(--font-size-small);
   margin: 28px 0;
@@ -186,7 +188,7 @@ tr {
 }
 
 .common-searchbar .MuiOutlinedInput-root {
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 
 .common-searchbar .MuiOutlinedInput-input {

@@ -71,7 +71,7 @@
   background-color: var(--secondary-dark-gray) !important;
   color: var(--primary-text-white) !important;
   padding: 5px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   margin: 0 5px;
 }
 
@@ -82,7 +82,7 @@
   right: 30px;
   background-color: var(--secondary-dark-gray);
   /* box-shadow: 0 4px 6px var(--sidebar-hover); */
-  border-radius: 4px;
+  border-radius: var(--border-radius) !important;
   z-index: 1000;
   text-align: left;
 }
@@ -145,6 +145,7 @@
   color: var(--primary-text-white);
   background-color: var(--secondary-dark-gray);
   border: 1px solid var(--sidebar-hover);
+  border-radius: var(--border-radius) !important;
   padding-left: 5px;
 }
 

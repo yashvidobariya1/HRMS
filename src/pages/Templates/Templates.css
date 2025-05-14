@@ -108,10 +108,11 @@
   padding: 10px 15px;
   align-items: center;
   border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
 }
 
 .template-custom-file-upload {
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   background-color: var(--primary-button);
   color: var(--primary-text-white);
   padding: 5px;
@@ -159,6 +160,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.template-input-dropdwon {
+  border-radius: var(--border-radius) !important;
 }
 
 @media (max-width: 1400px) {
@@ -241,7 +246,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 575px) {
   .template-contract-input {
     width: 100% !important;
     box-sizing: border-box;

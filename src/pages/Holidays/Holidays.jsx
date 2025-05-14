@@ -269,7 +269,7 @@ const Holidays = () => {
     (_, i) => startYear + i
   );
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
-
+  const companyId = useSelector((state) => state.companySelect.companySelect);
   const { locationId, id } = useParams();
   // console.log("locationid", locationId);
   // console.log("id", id);
@@ -287,7 +287,7 @@ const Holidays = () => {
       let response;
       if (id) {
         response = await GetCall(
-          `/getAllHolidays?locationId=${id}&year=${currentYear}`
+          `/getAllHolidays?locationId=${id}&year=${selectedYear}&companyId=${companyId}`
         );
       } else {
         response = await GetCall(`/getAllHolidays?year=${currentYear}`);
@@ -397,8 +397,10 @@ const Holidays = () => {
   };
 
   const handleYearChange = (event) => {
+    console.log("event", event.target.value);
     const newYear = parseInt(event.target.value, 10);
     setSelectedYear(newYear);
+    console.log("newYear", newYear);
   };
 
   const confirmDelete = async (id) => {
@@ -517,7 +519,7 @@ const Holidays = () => {
               left: "prev",
             }}
             validRange={{
-              start: "2022-01-01",
+              start: startDate,
               end: currentYearEnd,
             }}
             buttonText={{
@@ -536,7 +538,7 @@ const Holidays = () => {
             }}
             datesSet={(info) => {
               const currentYear = info.view.currentStart.getFullYear();
-              setSelectedYear(currentYear);
+              setSelectedYear(selectedYear);
             }}
           />
         </div>

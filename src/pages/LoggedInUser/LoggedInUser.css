@@ -28,7 +28,7 @@
   margin-top: 5px;
   padding: 13px;
   font-weight: 800;
-  border-radius: 4px;
+  border-radius: var(--border-radius) !important;
   color: var(--secondary-dark-gray);
   width: 100%;
   outline: none;
