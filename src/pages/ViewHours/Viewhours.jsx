@@ -258,6 +258,7 @@ import "./Viewhours.css";
 import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
 import Loader from "../Helper/Loader";
+import AssignClient from "../../SeparateCom/AssignClient";
 
 const Viewhours = () => {
   const [events, setEvents] = useState([]);
@@ -271,6 +272,9 @@ const Viewhours = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const EmployeeId = queryParams.get("EmployeeId");
+  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [Clientdata, setClientdata] = useState([]);
 
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
@@ -283,6 +287,7 @@ const Viewhours = () => {
       const filters = {
         jobId: EmployeeId ? selectedJobId : jobRoleId,
         userId: EmployeeId,
+        clientId: selectedClientId,
       };
 
       const response = await PostCall("/getAllTimesheets", filters);
@@ -330,6 +335,42 @@ const Viewhours = () => {
     setOpenJobTitleModal(true);
   };
 
+  const GetClientdata = async () => {
+    const payload = {
+      jobId: selectedJobId || jobRoleId,
+      userId: EmployeeId,
+    };
+
+    try {
+      const response = await PostCall(`/getUsersAssignClients`, payload);
+
+      if (response?.data?.status === 200) {
+        const clientId = response.data.assignClients;
+        console.log("job title", clientId);
+        setClientdata(clientId);
+
+        if (clientId.length > 1) {
+          setopenClietnSelectModal(false);
+        } else {
+          setSelectedClientId(clientId[0]?.clientId);
+          console.log("selected client id", selectedClientId);
+          setopenClietnSelectModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handlePopupCloseForclient = () => {
+    setopenClietnSelectModal(true);
+  };
+
+  const handleClientSelect = (selectedTitle) => {
+    setSelectedClientId(selectedTitle);
+    setopenClietnSelectModal(true);
+  };
+
   useEffect(() => {
     if (EmployeeId) {
       Getjobtitledata();
@@ -337,16 +378,43 @@ const Viewhours = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRole]);
 
+  // useEffect(() => {
+  //   if (EmployeeId) {
+  //     if (selectedJobId) {
+  //       getAlltimesheet();
+  //     }
+  //   } else {
+  //     getAlltimesheet();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [openJobTitleModal, EmployeeId, jobRoleId, userRole]);
+
   useEffect(() => {
     if (EmployeeId) {
-      if (selectedJobId) {
+      if (selectedJobId || selectedClientId) {
         getAlltimesheet();
       }
     } else {
-      getAlltimesheet();
+      if (jobRoleId || selectedClientId) {
+        getAlltimesheet();
+        console.log("own timesheet", EmployeeId);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openJobTitleModal, EmployeeId, jobRoleId]);
+  }, [EmployeeId, selectedClientId, userRole]);
+
+  useEffect(() => {
+    if (EmployeeId) {
+      if (selectedJobId) {
+        GetClientdata();
+      }
+    } else {
+      if (selectedJobId || jobRoleId) {
+        GetClientdata();
+      }
+    }
+    console.log("cleint data");
+  }, [selectedJobId, jobRoleId]);
 
   useEffect(() => {
     const transformedEvents = AlltimesheetList.flatMap((timesheet) => {
@@ -407,6 +475,13 @@ const Viewhours = () => {
           onClose={handlePopupClose}
           jobTitledata={JobTitledata}
           onJobTitleSelect={handleJobTitleSelect}
+        />
+      )}
+      {!openClietnSelectModal && Clientdata.length > 1 && (
+        <AssignClient
+          onClose={handlePopupCloseForclient}
+          Clientdata={Clientdata}
+          onClientSelect={handleClientSelect}
         />
       )}
       <div className="viewhour-section">

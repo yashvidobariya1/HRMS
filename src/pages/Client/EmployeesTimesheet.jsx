@@ -40,14 +40,13 @@ const EmployeesTimesheet = () => {
     );
   };
 
-  const tableHeaders = [
-    "",
-    "Employee Name",
-    "Job Title",
-    "Role",
-    "Employee Status",
-    "Action",
-  ];
+  const allStatusPending = reportDetails?.employees?.every(
+    (item) => item.status === "Pending"
+  );
+
+  const tableHeaders = allStatusPending
+    ? ["Employee Name", "Job Title", "Role", "status", "Action"]
+    : ["", "Employee Name", "Job Title", "Role", "status", "Action"];
 
   const actions = [{ label: "Action", onClick: HandleAction }];
 

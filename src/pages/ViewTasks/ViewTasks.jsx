@@ -15,6 +15,7 @@ import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 import Loader from "../Helper/Loader";
 import { MenuItem, Select } from "@mui/material";
+import AssignClient from "../../SeparateCom/AssignClient";
 
 const ViewTasks = () => {
   // const Navigate = useNavigate();
@@ -32,6 +33,9 @@ const ViewTasks = () => {
   const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState("");
   const [JobTitledata, setJobTitledata] = useState([]);
+  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [Clientdata, setClientdata] = useState([]);
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
@@ -122,6 +126,42 @@ const ViewTasks = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const GetClientdata = async () => {
+    const payload = {
+      jobId: selectedJobId || jobRoleId,
+      userId: EmployeeId,
+    };
+
+    try {
+      const response = await PostCall(`/getUsersAssignClients`, payload);
+
+      if (response?.data?.status === 200) {
+        const jobTitles = response.data.assignClients;
+        console.log("job title", jobTitles);
+        setClientdata(jobTitles);
+
+        if (jobTitles.length > 1) {
+          setopenClietnSelectModal(false);
+        } else {
+          setSelectedClientId(jobTitles[0]?.clientId);
+          setopenClietnSelectModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleClientPopupClose = () => {
+    setopenClietnSelectModal(true);
+  };
+
+  const handleClientSelect = (selectedTitle) => {
+    console.log("setSelectedClientId", selectedClientId);
+    setSelectedClientId(selectedTitle);
+    setopenClietnSelectModal(true);
+  };
+
   const validate = () => {
     let newErrors = {};
     if (!formData.taskDate) newErrors.taskDate = "Task Date is required";
@@ -146,6 +186,7 @@ const ViewTasks = () => {
         ...formData,
         userId: EmployeeId ? EmployeeId : "",
         jobId: selectedJobId ? selectedJobId : jobRoleId,
+        clientId: selectedClientId,
       };
       // console.log("formData", formData);
       if (formData._id) {
@@ -265,6 +306,7 @@ const ViewTasks = () => {
       const data = {
         userId: EmployeeId ? EmployeeId : "",
         jobId: selectedJobId ? selectedJobId : jobRoleId,
+        clientId: selectedClientId,
       };
       const response = await PostCall(
         `/getAllTasks?year=${selectedYear}&month=${selectedMonth}`,
@@ -283,11 +325,19 @@ const ViewTasks = () => {
   };
 
   useEffect(() => {
-    if (!EmployeeId || selectedJobId) {
-      getAllTasks();
+    if (EmployeeId) {
+      if (selectedJobId || selectedClientId) {
+        console.log("EmployeeId timesheet call");
+        getAllTasks();
+      }
+    } else {
+      if (jobRoleId || selectedClientId) {
+        getAllTasks();
+        console.log("without EmployeeId timesheet call");
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedYear, appliedFilters, selectedJobId, EmployeeId]);
+  }, [EmployeeId, selectedClientId, userRole]);
 
   useEffect(() => {
     const transformedEvents = taskList.map((task) => ({
@@ -310,6 +360,19 @@ const ViewTasks = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [EmployeeId]);
 
+  useEffect(() => {
+    if (EmployeeId) {
+      if (selectedJobId) {
+        GetClientdata();
+      }
+    } else {
+      if (selectedJobId || jobRoleId) {
+        GetClientdata();
+      }
+    }
+    console.log("cleint data");
+  }, [selectedJobId, jobRoleId]);
+
   return (
     <div className="View-task-main">
       {!openJobTitleModal && JobTitledata.length > 1 && (
@@ -317,6 +380,13 @@ const ViewTasks = () => {
           onClose={handleJobPopupClose}
           jobTitledata={JobTitledata}
           onJobTitleSelect={handleJobTitleSelect}
+        />
+      )}
+      {!openClietnSelectModal && Clientdata.length > 1 && (
+        <AssignClient
+          onClose={handleClientPopupClose}
+          Clientdata={Clientdata}
+          onClientSelect={handleClientSelect}
         />
       )}
       <div className="View-task-list">

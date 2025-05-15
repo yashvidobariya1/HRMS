@@ -9,6 +9,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     (state) => state.employeeformFilled.employeeformFilled
   );
 
+  if (children.type.name === "EmployeesTimesheet") return children;
+
   if (!token) {
     return <Navigate to="/login" />;
   }
@@ -21,12 +23,6 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     // console.log("inner edit page");
     return <Navigate to={`/editemployee/${userInfo._id}`} />;
   }
-
-  if (
-    children.type.name === "EmployeesTimesheet" &&
-    userInfo.role === undefined
-  )
-    return children;
 
   if (!allowedRoles.includes(userInfo.role)) {
     return <Navigate to="/unauthorized" />;

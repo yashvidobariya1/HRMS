@@ -423,7 +423,7 @@ const TimeSheetReport = () => {
 
   useEffect(() => {
     if (selectedEmployee) {
-      if (selectedJobId) {
+      if (selectedClientId) {
         GetTimesheetReport();
       }
     } else {
@@ -470,7 +470,7 @@ const TimeSheetReport = () => {
 
   const GetClientdata = async () => {
     const payload = {
-      jobId: selectedJobId,
+      jobId: selectedJobId || jobRoleId,
       userId: selectedEmployee,
     };
 
@@ -503,6 +503,7 @@ const TimeSheetReport = () => {
 
   const handleClientSelect = (selectedTitle) => {
     setSelectedClientId(selectedTitle);
+    console.log("clientid", selectedClientId);
     setopenClietnSelectModal(true);
   };
 
@@ -512,7 +513,7 @@ const TimeSheetReport = () => {
   }, [companyId]);
 
   useEffect(() => {
-    if (selectedJobId) {
+    if (selectedJobId || jobRoleId) {
       GetClientdata();
     }
   }, [selectedJobId, jobRoleId]);
