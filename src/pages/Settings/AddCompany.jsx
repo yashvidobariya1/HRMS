@@ -80,7 +80,7 @@ const AddCompany = () => {
           } else {
             showToast(response?.data?.message, "error");
           }
-          navigate("/settings");
+          navigate("/company");
           setLoading(false);
         } catch (error) {
           showToast(error, "error");
@@ -300,7 +300,7 @@ const AddCompany = () => {
         } else {
           showToast(response?.data?.message, "error");
         }
-        navigate("/settings");
+        navigate("/company");
       } catch (error) {
         showToast(error, "error");
       } finally {

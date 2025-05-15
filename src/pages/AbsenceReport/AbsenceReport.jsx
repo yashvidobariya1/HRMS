@@ -261,7 +261,7 @@ const AbsenceReport = () => {
       ) : (
         <>
           <CommonTable
-            headers={["Absence Date", "status"]}
+            headers={["Absence Date", "Status"]}
             data={absenceReportList.map((absencesheet) => ({
               absencesheetdate: absencesheet.date,
               absencesheetstatus: absencesheet.status,

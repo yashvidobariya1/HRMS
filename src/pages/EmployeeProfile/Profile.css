@@ -79,6 +79,7 @@
 }
 
 .profile-document {
+  width: 100%;
   color: var(--primary-button);
 }
 

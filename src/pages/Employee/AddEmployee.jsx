@@ -30,7 +30,7 @@ const AddEmployee = () => {
   const [contracts, setContracts] = useState([]);
   const [filteredAssignees, setFilteredAssignees] = useState([]);
   const [clients, setClients] = useState([]);
-  const [templates, setTemplates] = useState([]);
+  // const [templates, setTemplates] = useState([]);
   const [documentDetails, setDocumentDetails] = useState([]);
   const [jobList, setJobList] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -657,7 +657,7 @@ const AddEmployee = () => {
     // if (jobForm?.assignManager === "") {
     //   newErrors.assignManager = "Assign Manager is required";
     // }
-    if (!isWorkFromOffice && !jobForm?.assignClient) {
+    if (!isWorkFromOffice && jobForm?.assignClient.length == 0) {
       newErrors.assignClient = "Assign Client is required";
     }
     if (Object.keys(newErrors).length > 0) {
@@ -1037,7 +1037,7 @@ const AddEmployee = () => {
         setLocations(Company?.data?.companiesAllLocations);
         setContracts(Company?.data?.contracts);
         setClients(Company?.data?.clients);
-        setTemplates(Company?.data?.templates);
+        // setTemplates(Company?.data?.templates);
       } else {
         showToast(Company?.data?.message, "error");
       }

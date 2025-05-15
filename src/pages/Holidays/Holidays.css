@@ -662,10 +662,6 @@
     font-size: 14px;
   }
 
-  .View-holiday-main .fc-button-group {
-    gap: 5px;
-  }
-
   .View-holiday-main .fc-col-header-cell-cushion {
     font-size: 12px;
   }
@@ -701,11 +697,12 @@
   }
 
   .holiday-modal-buttons {
+    margin: 2px;
     padding: 5px 10px;
     font-size: 12px;
-    margin: 2px;
   }
 
+  .View-holiday-main .fc-button-group,
   .View-holiday-main .fc-toolbar-chunk {
     gap: 5px;
   }

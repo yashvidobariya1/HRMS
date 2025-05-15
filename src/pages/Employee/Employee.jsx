@@ -61,12 +61,12 @@ const Employee = () => {
     setShowConfirm(true);
   };
 
-  const HandleEmployeeTimesheet = async (id, name) => {
-    // setEmployeeName(name);
-    // setEmployeeId(id);
-    navigate(`/employees/timesheetreport/${name}?EmployeeId=${id}`);
-    setShowDropdownAction(null);
-  };
+  // const HandleEmployeeTimesheet = async (id, name) => {
+  //   // setEmployeeName(name);
+  //   // setEmployeeId(id);
+  //   navigate(`/employees/timesheetreport/${name}?EmployeeId=${id}`);
+  //   setShowDropdownAction(null);
+  // };
 
   const HandleViewHours = async (id, name) => {
     navigate(`/employees/viewhours/${name}?EmployeeId=${id}`);
@@ -168,10 +168,10 @@ const Employee = () => {
       label: "Delete",
       onClick: HandleDeleteEmployee,
     },
-    {
-      label: "TimeSheet",
-      onClick: HandleEmployeeTimesheet,
-    },
+    // {
+    //   label: "TimeSheet",
+    //   onClick: HandleEmployeeTimesheet,
+    // },
     {
       label: "View Hours",
       onClick: HandleViewHours,

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Loader from "../Helper/Loader";
 import { GetCall, PostCall } from "../../ApiServices";
 import { showToast } from "../../main/ToastManager";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import "./AddLeaves.css";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -31,6 +31,9 @@ const AddLeaves = () => {
   const Jobtitle = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobName
   );
+  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [Clientdata, setClientdata] = useState([]);
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
@@ -67,6 +70,29 @@ const AddLeaves = () => {
     }
   };
 
+  const GetClientdata = async () => {
+    try {
+      const response = await PostCall(`/getUsersAssignClients`, {
+        jobId: jobRoleId,
+      });
+
+      if (response?.data?.status === 200) {
+        const jobTitles = response.data.assignClients;
+        console.log("job title", jobTitles);
+        setClientdata(jobTitles);
+
+        if (jobTitles.length > 1) {
+          setopenClietnSelectModal(false);
+        } else {
+          setSelectedClientId(jobTitles[0]?.clientId);
+          setopenClietnSelectModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
     getAllowLeaveCount();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,6 +110,15 @@ const AddLeaves = () => {
         setType(selected.type);
       }
     }
+  };
+
+  const handlePopupClose = () => {
+    setopenClietnSelectModal(true);
+  };
+
+  const handleClientSelect = (selectedTitle) => {
+    setSelectedClientId(selectedTitle);
+    setopenClietnSelectModal(true);
   };
 
   const validate = () => {
@@ -114,6 +149,10 @@ const AddLeaves = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  useEffect(() => {
+    GetClientdata();
+  }, [jobRoleId]);
 
   useEffect(() => {
     if (formData.startDate && formData.endDate) {
@@ -202,7 +241,7 @@ const AddLeaves = () => {
       setLoading(true);
       let response;
       if (id) {
-        response = await PostCall(`/updateLeaveRequest/${id}`, { formData });
+        response = await PostCall(`/updateLeaveRequest/${id}`, formData);
       } else {
         response = await PostCall("/leaveRequest", {
           ...formData,

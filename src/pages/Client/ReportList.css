@@ -42,6 +42,28 @@
   padding: 12px 15px;
 }
 
+.report-list-input-dropdown {
+  margin: 0;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  /* width: 100%; */
+  outline: none;
+}
+
+.report-list-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.report-list-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media screen and (max-width: 992px) {
   .report-list-download-container button {
     margin-top: 17px;

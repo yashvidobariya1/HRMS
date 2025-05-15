@@ -422,8 +422,8 @@ const CommonTable = ({
     Client: "clientName",
     "First name": "Name",
     "Last name": "lastname",
-    "Mobile number": "phonenumber",
-    "candidate Email": "email",
+    Contact: "phonenumber",
+    "Candidate Email": "email",
     "QRCode Value": "Name",
     Date: "timesheetdate",
     status: "timesheetstatus",
@@ -435,6 +435,7 @@ const CommonTable = ({
     "ClockOut Time": "clockout",
     "Working Time": "workingTime",
     "Job Title Name": "Name",
+    "Client name": "clientName",
   };
 
   const handleSort = (key) => {
@@ -678,7 +679,7 @@ const CommonTable = ({
                                   }}
                                   onClick={() => window.open(item[key])}
                                 >
-                                  Link
+                                  Apply Link
                                 </p>
                               </>
                             ) : (
