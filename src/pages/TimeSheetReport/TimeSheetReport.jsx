@@ -426,8 +426,6 @@ const TimeSheetReport = () => {
       if (selectedClientId) {
         GetTimesheetReport();
       }
-    } else {
-      GetTimesheetReport();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

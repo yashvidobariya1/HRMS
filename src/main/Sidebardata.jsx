@@ -130,7 +130,7 @@ export const SidebarData = [
         title: "View Tasks",
         icon: <FaTasks />,
         link: "/viewtasks",
-        allowedRoles: ["Employee"],
+        allowedRoles: ["Employee", "Superadmin", "Administrator", "Manager"],
       },
       {
         title: "Timesheet Report",

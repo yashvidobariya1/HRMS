@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { GetCall, PostCall } from "../../ApiServices";
 import "./ViewTasks.css";
@@ -39,13 +39,20 @@ const ViewTasks = () => {
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
+  const jobRoleisworkFromOffice = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
+  );
+  const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(startDate).year();
   const currentYear = moment().year();
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const EmployeeId = searchParams.get("EmployeeId");
+  const [employeeList, setEmployeeList] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const companyId = useSelector((state) => state.companySelect.companySelect);
+  // const location = useLocation();
+  // const searchParams = new URLSearchParams(location.search);
+  // const EmployeeId = searchParams.get("EmployeeId");
   const [appliedFilters, setAppliedFilters] = useState({
     year: moment().year(),
     month: moment().month(),
@@ -128,8 +135,8 @@ const ViewTasks = () => {
 
   const GetClientdata = async () => {
     const payload = {
-      jobId: selectedJobId || jobRoleId,
-      userId: EmployeeId,
+      jobId: selectedEmployee ? selectedJobId : jobRoleId,
+      userId: selectedEmployee,
     };
 
     try {
@@ -184,7 +191,7 @@ const ViewTasks = () => {
       let response;
       const data = {
         ...formData,
-        userId: EmployeeId ? EmployeeId : "",
+        userId: selectedEmployee ? selectedEmployee : "",
         jobId: selectedJobId ? selectedJobId : jobRoleId,
         clientId: selectedClientId,
       };
@@ -263,6 +270,11 @@ const ViewTasks = () => {
 
   const handleJobTitleSelect = (selectedTitle) => {
     setSelectedJobId(selectedTitle);
+    const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
+    if (selectedJob) {
+      setIsWorkFromOffice(selectedJob.isWorkFromOffice);
+      console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+    }
     setOpenJobTitleModal(true);
   };
 
@@ -274,12 +286,27 @@ const ViewTasks = () => {
   //   }
   // };
 
+  const fetchEmployeeList = async () => {
+    try {
+      const response = await GetCall(`/getUsers?companyId=${companyId}`);
+      if (response?.data?.status === 200) {
+        setEmployeeList(response?.data?.users);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching employee list:", error);
+    }
+  };
+
   const GetJobTitleData = async () => {
     try {
       let response;
       // console.log("EmployeeId", EmployeeId);
-      if (EmployeeId) {
-        response = await GetCall(`/getUserJobTitles?EmployeeId=${EmployeeId}`);
+      if (selectedEmployee) {
+        response = await GetCall(
+          `/getUserJobTitles?EmployeeId=${selectedEmployee}`
+        );
       } else {
         response = await GetCall(`/getUserJobTitles`);
       }
@@ -304,8 +331,8 @@ const ViewTasks = () => {
     try {
       setLoading(true);
       const data = {
-        userId: EmployeeId ? EmployeeId : "",
-        jobId: selectedJobId ? selectedJobId : jobRoleId,
+        jobId: selectedEmployee ? selectedJobId : jobRoleId,
+        userId: selectedEmployee,
         clientId: selectedClientId,
       };
       const response = await PostCall(
@@ -325,19 +352,46 @@ const ViewTasks = () => {
   };
 
   useEffect(() => {
-    if (EmployeeId) {
-      if (selectedJobId || selectedClientId) {
-        console.log("EmployeeId timesheet call");
-        getAllTasks();
-      }
-    } else {
-      if (jobRoleId || selectedClientId) {
-        getAllTasks();
-        console.log("without EmployeeId timesheet call");
-      }
+    const GetTimesheet =
+      (selectedEmployee && selectedJobId && selectedClientId) ||
+      (!selectedEmployee &&
+        ((jobRoleId && jobRoleisworkFromOffice) ||
+          (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
+          (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
+      (selectedJobId && isWorkFromOffice);
+
+    if (GetTimesheet) {
+      getAllTasks();
     }
+  }, [
+    selectedEmployee,
+    selectedJobId,
+    selectedClientId,
+    jobRoleId,
+    isWorkFromOffice,
+    jobRoleisworkFromOffice,
+  ]);
+
+  useEffect(() => {
+    const GetClientData =
+      (selectedEmployee && selectedJobId && !isWorkFromOffice) ||
+      (!selectedEmployee && jobRoleId && !jobRoleisworkFromOffice);
+
+    if (GetClientData) {
+      GetClientdata();
+    }
+  }, [
+    selectedEmployee,
+    selectedJobId,
+    jobRoleId,
+    isWorkFromOffice,
+    jobRoleisworkFromOffice,
+  ]);
+
+  useEffect(() => {
+    userRole !== "Employee" && fetchEmployeeList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [EmployeeId, selectedClientId, userRole]);
+  }, [companyId]);
 
   useEffect(() => {
     const transformedEvents = taskList.map((task) => ({
@@ -354,24 +408,11 @@ const ViewTasks = () => {
   }, [taskList]);
 
   useEffect(() => {
-    if (EmployeeId) {
+    if (selectedEmployee) {
       GetJobTitleData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [EmployeeId]);
-
-  useEffect(() => {
-    if (EmployeeId) {
-      if (selectedJobId) {
-        GetClientdata();
-      }
-    } else {
-      if (selectedJobId || jobRoleId) {
-        GetClientdata();
-      }
-    }
-    console.log("cleint data");
-  }, [selectedJobId, jobRoleId]);
+  }, [selectedEmployee]);
 
   return (
     <div className="View-task-main">
@@ -416,6 +457,7 @@ const ViewTasks = () => {
                 );
               })}
             </select> */}
+
             <Select
               className="viewtask-dropdown"
               value={selectedYear}
@@ -491,6 +533,36 @@ const ViewTasks = () => {
           />
         </div>
       </div>
+
+      {userRole != "Employee" && (
+        <div className="viewhour-employee-list">
+          <Select
+            className="View-hour-input-dropdown"
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
+            displayEmpty
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  width: 150,
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxHeight: 200,
+                },
+              },
+            }}
+          >
+            <MenuItem value="" disabled>
+              Select Employee
+            </MenuItem>
+            {employeeList.map((employee) => (
+              <MenuItem key={employee._id} value={employee._id}>
+                {employee.userName}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
+      )}
 
       {loading ? (
         <div className="loader-wrapper">
