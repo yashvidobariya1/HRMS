@@ -1249,6 +1249,7 @@ const AddEmployee = () => {
                     PaperProps: {
                       style: {
                         width: 200,
+                        className: "custom-dropdown-menu",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         maxHeight: 200,

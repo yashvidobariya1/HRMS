@@ -51,7 +51,8 @@ const EmployeesTimesheet = () => {
   const actions = [{ label: "Action", onClick: HandleAction }];
 
   const handlereportPerPageChange = (e) => {
-    setReportPerPage(parseInt(e.target.value, 10));
+    // setReportPerPage(parseInt(e.target.value, 10));
+    setReportPerPage(e);
     setCurrentPage(1);
   };
 
@@ -80,7 +81,7 @@ const EmployeesTimesheet = () => {
   useEffect(() => {
     GetEmployeesStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentPage, reportPerPage]);
 
   return (
     <div className="employee-report-list-container">

@@ -281,6 +281,28 @@
   color: var(--secondary-dark-gray);
 }
 
+.viewtask-input-dropdown {
+  margin: 0;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  /* width: 100%; */
+  outline: none;
+}
+
+.viewtaskr-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.viewtask-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media (max-width: 767px) {
   .View-task-main .fc .fc-button {
     padding: 10px 12px;
@@ -297,6 +319,10 @@
 
   .View-task-main .fc-col-header-cell-cushion {
     font-size: 14px;
+  }
+
+  .viewtask-input-dropdown {
+    padding: 11px;
   }
 }
 
@@ -365,6 +391,14 @@
 
   .view-task-filter-container {
     gap: 5px;
+  }
+
+  .viewtask-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .viewtask-input-dropdown {
+    padding: 7px;
   }
 }
 

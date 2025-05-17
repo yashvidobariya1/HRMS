@@ -107,7 +107,7 @@ export const SidebarData = [
         title: "Absence Report",
         icon: <TbReportSearch />,
         link: "/absencereport",
-        allowedRoles: ["Administrator", "Manager", "Employee"],
+        allowedRoles: ["Administrator", "Manager", "Employee", "Superadmin"],
       },
     ],
   },
@@ -124,7 +124,7 @@ export const SidebarData = [
         title: "View Hours",
         icon: <LiaHourglassStartSolid />,
         link: "/viewhours",
-        allowedRoles: ["Administrator", "Manager", "Employee"],
+        allowedRoles: ["Administrator", "Manager", "Employee", "Superadmin"],
       },
       {
         title: "View Tasks",

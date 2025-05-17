@@ -250,7 +250,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useLocation } from "react-router";
+// import { useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { GetCall, PostCall } from "../../ApiServices";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
@@ -271,7 +271,7 @@ const Viewhours = () => {
   const [selectedJobId, setSelectedJobId] = useState("");
   const [viewMode, setViewMode] = useState("dayGridMonth");
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
-  const location = useLocation();
+  // const location = useLocation();
   // const queryParams = new URLSearchParams(location.search);
   // const EmployeeId = queryParams.get("EmployeeId");
   const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
@@ -287,6 +287,12 @@ const Viewhours = () => {
   const jobRoleisworkFromOffice = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
+
+  const handleEmployeeChange = (employeeId) => {
+    setSelectedEmployee(employeeId);
+    setSelectedClientId("");
+    setSelectedJobId("");
+  };
 
   const getAlltimesheet = async () => {
     try {
@@ -327,6 +333,7 @@ const Viewhours = () => {
           setOpenJobTitleModal(false);
         } else {
           setSelectedJobId(jobTitles[0]?.jobId);
+          getAlltimesheet();
           setOpenJobTitleModal(true);
         }
       }
@@ -357,7 +364,7 @@ const Viewhours = () => {
     const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
     if (selectedJob) {
       setIsWorkFromOffice(selectedJob.isWorkFromOffice);
-      console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+      // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
     }
     setOpenJobTitleModal(true);
   };
@@ -420,6 +427,7 @@ const Viewhours = () => {
       (selectedJobId && isWorkFromOffice);
 
     if (GetTimesheet) {
+      // console.log("timesheet api call");
       getAlltimesheet();
     }
   }, [
@@ -526,33 +534,35 @@ const Viewhours = () => {
           </p>
         </div>
       </div>
-      <div className="viewhour-employee-list">
-        <Select
-          className="View-hour-input-dropdown"
-          value={selectedEmployee}
-          onChange={(e) => setSelectedEmployee(e.target.value)}
-          displayEmpty
-          MenuProps={{
-            PaperProps: {
-              style: {
-                width: 150,
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxHeight: 200,
+      {userRole != "Employee" && (
+        <div className="viewhour-employee-list">
+          <Select
+            className="View-hour-input-dropdown"
+            value={selectedEmployee}
+            onChange={(e) => handleEmployeeChange(e.target.value)}
+            displayEmpty
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  width: 150,
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxHeight: 200,
+                },
               },
-            },
-          }}
-        >
-          <MenuItem value="" disabled>
-            Select Employee
-          </MenuItem>
-          {employeeList.map((employee) => (
-            <MenuItem key={employee._id} value={employee._id}>
-              {employee.userName}
+            }}
+          >
+            <MenuItem value="" disabled>
+              Select Employee
             </MenuItem>
-          ))}
-        </Select>
-      </div>
+            {employeeList.map((employee) => (
+              <MenuItem key={employee._id} value={employee._id}>
+                {employee.userName}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
+      )}
       {loading ? (
         <div className="loader-wrapper">
           <Loader />

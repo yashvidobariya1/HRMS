@@ -327,6 +327,12 @@ const ViewTasks = () => {
     }
   };
 
+  const handleEmployeeChange = (employeeId) => {
+    setSelectedEmployee(employeeId);
+    setSelectedClientId("");
+    setSelectedJobId("");
+  };
+
   const getAllTasks = async () => {
     try {
       setLoading(true);
@@ -537,9 +543,9 @@ const ViewTasks = () => {
       {userRole != "Employee" && (
         <div className="viewhour-employee-list">
           <Select
-            className="View-hour-input-dropdown"
+            className="viewtask-input-dropdown"
             value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
+            onChange={(e) => handleEmployeeChange(e.target.value)}
             displayEmpty
             MenuProps={{
               PaperProps: {
@@ -577,9 +583,10 @@ const ViewTasks = () => {
             initialDate={moment(`${selectedYear}-${selectedMonth}`).toDate()}
             dateClick={(info) => {
               if (
-                userRole === "Manager" ||
-                userRole === "Administrator" ||
-                userRole === "Superadmin"
+                (userRole === "Manager" ||
+                  userRole === "Administrator" ||
+                  userRole === "Superadmin") &&
+                selectedEmployee
               ) {
                 handleDateClick(info);
               }
