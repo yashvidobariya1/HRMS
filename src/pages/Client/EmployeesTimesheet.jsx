@@ -8,6 +8,18 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import { useLocation } from "react-router-dom";
 import { setUserInfo } from "../../store/userInfoSlice";
 import { useDispatch } from "react-redux";
+import {
+  Collapse,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
 const EmployeesTimesheet = () => {
   const navigate = useNavigate();
@@ -26,12 +38,17 @@ const EmployeesTimesheet = () => {
   localStorage.setItem("token", JSON.stringify(token));
   dispatch(setUserInfo({ role: "Client" }));
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  // const handlePageChange = (pageNumber) => {
+  //   setCurrentPage(pageNumber);
+  // };
 
-  const handleAction = (id) => {
-    setShowDropdownAction(showDropdownAction === id ? null : id);
+  // const handleAction = (id) => {
+  //   setShowDropdownAction(showDropdownAction === id ? null : id);
+  // };
+
+  const [openRows, setOpenRows] = useState({});
+  const handleToggle = (index) => {
+    setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
   const HandleAction = async (id) => {
@@ -109,29 +126,87 @@ const EmployeesTimesheet = () => {
         </div>
       ) : (
         <>
-          <CommonTable
-            headers={tableHeaders}
-            data={reportDetails?.employees?.map((report) => ({
-              _id: report?._id,
-              username: report?.userName,
-              jobtitle: report?.jobTitle,
-              role: report?.jobRole,
-              status: report?.status,
-              reason: report?.reason,
-            }))}
-            actions={{
-              actionsList: actions,
-            }}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            showPerPage={reportPerPage}
-            onPerPageChange={handlereportPerPageChange}
-            handleAction={handleAction}
-            isPagination="true"
-            isSearchQuery={false}
-            totalData={totalEmployee}
-          />
+          <TableContainer>
+            <Table aria-label="collapsible table">
+              <TableHead>
+                <TableRow>
+                  <TableCell />
+                  <TableCell>User Name</TableCell>
+                  <TableCell>Job Title</TableCell>
+                  <TableCell>Job Role</TableCell>
+                  <TableCell>Total Hours</TableCell>
+                  <TableCell>Overtime</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {reportDetails.map((row, index) => (
+                  <React.Fragment key={index}>
+                    <TableRow>
+                      <TableCell>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleToggle(index)}
+                        >
+                          {openRows[index] ? (
+                            <KeyboardArrowUp />
+                          ) : (
+                            <KeyboardArrowDown />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>{row.userName}</TableCell>
+                      <TableCell>{row.jobTitle}</TableCell>
+                      <TableCell>{row.jobRole}</TableCell>
+                      <TableCell>{row.timesheetData.totalHours}</TableCell>
+                      <TableCell>{row.timesheetData.overTime}</TableCell>
+                    </TableRow>
+
+                    <TableRow>
+                      <TableCell
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={6}
+                      >
+                        <Collapse
+                          in={openRows[index]}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          <Box margin={1}>
+                            <Typography variant="subtitle1" gutterBottom>
+                              Clock In/Out Entries
+                            </Typography>
+                            <Table size="small" aria-label="times">
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell>Clock In</TableCell>
+                                  <TableCell>Clock Out</TableCell>
+                                  <TableCell>Total Time</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {console.log(row?.timesheetData?.clockinTime)}
+                                {row?.timesheetData?.clockinTime?.map(
+                                  (entry) => (
+                                    <TableRow key={entry?._id}>
+                                      <TableCell>{entry?.clockIn}</TableCell>
+                                      <TableCell>{entry?.clockOut}</TableCell>
+                                      <TableCell>
+                                        {entry?.totalTiming}
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                )}
+                              </TableBody>
+                            </Table>
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </>
       )}
     </div>

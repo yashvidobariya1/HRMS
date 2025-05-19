@@ -76,9 +76,15 @@ const AbsenceReport = () => {
   };
 
   const handleEmployeeChange = (employeeId) => {
+    setSelectedYear(moment().year());
+    setSelectedMonth(moment().month() + 1);
     setSelectedEmployee(employeeId);
     setSelectedClientId("");
     setSelectedJobId("");
+    setAppliedFilters({
+      year: moment().year(),
+      month: moment().month(),
+    });
   };
 
   const GetAbsenceReport = async () => {
@@ -206,8 +212,12 @@ const AbsenceReport = () => {
 
   useEffect(() => {
     const AbsenceReport =
-      (selectedEmployee && selectedJobId && selectedClientId) ||
-      (!selectedEmployee &&
+      (selectedEmployee &&
+        selectedJobId &&
+        selectedClientId &&
+        appliedFilters) ||
+      !selectedEmployee ||
+      (appliedFilters &&
         ((jobRoleId && jobRoleisworkFromOffice) ||
           (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
           (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
@@ -224,6 +234,7 @@ const AbsenceReport = () => {
     jobRoleId,
     isWorkFromOffice,
     jobRoleisworkFromOffice,
+    appliedFilters,
   ]);
 
   useEffect(() => {

@@ -36,6 +36,7 @@ const ViewTasks = () => {
   const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [Clientdata, setClientdata] = useState([]);
+  const todayDate = new Date().toISOString().split("T")[0];
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
@@ -43,8 +44,8 @@ const ViewTasks = () => {
     (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
   const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
-  const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
-  const startYear = moment(startDate).year();
+  const AllowstartDate = "2022-01-01";
+  const startYear = moment(AllowstartDate).year();
   const currentYear = moment().year();
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [employeeList, setEmployeeList] = useState([]);
@@ -55,7 +56,7 @@ const ViewTasks = () => {
   // const EmployeeId = searchParams.get("EmployeeId");
   const [appliedFilters, setAppliedFilters] = useState({
     year: moment().year(),
-    month: moment().month(),
+    month: moment().month() + 1,
   });
 
   const applyFilters = () => {
@@ -82,6 +83,8 @@ const ViewTasks = () => {
     taskDescription: "",
     startTime: "",
     endTime: "",
+    startDate: "",
+    endDate: "",
   });
 
   const handleDateClick = (info) => {
@@ -171,10 +174,25 @@ const ViewTasks = () => {
 
   const validate = () => {
     let newErrors = {};
-    if (!formData.taskDate) newErrors.taskDate = "Task Date is required";
-    if (!formData.taskName) newErrors.taskName = "Task Name is required";
-    if (!formData.taskDescription)
-      newErrors.taskDescription = "Task Description is required";
+    if (formData._id && !formData.taskDate) {
+      newErrors.taskDate = "Task Date is required";
+    }
+    // if (!formData.taskName) newErrors.taskName = "Task Name is required";
+    // if (!formData.taskDescription)
+    //   newErrors.taskDescription = "Task Description is required";
+    if (!formData._id) {
+      if (!formData.startDate) newErrors.startDate = "Start Date is required";
+      if (!formData.endDate) newErrors.endDate = "End Date is required";
+    }
+    if (formData.startDate && formData.endDate) {
+      const start = moment(formData.startDate, "YYYY-MM-DD");
+      const end = moment(formData.endDate, "YYYY-MM-DD");
+
+      if (start.isAfter(end)) {
+        newErrors.startDate = "Start Date cannot be after End Date";
+        newErrors.endDate = "End Date cannot be before Start Date";
+      }
+    }
     if (!formData.startTime) newErrors.startTime = "Start Time is required";
     if (!formData.endTime) newErrors.endTime = "End Time is required";
     setErrors(newErrors);
@@ -328,9 +346,15 @@ const ViewTasks = () => {
   };
 
   const handleEmployeeChange = (employeeId) => {
+    setSelectedYear(moment().year());
+    setSelectedMonth(moment().month() + 1);
     setSelectedEmployee(employeeId);
     setSelectedClientId("");
     setSelectedJobId("");
+    setAppliedFilters({
+      year: moment().year(),
+      month: moment().month() + 1,
+    });
   };
 
   const getAllTasks = async () => {
@@ -341,12 +365,15 @@ const ViewTasks = () => {
         userId: selectedEmployee,
         clientId: selectedClientId,
       };
+      const { year, month } = appliedFilters;
       const response = await PostCall(
-        `/getAllTasks?year=${selectedYear}&month=${selectedMonth}`,
+        `/getAllTasks?year=${year}&month=${month}`,
         data
       );
+
       if (response?.data?.status === 200) {
         setTaskList(response?.data.tasks);
+        console.log("response:", response?.data.tasks);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -359,8 +386,12 @@ const ViewTasks = () => {
 
   useEffect(() => {
     const GetTimesheet =
-      (selectedEmployee && selectedJobId && selectedClientId) ||
+      (selectedEmployee &&
+        selectedJobId &&
+        selectedClientId &&
+        appliedFilters) ||
       (!selectedEmployee &&
+        appliedFilters &&
         ((jobRoleId && jobRoleisworkFromOffice) ||
           (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
           (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
@@ -376,6 +407,7 @@ const ViewTasks = () => {
     jobRoleId,
     isWorkFromOffice,
     jobRoleisworkFromOffice,
+    appliedFilters,
   ]);
 
   useEffect(() => {
@@ -400,6 +432,7 @@ const ViewTasks = () => {
   }, [companyId]);
 
   useEffect(() => {
+    console.log("tasklist", taskList);
     const transformedEvents = taskList.map((task) => ({
       title: task.taskName,
       start: task.taskDate,
@@ -509,8 +542,9 @@ const ViewTasks = () => {
               value={selectedMonth}
               className="viewtask-dropdown"
               onChange={(e) => {
-                // console.log("month", e.target.value);
-                setSelectedMonth(e.target.value);
+                const value = parseInt(e.target.value, 10);
+                console.log("month", value);
+                setSelectedMonth(value);
               }}
               displayEmpty
               MenuProps={{
@@ -600,7 +634,7 @@ const ViewTasks = () => {
               today: "Today",
             }}
             validRange={{
-              start: startDate,
+              start: AllowstartDate,
               end: currentYearEnd,
             }}
             events={events}
@@ -631,21 +665,25 @@ const ViewTasks = () => {
             </button>
 
             <h3>{formData._id ? "Update" : "Add"} Task</h3>
+            {formData._id && (
+              <div className="addtask-input-container">
+                <label className="label">Date*</label>
+                <input
+                  type="date"
+                  name="taskDate"
+                  value={formData.taskDate}
+                  className="addtask-input"
+                  onChange={handleChange}
+                  min={todayDate}
+                />
+                {errors?.taskDate && (
+                  <div className="error-text">{errors?.taskDate}</div>
+                )}
+              </div>
+            )}
+
             <div className="addtask-input-container">
-              <label className="label">Date*</label>
-              <input
-                type="date"
-                name="date"
-                value={formData.taskDate}
-                className="addtask-input"
-                onChange={handleChange}
-              />
-              {errors?.taskDate && (
-                <div className="error-text">{errors?.taskDate}</div>
-              )}
-            </div>
-            <div className="addtask-input-container">
-              <label className="label">Task Name*</label>
+              <label className="label">Task Name</label>
               <input
                 type="text"
                 name="taskName"
@@ -653,22 +691,55 @@ const ViewTasks = () => {
                 className="addtask-input"
                 onChange={handleChange}
               />
-              {errors?.taskName && (
+              {/* {errors?.taskName && (
                 <div className="error-text">{errors?.taskName}</div>
-              )}
+              )} */}
             </div>
             <div className="addtask-input-container">
-              <label className="label">Task Description*</label>
+              <label className="label">Task Description</label>
               <textarea
                 name="taskDescription"
                 value={formData.taskDescription}
                 className="addtask-input"
                 onChange={handleChange}
               />
-              {errors?.taskDescription && (
+              {/* {errors?.taskDescription && (
                 <div className="error-text">{errors?.taskDescription}</div>
-              )}
+              )} */}
             </div>
+            {!formData._id && (
+              <>
+                <div className="addtask-input-container">
+                  <label className="label">Start Date*</label>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={formData.startDate}
+                    className="addtask-input"
+                    onChange={handleChange}
+                    min={todayDate}
+                  />
+                  {errors?.startDate && (
+                    <div className="error-text">{errors?.startDate}</div>
+                  )}
+                </div>
+                <div className="addtask-input-container">
+                  <label className="label">End Date*</label>
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={formData.endDate}
+                    className="addtask-input"
+                    onChange={handleChange}
+                    min={todayDate}
+                  />
+                  {errors?.endDate && (
+                    <div className="error-text">{errors?.endDate}</div>
+                  )}
+                </div>
+              </>
+            )}
+
             <div className="addtask-input-container">
               <label className="label">Start Time*</label>
               <input

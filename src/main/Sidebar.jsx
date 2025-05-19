@@ -108,7 +108,26 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         <div className="logo-details">
           <div className="logo_name">
             {/* <img src="/image/login-bg.png" alt="Logo" /> */}
-            <img src="/favicon.png" alt="Logo" />
+            {selectedCompanyId && companyList.length > 0
+              ? (() => {
+                  const selectedCompany = companyList.find(
+                    (company) => company._id === selectedCompanyId
+                  );
+                  const logo = selectedCompany?.companyDetails?.companyLogo;
+                  const name = selectedCompany?.companyDetails?.businessName;
+
+                  return logo ? (
+                    <img
+                      src={logo}
+                      alt={name || "Company Logo"}
+                      className="company-logo"
+                    />
+                  ) : (
+                    <img src="/image/logo.jpg" alt="default logo" />
+                  );
+                })()
+              : ""}
+
             {companyList.length > 0 && !isCollapsed && (
               <>
                 {companyList.length === 1 ? (

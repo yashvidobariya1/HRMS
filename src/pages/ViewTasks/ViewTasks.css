@@ -291,7 +291,7 @@
   outline: none;
 }
 
-.viewtaskr-input-dropdown .MuiSelect-select {
+.viewtask-input-dropdown .MuiSelect-select {
   padding: 0px;
   color: var(--secondary-dark-gray) !important;
   border: none;
