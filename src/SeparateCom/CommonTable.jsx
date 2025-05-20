@@ -264,6 +264,7 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import moment from "moment";
 import { BsHourglassSplit } from "react-icons/bs";
 import "../SeparateCom/CommonTable.css";
+import { useNavigate } from "react-router";
 
 const CommonTable = ({
   headers,
@@ -286,6 +287,7 @@ const CommonTable = ({
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [openRow, setOpenRow] = useState(null);
+  const navigate = useNavigate();
   // const location = useLocation();
   const page = 0;
   // const params = new URLSearchParams(location.search);
@@ -304,6 +306,10 @@ const CommonTable = ({
   const handleMenuClose = () => {
     setAnchorEl(null);
     setSelectedRow(null);
+  };
+
+  const handleViewClick = (id) => {
+    navigate(`/reportlist/viewstatus?reportId=${id}`);
   };
 
   // const handleChangePage = (event, newPage) => {
@@ -522,6 +528,7 @@ const CommonTable = ({
                   header === "Document Name" ||
                   header === "Template" ||
                   header === "QR Code" ||
+                  header === "View" ||
                   header === "Timing" ||
                   header === "" ? (
                     header
@@ -900,6 +907,13 @@ const CommonTable = ({
                                 </MenuItem>
                               ))}
                           </Menu>
+                        </TableCell>
+                      )}
+                      {headers.includes("View") && (
+                        <TableCell className="reportlist-view-button">
+                          <IconButton onClick={() => handleViewClick(item._id)}>
+                            View
+                          </IconButton>
                         </TableCell>
                       )}
                     </TableRow>

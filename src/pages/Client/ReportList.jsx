@@ -55,8 +55,9 @@ const ReportList = () => {
     "Start Date",
     "End Date",
     "Report Generated Date",
+    "Action By",
     "Status",
-    "Action",
+    "View",
   ];
 
   const actions = [{ label: "View Status", onClick: HandleViewStatus }];
@@ -271,8 +272,9 @@ const ReportList = () => {
               startDate: report?.startDate,
               endDate: report?.endDate,
               generatedDate: moment(report?.createdAt).format(
-                "YYYY/MM/DD hh:mm A"
+                "YYYY-MM-DD hh:mm A"
               ),
+              actionby: report?.email,
               status: report?.status,
             }))}
             actions={{

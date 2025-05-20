@@ -6,7 +6,22 @@ import { showToast } from "../../main/ToastManager";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { TextField } from "@mui/material";
+import {
+  Box,
+  Collapse,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import moment from "moment";
+import CommonAddButton from "../../SeparateCom/CommonAddButton";
 
 const ViewStatus = () => {
   const [loading, setLoading] = useState(false);
@@ -21,6 +36,7 @@ const ViewStatus = () => {
   const [totalEmployees, settotalEmployees] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const [openRows, setOpenRows] = useState({});
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -29,6 +45,9 @@ const ViewStatus = () => {
   const allStatusPending = statusList?.every(
     (item) => item.status === "Pending"
   );
+  const handleToggle = (index) => {
+    setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
 
   const tableHeaders = allStatusPending
     ? ["Employee Name", "Job Title", "Role", "status"]
@@ -46,8 +65,12 @@ const ViewStatus = () => {
   const GetEmployeesStatus = async () => {
     try {
       setLoading(true);
+      // const response = await GetCall(
+      //   `/getReport/${reportId}?page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}&search=${debouncedSearch}`
+      // );
+      console.log(reportId);
       const response = await GetCall(
-        `/getReport/${reportId}?page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}&search=${debouncedSearch}`
+        `/getReportForClient?page=${currentPage}&limit=${reportPerPage}&reportId=${reportId}&companyId=${companyId}`
       );
       if (response?.data?.status === 200) {
         setStatusList(response?.data?.report?.employees);
@@ -95,6 +118,13 @@ const ViewStatus = () => {
           onChange={handleSearchChange}
         />
       </div>
+      <div className="viewstatus-action">
+        <CommonAddButton
+          label="Re send Link"
+          // icon={FaLocationDot}
+          // onClick={GoTOAddLocation}
+        />
+      </div>
 
       {loading ? (
         <div className="loader-wrapper">
@@ -102,7 +132,7 @@ const ViewStatus = () => {
         </div>
       ) : (
         <>
-          <CommonTable
+          {/* <CommonTable
             headers={tableHeaders}
             data={statusList?.map((status) => ({
               _id: status._id,
@@ -121,7 +151,103 @@ const ViewStatus = () => {
             isPagination="true"
             isSearchQuery={false}
             totalData={totalEmployees}
-          />
+          /> */}
+          <div className="scrollable-table-wrapper">
+            <TableContainer>
+              <Table
+                aria-label="collapsible table"
+                className="employeetimesheet-table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell />
+                    <TableCell>Employee Name</TableCell>
+                    <TableCell>Job Title</TableCell>
+                    <TableCell>Job Role</TableCell>
+                    {/* <TableCell>Role</TableCell>
+                    <TableCell>Status</TableCell> */}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {statusList?.map((row, index) => (
+                    <React.Fragment key={index}>
+                      <TableRow>
+                        <TableCell>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleToggle(index)}
+                          >
+                            {openRows[index] ? (
+                              <KeyboardArrowUp />
+                            ) : (
+                              <KeyboardArrowDown />
+                            )}
+                          </IconButton>
+                        </TableCell>
+                        <TableCell>{row.userName}</TableCell>
+                        <TableCell>{row.jobTitle}</TableCell>
+                        <TableCell>{row.jobRole}</TableCell>
+                        {/* <TableCell>{row?.totalHours}</TableCell>
+                        <TableCell>{row?.overTime}</TableCell> */}
+                      </TableRow>
+
+                      <TableRow>
+                        <TableCell
+                          style={{ paddingBottom: 0, paddingTop: 0 }}
+                          colSpan={6}
+                        >
+                          <Collapse
+                            in={openRows[index]}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            <Box margin={1}>
+                              <Typography variant="subtitle1" gutterBottom>
+                                Clock In/Out Entries
+                              </Typography>
+                              <Table size="small" aria-label="times">
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell>Clock In</TableCell>
+                                    <TableCell>Clock Out</TableCell>
+                                    <TableCell>Total Time</TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {/* {row?.employeeTimesheetData.timesheetData?.map(
+                                    (day) =>
+                                      day?.employeeTimesheetData.timesheetData?.clockinTime?.map(
+                                        (entry) => (
+                                          <TableRow key={entry?._id}>
+                                            <TableCell>
+                                              {moment(entry?.clockIn).format(
+                                                "L LTS"
+                                              )}
+                                            </TableCell>
+                                            <TableCell>
+                                              {moment(entry?.clockOut).format(
+                                                "L LTS"
+                                              )}
+                                            </TableCell>
+                                            <TableCell>
+                                              {entry?.totalTiming}
+                                            </TableCell>
+                                          </TableRow>
+                                        )
+                                      )
+                                  )} */}
+                                </TableBody>
+                              </Table>
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
         </>
       )}
     </div>
