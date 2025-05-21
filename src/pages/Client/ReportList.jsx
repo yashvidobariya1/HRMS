@@ -55,8 +55,9 @@ const ReportList = () => {
     "Start Date",
     "End Date",
     "Report Generated Date",
+    "Action By",
     "Status",
-    "Action",
+    "View",
   ];
 
   const actions = [{ label: "View Status", onClick: HandleViewStatus }];
@@ -182,7 +183,7 @@ const ReportList = () => {
         <div className="report-list-title">
           <h1>Report List</h1>
         </div>
-        <div className="report-list-download-container">
+        {/* <div className="report-list-download-container">
           <div className="report-list-input-container">
             <label className="label">Start Date*</label>
             <input
@@ -220,7 +221,7 @@ const ReportList = () => {
               onClick={HandleGenerateReport}
             />
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="report-list-flex">
@@ -271,9 +272,10 @@ const ReportList = () => {
               startDate: report?.startDate,
               endDate: report?.endDate,
               generatedDate: moment(report?.createdAt).format(
-                "YYYY/MM/DD hh:mm A"
+                "YYYY-MM-DD hh:mm A"
               ),
-              status: report?.status,
+              actionby: report?.email,
+              reportstatus: report?.status,
             }))}
             actions={{
               actionsList: actions,

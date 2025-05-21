@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./AbsenceReport.css";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
-import { useLocation } from "react-router";
+// import { useLocation } from "react-router";
 import { GetCall, PostCall } from "../../ApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
@@ -10,11 +10,12 @@ import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { MenuItem, Select } from "@mui/material";
+import AssignClient from "../../SeparateCom/AssignClient";
 
 const AbsenceReport = () => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const EmployeeId = queryParams.get("EmployeeId");
+  // const location = useLocation();
+  // const queryParams = new URLSearchParams(location.search);
+  // const EmployeeId = queryParams.get("EmployeeId");
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -24,6 +25,10 @@ const AbsenceReport = () => {
   const [absenceReportList, setAbsenceReportList] = useState([]);
   const [JobTitledata, setJobTitledata] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState("");
+  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [Clientdata, setClientdata] = useState([]);
+  const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(startDate).year();
   const currentYear = moment().year();
@@ -32,8 +37,15 @@ const AbsenceReport = () => {
   // const today = moment().format("YYYY-MM-DD");
   const [totalAbsencesheet, settotalAbsencesheet] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [employeeList, setEmployeeList] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const companyId = useSelector((state) => state.companySelect.companySelect);
+  const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
+  );
+  const jobRoleisworkFromOffice = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
   const [appliedFilters, setAppliedFilters] = useState({
     year: currentYear,
@@ -55,15 +67,33 @@ const AbsenceReport = () => {
 
   const handleJobTitleSelect = (selectedTitle) => {
     setSelectedJobId(selectedTitle);
+    const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
+    if (selectedJob) {
+      setIsWorkFromOffice(selectedJob.isWorkFromOffice);
+      console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+    }
     setOpenJobTitleModal(true);
+  };
+
+  const handleEmployeeChange = (employeeId) => {
+    setSelectedYear(moment().year());
+    setSelectedMonth(moment().month() + 1);
+    setSelectedEmployee(employeeId);
+    setSelectedClientId("");
+    setSelectedJobId("");
+    setAppliedFilters({
+      year: moment().year(),
+      month: moment().month(),
+    });
   };
 
   const GetAbsenceReport = async () => {
     try {
       setLoading(true);
       const filters = {
-        jobId: EmployeeId ? selectedJobId : jobRoleId,
-        userId: EmployeeId,
+        jobId: selectedEmployee ? selectedJobId : jobRoleId,
+        userId: selectedEmployee,
+        clientId: selectedClientId,
       };
       const { year, month } = appliedFilters;
 
@@ -88,8 +118,10 @@ const AbsenceReport = () => {
   const Getjobtitledata = async () => {
     try {
       let response;
-      if (EmployeeId) {
-        response = await GetCall(`/getUserJobTitles?EmployeeId=${EmployeeId}`);
+      if (selectedEmployee) {
+        response = await GetCall(
+          `/getUserJobTitles?EmployeeId=${selectedEmployee}`
+        );
       } else {
         response = await GetCall(`/getUserJobTitles`);
       }
@@ -107,6 +139,19 @@ const AbsenceReport = () => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    }
+  };
+
+  const fetchEmployeeList = async () => {
+    try {
+      const response = await GetCall(`/getUsers?companyId=${companyId}`);
+      if (response?.data?.status === 200) {
+        setEmployeeList(response?.data?.users);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching employee list:", error);
     }
   };
 
@@ -129,30 +174,114 @@ const AbsenceReport = () => {
       (month) => selectedYear < currentYear || month.value <= currentMonth
     );
 
+  const GetClientdata = async () => {
+    const payload = {
+      jobId: selectedJobId || jobRoleId,
+      userId: selectedEmployee,
+    };
+
+    try {
+      const response = await PostCall(`/getUsersAssignClients`, payload);
+
+      if (response?.data?.status === 200) {
+        const jobTitles = response.data.assignClients;
+        console.log("job title", jobTitles);
+        setClientdata(jobTitles);
+
+        if (jobTitles.length > 1) {
+          setopenClietnSelectModal(false);
+        } else {
+          setSelectedClientId(jobTitles[0]?.clientId);
+          setopenClietnSelectModal(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleClientPopupClose = () => {
+    setopenClietnSelectModal(true);
+  };
+
+  const handleClientSelect = (selectedTitle) => {
+    console.log("setSelectedClientId", selectedClientId);
+    setSelectedClientId(selectedTitle);
+    setopenClietnSelectModal(true);
+  };
+
   useEffect(() => {
-    if (EmployeeId) {
+    const AbsenceReport =
+      (selectedEmployee &&
+        selectedJobId &&
+        selectedClientId &&
+        appliedFilters) ||
+      !selectedEmployee ||
+      (appliedFilters &&
+        ((jobRoleId && jobRoleisworkFromOffice) ||
+          (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
+          (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
+      (selectedJobId && isWorkFromOffice);
+
+    if (AbsenceReport) {
+      // console.log("timesheet api call");
+      GetAbsenceReport();
+    }
+  }, [
+    selectedEmployee,
+    selectedJobId,
+    selectedClientId,
+    jobRoleId,
+    isWorkFromOffice,
+    jobRoleisworkFromOffice,
+    appliedFilters,
+  ]);
+
+  useEffect(() => {
+    const GetClientData =
+      (selectedEmployee && selectedJobId && !isWorkFromOffice) ||
+      (!selectedEmployee && jobRoleId && !jobRoleisworkFromOffice);
+
+    if (GetClientData) {
+      GetClientdata();
+    }
+  }, [
+    selectedEmployee,
+    selectedJobId,
+    jobRoleId,
+    isWorkFromOffice,
+    jobRoleisworkFromOffice,
+  ]);
+
+  useEffect(() => {
+    if (selectedEmployee) {
       Getjobtitledata();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [EmployeeId]);
+  }, [selectedEmployee]);
 
   useEffect(() => {
-    if (EmployeeId) {
-      if (selectedJobId) {
-        GetAbsenceReport();
-      }
-    } else {
-      GetAbsenceReport();
-    }
+    userRole !== "Employee" && fetchEmployeeList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    selectedJobId,
-    EmployeeId,
-    currentPage,
-    perPage,
-    jobRoleId,
-    appliedFilters,
-  ]);
+  }, [companyId]);
+
+  // useEffect(() => {
+  //   if (EmployeeId) {
+  //     if (selectedJobId) {
+  //       GetAbsenceReport();
+  //     }
+  //   } else {
+  //     GetAbsenceReport();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [
+  //   selectedJobId,
+  //   EmployeeId,
+  //   currentPage,
+  //   perPage,
+  //   jobRoleId,
+  //   appliedFilters,
+  // ]);
 
   return (
     <div className="absencesheet-list-container">
@@ -161,6 +290,13 @@ const AbsenceReport = () => {
           onClose={handlePopupClose}
           jobTitledata={JobTitledata}
           onJobTitleSelect={handleJobTitleSelect}
+        />
+      )}
+      {!openClietnSelectModal && Clientdata.length > 1 && (
+        <AssignClient
+          onClose={handleClientPopupClose}
+          Clientdata={Clientdata}
+          onClientSelect={handleClientSelect}
         />
       )}
       <div className="absencesheet-flex">
@@ -253,6 +389,36 @@ const AbsenceReport = () => {
           />
         </div>
       </div>
+
+      {userRole != "Employee" && (
+        <div className="absence-employee-list">
+          <Select
+            className="absence-input-dropdown"
+            value={selectedEmployee}
+            onChange={(e) => handleEmployeeChange(e.target.value)}
+            displayEmpty
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  width: 150,
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxHeight: 200,
+                },
+              },
+            }}
+          >
+            <MenuItem value="" disabled>
+              Select Employee
+            </MenuItem>
+            {employeeList.map((employee) => (
+              <MenuItem key={employee._id} value={employee._id}>
+                {employee.userName}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
+      )}
 
       {loading ? (
         <div className="loader-wrapper">

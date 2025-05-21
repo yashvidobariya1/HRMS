@@ -264,6 +264,7 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import moment from "moment";
 import { BsHourglassSplit } from "react-icons/bs";
 import "../SeparateCom/CommonTable.css";
+import { useNavigate } from "react-router";
 
 const CommonTable = ({
   headers,
@@ -286,6 +287,7 @@ const CommonTable = ({
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [openRow, setOpenRow] = useState(null);
+  const navigate = useNavigate();
   // const location = useLocation();
   const page = 0;
   // const params = new URLSearchParams(location.search);
@@ -304,6 +306,10 @@ const CommonTable = ({
   const handleMenuClose = () => {
     setAnchorEl(null);
     setSelectedRow(null);
+  };
+
+  const handleViewClick = (id) => {
+    navigate(`/reportlist/viewstatus?reportId=${id}`);
   };
 
   // const handleChangePage = (event, newPage) => {
@@ -422,7 +428,7 @@ const CommonTable = ({
     Client: "clientName",
     "First name": "Name",
     "Last name": "lastname",
-    "Contact": "phonenumber",
+    Contact: "phonenumber",
     "Candidate Email": "email",
     "QRCode Value": "Name",
     Date: "timesheetdate",
@@ -435,7 +441,7 @@ const CommonTable = ({
     "ClockOut Time": "clockout",
     "Working Time": "workingTime",
     "Job Title Name": "Name",
-    "Client name": "clientName"
+    "Client name": "clientName",
   };
 
   const handleSort = (key) => {
@@ -492,6 +498,13 @@ const CommonTable = ({
     return "gray";
   };
 
+  const reportgetStatusColor = (status) => {
+    if (status === "Pending") return "Pending";
+    if (status === "Rejected") return "Rejected";
+    if (status === "Approved" || status === "Reviewed") return "Approved";
+    return "gray";
+  };
+
   // const handleSearchChange = (event) => {
   //   setSearchQuery(event.target.value);
   // };
@@ -522,6 +535,7 @@ const CommonTable = ({
                   header === "Document Name" ||
                   header === "Template" ||
                   header === "QR Code" ||
+                  header === "View" ||
                   header === "Timing" ||
                   header === "" ? (
                     header
@@ -740,6 +754,23 @@ const CommonTable = ({
                                   );
                                 }
 
+                                if (key === "reportstatus") {
+                                  return (
+                                    <Box
+                                      display="flex"
+                                      alignItems="center"
+                                      gap={1}
+                                    >
+                                      <span
+                                        className={`status-circle ${reportgetStatusColor(
+                                          item[key]
+                                        )}`}
+                                      />
+                                      <span>{item[key]}</span>
+                                    </Box>
+                                  );
+                                }
+
                                 if (
                                   key === "totalTiming" &&
                                   item.clockIn.length > 0
@@ -900,6 +931,13 @@ const CommonTable = ({
                                 </MenuItem>
                               ))}
                           </Menu>
+                        </TableCell>
+                      )}
+                      {headers.includes("View") && (
+                        <TableCell className="reportlist-view-button">
+                          <IconButton onClick={() => handleViewClick(item._id)}>
+                            View
+                          </IconButton>
                         </TableCell>
                       )}
                     </TableRow>

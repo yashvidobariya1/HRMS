@@ -243,7 +243,7 @@ const AddLeaves = () => {
         response = await PostCall("/leaveRequest", {
           ...formData,
           jobId,
-          clientId: selectedClientId
+          clientId: selectedClientId,
         });
       }
 
@@ -314,6 +314,10 @@ const AddLeaves = () => {
   //     setLoading(false);
   //   }
   // };
+
+  useEffect(() => {
+    GetClientdata();
+  }, [jobRoleId]);
 
   if (loading) {
     return <Loader />;

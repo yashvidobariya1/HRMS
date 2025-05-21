@@ -82,7 +82,8 @@ const Dashboard = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const dispatch = useDispatch();
-  const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  // const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  const startDate = "2022-01-01";
   const startYear = moment(startDate).year();
   const calendarRef = useRef(null);
   const allowedYears = Array.from(
@@ -1262,6 +1263,7 @@ const Dashboard = () => {
                       // const currentYear = info.view.currentStart.getFullYear();
                       // const currentMonth =
                       //   info.view.currentStart.getMonth() + 1;
+
                       setSelectedMonth(selectedMonth);
                       setSelectedYear(selectedYear);
                     }}

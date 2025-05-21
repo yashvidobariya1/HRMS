@@ -294,15 +294,15 @@ const protectedRoutes = [
     component: <ViewReport />,
     roles: ["Client"],
   },
-  {
-    path: "employees/viewtasks/:name",
-    component: <ViewTasks />,
-    roles: ["Superadmin", "Administrator", "Manager"],
-  },
+  // {
+  //   path: "employees/viewtasks/:name",
+  //   component: <ViewTasks />,
+  //   roles: ["Superadmin", "Administrator", "Manager"],
+  // },
   {
     path: "viewtasks",
     component: <ViewTasks />,
-    roles: ["Employee"],
+    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
   },
   {
     path: "/jobtitles",

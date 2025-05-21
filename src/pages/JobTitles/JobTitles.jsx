@@ -174,7 +174,7 @@ const JobTitles = () => {
         </div>
         <div className="jobTitleslist-action">
           <CommonAddButton
-            label="Add jobTitles"
+            label="Add Job Titles"
             icon={FaLocationDot}
             onClick={GoTOAddjobTitles}
           />

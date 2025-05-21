@@ -167,7 +167,41 @@
   color: var(--secondary-dark-gray);
 }
 
-@media screen and (max-width: 600px) {
+.absence-employee-list {
+  justify-content: end;
+  display: flex;
+  margin: 10px 0;
+}
+
+.absence-input-dropdown {
+  margin: 0;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  /* width: 100%; */
+  outline: none;
+}
+
+.absence-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.absence-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
+@media (max-width: 767px) {
+  .absence-input-dropdown {
+    padding: 11px;
+  }
+}
+
+@media screen and (max-width: 575px) {
   .absencesheet-title {
     display: block;
   }
@@ -214,6 +248,14 @@
   }
 
   .absence-dropdown {
+    padding: 7px;
+  }
+
+  .absence-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .absence-input-dropdown {
     padding: 7px;
   }
 }

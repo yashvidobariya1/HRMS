@@ -57,8 +57,11 @@ const TimeSheetReport = () => {
     date: moment().format("YYYY-MM-DD"),
     endTime: moment().format("HH:mm"),
   });
-
+  const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const jobRoleisworkFromOffice = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
+  );
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
@@ -91,6 +94,11 @@ const TimeSheetReport = () => {
 
   const handleJobTitleSelect = (selectedTitle) => {
     setSelectedJobId(selectedTitle);
+    const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
+    if (selectedJob) {
+      setIsWorkFromOffice(selectedJob.isWorkFromOffice);
+      console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+    }
     setOpenJobTitleModal(true);
   };
 
@@ -242,12 +250,19 @@ const TimeSheetReport = () => {
   //   }
   // };
 
+  const handleEmployeeChange = (employeeId) => {
+    setSelectedEmployee(employeeId);
+    setSelectedClientId("");
+    setSelectedJobId("");
+  };
+
   const GetTimesheetReport = async () => {
     try {
       setLoading(true);
       const filters = {
         jobId: selectedEmployee ? selectedJobId : jobRoleId,
         // userId: EmployeeId,
+        clientId: selectedClientId,
         userId: selectedEmployee,
       };
 
@@ -422,26 +437,6 @@ const TimeSheetReport = () => {
   }, [selectedEmployee]);
 
   useEffect(() => {
-    if (selectedEmployee) {
-      if (selectedJobId) {
-        GetTimesheetReport();
-      }
-    } else {
-      GetTimesheetReport();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    selectedJobId,
-    selectedEmployee,
-    currentPage,
-    perPage,
-    jobRoleId,
-    appliedFilters,
-    debouncedSearch,
-    selectedClientId,
-  ]);
-
-  useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
 
@@ -470,7 +465,7 @@ const TimeSheetReport = () => {
 
   const GetClientdata = async () => {
     const payload = {
-      jobId: selectedJobId,
+      jobId: selectedEmployee ? selectedJobId : jobRoleId,
       userId: selectedEmployee,
     };
 
@@ -503,6 +498,7 @@ const TimeSheetReport = () => {
 
   const handleClientSelect = (selectedTitle) => {
     setSelectedClientId(selectedTitle);
+    console.log("clientid", selectedClientId);
     setopenClietnSelectModal(true);
   };
 
@@ -512,10 +508,42 @@ const TimeSheetReport = () => {
   }, [companyId]);
 
   useEffect(() => {
-    if (selectedJobId) {
+    const GetTimesheet =
+      (selectedEmployee && selectedJobId && selectedClientId) ||
+      (!selectedEmployee &&
+        ((jobRoleId && jobRoleisworkFromOffice) ||
+          (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
+          (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
+      (selectedJobId && isWorkFromOffice);
+
+    if (GetTimesheet) {
+      GetTimesheetReport();
+    }
+  }, [
+    selectedEmployee,
+    selectedJobId,
+    selectedClientId,
+    jobRoleId,
+    isWorkFromOffice,
+    jobRoleisworkFromOffice,
+  ]);
+
+  useEffect(() => {
+    const GetClientData =
+      (selectedEmployee && selectedJobId && !isWorkFromOffice) ||
+      (!selectedEmployee && jobRoleId && !jobRoleisworkFromOffice);
+
+    if (GetClientData) {
       GetClientdata();
     }
-  }, [selectedJobId, jobRoleId]);
+  }, [
+    selectedEmployee,
+    selectedJobId,
+    jobRoleId,
+    isWorkFromOffice,
+    jobRoleisworkFromOffice,
+    selectedClientId,
+  ]);
 
   return (
     <div className="timesheet-list-container">
@@ -725,7 +753,7 @@ const TimeSheetReport = () => {
           <Select
             className="timesheet-input-dropdown"
             value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
+            onChange={(e) => handleEmployeeChange(e.target.value)}
             displayEmpty
             MenuProps={{
               PaperProps: {

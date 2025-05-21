@@ -749,7 +749,7 @@ const AddEmployee = () => {
     let newErrors = {};
     const currentStepName = steps[currentStep];
     // const sortCodeError = /^\d{2}-\d{2}-\d{2}$/;
-    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
     //const NI_REGEX = /^[A-Z]{2}\d{6}[A-Z]?$/;
     // console.log("validate current step", currentStepName);
 
@@ -776,6 +776,15 @@ const AddEmployee = () => {
           newErrors.phone = "Phone number must contain only numbers";
         } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
           newErrors.phone = "Phone number must be exactly 11 digits";
+        }
+        const phone = formData.personalDetails?.homeTelephone;
+        if (phone) {
+          if (!/^\d+$/.test(phone)) {
+            newErrors.homeTelephone = "Home telephone must contain only digits";
+          } else if (phone.length !== 11) {
+            newErrors.homeTelephone =
+              "Home telephone must be exactly 11 digits";
+          }
         }
         const email = formData?.personalDetails?.email;
         if (!email) {
@@ -1240,6 +1249,7 @@ const AddEmployee = () => {
                     PaperProps: {
                       style: {
                         width: 200,
+                        className: "custom-dropdown-menu",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         maxHeight: 200,

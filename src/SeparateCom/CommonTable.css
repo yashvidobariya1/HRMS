@@ -226,7 +226,7 @@
   /* border-bottom: 1px solid var(--neutral-light-gray) !important; */
 }
 
-.MuiTableCell-root .MuiTableCell-body {
+.custom-table .MuiTableCell-root .MuiTableCell-body {
   border-bottom: 1px solid var(--neutral-light-gray) !important;
 }
 
@@ -391,6 +391,25 @@
 
 .employee-template .MuiSelect-icon {
   color: var(--secondary-dark-gray);
+}
+
+.reportlist-view-button button {
+  background-color: var(--neutral-light-gray);
+}
+
+.reportlist-view-button .MuiButtonBase-root {
+  border-radius: 0px !important;
+  display: flex;
+  text-align: center;
+  background-color: var(--primary-text-white);
+  cursor: pointer;
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
+  gap: 8px;
+  padding: 5px;
+  color: var(--sidebar-bg);
+  width: 60px;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {

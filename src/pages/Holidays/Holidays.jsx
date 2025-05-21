@@ -262,11 +262,12 @@ const Holidays = () => {
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   const [showConfirm, setShowConfirm] = useState(false);
   const [holidayId, setholidayId] = useState("");
+  // const startDate = "2022-01-01";
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
-  const startYear = moment(startDate).year();
   const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
-  const calendarRef = useRef(null);
+  const startYear = moment(startDate).year();
   const currentYear = moment().year();
+  const calendarRef = useRef(null);
   const allowedYears = Array.from(
     { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
@@ -336,18 +337,6 @@ const Holidays = () => {
     }
 
     setIsPopupOpen(true);
-  };
-
-  const handleTodayClick = () => {
-    const now = moment();
-    const currentYear = now.year();
-    const currentMonth = now.month() + 1;
-    setSelectedYear(currentYear);
-    setSelectedMonth(currentMonth);
-    if (calendarRef.current) {
-      calendarRef.current.getApi().today();
-      setSelectedYear(currentYear);
-    }
   };
 
   const handleChange = (e) => {
@@ -449,6 +438,19 @@ const Holidays = () => {
 
   const handleViewHoliday = () => {
     Navigate(`/holidays/holidaylist`);
+  };
+
+  const handleTodayClick = () => {
+    const now = moment();
+    const currentYear = now.year();
+    const currentMonth = now.month() + 1;
+    setSelectedYear(currentYear);
+    setSelectedMonth(currentMonth);
+
+    if (calendarRef.current) {
+      calendarRef.current.getApi().today();
+      setSelectedYear(currentYear);
+    }
   };
 
   useEffect(() => {
