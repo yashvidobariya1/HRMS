@@ -82,7 +82,7 @@
 
 .employeetimesheet-table td {
   color: var(--secondary-dark-gray) !important;
-  border-bottom: var(--neutral-light-gray) !important;
+  /* border-bottom: var(--neutral-light-gray) !important; */
 }
 
 .employeetimesheet-table .MuiTableCell-root .MuiTableCell-body {
@@ -149,6 +149,11 @@
 .employee-timesheet-timming {
   font-weight: 500;
   color: var(--secondary-teal);
+}
+
+.employeetimesheet-count {
+  display: flex;
+  justify-content: space-between;
 }
 
 @media (max-width: 767px) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router";
-import { GetCall } from "../../ApiServices";
+import { GetCall, PostCall } from "../../ApiServices";
 import "./EmployeesTimesheet.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
@@ -29,7 +29,6 @@ import ApproveRejectConfirmation from "../../main/ApproveRejectConfirmation";
 const EmployeesTimesheet = () => {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const [loading, setLoading] = useState(false);
   const [reportDetails, setReportDetails] = useState([]);
   // const [showDropdownAction, setShowDropdownAction] = useState(null);
@@ -46,8 +45,9 @@ const EmployeesTimesheet = () => {
   const [errors, setErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
-  const [status, setStatus] = useState("Pending");
-
+  const [status, setStatus] = useState("");
+  const [page, setPage] = useState(0);
+  const [totalemployeereport, setTotalemployeereport] = useState("1");
   const handleToggle = (index) => {
     setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
@@ -90,10 +90,8 @@ const EmployeesTimesheet = () => {
       );
       if (response?.data?.status === 200) {
         setReportDetails(response?.data?.reports.employeeTimesheetData);
-        console.log(
-          "report list",
-          response.data?.reports.employeeTimesheetData
-        );
+        setStatus(response.data?.reports?.status);
+        // setTotalemployeereport(response?.data?.)
         // setStatusList(response?.data?.report);
         // setStartDate(response?.data?.report?.startDate);
         // setEndDate(response?.data?.report?.endDate);
@@ -113,53 +111,49 @@ const EmployeesTimesheet = () => {
     //   reportId,
     //   jobId,
     // };
-    // try {
-    //   setLoading(true);
-    //   const response = await PostCall(`/approveReport`, data);
-    //   if (response?.data?.status === 200) {
-    //     showToast(response?.data?.message, "success");
-    //   } else {
-    //     showToast(response?.data?.message, "error");
-    //   }
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.log("Error while downloading timesheet report.", error);
-    //   showToast("An error occurred while processing your request.", "error");
-    // }
-    alert("submited suceesfully");
+    try {
+      setLoading(true);
+      const response = await PostCall(`/approveReport`);
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "success");
+        console.log("response", response);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+      GetEmployeesStatus();
+    } catch (error) {
+      console.log("Error while downloading timesheet report.", error);
+      showToast("An error occurred while processing your request.", "error");
+    }
   };
 
   const handleRejectSubmit = async () => {
+    setShowConfirm(false);
+    if (!rejectionReason) {
+      setErrors({ rejectionReason: "Rejection reason is required!" });
+      return;
+    }
     const data = {
       reason: rejectionReason,
     };
-    console.log("data", data);
-    setShowConfirm(false);
-    // if (!rejectionReason) {
-    //   setErrors({ rejectionReason: "Rejection reason is required!" });
-    //   return;
-    // }
-    // const data = {
-    //   reportId,
-    //   jobId,
-    //   reason: rejectionReason,
-    // };
-    // try {
-    //   setLoading(true);
-    //   const response = await PostCall(`/rejectReport`, data);
-    //   if (response?.data?.status === 200) {
-    //     showToast(response?.data?.message, "success");
-    //     setRejectionReason("");
-    //     setErrors({});
-    //     setShowConfirm(false);
-    //   } else {
-    //     showToast(response?.data?.message, "error");
-    //   }
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.log("Error while downloading timesheet report.", error);
-    //   showToast("An error occurred while processing your request.", "error");
-    // }
+    try {
+      setLoading(true);
+      const response = await PostCall(`/rejectReport`, data);
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "success");
+        setRejectionReason("");
+        setErrors({});
+        setShowConfirm(false);
+        GetEmployeesStatus();
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log("Error while downloading timesheet report.", error);
+      showToast("An error occurred while processing your request.", "error");
+    }
   };
 
   const handleReject = () => {
@@ -178,12 +172,9 @@ const EmployeesTimesheet = () => {
     setCurrentPage(1);
   };
 
-  const [page, setPage] = useState(0);
-
-  const ROWS_PER_PAGE = 5;
   const paginatedRows = reportDetails?.slice(
-    page * ROWS_PER_PAGE,
-    page * ROWS_PER_PAGE + ROWS_PER_PAGE
+    page * reportPerPage,
+    page * reportPerPage + reportPerPage
   );
 
   useEffect(() => {
@@ -282,120 +273,130 @@ const EmployeesTimesheet = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {paginatedRows?.map((row, index) => {
-                    const actualIndex = page * ROWS_PER_PAGE + index;
-                    return (
-                      <React.Fragment key={actualIndex}>
-                        <TableRow>
-                          <TableCell>
-                            <IconButton
-                              // size="small"
-                              onClick={() => handleToggle(actualIndex)}
-                            >
-                              {openRows[actualIndex] ? (
-                                <KeyboardArrowUp />
-                              ) : (
-                                <KeyboardArrowDown />
-                              )}
-                            </IconButton>
-                          </TableCell>
-                          <TableCell>{row.userName}</TableCell>
-                          <TableCell>{row.jobTitle}</TableCell>
-                          <TableCell>{row.jobRole}</TableCell>
-                          <TableCell>{row.totalWorkingHours}</TableCell>
-                          <TableCell>{row?.totalHours}</TableCell>
-                          <TableCell>{row?.overTime}</TableCell>
-                        </TableRow>
+                  {paginatedRows && paginatedRows.length > 0 ? (
+                    paginatedRows.map((row, index) => {
+                      const actualIndex = page * reportPerPage + index;
+                      return (
+                        <React.Fragment key={actualIndex}>
+                          <TableRow>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => handleToggle(actualIndex)}
+                              >
+                                {openRows[actualIndex] ? (
+                                  <KeyboardArrowUp />
+                                ) : (
+                                  <KeyboardArrowDown />
+                                )}
+                              </IconButton>
+                            </TableCell>
+                            <TableCell>{row.userName}</TableCell>
+                            <TableCell>{row.jobTitle}</TableCell>
+                            <TableCell>{row.jobRole}</TableCell>
+                            <TableCell>{row.totalWorkingHours}</TableCell>
+                            <TableCell>{row?.totalHours}</TableCell>
+                            <TableCell>{row?.overTime}</TableCell>
+                          </TableRow>
 
-                        <TableRow>
-                          <TableCell
-                            style={{ paddingBottom: 0, paddingTop: 0 }}
-                            colSpan={7}
-                          >
-                            <Collapse
-                              in={openRows[actualIndex]}
-                              timeout="auto"
-                              unmountOnExit
+                          <TableRow>
+                            <TableCell
+                              style={{ paddingBottom: 0, paddingTop: 0 }}
+                              colSpan={7}
                             >
-                              <Box margin={1}>
-                                <Typography variant="subtitle1" gutterBottom>
-                                  Clock In/Out Entries
-                                </Typography>
-                                <Table size="small" aria-label="times">
-                                  <TableHead>
-                                    <TableRow>
-                                      <TableCell>Date</TableCell>
-                                      <TableCell>Timming</TableCell>
-                                      <TableCell>working Hours</TableCell>
-                                      <TableCell>overTime</TableCell>
-                                      <TableCell>totalHours</TableCell>
-                                    </TableRow>
-                                  </TableHead>
-                                  <TableBody>
-                                    {row?.timesheetData?.map((entry) => (
-                                      <TableRow key={entry?.date}>
-                                        <TableCell>
-                                          {moment(entry?.date).format(
-                                            "YYYY-MM-DD (ddd)"
-                                          )}
-                                        </TableCell>
-                                        <TableCell>
-                                          {entry?.timesheetData?.clockinTime?.map(
-                                            (clockEntry) => (
-                                              <div
-                                                key={clockEntry?._id}
-                                                className="employeetimeesheet-timming"
-                                              >
-                                                <span className="employee-timesheetclockin">
-                                                  {" "}
-                                                  {moment(
-                                                    clockEntry?.clockIn
-                                                  ).format("LT")}{" "}
-                                                  |{" "}
-                                                </span>
-                                                <span className="employee-timesheetclockout">
-                                                  {moment(
-                                                    clockEntry?.clockOut
-                                                  ).format("LT")}{" "}
-                                                </span>
-                                                <span className="employee-timesheet-timming">
-                                                  | {clockEntry?.totalTiming}
-                                                </span>
-                                              </div>
-                                            )
-                                          )}
-                                        </TableCell>
-                                        <TableCell>
-                                          {entry?.timesheetData?.workingHours}
-                                        </TableCell>
-                                        <TableCell>
-                                          {entry?.timesheetData?.overTime}
-                                        </TableCell>
-                                        <TableCell>
-                                          {entry?.timesheetData?.totalHours}
-                                        </TableCell>
+                              <Collapse
+                                in={openRows[actualIndex]}
+                                timeout="auto"
+                                unmountOnExit
+                              >
+                                <Box margin={1}>
+                                  <Typography variant="subtitle1" gutterBottom>
+                                    Clock In/Out Entries
+                                  </Typography>
+                                  <Table size="small" aria-label="times">
+                                    <TableHead>
+                                      <TableRow>
+                                        <TableCell>Date</TableCell>
+                                        <TableCell>Timing</TableCell>
+                                        <TableCell>Working Hours</TableCell>
+                                        <TableCell>Overtime</TableCell>
+                                        <TableCell>Total Hours</TableCell>
                                       </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </Box>
-                            </Collapse>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    );
-                  })}
+                                    </TableHead>
+                                    <TableBody>
+                                      {row?.timesheetData?.map((entry) => (
+                                        <TableRow key={entry?.date}>
+                                          <TableCell>
+                                            {moment(entry?.date).format(
+                                              "YYYY-MM-DD (ddd)"
+                                            )}
+                                          </TableCell>
+                                          <TableCell>
+                                            {entry?.timesheetData?.clockinTime?.map(
+                                              (clockEntry) => (
+                                                <div
+                                                  key={clockEntry?._id}
+                                                  className="employeetimeesheet-timming"
+                                                >
+                                                  <span className="employee-timesheetclockin">
+                                                    {moment(
+                                                      clockEntry?.clockIn
+                                                    ).format("LT")}{" "}
+                                                    |{" "}
+                                                  </span>
+                                                  <span className="employee-timesheetclockout">
+                                                    {moment(
+                                                      clockEntry?.clockOut
+                                                    ).format("LT")}
+                                                  </span>
+                                                  <span className="employee-timesheet-timming">
+                                                    {" "}
+                                                    | {clockEntry?.totalTiming}
+                                                  </span>
+                                                </div>
+                                              )
+                                            )}
+                                          </TableCell>
+                                          <TableCell>
+                                            {entry?.timesheetData?.workingHours}
+                                          </TableCell>
+                                          <TableCell>
+                                            {entry?.timesheetData?.overTime}
+                                          </TableCell>
+                                          <TableCell>
+                                            {entry?.timesheetData?.totalHours}
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </Box>
+                              </Collapse>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        Data not found
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
-              <TablePagination
-                component="div"
-                count={totalPages}
-                page={currentPage - 1}
-                onPageChange={handlePageChange}
-                rowsPerPage={reportPerPage}
-                onRowsPerPageChange={handleReportPerPageChange}
-                rowsPerPageOptions={[50, 100, 200]}
-              />
+              <div className="employeetimesheet-count">
+                <p>Total Emplyoees {totalemployeereport}</p>
+                <TablePagination
+                  component="div"
+                  count={totalPages}
+                  page={currentPage - 1}
+                  onPageChange={handlePageChange}
+                  rowsPerPage={reportPerPage}
+                  onRowsPerPageChange={handleReportPerPageChange}
+                  rowsPerPageOptions={[50, 100, 200]}
+                />
+              </div>
             </TableContainer>
           </div>
         </>

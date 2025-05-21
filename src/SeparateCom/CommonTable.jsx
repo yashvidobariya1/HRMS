@@ -498,6 +498,13 @@ const CommonTable = ({
     return "gray";
   };
 
+  const reportgetStatusColor = (status) => {
+    if (status === "Pending") return "Pending";
+    if (status === "Rejected") return "Rejected";
+    if (status === "Approved" || status === "Reviewed") return "Approved";
+    return "gray";
+  };
+
   // const handleSearchChange = (event) => {
   //   setSearchQuery(event.target.value);
   // };
@@ -739,6 +746,23 @@ const CommonTable = ({
                                     >
                                       <span
                                         className={`status-circle ${getStatusColor(
+                                          item[key]
+                                        )}`}
+                                      />
+                                      <span>{item[key]}</span>
+                                    </Box>
+                                  );
+                                }
+
+                                if (key === "reportstatus") {
+                                  return (
+                                    <Box
+                                      display="flex"
+                                      alignItems="center"
+                                      gap={1}
+                                    >
+                                      <span
+                                        className={`status-circle ${reportgetStatusColor(
                                           item[key]
                                         )}`}
                                       />

@@ -77,7 +77,7 @@
   border: 1px solid var(--primary-text-white);
   height: 30px;
   width: 30px;
-  padding: 5px;
+  /* padding: 5px; */
 }
 
 .home-subheader {

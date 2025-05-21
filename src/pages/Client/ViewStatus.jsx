@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GetCall } from "../../ApiServices";
+import { GetCall, PostCall } from "../../ApiServices";
 import "./ViewStatus.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
@@ -15,6 +15,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -33,30 +34,33 @@ const ViewStatus = () => {
   const searchParams = new URLSearchParams(location.search);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const reportId = searchParams.get("reportId");
-  const [totalEmployees, settotalEmployees] = useState([]);
+  // const [totalEmployees, settotalEmployees] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [openRows, setOpenRows] = useState({});
+  const [page, setPage] = useState(0);
+  const [totalemployeereport, setTotalemployeereport] = useState("1");
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const allStatusPending = statusList?.every(
-    (item) => item.status === "Pending"
-  );
+  // const allStatusPending = statusList?.every(
+  //   (item) => item.status === "Pending"
+  // );
+
   const handleToggle = (index) => {
     setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const tableHeaders = allStatusPending
-    ? ["Employee Name", "Job Title", "Role", "status"]
-    : ["", "Employee Name", "Job Title", "Role", "status"];
+  // const tableHeaders = allStatusPending
+  //   ? ["Employee Name", "Job Title", "Role", "status"]
+  //   : ["", "Employee Name", "Job Title", "Role", "status"];
 
-  const handlereportPerPageChange = (e) => {
-    setReportPerPage(e);
-    setCurrentPage(1);
-  };
+  // const handlereportPerPageChange = (e) => {
+  //   setReportPerPage(e);
+  //   setCurrentPage(1);
+  // };
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -70,11 +74,12 @@ const ViewStatus = () => {
       // );
       console.log(reportId);
       const response = await GetCall(
-        `/getReportForClient?page=${currentPage}&limit=${reportPerPage}&reportId=${reportId}&companyId=${companyId}`
+        `/getReportForClient?page=${currentPage}&limit=${reportPerPage}&reportId=${reportId}&companyId=${companyId}&search=${debouncedSearch}`
       );
       if (response?.data?.status === 200) {
-        setStatusList(response?.data?.report?.employees);
-        settotalEmployees(response.data.totalEmployees);
+        setStatusList(response?.data?.reports?.employeeTimesheetData);
+        // setTotalemployeereport(response?.data?.)
+        // settotalEmployees(response.data.totalEmployees);
         setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message);
@@ -85,10 +90,39 @@ const ViewStatus = () => {
     }
   };
 
+  const handleGenerateReportLink = async () => {
+    try {
+      setLoading(true);
+      const data = {
+        reportId: reportId,
+      };
+      const response = await PostCall(`/re-generateReportLink`, data);
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "success");
+      } else {
+        showToast(response?.data?.message);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleReportPerPageChange = (event) => {
+    const value = parseInt(event.target.value, 10);
+    setReportPerPage(value);
+    setCurrentPage(1);
+  };
+
+  const paginatedRows = statusList?.slice(
+    page * reportPerPage,
+    page * reportPerPage + reportPerPage
+  );
+
   useEffect(() => {
     GetEmployeesStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, reportPerPage, companyId]);
+  }, [currentPage, reportPerPage, companyId, debouncedSearch]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -122,7 +156,7 @@ const ViewStatus = () => {
         <CommonAddButton
           label="Re send Link"
           // icon={FaLocationDot}
-          // onClick={GoTOAddLocation}
+          onClick={handleGenerateReportLink}
         />
       </div>
 
@@ -161,91 +195,138 @@ const ViewStatus = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell />
-                    <TableCell>Employee Name</TableCell>
+                    <TableCell>User Name</TableCell>
                     <TableCell>Job Title</TableCell>
                     <TableCell>Job Role</TableCell>
-                    {/* <TableCell>Role</TableCell>
-                    <TableCell>Status</TableCell> */}
+                    <TableCell>Total Working</TableCell>
+                    <TableCell>Total Hours</TableCell>
+                    <TableCell>Overtime</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {statusList?.map((row, index) => (
-                    <React.Fragment key={index}>
-                      <TableRow>
-                        <TableCell>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleToggle(index)}
-                          >
-                            {openRows[index] ? (
-                              <KeyboardArrowUp />
-                            ) : (
-                              <KeyboardArrowDown />
-                            )}
-                          </IconButton>
-                        </TableCell>
-                        <TableCell>{row.userName}</TableCell>
-                        <TableCell>{row.jobTitle}</TableCell>
-                        <TableCell>{row.jobRole}</TableCell>
-                        {/* <TableCell>{row?.totalHours}</TableCell>
-                        <TableCell>{row?.overTime}</TableCell> */}
-                      </TableRow>
+                  {paginatedRows && paginatedRows.length > 0 ? (
+                    paginatedRows.map((row, index) => {
+                      const actualIndex = page * reportPerPage + index;
+                      return (
+                        <React.Fragment key={actualIndex}>
+                          <TableRow>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => handleToggle(actualIndex)}
+                              >
+                                {openRows[actualIndex] ? (
+                                  <KeyboardArrowUp />
+                                ) : (
+                                  <KeyboardArrowDown />
+                                )}
+                              </IconButton>
+                            </TableCell>
+                            <TableCell>{row.userName}</TableCell>
+                            <TableCell>{row.jobTitle}</TableCell>
+                            <TableCell>{row.jobRole}</TableCell>
+                            <TableCell>{row.totalWorkingHours}</TableCell>
+                            <TableCell>{row?.totalHours}</TableCell>
+                            <TableCell>{row?.overTime}</TableCell>
+                          </TableRow>
 
-                      <TableRow>
-                        <TableCell
-                          style={{ paddingBottom: 0, paddingTop: 0 }}
-                          colSpan={6}
-                        >
-                          <Collapse
-                            in={openRows[index]}
-                            timeout="auto"
-                            unmountOnExit
-                          >
-                            <Box margin={1}>
-                              <Typography variant="subtitle1" gutterBottom>
-                                Clock In/Out Entries
-                              </Typography>
-                              <Table size="small" aria-label="times">
-                                <TableHead>
-                                  <TableRow>
-                                    <TableCell>Clock In</TableCell>
-                                    <TableCell>Clock Out</TableCell>
-                                    <TableCell>Total Time</TableCell>
-                                  </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                  {/* {row?.employeeTimesheetData.timesheetData?.map(
-                                    (day) =>
-                                      day?.employeeTimesheetData.timesheetData?.clockinTime?.map(
-                                        (entry) => (
-                                          <TableRow key={entry?._id}>
-                                            <TableCell>
-                                              {moment(entry?.clockIn).format(
-                                                "L LTS"
-                                              )}
-                                            </TableCell>
-                                            <TableCell>
-                                              {moment(entry?.clockOut).format(
-                                                "L LTS"
-                                              )}
-                                            </TableCell>
-                                            <TableCell>
-                                              {entry?.totalTiming}
-                                            </TableCell>
-                                          </TableRow>
-                                        )
-                                      )
-                                  )} */}
-                                </TableBody>
-                              </Table>
-                            </Box>
-                          </Collapse>
-                        </TableCell>
-                      </TableRow>
-                    </React.Fragment>
-                  ))}
+                          <TableRow>
+                            <TableCell
+                              style={{ paddingBottom: 0, paddingTop: 0 }}
+                              colSpan={7}
+                            >
+                              <Collapse
+                                in={openRows[actualIndex]}
+                                timeout="auto"
+                                unmountOnExit
+                              >
+                                <Box margin={1}>
+                                  <Typography variant="subtitle1" gutterBottom>
+                                    Clock In/Out Entries
+                                  </Typography>
+                                  <Table size="small" aria-label="times">
+                                    <TableHead>
+                                      <TableRow>
+                                        <TableCell>Date</TableCell>
+                                        <TableCell>Timming</TableCell>
+                                        <TableCell>working Hours</TableCell>
+                                        <TableCell>overTime</TableCell>
+                                        <TableCell>totalHours</TableCell>
+                                      </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                      {row?.timesheetData?.map((entry) => (
+                                        <TableRow key={entry?.date}>
+                                          <TableCell>
+                                            {moment(entry?.date).format(
+                                              "YYYY-MM-DD (ddd)"
+                                            )}
+                                          </TableCell>
+                                          <TableCell>
+                                            {entry?.timesheetData?.clockinTime?.map(
+                                              (clockEntry) => (
+                                                <div
+                                                  key={clockEntry?._id}
+                                                  className="employeetimeesheet-timming"
+                                                >
+                                                  <span className="employee-timesheetclockin">
+                                                    {moment(
+                                                      clockEntry?.clockIn
+                                                    ).format("LT")}{" "}
+                                                    |{" "}
+                                                  </span>
+                                                  <span className="employee-timesheetclockout">
+                                                    {moment(
+                                                      clockEntry?.clockOut
+                                                    ).format("LT")}{" "}
+                                                  </span>
+                                                  <span className="employee-timesheet-timming">
+                                                    | {clockEntry?.totalTiming}
+                                                  </span>
+                                                </div>
+                                              )
+                                            )}
+                                          </TableCell>
+                                          <TableCell>
+                                            {entry?.timesheetData?.workingHours}
+                                          </TableCell>
+                                          <TableCell>
+                                            {entry?.timesheetData?.overTime}
+                                          </TableCell>
+                                          <TableCell>
+                                            {entry?.timesheetData?.totalHours}
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </Box>
+                              </Collapse>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        Data not found
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
+              <div className="employeetimesheet-count">
+                <p>Total Emplyoees {totalemployeereport}</p>
+                <TablePagination
+                  component="div"
+                  count={totalPages}
+                  page={currentPage - 1}
+                  onPageChange={handlePageChange}
+                  rowsPerPage={reportPerPage}
+                  onRowsPerPageChange={handleReportPerPageChange}
+                  rowsPerPageOptions={[50, 100, 200]}
+                />
+              </div>
             </TableContainer>
           </div>
         </>

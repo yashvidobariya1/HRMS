@@ -749,7 +749,7 @@ const AddEmployee = () => {
     let newErrors = {};
     const currentStepName = steps[currentStep];
     // const sortCodeError = /^\d{2}-\d{2}-\d{2}$/;
-    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
     //const NI_REGEX = /^[A-Z]{2}\d{6}[A-Z]?$/;
     // console.log("validate current step", currentStepName);
 

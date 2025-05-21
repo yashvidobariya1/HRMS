@@ -183,7 +183,7 @@ const ReportList = () => {
         <div className="report-list-title">
           <h1>Report List</h1>
         </div>
-        <div className="report-list-download-container">
+        {/* <div className="report-list-download-container">
           <div className="report-list-input-container">
             <label className="label">Start Date*</label>
             <input
@@ -221,7 +221,7 @@ const ReportList = () => {
               onClick={HandleGenerateReport}
             />
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="report-list-flex">
@@ -275,7 +275,7 @@ const ReportList = () => {
                 "YYYY-MM-DD hh:mm A"
               ),
               actionby: report?.email,
-              status: report?.status,
+              reportstatus: report?.status,
             }))}
             actions={{
               actionsList: actions,
