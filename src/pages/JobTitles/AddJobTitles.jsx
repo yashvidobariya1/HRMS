@@ -4,7 +4,7 @@ import "./AddJobTitles.css";
 import { GetCall, PostCall } from "../../ApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 const AddjobtitleTitles = () => {
   const navigate = useNavigate();

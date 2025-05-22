@@ -32,7 +32,7 @@ const GenerateQRcodeForClient = () => {
     moment().format("YYYYMMDDHHmmssSSS") + Math.floor(Math.random() * 1000)
   }`;
   const [totalQRCodes, settotalQRCodes] = useState([]);
-  console.log("clientId", clientId);
+  // console.log("clientId", clientId);
 
   const tableHeaders = [
     "QRCode Value",

@@ -108,7 +108,8 @@
   overflow-x: hidden;
   z-index: 1000;
   max-height: calc(100vh - 150px);
-  scrollbar-color: var(--sidebar-neutral-light-gray) !important;
+  scrollbar-color: var(--sidebar-neutral-light-gray) transparent !important; /* For Firefox */
+  scrollbar-width: thin;
 }
 
 .sidebar-icon {

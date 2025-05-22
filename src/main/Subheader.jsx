@@ -6,7 +6,8 @@ import { GetCall } from "../ApiServices";
 import { setJobRoleSelect } from "../store/selectJobeRoleSlice";
 import "./Subheader.css";
 import { MenuItem, Select } from "@mui/material";
-import JobTitles from "../pages/JobTitles/JobTitles";
+// import JobTitles from "../pages/JobTitles/JobTitles";
+import { showToast } from "./ToastManager";
 
 const pageNames = {
   dashboard: "Dashboard",
@@ -98,6 +99,8 @@ const Subheader = () => {
           const defaultJob = jobTitles[0];
           dispatch(setJobRoleSelect(defaultJob));
         }
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching job titles:", error);

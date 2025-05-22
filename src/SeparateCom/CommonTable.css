@@ -164,7 +164,7 @@
 }
 
 .custom-table table {
-  border-collapse: separate;
+  /* border-collapse: separate; */
   border-radius: var(--border-radius);
 }
 
@@ -190,7 +190,9 @@
 
 .custom-table td {
   color: var(--secondary-dark-gray);
-  border-bottom: var(--neutral-light-gray);
+  border-bottom: 1px solid var(--neutral-light-gray);
+  padding: 14px;
+  text-align: left;
 }
 
 .status-circle {
@@ -398,7 +400,6 @@
 }
 
 .reportlist-view-button .MuiButtonBase-root {
-  border-radius: 0px !important;
   display: flex;
   text-align: center;
   background-color: var(--primary-text-white);

@@ -17,9 +17,11 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
   Typography,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
@@ -39,15 +41,74 @@ const EmployeesTimesheet = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
-  localStorage.setItem("token", JSON.stringify(token));
-  dispatch(setUserInfo({ role: "Client" }));
   const [openRows, setOpenRows] = useState({});
   const [errors, setErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(0);
-  const [totalemployeereport, setTotalemployeereport] = useState("1");
+  const [totalemployeereport, setTotalemployeereport] = useState("");
+  const [rejectReason, setrejectReason] = useState("");
+  const [actionBy, setActionby] = useState("");
+  const [sortConfig, setSortConfig] = React.useState({
+    key: "",
+    direction: "asc",
+  });
+
+  const keyMap = {
+    userName: "userName",
+    jobTitle: "jobTitle",
+    totalWorkingHours: "totalWorkingHours",
+    overTime: "overTime",
+    totalHours: "totalHours",
+  };
+
+  const handleSort = (key) => {
+    const mappedKey = keyMap[key] || key;
+    // console.log("Sorting by:", mappedKey);
+
+    setSortConfig((prevSort) => {
+      let direction = "asc";
+      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+        direction = "desc";
+      }
+      return { key: mappedKey, direction };
+    });
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (!Array.isArray(reportDetails)) return [];
+    if (!sortConfig.key) return [...reportDetails];
+    return [...reportDetails].sort((a, b) => {
+      const valueA = a[sortConfig.key] ?? "";
+      const valueB = b[sortConfig.key] ?? "";
+      // console.log("reportDetails", reportDetails);
+      if (typeof valueA === "string") {
+        return sortConfig.direction === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return sortConfig.direction === "asc"
+          ? valueA - valueB
+          : valueB - valueA;
+      }
+    });
+  }, [reportDetails, sortConfig]);
+
+  const filteredData = React.useMemo(() => {
+    return sortedData.filter((item) =>
+      Object.values(item).some(
+        (value) => value?.toString().toLowerCase().includes
+      )
+    );
+  }, [sortedData]);
+
+  const paginatedRows = React.useMemo(() => {
+    const start = (currentPage - 1) * reportPerPage;
+    const end = start + reportPerPage;
+    return filteredData.slice(start, end);
+  }, [filteredData, currentPage, reportPerPage]);
+
   const handleToggle = (index) => {
     setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
@@ -91,8 +152,9 @@ const EmployeesTimesheet = () => {
       if (response?.data?.status === 200) {
         setReportDetails(response?.data?.reports.employeeTimesheetData);
         setStatus(response.data?.reports?.status);
-        // setTotalemployeereport(response?.data?.)
-        // setStatusList(response?.data?.report);
+        setTotalemployeereport(response?.data?.reports?.totalHoursOfEmployees);
+        setActionby(response.data.reports.actionBy);
+        setrejectReason(response?.data?.reports?.rejectionReason);
         // setStartDate(response?.data?.report?.startDate);
         // setEndDate(response?.data?.report?.endDate);
         setDateEmployee(response?.data?.reports);
@@ -115,8 +177,9 @@ const EmployeesTimesheet = () => {
       setLoading(true);
       const response = await PostCall(`/approveReport`);
       if (response?.data?.status === 200) {
+        setStatus(response?.data?.updatedReport?.status);
         showToast(response?.data?.message, "success");
-        console.log("response", response);
+        // console.log("response", response);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -130,10 +193,6 @@ const EmployeesTimesheet = () => {
 
   const handleRejectSubmit = async () => {
     setShowConfirm(false);
-    if (!rejectionReason) {
-      setErrors({ rejectionReason: "Rejection reason is required!" });
-      return;
-    }
     const data = {
       reason: rejectionReason,
     };
@@ -143,7 +202,6 @@ const EmployeesTimesheet = () => {
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
         setRejectionReason("");
-        setErrors({});
         setShowConfirm(false);
         GetEmployeesStatus();
       } else {
@@ -172,15 +230,22 @@ const EmployeesTimesheet = () => {
     setCurrentPage(1);
   };
 
-  const paginatedRows = reportDetails?.slice(
-    page * reportPerPage,
-    page * reportPerPage + reportPerPage
-  );
+  // const paginatedRows = reportDetails?.slice(
+  //   page * reportPerPage,
+  //   page * reportPerPage + reportPerPage
+  // );
 
   useEffect(() => {
     GetEmployeesStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, reportPerPage]);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", JSON.stringify(token));
+      dispatch(setUserInfo({ role: "Client" }));
+    }
+  }, [token, dispatch]);
 
   return (
     <div className="employee-report-list-container">
@@ -201,9 +266,26 @@ const EmployeesTimesheet = () => {
           </div>
         </div>
       </div>
-      <div className="employee-report-list-action-button">
-        <div className="employee-report-list-input-container">
-          {status === "Pending" && (
+      {status !== "Pending" && (
+        <div className="employee-report-list-action-button">
+          <div className="employee-report-list-input-container-status">
+            <div className="Employeetimesheet-reason">
+              <p>
+                {status} by <b>{actionBy}</b>
+              </p>
+
+              {status === "Rejected" && rejectReason && (
+                <p>
+                  Reason: <b>{rejectReason}</b>
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {status === "Pending" && (
+        <div className="employee-report-list-action-button">
+          <div className="employee-report-list-input-container">
             <button
               label="Approve"
               // icon={GrDocumentDownload}
@@ -211,10 +293,8 @@ const EmployeesTimesheet = () => {
             >
               Approve
             </button>
-          )}
-        </div>
-        <div className="employee-report-list-input-container reject">
-          {status === "Pending" && (
+          </div>
+          <div className="employee-report-list-input-container reject">
             <button
               label="Reject"
               // icon={GrDocumentDownload}
@@ -222,9 +302,9 @@ const EmployeesTimesheet = () => {
             >
               Reject
             </button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {loading ? (
         <div className="loader-wrapper">
@@ -264,12 +344,101 @@ const EmployeesTimesheet = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell />
-                    <TableCell>User Name</TableCell>
-                    <TableCell>Job Title</TableCell>
-                    <TableCell>Job Role</TableCell>
-                    <TableCell>Total Working</TableCell>
-                    <TableCell>Total Hours</TableCell>
-                    <TableCell>Overtime</TableCell>
+                    <TableCell
+                      sortDirection={
+                        sortConfig.key === "userName"
+                          ? sortConfig.direction
+                          : false
+                      }
+                    >
+                      <TableSortLabel
+                        active={sortConfig.key === "userName"}
+                        direction={
+                          sortConfig.key === "userName"
+                            ? sortConfig.direction
+                            : "asc"
+                        }
+                        onClick={() => handleSort("userName")}
+                      >
+                        User Name
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell
+                      sortDirection={
+                        sortConfig.key === "jobTitle"
+                          ? sortConfig.direction
+                          : false
+                      }
+                    >
+                      <TableSortLabel
+                        active={sortConfig.key === "jobTitle"}
+                        direction={
+                          sortConfig.key === "jobTitle"
+                            ? sortConfig.direction
+                            : "asc"
+                        }
+                        onClick={() => handleSort("jobTitle")}
+                      >
+                        Job Title
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell
+                      sortDirection={
+                        sortConfig.key === "totalWorkingHours"
+                          ? sortConfig.direction
+                          : false
+                      }
+                    >
+                      <TableSortLabel
+                        active={sortConfig.key === "totalWorkingHours"}
+                        direction={
+                          sortConfig.key === "totalWorkingHours"
+                            ? sortConfig.direction
+                            : "asc"
+                        }
+                        onClick={() => handleSort("totalWorkingHours")}
+                      >
+                        Working Hours
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell
+                      sortDirection={
+                        sortConfig.key === "overTime"
+                          ? sortConfig.direction
+                          : false
+                      }
+                    >
+                      <TableSortLabel
+                        active={sortConfig.key === "overTime"}
+                        direction={
+                          sortConfig.key === "overTime"
+                            ? sortConfig.direction
+                            : "asc"
+                        }
+                        onClick={() => handleSort("overTime")}
+                      >
+                        Over Time
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell
+                      sortDirection={
+                        sortConfig.key === "totalHours"
+                          ? sortConfig.direction
+                          : false
+                      }
+                    >
+                      <TableSortLabel
+                        active={sortConfig.key === "totalHours"}
+                        direction={
+                          sortConfig.key === "totalHours"
+                            ? sortConfig.direction
+                            : "asc"
+                        }
+                        onClick={() => handleSort("totalHours")}
+                      >
+                        Total Hours
+                      </TableSortLabel>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -290,18 +459,18 @@ const EmployeesTimesheet = () => {
                                 )}
                               </IconButton>
                             </TableCell>
-                            <TableCell>{row.userName}</TableCell>
-                            <TableCell>{row.jobTitle}</TableCell>
-                            <TableCell>{row.jobRole}</TableCell>
-                            <TableCell>{row.totalWorkingHours}</TableCell>
-                            <TableCell>{row?.totalHours}</TableCell>
+                            <TableCell>{row?.userName}</TableCell>
+                            <TableCell>{row?.jobTitle}</TableCell>
+                            {/* <TableCell>{row?.jobRole}</TableCell> */}
+                            <TableCell>{row?.totalWorkingHours}</TableCell>
                             <TableCell>{row?.overTime}</TableCell>
+                            <TableCell>{row?.totalHours}</TableCell>
                           </TableRow>
 
                           <TableRow>
                             <TableCell
                               style={{ paddingBottom: 0, paddingTop: 0 }}
-                              colSpan={7}
+                              colSpan={6}
                             >
                               <Collapse
                                 in={openRows[actualIndex]}
@@ -318,7 +487,7 @@ const EmployeesTimesheet = () => {
                                         <TableCell>Date</TableCell>
                                         <TableCell>Timing</TableCell>
                                         <TableCell>Working Hours</TableCell>
-                                        <TableCell>Overtime</TableCell>
+                                        <TableCell>Over Time</TableCell>
                                         <TableCell>Total Hours</TableCell>
                                       </TableRow>
                                     </TableHead>
@@ -335,7 +504,7 @@ const EmployeesTimesheet = () => {
                                               (clockEntry) => (
                                                 <div
                                                   key={clockEntry?._id}
-                                                  className="employeetimeesheet-timming"
+                                                  className="employeetimeesheet-timing"
                                                 >
                                                   <span className="employee-timesheetclockin">
                                                     {moment(
@@ -384,19 +553,27 @@ const EmployeesTimesheet = () => {
                     </TableRow>
                   )}
                 </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={10}>
+                      <div className="employeetimesheet-count">
+                        <p>
+                          Total Hours: <b>{totalemployeereport}</b>
+                        </p>
+                        <TablePagination
+                          component="div"
+                          count={totalPages}
+                          page={currentPage - 1}
+                          onPageChange={handlePageChange}
+                          rowsPerPage={reportPerPage}
+                          onRowsPerPageChange={handleReportPerPageChange}
+                          rowsPerPageOptions={[50, 100, 200]}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
               </Table>
-              <div className="employeetimesheet-count">
-                <p>Total Emplyoees {totalemployeereport}</p>
-                <TablePagination
-                  component="div"
-                  count={totalPages}
-                  page={currentPage - 1}
-                  onPageChange={handlePageChange}
-                  rowsPerPage={reportPerPage}
-                  onRowsPerPageChange={handleReportPerPageChange}
-                  rowsPerPageOptions={[50, 100, 200]}
-                />
-              </div>
             </TableContainer>
           </div>
         </>

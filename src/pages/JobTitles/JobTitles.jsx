@@ -96,7 +96,7 @@ const JobTitles = () => {
   const HandleIsactiveUser = async (Id) => {
     try {
       setLoading(true);
-      console.log("active id", Id);
+      // console.log("active id", Id);
       const response = await PostCall(
         `/activeInactiveJobTitle?jobTitleId=${Id}`
       );

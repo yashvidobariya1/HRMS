@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -11,13 +11,14 @@ import "tippy.js/dist/tippy.css";
 import moment from "moment";
 import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
-import CommonAddButton from "../../SeparateCom/CommonAddButton";
+// import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 import Loader from "../Helper/Loader";
 import { MenuItem, Select } from "@mui/material";
 import AssignClient from "../../SeparateCom/AssignClient";
 
 const ViewTasks = () => {
+  const calendarRef = useRef(null);
   // const Navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [taskList, setTaskList] = useState([]);
@@ -44,7 +45,7 @@ const ViewTasks = () => {
     (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
   const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
-  const AllowstartDate = "2022-01-01";
+  const AllowstartDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(AllowstartDate).year();
   const currentYear = moment().year();
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
@@ -66,16 +67,14 @@ const ViewTasks = () => {
     });
   };
 
-  const months = moment
-    .months()
-    .map((month, index) => ({
-      name: moment().month(index).format("MMM"),
-      value: index + 1,
-    }))
-    .filter(
-      (month) =>
-        selectedYear < currentYear || month.value <= moment().month() + 1
-    );
+  const months = moment.months().map((month, index) => ({
+    name: moment().month(index).format("MMM"),
+    value: index + 1,
+  }));
+  // .filter(
+  //   (month) =>
+  //     selectedYear < currentYear || month.value <= moment().month() + 1
+  // );
 
   const [formData, setFormData] = useState({
     taskDate: "",
@@ -88,7 +87,7 @@ const ViewTasks = () => {
   });
 
   const handleDateClick = (info) => {
-    console.log("save click");
+    // console.log("save click");
     setFormData({
       taskDate: "",
       taskName: "",
@@ -131,6 +130,62 @@ const ViewTasks = () => {
     setIsPopupOpen(true);
   };
 
+  const handleNextClick = () => {
+    const calendarApi = calendarRef.current.getApi();
+    calendarApi.next();
+
+    const currentDate = calendarApi.getDate();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    // console.log("Next", currentDate, year, month);
+
+    setAppliedFilters((prev) => ({
+      ...prev,
+      year,
+      month,
+    }));
+    setSelectedYear(year);
+    setSelectedMonth(month);
+    // console.log("appliaedfilter", appliedFilters);
+  };
+
+  const handlePrevClick = () => {
+    const calendarApi = calendarRef.current.getApi();
+    calendarApi.prev();
+
+    const currentDate = calendarApi.getDate();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    // console.log("Prev", currentDate, year, month);
+
+    setAppliedFilters((prev) => ({
+      ...prev,
+      year,
+      month,
+    }));
+    setSelectedYear(year);
+    setSelectedMonth(month);
+  };
+
+  const handleTodayClick = () => {
+    const calendarApi = calendarRef.current.getApi();
+    calendarApi.today();
+
+    const currentDate = calendarApi.getDate();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    setAppliedFilters((prev) => ({
+      ...prev,
+      year,
+      month,
+    }));
+    setSelectedYear(year);
+    setSelectedMonth(month);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -147,7 +202,7 @@ const ViewTasks = () => {
 
       if (response?.data?.status === 200) {
         const jobTitles = response.data.assignClients;
-        console.log("job title", jobTitles);
+        // console.log("job title", jobTitles);
         setClientdata(jobTitles);
 
         if (jobTitles.length > 1) {
@@ -167,7 +222,7 @@ const ViewTasks = () => {
   };
 
   const handleClientSelect = (selectedTitle) => {
-    console.log("setSelectedClientId", selectedClientId);
+    // console.log("setSelectedClientId", selectedClientId);
     setSelectedClientId(selectedTitle);
     setopenClietnSelectModal(true);
   };
@@ -194,13 +249,13 @@ const ViewTasks = () => {
       }
     }
     if (!formData.startTime) newErrors.startTime = "Start Time is required";
-    if (!formData.endTime) newErrors.endTime = "End Time is required";
+    // if (!formData.endTime) newErrors.endTime = "End Time is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleAddTask = async (e) => {
-    console.log("handle add task", e, selectedJobId);
+    // console.log("handle add task", e, selectedJobId);
     e.preventDefault();
     if (!validate()) return;
 
@@ -291,7 +346,7 @@ const ViewTasks = () => {
     const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
     if (selectedJob) {
       setIsWorkFromOffice(selectedJob.isWorkFromOffice);
-      console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+      // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
     }
     setOpenJobTitleModal(true);
   };
@@ -337,8 +392,11 @@ const ViewTasks = () => {
           setOpenJobTitleModal(false);
         } else {
           setSelectedJobId(jobTitles[0]?.jobId);
+          setIsWorkFromOffice(jobTitles[0]?.isWorkFromOffice);
           setOpenJobTitleModal(true);
         }
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -373,7 +431,7 @@ const ViewTasks = () => {
 
       if (response?.data?.status === 200) {
         setTaskList(response?.data.tasks);
-        console.log("response:", response?.data.tasks);
+        // console.log("response:", response?.data.tasks);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -400,6 +458,7 @@ const ViewTasks = () => {
     if (GetTimesheet) {
       getAllTasks();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
     selectedJobId,
@@ -418,6 +477,7 @@ const ViewTasks = () => {
     if (GetClientData) {
       GetClientdata();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
     selectedJobId,
@@ -431,8 +491,12 @@ const ViewTasks = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId]);
 
+  // useEffect(() => {
+  //   console.log("Year:", selectedYear, "Month:", selectedMonth);
+  // }, [selectedYear, selectedMonth]);
+
   useEffect(() => {
-    console.log("tasklist", taskList);
+    // console.log("tasklist", taskList);
     const transformedEvents = taskList.map((task) => ({
       title: task.taskName,
       start: task.taskDate,
@@ -497,7 +561,7 @@ const ViewTasks = () => {
               })}
             </select> */}
 
-            <Select
+            {/* <Select
               className="viewtask-dropdown"
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
@@ -521,7 +585,7 @@ const ViewTasks = () => {
                   </MenuItem>
                 );
               })}
-            </Select>
+            </Select> */}
           </div>
 
           <div className="selection-wrapper">
@@ -538,7 +602,7 @@ const ViewTasks = () => {
                 </option>
               ))}
             </select> */}
-            <Select
+            {/* <Select
               value={selectedMonth}
               className="viewtask-dropdown"
               onChange={(e) => {
@@ -563,18 +627,18 @@ const ViewTasks = () => {
                   {month.name}
                 </MenuItem>
               ))}
-            </Select>
+            </Select> */}
           </div>
 
-          <CommonAddButton
+          {/* <CommonAddButton
             label={"Filter"}
             // icon={MdRateReview}
             onClick={applyFilters}
-          />
+          /> */}
         </div>
       </div>
 
-      {userRole != "Employee" && (
+      {userRole !== "Employee" && (
         <div className="viewhour-employee-list">
           <Select
             className="viewtask-input-dropdown"
@@ -611,6 +675,7 @@ const ViewTasks = () => {
       ) : (
         <div>
           <FullCalendar
+            ref={calendarRef}
             key={selectedYear}
             plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
@@ -632,6 +697,20 @@ const ViewTasks = () => {
             }}
             buttonText={{
               today: "Today",
+            }}
+            customButtons={{
+              next: {
+                text: "Next",
+                click: handleNextClick,
+              },
+              prev: {
+                text: "Prev",
+                click: handlePrevClick,
+              },
+              today: {
+                text: "Today",
+                click: handleTodayClick,
+              },
             }}
             validRange={{
               start: AllowstartDate,
@@ -724,7 +803,7 @@ const ViewTasks = () => {
                   )}
                 </div>
                 <div className="addtask-input-container">
-                  <label className="label">End Date*</label>
+                  <label className="label">End Date</label>
                   <input
                     type="date"
                     name="endDate"
@@ -733,9 +812,9 @@ const ViewTasks = () => {
                     onChange={handleChange}
                     min={todayDate}
                   />
-                  {errors?.endDate && (
+                  {/* {errors?.endDate && (
                     <div className="error-text">{errors?.endDate}</div>
-                  )}
+                  )} */}
                 </div>
               </>
             )}

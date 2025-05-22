@@ -270,7 +270,7 @@ const CommonTable = ({
   headers,
   data,
   actions,
-  totalPages,
+  // totalPages,
   showPerPage,
   onPageChange,
   onPerPageChange,

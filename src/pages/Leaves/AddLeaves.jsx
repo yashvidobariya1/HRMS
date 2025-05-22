@@ -60,6 +60,8 @@ const AddLeaves = () => {
       if (response?.data?.status === 200) {
         setLeaveTypes(response?.data.leaveCount);
         // console.log("response", response?.data.leaveCount);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
@@ -75,7 +77,7 @@ const AddLeaves = () => {
 
       if (response?.data?.status === 200) {
         const jobTitles = response.data.assignClients;
-        console.log("job title", jobTitles);
+        // console.log("job title", jobTitles);
         setClientdata(jobTitles);
 
         if (jobTitles.length > 1) {
@@ -84,6 +86,8 @@ const AddLeaves = () => {
           setSelectedClientId(jobTitles[0]?.clientId);
           setopenClietnSelectModal(true);
         }
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -149,6 +153,7 @@ const AddLeaves = () => {
 
   useEffect(() => {
     GetClientdata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobRoleId]);
 
   useEffect(() => {
@@ -159,6 +164,7 @@ const AddLeaves = () => {
       const days = timeDiff / (1000 * 3600 * 24) + 1;
       setCalculatedDays(days);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.startDate, formData.endDate]);
 
   const handleSubmit = async (e) => {
@@ -251,11 +257,11 @@ const AddLeaves = () => {
         showToast(response?.data?.message, "success");
         navigate("/leaves");
       } else {
-        showToast(response?.data?.message, "error-text");
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
-      console.log("error-text", error);
+      console.log("error", error);
     }
   };
 
@@ -267,7 +273,7 @@ const AddLeaves = () => {
           if (response?.data?.status === 200) {
             setformData(response?.data?.leave);
           } else {
-            showToast(response?.data?.message, "error-text");
+            showToast(response?.data?.message, "error");
           }
         })
         .catch((error) => console.error("Error fetching holiday:", error))
@@ -306,7 +312,7 @@ const AddLeaves = () => {
   //   try {
   //     setLoading(true);
   //     const response = await PostCall("/leaveRequest", newformdata);
-  //     showToast(response?.data?.message, response?.data?.status === 200 ? "success" : "error-text");
+  //     showToast(response?.data?.message, response?.data?.status === 200 ? "success" : "error");
   //     if (response?.data?.status === 200) navigate("/leaves");
   //   } catch (error) {
   //     console.log("error-text", error);
@@ -317,6 +323,7 @@ const AddLeaves = () => {
 
   useEffect(() => {
     GetClientdata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobRoleId]);
 
   if (loading) {

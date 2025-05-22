@@ -91,6 +91,8 @@ const Employee = () => {
         settotalUsers(response.data.totalUsers);
         setEmployeeList(response?.data?.users);
         setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
       // console.log("response", response);

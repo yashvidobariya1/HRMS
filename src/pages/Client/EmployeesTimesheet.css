@@ -127,8 +127,8 @@
   color: var(--sidebar-bg);
 }
 
-.employeetimeesheet-timming {
-  padding: 5px 10px;
+.employeetimeesheet-timing {
+  padding: 5px;
   background-color: var(--neutral-light-gray);
   margin-bottom: 5px;
   border: 1px solid var(--neutral-light-gray);
@@ -156,6 +156,37 @@
   justify-content: space-between;
 }
 
+.scrollable-table-wrapper .MuiTableContainer-root {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  margin: 0;
+  background-color: var(--primary-text-white);
+  border-radius: var(--border-radius) !important;
+}
+
+.employeetimesheet-table {
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
+}
+
+.Employeetimesheet-reason {
+  padding: 5px;
+}
+
+.Employeetimesheet-reason p {
+  margin: 5px;
+  font-size: 14px;
+}
+
+.employeetimesheet-count .MuiTablePagination-root {
+  overflow: hidden;
+}
+
+.employeetimesheet-table .MuiTableCell-footer {
+  padding: 0 10px !important;
+}
+
 @media (max-width: 767px) {
   .employee-report-list-input-container button {
     padding: 9px 12px;
@@ -167,6 +198,10 @@
 
   .employeetimesheet-table .MuiTableCell-root {
     padding: 12px;
+  }
+
+  .employeetimeesheet-timing {
+    padding: 5px 8px;
   }
 }
 
@@ -188,5 +223,14 @@
   .employeetimesheet-table .MuiTableCell-root .MuiTableCell-body {
     padding: 10px;
     font-size: 12px !important;
+  }
+
+  .employeetimesheet-count p {
+    margin: 5px;
+    font-size: 12px;
+  }
+
+  .Employeetimesheet-reason p {
+    font-size: 12px;
   }
 }

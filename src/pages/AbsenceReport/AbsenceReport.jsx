@@ -70,7 +70,7 @@ const AbsenceReport = () => {
     const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
     if (selectedJob) {
       setIsWorkFromOffice(selectedJob.isWorkFromOffice);
-      console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+      // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
     }
     setOpenJobTitleModal(true);
   };
@@ -83,7 +83,7 @@ const AbsenceReport = () => {
     setSelectedJobId("");
     setAppliedFilters({
       year: moment().year(),
-      month: moment().month(),
+      month: moment().month() + 1,
     });
   };
 
@@ -134,8 +134,11 @@ const AbsenceReport = () => {
           setOpenJobTitleModal(false);
         } else {
           setSelectedJobId(jobTitles[0]?.jobId);
+          setIsWorkFromOffice(jobTitles[0]?.isWorkFromOffice);
           setOpenJobTitleModal(true);
         }
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -185,7 +188,7 @@ const AbsenceReport = () => {
 
       if (response?.data?.status === 200) {
         const jobTitles = response.data.assignClients;
-        console.log("job title", jobTitles);
+        // console.log("job title", jobTitles);
         setClientdata(jobTitles);
 
         if (jobTitles.length > 1) {
@@ -205,7 +208,7 @@ const AbsenceReport = () => {
   };
 
   const handleClientSelect = (selectedTitle) => {
-    console.log("setSelectedClientId", selectedClientId);
+    // console.log("setSelectedClientId", selectedClientId);
     setSelectedClientId(selectedTitle);
     setopenClietnSelectModal(true);
   };
@@ -216,8 +219,8 @@ const AbsenceReport = () => {
         selectedJobId &&
         selectedClientId &&
         appliedFilters) ||
-      !selectedEmployee ||
-      (appliedFilters &&
+      (!selectedEmployee &&
+        appliedFilters &&
         ((jobRoleId && jobRoleisworkFromOffice) ||
           (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
           (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||

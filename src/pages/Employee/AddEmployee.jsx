@@ -224,8 +224,8 @@ const AddEmployee = () => {
         return doc;
       })
     );
-    console.log("Original documentDetails", documentDetails);
-    console.log("Updated documentDetails", updatedDocumentDetails);
+    // console.log("Original documentDetails", documentDetails);
+    // console.log("Updated documentDetails", updatedDocumentDetails);
 
     const isValid = validate();
     if (isValid) {
@@ -233,7 +233,7 @@ const AddEmployee = () => {
         ...formData,
         documentDetails: updatedDocumentDetails,
       };
-      console.log("data", data);
+      // console.log("data", data);
 
       if (currentStep === steps.length - 1) {
         try {
@@ -599,7 +599,7 @@ const AddEmployee = () => {
         })),
       };
 
-      console.log("newDocument", newDocument);
+      // console.log("newDocument", newDocument);
       setDocumentDetails((prevDocuments) => [...prevDocuments, newDocument]);
 
       setFile({
@@ -657,7 +657,7 @@ const AddEmployee = () => {
     // if (jobForm?.assignManager === "") {
     //   newErrors.assignManager = "Assign Manager is required";
     // }
-    if (!isWorkFromOffice && jobForm?.assignClient.length == 0) {
+    if (!isWorkFromOffice && jobForm?.assignClient.length === 0) {
       newErrors.assignClient = "Assign Client is required";
     }
     if (Object.keys(newErrors).length > 0) {

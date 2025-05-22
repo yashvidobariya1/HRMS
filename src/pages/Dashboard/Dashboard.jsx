@@ -341,7 +341,7 @@ const Dashboard = () => {
 
         if (userData) {
           Object.keys(userData).forEach((key) => {
-            console.log("key", key, "value", userData[key]);
+            // console.log("key", key, "value", userData[key]);
             content = content.replace(
               new RegExp(`{${key}}`, "g"),
               userData[key]
@@ -559,6 +559,8 @@ const Dashboard = () => {
         const unreadCount = response.data.unreadNotificationsCount;
         // console.log("unreadCount", response.data.unreadNotificationsCount);
         dispatch(setNotificationCount(unreadCount));
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);

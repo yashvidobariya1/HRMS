@@ -8,7 +8,8 @@ import { RxDashboard } from "react-icons/rx";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import { GetCall } from "../ApiServices";
 import { setCompanySelect } from "../store/selectCompanySlice";
-import { Select, MenuItem, Tooltip } from "@mui/material";
+import { Select, MenuItem } from "@mui/material";
+import { showToast } from "./ToastManager";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const currentRole = useSelector((state) => state.userInfo.userInfo.role);
@@ -58,6 +59,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           dispatch(setCompanySelect(defaultCompanyId));
           setSelectedCompanyId(defaultCompanyId);
         }
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);

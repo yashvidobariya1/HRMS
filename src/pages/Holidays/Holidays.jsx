@@ -359,7 +359,7 @@ const Holidays = () => {
     try {
       setLoading(true);
       let response;
-      console.log("formData", formData);
+      // console.log("formData", formData);
       if (formData._id) {
         response = await PostCall(`/updateHoliday/${formData._id}`, formData);
       } else {
@@ -395,10 +395,10 @@ const Holidays = () => {
   };
 
   const handleYearChange = (event) => {
-    console.log("event", event.target.value);
+    // console.log("event", event.target.value);
     const newYear = parseInt(event.target.value, 10);
     setSelectedYear(newYear);
-    console.log("newYear", newYear);
+    // console.log("newYear", newYear);
   };
 
   const confirmDelete = async (id) => {
