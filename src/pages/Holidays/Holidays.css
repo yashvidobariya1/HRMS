@@ -719,3 +719,10 @@
     padding: 5px 8px;
   }
 }
+
+@media (max-width: 350px) {
+  .View-holiday-main .fc .fc-toolbar {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

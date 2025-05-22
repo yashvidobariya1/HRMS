@@ -12,6 +12,12 @@
   /* margin-bottom: 10px; */
 }
 
+.viewstatus-action {
+  display: flex;
+  justify-content: right;
+  margin: 10px 0;
+}
+
 @media screen and (max-width: 400px) {
   .status-list-flex {
     display: block;

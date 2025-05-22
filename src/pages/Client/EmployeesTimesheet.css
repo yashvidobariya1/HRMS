@@ -34,7 +34,178 @@
   margin: 0;
 }
 
-@media screen and (max-width: 600px) {
+.employee-report-list-input-container button {
+  color: var(--primary-text-white);
+  background-color: var(--alert-green);
+  padding: 15px 20px;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.reject button {
+  background-color: var(--alert-red);
+}
+
+.employee-report-list-action-button {
+  display: flex;
+  justify-content: right;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.employeetimesheet-table table {
+  border-collapse: separate;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.employeetimesheet-table .MuiTableHead-root {
+  color: var(--sidebar-title-primary-white);
+  background-color: var(--table-heading-neutral-dark-blue);
+  border-collapse: separate;
+}
+
+.employeetimesheet-table .MuiTableCell-head {
+  font-weight: bold !important;
+  color: var(--sidebar-title-primary-white);
+}
+
+.employeetimesheet-table tbody,
+.MuiTableFooter-root {
+  background-color: var(--primary-text-white);
+}
+
+.employeetimesheet-table td {
+  color: var(--secondary-dark-gray) !important;
+  /* border-bottom: var(--neutral-light-gray) !important; */
+}
+
+.employeetimesheet-table .MuiTableCell-root .MuiTableCell-body {
+  font-size: 15px !important;
+  color: var(--secondary-dark-gray) !important;
+}
+
+.employeetimesheet-table .MuiIconButton-root {
+  font-size: 16px !important;
+  color: var(--secondary-dark-gray) !important;
+}
+
+.employeetimesheet-table .MuiTableSortLabel-root.Mui-active,
+.employeetimesheet-table
+  .MuiTableSortLabel-root.Mui-active
+  .MuiTableSortLabel-icon,
+.employeetimesheet-table .MuiTableSortLabel-root:hover {
+  color: var(--sidebar-title-primary-white) !important;
+}
+
+.employeetimesheet-table .MuiSelect-select {
+  color: var(--secondary-dark-gray);
+}
+
+.employeetimesheet-table .MuiIconButton-root.Mui-disabled {
+  color: var(--sidebar-hover) !important;
+  opacity: 0.6;
+}
+
+.employeetimesheet-table .MuiIconButton-root {
+  color: var(--sidebar-hover) !important;
+}
+
+.employeetimesheet-table .MuiSelect-icon {
+  color: var(--sidebar-hover) !important;
+  fill: var(--sidebar-hover);
+}
+
+.employeetimesheet-table .MuiMenu-list {
+  background: var(--primary-text-white) !important;
+  border: 1px solid var(--neutral-light-gray);
+  color: var(--sidebar-bg);
+}
+
+.employeetimeesheet-timing {
+  padding: 5px;
+  background-color: var(--neutral-light-gray);
+  margin-bottom: 5px;
+  border: 1px solid var(--neutral-light-gray);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.employee-timesheetclockin {
+  color: var(--secondary-dark-gray) #333333;
+  font-weight: 500;
+}
+
+.employee-timesheetclockout {
+  font-weight: 600;
+  color: var(--primary-button);
+}
+
+.employee-timesheet-timming {
+  font-weight: 500;
+  color: var(--secondary-teal);
+}
+
+.employeetimesheet-count {
+  display: flex;
+  justify-content: space-between;
+}
+
+.scrollable-table-wrapper .MuiTableContainer-root {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  margin: 0;
+  background-color: var(--primary-text-white);
+  border-radius: var(--border-radius) !important;
+}
+
+.employeetimesheet-table {
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
+}
+
+.Employeetimesheet-reason {
+  padding: 5px;
+}
+
+.Employeetimesheet-reason p {
+  margin: 5px;
+  font-size: 14px;
+}
+
+.employeetimesheet-count .MuiTablePagination-root {
+  overflow: hidden;
+}
+
+.employeetimesheet-table .MuiTableCell-footer {
+  padding: 0 10px !important;
+}
+
+@media (max-width: 767px) {
+  .employee-report-list-input-container button {
+    padding: 9px 12px;
+  }
+
+  .employeetimesheet-table {
+    font-size: 12px;
+  }
+
+  .employeetimesheet-table .MuiTableCell-root {
+    padding: 12px;
+  }
+
+  .employeetimeesheet-timing {
+    padding: 5px 8px;
+  }
+}
+
+@media screen and (max-width: 575px) {
   .employee-report-list-flex {
     display: block;
   }
@@ -42,5 +213,24 @@
   .employee-report-list-download-container {
     font-size: 12px;
     margin-bottom: 10px;
+  }
+
+  .employee-report-list-input-container button {
+    padding: 6px 10px !important;
+  }
+
+  .employeetimesheet-table .MuiTableCell-root,
+  .employeetimesheet-table .MuiTableCell-root .MuiTableCell-body {
+    padding: 10px;
+    font-size: 12px !important;
+  }
+
+  .employeetimesheet-count p {
+    margin: 5px;
+    font-size: 12px;
+  }
+
+  .Employeetimesheet-reason p {
+    font-size: 12px;
   }
 }

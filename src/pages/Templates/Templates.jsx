@@ -542,7 +542,19 @@ const Templates = () => {
                   multiple
                   value={selectedAssignuser}
                   className="template-input-dropdwon"
-                  onChange={(e) => setSelectedAssignuser(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    if (value.includes("all")) {
+                      if (selectedAssignuser.length === assignUser.length) {
+                        setSelectedAssignuser([]);
+                      } else {
+                        setSelectedAssignuser(assignUser.map((u) => u._id));
+                      }
+                    } else {
+                      setSelectedAssignuser(value);
+                    }
+                  }}
                   MenuProps={{
                     PaperProps: {
                       className: "custom-select-menu",
@@ -565,6 +577,17 @@ const Templates = () => {
                     );
                   }}
                 >
+                  <MenuItem value="all">
+                    <Checkbox
+                      checked={selectedAssignuser.length === assignUser.length}
+                      indeterminate={
+                        selectedAssignuser.length > 0 &&
+                        selectedAssignuser.length < assignUser.length
+                      }
+                    />
+                    <ListItemText primary="All" />
+                  </MenuItem>
+
                   {assignUser.map((user) => (
                     <MenuItem
                       key={user._id}

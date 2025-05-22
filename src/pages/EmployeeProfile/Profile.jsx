@@ -143,6 +143,8 @@ const Profile = () => {
 
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
+        setoldDocument((prev) => [...prev, ...updatedDocumentDetails]);
+        setDocumentDetails([]);
         setupdate(false);
         setFile({ documentType: "", document: "", fileName: "" });
         if (fileInputRef.current) fileInputRef.current.value = "";

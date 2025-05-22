@@ -82,7 +82,8 @@ const Dashboard = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const dispatch = useDispatch();
-  const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  // const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  const startDate = "2022-01-01";
   const startYear = moment(startDate).year();
   const calendarRef = useRef(null);
   const allowedYears = Array.from(
@@ -340,7 +341,7 @@ const Dashboard = () => {
 
         if (userData) {
           Object.keys(userData).forEach((key) => {
-            console.log("key", key, "value", userData[key]);
+            // console.log("key", key, "value", userData[key]);
             content = content.replace(
               new RegExp(`{${key}}`, "g"),
               userData[key]
@@ -558,6 +559,8 @@ const Dashboard = () => {
         const unreadCount = response.data.unreadNotificationsCount;
         // console.log("unreadCount", response.data.unreadNotificationsCount);
         dispatch(setNotificationCount(unreadCount));
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -1262,6 +1265,7 @@ const Dashboard = () => {
                       // const currentYear = info.view.currentStart.getFullYear();
                       // const currentMonth =
                       //   info.view.currentStart.getMonth() + 1;
+
                       setSelectedMonth(selectedMonth);
                       setSelectedYear(selectedYear);
                     }}

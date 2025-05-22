@@ -17,6 +17,7 @@ const AddClient = () => {
   // const location = useLocation();
   // const searchParams = new URLSearchParams(location.search);
   // const companyId = searchParams.get("companyId");
+  const [isOn, setIsOn] = useState(false);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   // console.log("companyid", companyId);
   const { id } = useParams();
@@ -34,7 +35,77 @@ const AddClient = () => {
     longitude: "",
     latitude: "",
     radius: "",
+    isAutoGenerateReport: false,
+    reportFrequency: "",
+    reportTime: "",
+    weekday: "",
+    monthDate: "",
   });
+  const HourList = [
+    "00:00",
+    "01:00",
+    "02:00",
+    "03:00",
+    "04:00",
+    "05:00",
+    "06:00",
+    "07:00",
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
+    "19:00",
+    "20:00",
+    "21:00",
+    "22:00",
+    "23:00",
+  ];
+  const WeekDayList = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  const MonthDateList = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+  ];
 
   // const validate = () => {
   //   let newErrors = {};
@@ -147,6 +218,18 @@ const AddClient = () => {
     } else if (!/^[1-9]\d*$/.test(formData.radius)) {
       newErrors.radius = "Radius must be a positive number in meters";
     }
+    if (isOn && !formData.reportFrequency) {
+      newErrors.reportFrequency = "Frequency is required";
+    }
+    if (isOn && formData.reportFrequency && !formData.reportTime) {
+      newErrors.reportTime = "Hour is required";
+    }
+    if (isOn && formData.reportFrequency === "Weekly" && !formData.weekday) {
+      newErrors.weekday = "Week Day is required";
+    }
+    if (isOn && formData.reportFrequency === "Monthly" && !formData.monthDate) {
+      newErrors.monthDate = "Month Date is required";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -244,12 +327,17 @@ const AddClient = () => {
   };
 
   useEffect(() => {
+    setIsOn(formData.isAutoGenerateReport);
+  }, [formData.isAutoGenerateReport]);
+
+  useEffect(() => {
     const GetClientDetails = async () => {
       try {
         setLoading(true);
         const response = await GetCall(`/getClient/${id}`);
         if (response?.data?.status === 200) {
           setFormData(response?.data?.client);
+          setIsOn(response?.data?.client?.isAutoGenerateReport);
         } else {
           showToast(response?.data?.message, "error");
         }
@@ -465,13 +553,13 @@ const AddClient = () => {
               </div>
             </div>
 
-            <div className="addlocation-section">
-              <div className="addlocation-input-container">
+            <div className="addclient-section">
+              <div className="addclient-input-container">
                 <label className="label">Grace Time (Minutes)*</label>
                 <input
                   type="number"
                   name="graceTime"
-                  className="addlocation-input"
+                  className="addclient-input"
                   value={formData?.graceTime}
                   onChange={handleChange}
                   placeholder="Enter grace time"
@@ -480,13 +568,13 @@ const AddClient = () => {
                   <p className="error-text">{errors?.graceTime}</p>
                 )}
               </div>
-              <div className="addlocation-input-container">
+              <div className="addclient-input-container">
                 <label className="label">Break Time (Minutes)*</label>
                 <input
                   type="number"
                   name="breakTime"
                   value={formData?.breakTime}
-                  className="addlocation-input"
+                  className="addclient-input"
                   onChange={handleChange}
                   placeholder="Enter break time"
                 />
@@ -496,13 +584,13 @@ const AddClient = () => {
               </div>
             </div>
 
-            <div className="addlocation-section">
-              <div className="addlocation-input-container">
+            <div className="addclient-section">
+              <div className="addclient-input-container">
                 <label className="label">Latitude*</label>
                 <input
                   type="number"
                   name="latitude"
-                  className="addlocation-input"
+                  className="addclient-input"
                   value={formData?.latitude}
                   onChange={handleChange}
                   placeholder="Enter latitude"
@@ -517,7 +605,7 @@ const AddClient = () => {
                   type="number"
                   name="longitude"
                   value={formData?.longitude}
-                  className="addlocation-input"
+                  className="addclient-input"
                   onChange={handleChange}
                   placeholder="Enter longitude"
                 />
@@ -525,13 +613,13 @@ const AddClient = () => {
                   <p className="error-text">{errors?.longitude}</p>
                 )}
               </div>
-              <div className="addlocation-input-container">
+              <div className="addclient-input-container">
                 <label className="label">Area Radius (Meter)*</label>
                 <input
                   type="number"
                   name="radius"
                   value={formData?.radius}
-                  className="addlocation-input"
+                  className="addclient-input"
                   onChange={handleChange}
                   placeholder="Enter radius"
                 />
@@ -541,6 +629,167 @@ const AddClient = () => {
               </div>
             </div>
 
+            <div className="addclient-section">
+              <div className="addclient-input-container">
+                <label className="label">Auto Generate Report</label>
+                <div
+                  className={`slider-container ${isOn ? "on" : "off"}`}
+                  onClick={() => {
+                    const newIsOn = !isOn;
+                    setIsOn(newIsOn);
+                    setFormData((prev) => ({
+                      ...prev,
+                      isAutoGenerateReport: newIsOn,
+                      ...(newIsOn
+                        ? {}
+                        : {
+                            reportFrequency: "",
+                            reportTime: "",
+                            weekday: "",
+                            monthDate: "",
+                          }),
+                    }));
+                  }}
+                >
+                  <div className="slider-circle"></div>
+                  <span className="slider-label">{isOn ? "ON" : "OFF"}</span>
+                </div>
+              </div>
+              {isOn && (
+                <div className="addclient-input-container">
+                  <label className="label">Select Frequency</label>
+                  <Select
+                    className="addclient-input checkbox-country"
+                    name="reportFrequency"
+                    value={formData?.reportFrequency}
+                    onChange={handleChange}
+                    displayEmpty
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 150,
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxHeight: 192,
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Frequency
+                    </MenuItem>
+                    <MenuItem value="Daily">Daily</MenuItem>
+                    <MenuItem value="Weekly">Weekly</MenuItem>
+                    <MenuItem value="Monthly">Monthly</MenuItem>
+                  </Select>
+                  {errors?.reportFrequency && (
+                    <p className="error-text">{errors?.reportFrequency}</p>
+                  )}
+                </div>
+              )}
+              {isOn && formData?.reportFrequency !== "" && (
+                <div className="addclient-input-container">
+                  <label className="label">Select Hour*</label>
+                  <Select
+                    className="addclient-input checkbox-country"
+                    name="reportTime"
+                    value={formData?.reportTime}
+                    onChange={handleChange}
+                    displayEmpty
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 150,
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxHeight: 192,
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Time
+                    </MenuItem>
+                    {HourList.map((hr, index) => (
+                      <MenuItem key={index} value={hr}>
+                        {hr}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors?.reportTime && (
+                    <p className="error-text">{errors?.reportTime}</p>
+                  )}
+                </div>
+              )}
+              {isOn && formData?.reportFrequency === "Weekly" && (
+                <div className="addclient-input-container">
+                  <label className="label">Select Week Day*</label>
+                  <Select
+                    className="addclient-input checkbox-country"
+                    name="weekday"
+                    value={formData?.weekday}
+                    onChange={handleChange}
+                    displayEmpty
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 150,
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxHeight: 192,
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Week Day
+                    </MenuItem>
+                    {WeekDayList.map((weekday, index) => (
+                      <MenuItem key={index} value={weekday}>
+                        {weekday}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors?.weekday && (
+                    <p className="error-text">{errors?.weekday}</p>
+                  )}
+                </div>
+              )}
+              {isOn && formData?.reportFrequency === "Monthly" && (
+                <div className="addclient-input-container">
+                  <label className="label">Select Month Date*</label>
+                  <Select
+                    className="addclient-input checkbox-country"
+                    name="monthDate"
+                    value={formData?.monthDate}
+                    onChange={handleChange}
+                    displayEmpty
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          width: 150,
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          maxHeight: 192,
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Month Date
+                    </MenuItem>
+                    {MonthDateList.map((monthDate, index) => (
+                      <MenuItem key={index} value={monthDate}>
+                        {monthDate}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors?.monthDate && (
+                    <p className="error-text">{errors?.monthDate}</p>
+                  )}
+                </div>
+              )}
+            </div>
             <button type="submit" className="save-button">
               {id ? "Update" : "Submit"}
             </button>

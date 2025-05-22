@@ -37,7 +37,7 @@ const AddHoliday = () => {
           if (response?.data?.status === 200) {
             setFormData(response?.data?.holiday);
           } else {
-            showToast(response?.data?.message, "error-text");
+            showToast(response?.data?.message, "error");
           }
         })
         .catch((error) => console.error("Error fetching holiday:", error))

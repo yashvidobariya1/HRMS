@@ -224,8 +224,8 @@ const AddEmployee = () => {
         return doc;
       })
     );
-    console.log("Original documentDetails", documentDetails);
-    console.log("Updated documentDetails", updatedDocumentDetails);
+    // console.log("Original documentDetails", documentDetails);
+    // console.log("Updated documentDetails", updatedDocumentDetails);
 
     const isValid = validate();
     if (isValid) {
@@ -233,7 +233,7 @@ const AddEmployee = () => {
         ...formData,
         documentDetails: updatedDocumentDetails,
       };
-      console.log("data", data);
+      // console.log("data", data);
 
       if (currentStep === steps.length - 1) {
         try {
@@ -599,7 +599,7 @@ const AddEmployee = () => {
         })),
       };
 
-      console.log("newDocument", newDocument);
+      // console.log("newDocument", newDocument);
       setDocumentDetails((prevDocuments) => [...prevDocuments, newDocument]);
 
       setFile({
@@ -657,7 +657,7 @@ const AddEmployee = () => {
     // if (jobForm?.assignManager === "") {
     //   newErrors.assignManager = "Assign Manager is required";
     // }
-    if (!isWorkFromOffice && jobForm?.assignClient.length == 0) {
+    if (!isWorkFromOffice && jobForm?.assignClient.length === 0) {
       newErrors.assignClient = "Assign Client is required";
     }
     if (Object.keys(newErrors).length > 0) {
@@ -749,7 +749,7 @@ const AddEmployee = () => {
     let newErrors = {};
     const currentStepName = steps[currentStep];
     // const sortCodeError = /^\d{2}-\d{2}-\d{2}$/;
-    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
     //const NI_REGEX = /^[A-Z]{2}\d{6}[A-Z]?$/;
     // console.log("validate current step", currentStepName);
 
@@ -776,6 +776,15 @@ const AddEmployee = () => {
           newErrors.phone = "Phone number must contain only numbers";
         } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
           newErrors.phone = "Phone number must be exactly 11 digits";
+        }
+        const phone = formData.personalDetails?.homeTelephone;
+        if (phone) {
+          if (!/^\d+$/.test(phone)) {
+            newErrors.homeTelephone = "Home telephone must contain only digits";
+          } else if (phone.length !== 11) {
+            newErrors.homeTelephone =
+              "Home telephone must be exactly 11 digits";
+          }
         }
         const email = formData?.personalDetails?.email;
         if (!email) {
@@ -1240,6 +1249,7 @@ const AddEmployee = () => {
                     PaperProps: {
                       style: {
                         width: 200,
+                        className: "custom-dropdown-menu",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         maxHeight: 200,

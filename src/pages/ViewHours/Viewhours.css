@@ -555,6 +555,34 @@
   border-radius: var(--border-radius);
 }
 
+.viewhour-employee-list {
+  justify-content: end;
+  display: flex;
+  margin: 10px 0;
+}
+
+.View-hour-input-dropdown {
+  margin: 0;
+  padding: 12px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  /* width: 100%; */
+  outline: none;
+}
+
+.View-hour-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.View-hour-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media (max-width: 767px) {
   .View-hour-main .fc .fc-button {
     padding: 10px 12px;
@@ -571,6 +599,10 @@
 
   .View-hour-main .fc-col-header-cell-cushion {
     font-size: 14px;
+  }
+
+  .View-hour-input-dropdown {
+    padding: 11px;
   }
 }
 
@@ -626,6 +658,14 @@
 
   .color-box {
     margin-right: 5px !important;
+  }
+
+  .View-hour-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .View-hour-input-dropdown {
+    padding: 7px;
   }
 }
 

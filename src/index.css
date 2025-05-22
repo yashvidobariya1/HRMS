@@ -261,3 +261,9 @@ tr {
     padding: 7px;
   }
 }
+
+@media (max-width: 600px) {
+  .MuiMenuItem-root {
+    min-height: auto !important;
+  }
+}

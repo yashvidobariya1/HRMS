@@ -262,11 +262,12 @@ const Holidays = () => {
   const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   const [showConfirm, setShowConfirm] = useState(false);
   const [holidayId, setholidayId] = useState("");
+  // const startDate = "2022-01-01";
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
-  const startYear = moment(startDate).year();
   const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
-  const calendarRef = useRef(null);
+  const startYear = moment(startDate).year();
   const currentYear = moment().year();
+  const calendarRef = useRef(null);
   const allowedYears = Array.from(
     { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
@@ -338,18 +339,6 @@ const Holidays = () => {
     setIsPopupOpen(true);
   };
 
-  const handleTodayClick = () => {
-    const now = moment();
-    const currentYear = now.year();
-    const currentMonth = now.month() + 1;
-    setSelectedYear(currentYear);
-    setSelectedMonth(currentMonth);
-    if (calendarRef.current) {
-      calendarRef.current.getApi().today();
-      setSelectedYear(currentYear);
-    }
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -370,7 +359,7 @@ const Holidays = () => {
     try {
       setLoading(true);
       let response;
-      console.log("formData", formData);
+      // console.log("formData", formData);
       if (formData._id) {
         response = await PostCall(`/updateHoliday/${formData._id}`, formData);
       } else {
@@ -406,10 +395,10 @@ const Holidays = () => {
   };
 
   const handleYearChange = (event) => {
-    console.log("event", event.target.value);
+    // console.log("event", event.target.value);
     const newYear = parseInt(event.target.value, 10);
     setSelectedYear(newYear);
-    console.log("newYear", newYear);
+    // console.log("newYear", newYear);
   };
 
   const confirmDelete = async (id) => {
@@ -449,6 +438,19 @@ const Holidays = () => {
 
   const handleViewHoliday = () => {
     Navigate(`/holidays/holidaylist`);
+  };
+
+  const handleTodayClick = () => {
+    const now = moment();
+    const currentYear = now.year();
+    const currentMonth = now.month() + 1;
+    setSelectedYear(currentYear);
+    setSelectedMonth(currentMonth);
+
+    if (calendarRef.current) {
+      calendarRef.current.getApi().today();
+      setSelectedYear(currentYear);
+    }
   };
 
   useEffect(() => {

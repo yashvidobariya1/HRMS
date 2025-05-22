@@ -121,6 +121,14 @@
   color: var(--secondary-dark-gray);
 }
 
+/* .addemployee-input-dropdown ul li {
+  min-height: 10px !important;
+} */
+
+/* .custom-dropdown-menu li {
+  min-height: 10px !important;
+} */
+
 .addemployee-section {
   display: flex;
   width: 100%;

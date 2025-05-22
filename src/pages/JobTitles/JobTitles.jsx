@@ -96,7 +96,7 @@ const JobTitles = () => {
   const HandleIsactiveUser = async (Id) => {
     try {
       setLoading(true);
-      console.log("active id", Id);
+      // console.log("active id", Id);
       const response = await PostCall(
         `/activeInactiveJobTitle?jobTitleId=${Id}`
       );
@@ -174,7 +174,7 @@ const JobTitles = () => {
         </div>
         <div className="jobTitleslist-action">
           <CommonAddButton
-            label="Add jobTitles"
+            label="Add Job Titles"
             icon={FaLocationDot}
             onClick={GoTOAddjobTitles}
           />

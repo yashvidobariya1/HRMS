@@ -74,8 +74,10 @@
 
 .logo-details img {
   border-radius: var(--border-radius);
-  height: 40px;
-  width: 40px;
+  border: 1px solid var(--primary-text-white);
+  height: 30px;
+  width: 30px;
+  /* padding: 5px; */
 }
 
 .home-subheader {
@@ -106,7 +108,8 @@
   overflow-x: hidden;
   z-index: 1000;
   max-height: calc(100vh - 150px);
-  scrollbar-color: var(--sidebar-neutral-light-gray) !important;
+  scrollbar-color: var(--sidebar-neutral-light-gray) transparent !important; /* For Firefox */
+  scrollbar-width: thin;
 }
 
 .sidebar-icon {

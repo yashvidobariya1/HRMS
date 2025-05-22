@@ -55,8 +55,9 @@ const ReportList = () => {
     "Start Date",
     "End Date",
     "Report Generated Date",
+    "Action By",
     "Status",
-    "Action",
+    "View",
   ];
 
   const actions = [{ label: "View Status", onClick: HandleViewStatus }];
@@ -90,25 +91,36 @@ const ReportList = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const HandleGenerateReport = async () => {
-    if (validate()) {
-      const data = {
-        ...formData,
-        selectedClient,
-      };
-      try {
-        setLoading(true);
-        const response = await PostCall(`/generateLink`, data);
-        if (response?.data?.status === 200) {
-          showToast(response?.data?.message, "success");
-          GetReports();
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-  };
+  // const HandleGenerateReport = async () => {
+  //   if (
+  //     selectedClient === "" ||
+  //     selectedClient === undefined ||
+  //     selectedClient === null ||
+  //     selectedClient === "allClients"
+  //   ) {
+  //     showToast("Please select a specific client", "error");
+  //     return;
+  //   }
+  //   if (validate()) {
+  //     const data = {
+  //       ...formData,
+  //       selectedClient,
+  //     };
+  //     try {
+  //       setLoading(true);
+  //       const response = await PostCall(`/generateLink`, data);
+  //       if (response?.data?.status === 200) {
+  //         showToast(response?.data?.message, "success");
+  //         GetReports();
+  //       } else {
+  //         showToast(response?.data?.message, "error");
+  //       }
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   }
+  // };
 
   const GetAllClients = async () => {
     try {
@@ -140,6 +152,8 @@ const ReportList = () => {
         setTotalPages(response?.data?.totalPages);
         setMinDate(response?.data?.startDate);
         setMaxDate(response?.data?.endDate);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
@@ -182,7 +196,7 @@ const ReportList = () => {
         <div className="report-list-title">
           <h1>Report List</h1>
         </div>
-        <div className="report-list-download-container">
+        {/* <div className="report-list-download-container">
           <div className="report-list-input-container">
             <label className="label">Start Date*</label>
             <input
@@ -220,7 +234,7 @@ const ReportList = () => {
               onClick={HandleGenerateReport}
             />
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="report-list-flex">
@@ -271,9 +285,10 @@ const ReportList = () => {
               startDate: report?.startDate,
               endDate: report?.endDate,
               generatedDate: moment(report?.createdAt).format(
-                "YYYY/MM/DD hh:mm A"
+                "YYYY-MM-DD hh:mm A"
               ),
-              status: report?.status,
+              actionBy: report?.actionBy,
+              reportstatus: report?.status,
             }))}
             actions={{
               actionsList: actions,

@@ -68,17 +68,17 @@ const Employee = () => {
   //   setShowDropdownAction(null);
   // };
 
-  const HandleViewHours = async (id, name) => {
-    navigate(`/employees/viewhours/${name}?EmployeeId=${id}`);
-  };
+  // const HandleViewHours = async (id, name) => {
+  //   navigate(`/employees/viewhours/${name}?EmployeeId=${id}`);
+  // };
 
-  const HandleViewTasks = async (id, name) => {
-    navigate(`/employees/viewtasks/${name}?EmployeeId=${id}`);
-  };
+  // const HandleViewTasks = async (id, name) => {
+  //   navigate(`/employees/viewtasks/${name}?EmployeeId=${id}`);
+  // };
 
-  const HandleViewAbsenceReport = async (id, name) => {
-    navigate(`/employees/absencereport/${name}?EmployeeId=${id}`);
-  };
+  // const HandleViewAbsenceReport = async (id, name) => {
+  //   navigate(`/employees/absencereport/${name}?EmployeeId=${id}`);
+  // };
 
   const GetEmployees = async () => {
     try {
@@ -91,6 +91,8 @@ const Employee = () => {
         settotalUsers(response.data.totalUsers);
         setEmployeeList(response?.data?.users);
         setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
       // console.log("response", response);
@@ -172,18 +174,18 @@ const Employee = () => {
     //   label: "TimeSheet",
     //   onClick: HandleEmployeeTimesheet,
     // },
-    {
-      label: "View Hours",
-      onClick: HandleViewHours,
-    },
-    {
-      label: "View Tasks",
-      onClick: HandleViewTasks,
-    },
-    {
-      label: "View Absence",
-      onClick: HandleViewAbsenceReport,
-    },
+    // {
+    //   label: "View Hours",
+    //   onClick: HandleViewHours,
+    // },
+    // {
+    //   label: "View Tasks",
+    //   onClick: HandleViewTasks,
+    // },
+    // {
+    //   label: "View Absence",
+    //   onClick: HandleViewAbsenceReport,
+    // },
   ];
 
   if (userRole === "Superadmin") {

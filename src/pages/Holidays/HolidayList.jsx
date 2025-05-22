@@ -6,7 +6,7 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
 import moment from "moment";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./HolidayList.css";
 import { MdAssignmentAdd } from "react-icons/md";
@@ -38,7 +38,8 @@ const HolidayList = () => {
   const [selectedYear, setSelectedYear] = useState(currentYear);
 
   const handleYearChange = (e) => {
-    setSelectedYear(parseInt(e.target.value, 10));
+    setSelectedYear(e);
+    // setSelectedYear(parseInt(e.target.value, 10));
     setCurrentPage(1);
   };
 
@@ -69,6 +70,8 @@ const HolidayList = () => {
         setTotalHoliday(response.data.totalHolidays);
         setTotalPages(response?.data?.totalPages);
         // console.log("response", response?.data.holidays);
+      } else {
+        showToast(response?.data?.message, "error");
       }
 
       setLoading(false);
@@ -168,11 +171,21 @@ const HolidayList = () => {
                 })}
               </select> */}
               <Select
-                labelId="year-select-label"
                 id="year-select"
                 value={selectedYear}
                 onChange={handleYearChange}
-                label="Year"
+                className="holiday-year-select"
+                displayEmpty
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      width: 100,
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      maxHeight: 200,
+                    },
+                  },
+                }}
               >
                 {[...Array(currentYear - startYear + 1)].map((_, index) => {
                   const year = startYear + index;
