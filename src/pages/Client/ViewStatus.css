@@ -18,8 +18,190 @@
   margin: 10px 0;
 }
 
-@media screen and (max-width: 400px) {
+.employee-report-list-container {
+  padding: 20px;
+  margin: 0 auto;
+  background-color: var(--primary-text-white);
+}
+
+.employee-report-list-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.employee-report-list-download-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.employee-report-list-input-container input,
+.employee-report-list-input-container select {
+  margin: 0;
+  padding: 10px !important;
+}
+
+.employee-report-list-input-container label {
+  margin: 0;
+}
+
+.employee-report-list-input-container button {
+  color: var(--primary-text-white);
+  background-color: var(--alert-green);
+  padding: 15px 20px;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.reject button {
+  background-color: var(--alert-red);
+}
+
+.employee-report-list-action-button {
+  display: flex;
+  justify-content: right;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.viewstatus-scrollable-table-wrapper .MuiTableContainer-root {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  margin: 20px 0;
+  background-color: var(--primary-text-white);
+  border-radius: var(--border-radius) !important;
+}
+
+.viewstatus-table {
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
+}
+
+.viewstatus-table table {
+  border-collapse: separate;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.viewstatus-table .MuiTableHead-root {
+  color: var(--sidebar-title-primary-white);
+  background-color: var(--table-heading-neutral-dark-blue);
+  border-collapse: separate;
+}
+
+.viewstatus-table .MuiTableCell-head {
+  font-weight: bold !important;
+  color: var(--sidebar-title-primary-white);
+}
+
+.viewstatus-table tbody,
+.MuiTableFooter-root {
+  background-color: var(--primary-text-white);
+}
+
+.viewstatus-table td {
+  color: var(--secondary-dark-gray) !important;
+  /* border-bottom: var(--neutral-light-gray) !important; */
+}
+
+.viewstatus-table .MuiTableCell-root .MuiTableCell-body {
+  font-size: 15px !important;
+  color: var(--secondary-dark-gray) !important;
+}
+
+.viewstatus-table .MuiIconButton-root {
+  font-size: 16px !important;
+  color: var(--secondary-dark-gray) !important;
+}
+
+.viewstatus-table .MuiTableSortLabel-root.Mui-active,
+.viewstatus-table .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon,
+.viewstatus-table .MuiTableSortLabel-root:hover {
+  color: var(--sidebar-title-primary-white) !important;
+}
+
+.viewstatus-table .MuiSelect-select {
+  color: var(--secondary-dark-gray);
+}
+
+.viewstatus-table .MuiIconButton-root.Mui-disabled {
+  color: var(--sidebar-hover) !important;
+  opacity: 0.6;
+}
+
+.viewstatus-table .MuiIconButton-root {
+  color: var(--sidebar-hover) !important;
+}
+
+.viewstatus-table .MuiSelect-icon {
+  color: var(--sidebar-hover) !important;
+  fill: var(--sidebar-hover);
+}
+
+.viewstatus-table .MuiMenu-list {
+  background: var(--primary-text-white) !important;
+  border: 1px solid var(--neutral-light-gray);
+  color: var(--sidebar-bg);
+}
+
+.employeetimeesheet-timming {
+  padding: 5px 10px;
+  background-color: var(--neutral-light-gray);
+  margin-bottom: 5px;
+  border: 1px solid var(--neutral-light-gray);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.viewstatus-count {
+  display: flex;
+  justify-content: space-between;
+}
+
+.viewstatus-count .MuiTablePagination-root {
+  overflow: hidden;
+}
+
+.viewstatus-table .MuiTableCell-footer {
+  padding: 0 10px !important;
+}
+
+@media (max-width: 767px) {
+  .viewstatus-table {
+    font-size: 12px;
+  }
+
+  .viewstatus-table .MuiTableCell-root {
+    padding: 12px;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .employee-report-list-flex {
+    display: block;
+  }
+
   .status-list-flex {
     display: block;
+  }
+
+  .viewstatus-count p {
+    margin: 5px;
+    font-size: 12px;
   }
 }

@@ -188,9 +188,15 @@
   background-color: var(--primary-text-white);
 }
 
+.custom-table th {
+  padding: 14px;
+}
+
 .custom-table td {
   color: var(--secondary-dark-gray);
-  border-bottom: var(--neutral-light-gray);
+  border-bottom: 1px solid var(--neutral-light-gray);
+  padding: 12px;
+  text-align: left;
 }
 
 .status-circle {
@@ -398,7 +404,6 @@
 }
 
 .reportlist-view-button .MuiButtonBase-root {
-  border-radius: 0px !important;
   display: flex;
   text-align: center;
   background-color: var(--primary-text-white);

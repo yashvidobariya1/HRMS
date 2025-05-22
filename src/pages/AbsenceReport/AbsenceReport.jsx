@@ -134,6 +134,7 @@ const AbsenceReport = () => {
           setOpenJobTitleModal(false);
         } else {
           setSelectedJobId(jobTitles[0]?.jobId);
+          setIsWorkFromOffice(jobTitles[0]?.isWorkFromOffice);
           setOpenJobTitleModal(true);
         }
       }
@@ -216,8 +217,8 @@ const AbsenceReport = () => {
         selectedJobId &&
         selectedClientId &&
         appliedFilters) ||
-      !selectedEmployee ||
-      (appliedFilters &&
+      (!selectedEmployee &&
+        appliedFilters &&
         ((jobRoleId && jobRoleisworkFromOffice) ||
           (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
           (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||

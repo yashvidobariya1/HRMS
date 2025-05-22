@@ -333,6 +333,7 @@ const Viewhours = () => {
           setOpenJobTitleModal(false);
         } else {
           setSelectedJobId(jobTitles[0]?.jobId);
+          setIsWorkFromOffice(jobTitles[0]?.isWorkFromOffice);
           getAlltimesheet();
           setOpenJobTitleModal(true);
         }

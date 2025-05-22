@@ -182,7 +182,7 @@ const ViewTasks = () => {
     //   newErrors.taskDescription = "Task Description is required";
     if (!formData._id) {
       if (!formData.startDate) newErrors.startDate = "Start Date is required";
-      if (!formData.endDate) newErrors.endDate = "End Date is required";
+      // if (!formData.endDate) newErrors.endDate = "End Date is required";
     }
     if (formData.startDate && formData.endDate) {
       const start = moment(formData.startDate, "YYYY-MM-DD");
@@ -337,6 +337,7 @@ const ViewTasks = () => {
           setOpenJobTitleModal(false);
         } else {
           setSelectedJobId(jobTitles[0]?.jobId);
+          setIsWorkFromOffice(jobTitles[0]?.isWorkFromOffice);
           setOpenJobTitleModal(true);
         }
       }

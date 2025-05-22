@@ -274,7 +274,7 @@ const ReportList = () => {
               generatedDate: moment(report?.createdAt).format(
                 "YYYY-MM-DD hh:mm A"
               ),
-              actionby: report?.email,
+              actionBy: report?.actionBy,
               reportstatus: report?.status,
             }))}
             actions={{
