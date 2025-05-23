@@ -1022,9 +1022,9 @@ const CheckIn = () => {
 
         // setTotalWorkingTime(savedTotalWorkingTime);
       } else {
-        if (response?.data?.message !== "Record is not found!") {
-          showToast(response?.data?.message, "error");
-        }
+        // if (response?.data?.message !== "Record is not found!") {
+        showToast(response?.data?.message, "error");
+        // }
       }
       setLoading(false);
     } catch (error) {
@@ -1116,7 +1116,7 @@ const CheckIn = () => {
 
       if (response?.data?.status === 200) {
         const jobTitles = response.data.assignClients;
-        console.log("job title", jobTitles);
+        // console.log("job title", jobTitles);
         setClientdata(jobTitles);
 
         if (jobTitles.length > 1) {
@@ -1125,6 +1125,8 @@ const CheckIn = () => {
           setSelectedClientId(jobTitles[0]?.clientId);
           setopenClietnSelectModal(true);
         }
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -1205,7 +1207,7 @@ const CheckIn = () => {
     fetchTimesheet();
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobRoleId, selectedClientId, elapsedTime]);
+  }, [jobRoleId, selectedClientId]);
 
   useEffect(() => {
     GetClientdata();

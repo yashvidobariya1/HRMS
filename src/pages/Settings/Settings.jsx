@@ -63,6 +63,8 @@ const Settings = () => {
         setCompanyList(response?.data?.companies);
         settotalCompany(response.data.totalCompanies);
         setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
@@ -97,7 +99,7 @@ const Settings = () => {
   useEffect(() => {
     GetCompanies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, companiesPerPage, searchQuery]);
+  }, [currentPage, companiesPerPage, debouncedSearch]);
 
   useEffect(() => {
     setCurrentPage(1);

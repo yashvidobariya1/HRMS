@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Navigate } from "react-router";
 import "./App.css";
@@ -322,6 +322,41 @@ const protectedRoutes = [
 ];
 
 const App = () => {
+  // useEffect(() => {
+  //   document.addEventListener("contextmenu", (e) => e.preventDefault());
+  //   document.onkeydown = function (e) {
+  //     if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+  //       return false;
+  //     }
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    // Disable right-click
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    // Disable certain keyboard shortcuts
+    const handleKeyDown = (e) => {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && ["I", "C", "J"].includes(e.key)) || // Ctrl+Shift+I/C/J
+        (e.ctrlKey && e.key === "U") // Ctrl+U (View Source)
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <>
       <ToastManager />
@@ -359,7 +394,7 @@ const App = () => {
               path={path}
               element={
                 <MainLayout path={path}>
-                  <ProtectedRoute allowedRoles={roles}>
+                  <ProtectedRoute allowedRoles={roles} path={path}>
                     {component}
                   </ProtectedRoute>
                 </MainLayout>

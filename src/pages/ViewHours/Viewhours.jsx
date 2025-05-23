@@ -297,7 +297,7 @@ const Viewhours = () => {
   const getAlltimesheet = async () => {
     try {
       setLoading(true);
-      console.log("setSelectedEmployee", selectedEmployee);
+      // console.log("setSelectedEmployee", selectedEmployee);
       const filters = {
         jobId: selectedEmployee ? selectedJobId : jobRoleId,
         userId: selectedEmployee,
@@ -307,6 +307,8 @@ const Viewhours = () => {
       const response = await PostCall("/getAllTimesheets", filters);
       if (response?.data?.status === 200) {
         setAlltimesheetList(response?.data.timesheets);
+      } else {
+        showToast(response?.data?.message, "error");
       }
 
       setLoading(false);
@@ -337,6 +339,8 @@ const Viewhours = () => {
           getAlltimesheet();
           setOpenJobTitleModal(true);
         }
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -381,7 +385,7 @@ const Viewhours = () => {
 
       if (response?.data?.status === 200) {
         const clientId = response.data.assignClients;
-        console.log("job title", clientId);
+        // console.log("job title", clientId);
         setClientdata(clientId);
 
         if (clientId.length > 1) {
@@ -391,6 +395,8 @@ const Viewhours = () => {
           console.log("selected client id", selectedClientId);
           setopenClietnSelectModal(true);
         }
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -431,6 +437,7 @@ const Viewhours = () => {
       // console.log("timesheet api call");
       getAlltimesheet();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
     selectedJobId,
@@ -448,6 +455,7 @@ const Viewhours = () => {
     if (GetClientData) {
       GetClientdata();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
     selectedJobId,
@@ -535,7 +543,7 @@ const Viewhours = () => {
           </p>
         </div>
       </div>
-      {userRole != "Employee" && (
+      {userRole !== "Employee" && (
         <div className="viewhour-employee-list">
           <Select
             className="View-hour-input-dropdown"

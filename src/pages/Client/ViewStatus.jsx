@@ -3,7 +3,7 @@ import { GetCall, PostCall } from "../../ApiServices";
 import "./ViewStatus.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
-import CommonTable from "../../SeparateCom/CommonTable";
+// import CommonTable from "../../SeparateCom/CommonTable";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -18,6 +18,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
   TextField,
   Typography,
   TableSortLabel,
@@ -46,6 +47,62 @@ const ViewStatus = () => {
     key: "",
     direction: "asc",
   });
+
+  const keyMap = {
+    userName: "userName",
+    jobTitle: "jobTitle",
+    jobRole: "jobRole",
+    totalWorkingHours: "totalWorkingHours",
+    overTime: "overTime",
+    totalHours: "totalHours",
+  };
+
+  const handleSort = (key) => {
+    const mappedKey = keyMap[key] || key;
+    // console.log("Sorting by:", mappedKey);
+
+    setSortConfig((prevSort) => {
+      let direction = "asc";
+      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+        direction = "desc";
+      }
+      return { key: mappedKey, direction };
+    });
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (!Array.isArray(statusList)) return [];
+    if (!sortConfig.key) return [...statusList];
+    return [...statusList].sort((a, b) => {
+      const valueA = a[sortConfig.key] ?? "";
+      const valueB = b[sortConfig.key] ?? "";
+      // console.log("statusList", statusList);
+      if (typeof valueA === "string") {
+        return sortConfig.direction === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return sortConfig.direction === "asc"
+          ? valueA - valueB
+          : valueB - valueA;
+      }
+    });
+  }, [statusList, sortConfig]);
+
+  const filteredData = React.useMemo(() => {
+    return sortedData.filter((item) =>
+      Object.values(item).some(
+        (value) => value?.toString().toLowerCase().includes
+      )
+    );
+  }, [sortedData]);
+
+  const paginatedRows = React.useMemo(() => {
+    const start = (currentPage - 1) * reportPerPage;
+    const end = start + reportPerPage;
+    return filteredData.slice(start, end);
+  }, [filteredData, currentPage, reportPerPage]);
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -77,7 +134,7 @@ const ViewStatus = () => {
       // const response = await GetCall(
       //   `/getReport/${reportId}?page=${currentPage}&limit=${reportPerPage}&companyId=${companyId}&search=${debouncedSearch}`
       // );
-      console.log(reportId);
+      // console.log(reportId);
       const response = await GetCall(
         `/getReportForClient?page=${currentPage}&limit=${reportPerPage}&reportId=${reportId}&companyId=${companyId}&search=${debouncedSearch}`
       );
@@ -105,7 +162,7 @@ const ViewStatus = () => {
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
       } else {
-        showToast(response?.data?.message);
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
@@ -118,61 +175,6 @@ const ViewStatus = () => {
     setReportPerPage(value);
     setCurrentPage(1);
   };
-
-  const keyMap = {
-    userName: "userName",
-    jobTitle: "jobTitle",
-    jobRole: "jobRole",
-    totalWorkingHours: "totalWorkingHours",
-    overTime: "overTime",
-    totalHours: "totalHours",
-  };
-
-  const handleSort = (key) => {
-    const mappedKey = keyMap[key] || key;
-    // console.log("Sorting by:", mappedKey);
-
-    setSortConfig((prevSort) => {
-      let direction = "asc";
-      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
-        direction = "desc";
-      }
-      return { key: mappedKey, direction };
-    });
-  };
-
-  const sortedData = React.useMemo(() => {
-    if (!Array.isArray(statusList)) return [];
-    if (!sortConfig.key) return [...statusList];
-    return [...statusList].sort((a, b) => {
-      const valueA = a[sortConfig.key] ?? "";
-      const valueB = b[sortConfig.key] ?? "";
-      console.log("statusList", statusList);
-      if (typeof valueA === "string") {
-        return sortConfig.direction === "asc"
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
-      } else {
-        return sortConfig.direction === "asc"
-          ? valueA - valueB
-          : valueB - valueA;
-      }
-    });
-  }, [statusList, sortConfig]);
-
-  const filteredData = React.useMemo(() => {
-    return sortedData.filter((item) =>
-      Object.values(item).some(
-        (value) => value?.toString().toLowerCase().includes
-      )
-    );
-  }, [sortedData]);
-
-  const paginatedRows = React.useMemo(() => {
-    const start = (currentPage - 1) * reportPerPage;
-    const end = start + reportPerPage;
-    return filteredData.slice(start, end);
-  }, [filteredData, currentPage, reportPerPage]);
 
   // const paginatedRows = statusList?.slice(
   //   page * reportPerPage,
@@ -214,7 +216,7 @@ const ViewStatus = () => {
       </div>
       <div className="viewstatus-action">
         <CommonAddButton
-          label="Re send Link"
+          label="Resend Link"
           // icon={FaLocationDot}
           onClick={handleGenerateReportLink}
         />
@@ -434,7 +436,7 @@ const ViewStatus = () => {
                                               (clockEntry) => (
                                                 <div
                                                   key={clockEntry?._id}
-                                                  className="employeetimeesheet-timming"
+                                                  className="employeetimeesheet-timing"
                                                 >
                                                   <span className="employee-timesheetclockin">
                                                     {moment(
@@ -485,7 +487,7 @@ const ViewStatus = () => {
                 <TableFooter>
                   <TableRow>
                     <TableCell colSpan={10}>
-                      <div className="viewstatus-count">
+                      <div className="employeetimesheet-count">
                         <p>
                           Total Hours: <b>{totalemployeereport}</b>
                         </p>

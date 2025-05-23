@@ -37,6 +37,8 @@ const ShowNotification = () => {
         const unreadCount = response.data.unreadNotificationsCount;
         // console.log("unreadCount", response.data.unreadNotificationsCount);
         dispatch(setNotificationCount(unreadCount));
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);

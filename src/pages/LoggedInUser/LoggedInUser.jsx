@@ -6,6 +6,7 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import moment from "moment";
 import { MenuItem, Select, TextField } from "@mui/material";
 import { useSelector } from "react-redux";
+import { showToast } from "../../main/ToastManager";
 
 const LoggedInUser = () => {
   const [loading, setLoading] = useState(false);
@@ -46,6 +47,8 @@ const LoggedInUser = () => {
         setuserLoggedList(response?.data?.users);
         settotalLoggedUser(response.data.totalUsers);
         setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -76,7 +79,6 @@ const LoggedInUser = () => {
     loggeduserPerPage,
     selectedTimePeriod,
     debouncedSearch,
-    ,
     companyId,
   ]);
 

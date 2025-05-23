@@ -91,25 +91,36 @@ const ReportList = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const HandleGenerateReport = async () => {
-    if (validate()) {
-      const data = {
-        ...formData,
-        selectedClient,
-      };
-      try {
-        setLoading(true);
-        const response = await PostCall(`/generateLink`, data);
-        if (response?.data?.status === 200) {
-          showToast(response?.data?.message, "success");
-          GetReports();
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-  };
+  // const HandleGenerateReport = async () => {
+  //   if (
+  //     selectedClient === "" ||
+  //     selectedClient === undefined ||
+  //     selectedClient === null ||
+  //     selectedClient === "allClients"
+  //   ) {
+  //     showToast("Please select a specific client", "error");
+  //     return;
+  //   }
+  //   if (validate()) {
+  //     const data = {
+  //       ...formData,
+  //       selectedClient,
+  //     };
+  //     try {
+  //       setLoading(true);
+  //       const response = await PostCall(`/generateLink`, data);
+  //       if (response?.data?.status === 200) {
+  //         showToast(response?.data?.message, "success");
+  //         GetReports();
+  //       } else {
+  //         showToast(response?.data?.message, "error");
+  //       }
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   }
+  // };
 
   const GetAllClients = async () => {
     try {
@@ -141,6 +152,8 @@ const ReportList = () => {
         setTotalPages(response?.data?.totalPages);
         setMinDate(response?.data?.startDate);
         setMaxDate(response?.data?.endDate);
+      } else {
+        showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {

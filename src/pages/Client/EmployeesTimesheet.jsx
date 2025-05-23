@@ -41,8 +41,6 @@ const EmployeesTimesheet = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get("token");
-  localStorage.setItem("token", JSON.stringify(token));
-  dispatch(setUserInfo({ role: "Client" }));
   const [openRows, setOpenRows] = useState({});
   const [errors, setErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
@@ -51,11 +49,67 @@ const EmployeesTimesheet = () => {
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(0);
   const [totalemployeereport, setTotalemployeereport] = useState("");
+  const [rejectReason, setrejectReason] = useState("");
   const [actionBy, setActionby] = useState("");
   const [sortConfig, setSortConfig] = React.useState({
     key: "",
     direction: "asc",
   });
+
+  const keyMap = {
+    userName: "userName",
+    jobTitle: "jobTitle",
+    totalWorkingHours: "totalWorkingHours",
+    overTime: "overTime",
+    totalHours: "totalHours",
+  };
+
+  const handleSort = (key) => {
+    const mappedKey = keyMap[key] || key;
+    // console.log("Sorting by:", mappedKey);
+
+    setSortConfig((prevSort) => {
+      let direction = "asc";
+      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+        direction = "desc";
+      }
+      return { key: mappedKey, direction };
+    });
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (!Array.isArray(reportDetails)) return [];
+    if (!sortConfig.key) return [...reportDetails];
+    return [...reportDetails].sort((a, b) => {
+      const valueA = a[sortConfig.key] ?? "";
+      const valueB = b[sortConfig.key] ?? "";
+      // console.log("reportDetails", reportDetails);
+      if (typeof valueA === "string") {
+        return sortConfig.direction === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return sortConfig.direction === "asc"
+          ? valueA - valueB
+          : valueB - valueA;
+      }
+    });
+  }, [reportDetails, sortConfig]);
+
+  const filteredData = React.useMemo(() => {
+    return sortedData.filter((item) =>
+      Object.values(item).some(
+        (value) => value?.toString().toLowerCase().includes
+      )
+    );
+  }, [sortedData]);
+
+  const paginatedRows = React.useMemo(() => {
+    const start = (currentPage - 1) * reportPerPage;
+    const end = start + reportPerPage;
+    return filteredData.slice(start, end);
+  }, [filteredData, currentPage, reportPerPage]);
+
   const handleToggle = (index) => {
     setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
@@ -124,9 +178,9 @@ const EmployeesTimesheet = () => {
       setLoading(true);
       const response = await PostCall(`/approveReport`);
       if (response?.data?.status === 200) {
+        setStatus(response?.data?.updatedReport?.status);
         showToast(response?.data?.message, "success");
-        setStatus(response.data.updatedReport.status);
-        console.log("response", response);
+        // console.log("response", response);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -140,10 +194,6 @@ const EmployeesTimesheet = () => {
 
   const handleRejectSubmit = async () => {
     setShowConfirm(false);
-    if (!rejectionReason) {
-      setErrors({ rejectionReason: "Rejection reason is required!" });
-      return;
-    }
     const data = {
       reason: rejectionReason,
     };
@@ -153,7 +203,6 @@ const EmployeesTimesheet = () => {
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
         setRejectionReason("");
-        setErrors({});
         setShowConfirm(false);
         GetEmployeesStatus();
       } else {
@@ -182,64 +231,22 @@ const EmployeesTimesheet = () => {
     setCurrentPage(1);
   };
 
-  const keyMap = {
-    userName: "userName",
-    jobTitle: "jobTitle",
-    totalWorkingHours: "totalWorkingHours",
-    overTime: "overTime",
-    totalHours: "totalHours",
-  };
-
-  const handleSort = (key) => {
-    const mappedKey = keyMap[key] || key;
-    // console.log("Sorting by:", mappedKey);
-
-    setSortConfig((prevSort) => {
-      let direction = "asc";
-      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
-        direction = "desc";
-      }
-      return { key: mappedKey, direction };
-    });
-  };
-
-  const sortedData = React.useMemo(() => {
-    if (!Array.isArray(reportDetails)) return [];
-    if (!sortConfig.key) return [...reportDetails];
-    return [...reportDetails].sort((a, b) => {
-      const valueA = a[sortConfig.key] ?? "";
-      const valueB = b[sortConfig.key] ?? "";
-      console.log("reportDetails", reportDetails);
-      if (typeof valueA === "string") {
-        return sortConfig.direction === "asc"
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
-      } else {
-        return sortConfig.direction === "asc"
-          ? valueA - valueB
-          : valueB - valueA;
-      }
-    });
-  }, [reportDetails, sortConfig]);
-
-  const filteredData = React.useMemo(() => {
-    return sortedData.filter((item) =>
-      Object.values(item).some(
-        (value) => value?.toString().toLowerCase().includes
-      )
-    );
-  }, [sortedData]);
-
-  const paginatedRows = React.useMemo(() => {
-    const start = (currentPage - 1) * reportPerPage;
-    const end = start + reportPerPage;
-    return filteredData.slice(start, end);
-  }, [filteredData, currentPage, reportPerPage]);
+  // const paginatedRows = reportDetails?.slice(
+  //   page * reportPerPage,
+  //   page * reportPerPage + reportPerPage
+  // );
 
   useEffect(() => {
     GetEmployeesStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, reportPerPage]);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", JSON.stringify(token));
+      dispatch(setUserInfo({ role: "Client" }));
+    }
+  }, [token, dispatch]);
 
   return (
     <div className="employee-report-list-container">
@@ -260,9 +267,26 @@ const EmployeesTimesheet = () => {
           </div>
         </div>
       </div>
-      <div className="employee-report-list-action-button">
-        <div className="employee-report-list-input-container">
-          {status === "Pending" && (
+      {status !== "Pending" && (
+        <div className="employee-report-list-action-button">
+          <div className="employee-report-list-input-container-status">
+            <div className="Employeetimesheet-reason">
+              <p>
+                {status} by <b>{actionBy}</b>
+              </p>
+
+              {status === "Rejected" && rejectReason && (
+                <p>
+                  Reason: <b>{rejectReason}</b>
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {status === "Pending" && (
+        <div className="employee-report-list-action-button">
+          <div className="employee-report-list-input-container">
             <button
               label="Approve"
               // icon={GrDocumentDownload}
@@ -270,10 +294,8 @@ const EmployeesTimesheet = () => {
             >
               Approve
             </button>
-          )}
-        </div>
-        <div className="employee-report-list-input-container reject">
-          {status === "Pending" && (
+          </div>
+          <div className="employee-report-list-input-container reject">
             <button
               label="Reject"
               // icon={GrDocumentDownload}
@@ -281,25 +303,9 @@ const EmployeesTimesheet = () => {
             >
               Reject
             </button>
-          )}
+          </div>
         </div>
-        <div className="employee-report-list-input-container-status">
-          {status !== "Pending" && (
-            <div className="Employeetimesheet-reason">
-              <p>
-                {" "}
-                {status} Action by <b>{actionBy}</b>
-              </p>
-
-              {status === "Rejected" && (
-                <p>
-                  Reason: <b>{rejectReason}</b>
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+      )}
 
       {loading ? (
         <div className="loader-wrapper">
@@ -455,9 +461,10 @@ const EmployeesTimesheet = () => {
                                 )}
                               </IconButton>
                             </TableCell>
-                            <TableCell>{row.userName}</TableCell>
-                            <TableCell>{row.jobTitle}</TableCell>
-                            <TableCell>{row.totalWorkingHours}</TableCell>
+                            <TableCell>{row?.userName}</TableCell>
+                            <TableCell>{row?.jobTitle}</TableCell>
+                            {/* <TableCell>{row?.jobRole}</TableCell> */}
+                            <TableCell>{row?.totalWorkingHours}</TableCell>
                             <TableCell>{row?.overTime}</TableCell>
                             <TableCell>{row?.totalHours}</TableCell>
                           </TableRow>
@@ -465,7 +472,7 @@ const EmployeesTimesheet = () => {
                           <TableRow>
                             <TableCell
                               style={{ paddingBottom: 0, paddingTop: 0 }}
-                              colSpan={7}
+                              colSpan={6}
                             >
                               <Collapse
                                 in={openRows[actualIndex]}

@@ -97,7 +97,7 @@ const TimeSheetReport = () => {
     const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
     if (selectedJob) {
       setIsWorkFromOffice(selectedJob.isWorkFromOffice);
-      console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+      // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
     }
     setOpenJobTitleModal(true);
   };
@@ -373,7 +373,7 @@ const TimeSheetReport = () => {
       jobId: selectedJobId || jobRoleId,
       clientId: selectedClientId,
     };
-    console.log("clockindata", clockindata);
+    // console.log("clockindata", clockindata);
     try {
       const response = await PostCall(`/clockInForEmployee`, clockindata);
       if (response?.data?.status === 200) {
@@ -477,7 +477,7 @@ const TimeSheetReport = () => {
 
       if (response?.data?.status === 200) {
         const clientId = response.data.assignClients;
-        console.log("job title", clientId);
+        // console.log("job title", clientId);
         setClientdata(clientId);
 
         if (clientId.length > 1) {
@@ -523,6 +523,7 @@ const TimeSheetReport = () => {
     if (GetTimesheet) {
       GetTimesheetReport();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
     selectedJobId,
@@ -530,6 +531,7 @@ const TimeSheetReport = () => {
     jobRoleId,
     isWorkFromOffice,
     jobRoleisworkFromOffice,
+    appliedFilters,
   ]);
 
   useEffect(() => {
@@ -540,12 +542,14 @@ const TimeSheetReport = () => {
     if (GetClientData) {
       GetClientdata();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
     selectedJobId,
     jobRoleId,
     isWorkFromOffice,
     jobRoleisworkFromOffice,
+    // selectedClientId,
   ]);
 
   return (

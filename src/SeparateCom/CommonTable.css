@@ -164,7 +164,7 @@
 }
 
 .custom-table table {
-  border-collapse: separate;
+  /* border-collapse: separate; */
   border-radius: var(--border-radius);
 }
 

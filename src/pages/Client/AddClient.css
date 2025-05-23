@@ -17,6 +17,7 @@
   width: 100%;
   margin-bottom: 25px;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .addclient-input-container {
@@ -81,6 +82,72 @@
   color: var(--secondary-dark-gray);
 }
 
+.slider-container {
+  width: 50px;
+  height: 26px;
+  border-radius: 20px;
+  background-color: #ccc;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.4s ease;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
+  user-select: none;
+  overflow: hidden;
+  margin-top: 15px;
+  margin-bottom: 12px;
+}
+
+.slider-container.on {
+  background-color: #4caf50;
+  justify-content: flex-end;
+}
+
+.slider-container.off {
+  background-color: #f44336;
+  justify-content: flex-start;
+}
+
+.slider-circle {
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.slider-label {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.slider-container.on .slider-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slider-container.off .slider-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media screen and (max-width: 767px) {
+  .slider-label {
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 575px) {
   .addclient-section {
     flex-direction: column;
@@ -96,5 +163,35 @@
   .checkbox-country {
     padding: 7px;
     font-size: 12px;
+  }
+
+  .slider-container {
+    width: 37px;
+    height: 20px;
+  }
+
+  .slider-circle {
+    width: 12px;
+    height: 12px;
+  }
+
+  .slider-label {
+    font-size: 11px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .slider-container {
+    width: 50px;
+    height: 24px;
+  }
+
+  .slider-circle {
+    width: 18px;
+    height: 18px;
+  }
+
+  .slider-label {
+    font-size: 10px;
   }
 }
