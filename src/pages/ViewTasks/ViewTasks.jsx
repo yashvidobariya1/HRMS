@@ -239,15 +239,16 @@ const ViewTasks = () => {
       if (!formData.startDate) newErrors.startDate = "Start Date is required";
       // if (!formData.endDate) newErrors.endDate = "End Date is required";
     }
-    if (formData.startDate && formData.endDate) {
-      const start = moment(formData.startDate, "YYYY-MM-DD");
-      const end = moment(formData.endDate, "YYYY-MM-DD");
 
-      if (start.isAfter(end)) {
-        newErrors.startDate = "Start Date cannot be after End Date";
-        newErrors.endDate = "End Date cannot be before Start Date";
-      }
-    }
+    // if (formData.startDate && formData.endDate) {
+    //   const start = moment(formData.startDate, "YYYY-MM-DD");
+    //   const end = moment(formData.endDate, "YYYY-MM-DD");
+
+    //   if (start.isAfter(end)) {
+    //     newErrors.startDate = "Start Date cannot be after End Date";
+    //     newErrors.endDate = "End Date cannot be before Start Date";
+    //   }
+    // }
     if (!formData.startTime) newErrors.startTime = "Start Time is required";
     // if (!formData.endTime) newErrors.endTime = "End Time is required";
     setErrors(newErrors);

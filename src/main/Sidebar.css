@@ -77,7 +77,7 @@
   border: 1px solid var(--primary-text-white);
   height: 30px;
   width: 30px;
-  /* padding: 5px; */
+  margin: 5px;
 }
 
 .home-subheader {
@@ -207,6 +207,7 @@
   position: fixed;
   background: var(--primary-text-white);
   border-radius: 20px;
+  z-index: 10;
 }
 
 .sidebar-Toggle-menu.collapsed {
@@ -235,7 +236,7 @@
   color: var(--sidebar-title-primary-white);
   border: 1px solid var(--sidebar-hover);
   width: 100%;
-  max-width: 205px;
+  max-width: 200px;
   outline: none;
 }
 
@@ -247,8 +248,20 @@
   outline: none;
 }
 
+.company-dropdown .MuiPaper-elevation {
+  overflow: auto;
+}
+
 .company-dropdown .MuiSelect-icon {
   color: var(--sidebar-title-primary-white);
+}
+
+.company-dropdown .MuiSelect-select {
+  font-size: 14px !important;
+}
+
+.company-dropdown .MuiMenuItem-root .MuiMenuItem-gutters .Mui-selected {
+  overflow-y: auto !important;
 }
 
 @media screen and (max-width: 767px) {
@@ -263,6 +276,7 @@
   .sidebar .logo-details img {
     width: 30px;
     height: 30px;
+    margin: 0;
   }
 
   .setting-form-container {
@@ -320,7 +334,7 @@
 
 @media screen and (max-width: 600px) {
   .logo-details {
-    padding: 31px !important;
+    padding: 30px 10px !important;
   }
 
   .content {
@@ -332,12 +346,21 @@
     left: 238px;
     top: 80px;
   }
+
+  .sidebar .logo-details .logo-text {
+    padding: 0;
+  }
 }
 
 @media screen and (max-width: 500px) {
   .sidebar .logo-details img {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+  }
+
+  .logo_name {
+    gap: 5px;
   }
 }
 

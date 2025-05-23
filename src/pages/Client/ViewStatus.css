@@ -18,18 +18,6 @@
   margin: 10px 0;
 }
 
-.employee-report-list-container {
-  padding: 20px;
-  margin: 0 auto;
-  background-color: var(--primary-text-white);
-}
-
-.employee-report-list-flex {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .no-data {
   display: flex;
   flex-direction: column;
@@ -38,51 +26,11 @@
   height: 100vh;
 }
 
-.employee-report-list-download-container {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.employee-report-list-input-container input,
-.employee-report-list-input-container select {
-  margin: 0;
-  padding: 10px !important;
-}
-
-.employee-report-list-input-container label {
-  margin: 0;
-}
-
-.employee-report-list-input-container button {
-  color: var(--primary-text-white);
-  background-color: var(--alert-green);
-  padding: 15px 20px;
-  border-radius: var(--border-radius);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 14px;
-}
-
-.reject button {
-  background-color: var(--alert-red);
-}
-
-.employee-report-list-action-button {
-  display: flex;
-  justify-content: right;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
 .viewstatus-scrollable-table-wrapper .MuiTableContainer-root {
   width: 100%;
   overflow-x: auto;
   scrollbar-width: thin;
-  margin: 20px 0;
+  margin: 10px 0;
   background-color: var(--primary-text-white);
   border-radius: var(--border-radius) !important;
 }
@@ -107,6 +55,7 @@
 .viewstatus-table .MuiTableCell-head {
   font-weight: bold !important;
   color: var(--sidebar-title-primary-white);
+  padding: 12px;
 }
 
 .viewstatus-table tbody,
@@ -116,6 +65,7 @@
 
 .viewstatus-table td {
   color: var(--secondary-dark-gray) !important;
+  padding: 12px;
   /* border-bottom: var(--neutral-light-gray) !important; */
 }
 
@@ -159,13 +109,28 @@
   color: var(--sidebar-bg);
 }
 
-.employeetimeesheet-timming {
+.viewstatus-timing {
   padding: 5px 10px;
   background-color: var(--neutral-light-gray);
   margin-bottom: 5px;
   border: 1px solid var(--neutral-light-gray);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+}
+
+.viewstatus-timesheetclockin {
+  color: var(--secondary-dark-gray) #333333;
+  font-weight: 500;
+}
+
+.viewstatus-timesheetclockout {
+  font-weight: 600;
+  color: var(--primary-button);
+}
+
+.viewstatus-timesheet-timming {
+  font-weight: 500;
+  color: var(--secondary-teal);
 }
 
 .viewstatus-count {
@@ -181,21 +146,23 @@
   padding: 0 10px !important;
 }
 
+.viewstatus-count {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 @media (max-width: 767px) {
   .viewstatus-table {
     font-size: 12px;
   }
 
   .viewstatus-table .MuiTableCell-root {
-    padding: 12px;
+    padding: 10px;
   }
 }
 
 @media screen and (max-width: 575px) {
-  .employee-report-list-flex {
-    display: block;
-  }
-
   .status-list-flex {
     display: block;
   }
@@ -203,5 +170,13 @@
   .viewstatus-count p {
     margin: 5px;
     font-size: 12px;
+  }
+
+  .viewstatus-table .MuiTableCell-root {
+    padding: 8px;
+  }
+
+  .viewstatus-action {
+    margin: 5px 0;
   }
 }

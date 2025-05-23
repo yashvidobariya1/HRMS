@@ -164,6 +164,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                           width: 200, // same as Select
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          scrollbarWidth: "thin",
+                          overflowX: "auto",
                           maxHeight: 192,
                         },
                       },
@@ -183,7 +185,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                         style={{
                           // overflow: "hidden",
                           textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          // whiteSpace: "nowrap",
                         }}
                       >
                         {company.companyDetails.businessName}

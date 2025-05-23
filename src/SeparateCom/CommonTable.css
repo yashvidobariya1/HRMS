@@ -189,7 +189,7 @@
 }
 
 .custom-table th {
-  padding: 14px;
+  padding: 12px;
 }
 
 .custom-table td {
@@ -423,7 +423,7 @@
   }
 
   .custom-table .MuiTableCell-root {
-    padding: 12px;
+    padding: 10px;
   }
 
   .action-icon {
@@ -450,7 +450,7 @@
 
 @media (max-width: 575px) {
   .custom-table .MuiTableCell-root {
-    padding: 10px;
+    padding: 8px;
     font-size: 12px !important;
   }
 

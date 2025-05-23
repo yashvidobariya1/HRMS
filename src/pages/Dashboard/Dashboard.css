@@ -194,6 +194,7 @@
 .dashboard-absence-table table th {
   background-color: var(--table-heading-neutral-dark-blue);
   color: var(--sidebar-title-primary-white);
+  padding: 12px;
 }
 
 .dashboard-absence-table table th:first-child {

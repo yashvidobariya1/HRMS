@@ -1252,7 +1252,9 @@ const AddEmployee = () => {
                         className: "custom-dropdown-menu",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
+                        overflowX: "auto",
                         maxHeight: 200,
+                        scrollbarWidth: "thin",
                       },
                     },
                   }}
@@ -1302,6 +1304,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         maxHeight: 200,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                       },
                     },
                   }}
