@@ -373,6 +373,8 @@ const AddLeaves = () => {
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                     maxHeight: 200,
+                    scrollbarWidth: "thin",
+                    overflowX: "auto",
                   },
                 },
               }}

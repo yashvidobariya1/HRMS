@@ -496,7 +496,7 @@ const EmployeesTimesheet = () => {
                                         <TableRow key={entry?.date}>
                                           <TableCell>
                                             {moment(entry?.date).format(
-                                              "YYYY-MM-DD (ddd)"
+                                              "DD/MM/YYYY (ddd)"
                                             )}
                                           </TableCell>
                                           <TableCell>

@@ -38,6 +38,8 @@ const AssignClient = ({ onClose, Clientdata, onClientSelect }) => {
                   textOverflow: "ellipsis",
                   maxHeight: 200,
                   whiteSpace: "nowrap",
+                  scrollbarWidth: "thin",
+                  overflowX: "auto",
                 },
               },
             }}

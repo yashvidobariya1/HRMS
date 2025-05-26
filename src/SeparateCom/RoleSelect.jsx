@@ -55,6 +55,8 @@ const JobTitleForm = ({ onClose, jobTitledata, onJobTitleSelect }) => {
                   textOverflow: "ellipsis",
                   maxHeight: 200,
                   whiteSpace: "nowrap",
+                  scrollbarWidth: "thin",
+                  overflowX: "auto",
                 },
               },
             }}

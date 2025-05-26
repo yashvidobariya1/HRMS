@@ -134,27 +134,42 @@ const GenerateQRcode = () => {
 
   const handleDownloadBase64 = (e, qrURL, locationName, companyName) => {
     e.preventDefault();
-
     const timestamp = moment().format("YYYYMMDD-HHmmss");
     const fileName = `${locationName}-${companyName}-${timestamp}.png`.replace(
       /\s+/g,
       "_"
     );
-
-    fetch(qrURL)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      })
-      .catch((error) => console.error("Error downloading QR Code:", error));
+    const a = document.createElement("a");
+    a.href = qrURL;
+    a.setAttribute("download", fileName);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
+
+  // const handleDownloadBase64 = (e, qrURL, locationName, companyName) => {
+  //   e.preventDefault();
+
+  //   const timestamp = moment().format("YYYYMMDD-HHmmss");
+  //   const fileName = `${locationName}-${companyName}-${timestamp}.png`.replace(
+  //     /\s+/g,
+  //     "_"
+  //   );
+
+  //   fetch(qrURL)
+  //     .then((response) => response.blob())
+  //     .then((blob) => {
+  //       const url = window.URL.createObjectURL(blob);
+  //       const a = document.createElement("a");
+  //       a.href = url;
+  //       a.download = fileName;
+  //       document.body.appendChild(a);
+  //       a.click();
+  //       document.body.removeChild(a);
+  //       window.URL.revokeObjectURL(url);
+  //     })
+  //     .catch((error) => console.error("Error downloading QR Code:", error));
+  // };
 
   const GetAllQRs = async () => {
     try {
@@ -215,7 +230,7 @@ const GenerateQRcode = () => {
               LocationName: qr?.locationName,
               companyName: qr?.companyName,
               isactive: qr?.isActive ? "Active" : "Inactive",
-              date: moment(qr?.createdAt).format("DD-MM-YYYY"),
+              date: moment(qr?.createdAt).format("DD/MM/YYYY"),
               qrcode: (
                 <div
                   className="qr-container"

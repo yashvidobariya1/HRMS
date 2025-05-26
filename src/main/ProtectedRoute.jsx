@@ -15,11 +15,14 @@ const ProtectedRoute = ({ children, allowedRoles, path }) => {
     return <Navigate to="/login" />;
   }
 
+  console.log("children", children);
+
   if (
     employeeFormFilled === false &&
     allowedRoles.includes(userInfo.role) &&
-    path !== "/addemployee" &&
-    path !== "/viewtimesheetreport"
+    // path !== "/addemployee" &&
+    path !== "/viewtimesheetreport" &&
+    !path.startsWith("/editemployee")
   ) {
     return <Navigate to={`/editemployee/${userInfo._id}`} />;
   }

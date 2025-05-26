@@ -29,7 +29,7 @@ const GenerateQRcodeForClient = () => {
   const [totalPages, setTotalPages] = useState(0);
   const qrCodeRef = useRef();
   const uniqueQRName = `${QRvalue}-${
-    moment().format("YYYYMMDDHHmmssSSS") + Math.floor(Math.random() * 1000)
+    moment().format("MMDDYYYYHHmmssSSS") + Math.floor(Math.random() * 1000)
   }`;
   const [totalQRCodes, settotalQRCodes] = useState([]);
   // console.log("clientId", clientId);
@@ -135,7 +135,7 @@ const GenerateQRcodeForClient = () => {
   const handleDownloadBase64 = (e, qrURL, clientName, companyName) => {
     e.preventDefault();
 
-    const timestamp = moment().format("YYYYMMDD-HHmmss");
+    const timestamp = moment().format("DDMMYYYY-HHmmss");
     const fileName = `${clientName}-${companyName}-${timestamp}.png`.replace(
       /\s+/g,
       "_"
@@ -215,7 +215,7 @@ const GenerateQRcodeForClient = () => {
               ClientName: qr?.clientName,
               companyName: qr?.companyName,
               isactive: qr?.isActive ? "Active" : "Inactive",
-              date: moment(qr?.createdAt).format("DD-MM-YYYY"),
+              date: moment(qr?.createdAt).format("DD/MM/YYYY"),
               qrcode: (
                 <div
                   className="client-qr-container"

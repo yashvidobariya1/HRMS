@@ -13,6 +13,7 @@ import countryNames from "../../Data/AllCountryList.json";
 import VisaCategory from "../../Data/VisaCategory.json";
 import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
 import { Checkbox, MenuItem, Select } from "@mui/material";
+import moment from "moment";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
@@ -1427,6 +1428,8 @@ const AddEmployee = () => {
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                           maxHeight: 200,
+                          scrollbarWidth: "thin",
+                          overflowX: "auto",
                         },
                       },
                     }}
@@ -1807,6 +1810,8 @@ const AddEmployee = () => {
                           textOverflow: "ellipsis",
                           maxHeight: 200,
                           whiteSpace: "nowrap",
+                          scrollbarWidth: "thin",
+                          overflowX: "auto",
                         },
                       },
                     }}
@@ -2048,7 +2053,7 @@ const AddEmployee = () => {
                   _id: i,
                   Name: job.jobTitle,
                   annualSalary: job.annualSalary,
-                  joiningDate: job.joiningDate,
+                  joiningDate: moment(job.joiningDate).format("DD/MM/YYYY"),
                 }))}
                 actions={{
                   // ShowdropwornAction,
@@ -2531,6 +2536,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         maxHeight: 200,
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
                       },
                     },
                   }}
@@ -2691,6 +2698,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         maxHeight: 200,
                         whiteSpace: "nowrap",
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
                       },
                     },
                   }}
@@ -2872,6 +2881,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         maxHeight: 200,
                         whiteSpace: "nowrap",
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
                       },
                     },
                   }}
@@ -2941,6 +2952,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         maxHeight: 200,
                         whiteSpace: "nowrap",
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
                       },
                     },
                   }}

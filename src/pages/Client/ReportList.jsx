@@ -282,10 +282,10 @@ const ReportList = () => {
             data={reportList?.map((report) => ({
               _id: report._id,
               clientName: report?.clientName,
-              startDate: report?.startDate,
-              endDate: report?.endDate,
+              startDate: moment(report?.startDate).format("DD/MM/YYYY"),
+              endDate: moment(report?.endDate).format("DD/MM/YYYY"),
               generatedDate: moment(report?.createdAt).format(
-                "YYYY-MM-DD hh:mm A"
+                "DD/MM/YYYY hh:mm A"
               ),
               actionBy: report?.actionBy,
               reportstatus: report?.status,

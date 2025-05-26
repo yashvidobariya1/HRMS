@@ -37,7 +37,7 @@ const TimesheetTable = (props) => {
                   <>
                     <tr key={`${index}-timesheet`}>
                       <td>
-                        {moment(date).format("YYYY-MM-DD")} (
+                        {moment(date).format("DD/MM/YYYY")} (
                         {moment(date).format("ddd")})
                       </td>
                       <td>{status}</td>
@@ -84,7 +84,7 @@ const TimesheetTable = (props) => {
                 return (
                   <tr key={index}>
                     <td>
-                      {moment(date).format("YYYY-MM-DD")} (
+                      {moment(date).format("DD/MM/YYYY")} (
                       {moment(entry.date).format("ddd")})
                     </td>
                     <td colSpan={headers.length - 1}>
@@ -100,7 +100,7 @@ const TimesheetTable = (props) => {
                 return (
                   <tr key={index}>
                     <td>
-                      {moment(date).format("YYYY-MM-DD")} (
+                      {moment(date).format("DD/MM/YYYY")} (
                       {moment(date).format("ddd")})
                     </td>
                     <td>{status}</td>
