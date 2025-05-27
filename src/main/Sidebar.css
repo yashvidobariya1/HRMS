@@ -264,6 +264,26 @@
   overflow-y: auto !important;
 }
 
+.sidebar-submenu {
+  padding-left: 38px;
+}
+
+.sidebar-subitem .link_name {
+  font-size: 0.9rem;
+}
+
+.sidebar-collapsible-header-custom {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  gap: 20px;
+  padding: 8px;
+  color: var(--sidebar-title-primary-white);
+  border-radius: var(--border-radius);
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 767px) {
   /* .sidebar .nav-links li {
     margin: 0px;

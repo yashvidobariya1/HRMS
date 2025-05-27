@@ -25,7 +25,7 @@ import Job from "./pages/Job/Job";
 import Candidate from "./pages/Candidate/Candidate";
 import ChangePassword from "./pages/EmployeeProfile/ChangePassword";
 import Viewhours from "./pages/ViewHours/Viewhours";
-import TimeSheetReport from "./pages/TimeSheetReport/TimeSheetReport";
+// import TimeSheetReport from "./pages/TimeSheetReport/TimeSheetReport";
 import AbsenceReport from "./pages/AbsenceReport/AbsenceReport";
 import AddCompany from "./pages/Settings/AddCompany";
 import Profile from "./pages/EmployeeProfile/Profile";
@@ -48,6 +48,10 @@ import ApplyJob from "./pages/Applypost/ApplyJob";
 import GenerateQRcodeForClient from "./pages/GenerateQRcode/GenerateQRcodeForClient";
 import JobTitles from "./pages/JobTitles/JobTitles";
 import AddJobTitles from "./pages/JobTitles/AddJobTitles";
+import TimeSheetReportDaily from "./pages/TimeSheetReport/TimeSheetReportDaily";
+import TimeSheetReportWeekly from "./pages/TimeSheetReport/TimeSheetReportWeekly";
+import TimeSheetReport from "./pages/Client/ViewReport";
+import TimeSheetReportMonthly from "./pages/TimeSheetReport/TimeReportMonthly";
 
 // Layout wrapper
 function MainLayout({ children, path }) {
@@ -244,9 +248,24 @@ const protectedRoutes = [
     component: <Viewhours />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
+  // {
+  //   path: "/timesheetreport",
+  //   component: <TimeSheetReport />,
+  //   roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+  // },
   {
-    path: "/timesheetreport",
-    component: <TimeSheetReport />,
+    path: "/timesheetreport/daily",
+    component: <TimeSheetReportDaily />,
+    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/timesheetreport/weekly",
+    component: <TimeSheetReportWeekly />,
+    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/timesheetreport/monthly",
+    component: <TimeSheetReportMonthly />,
     roles: ["Superadmin", "Administrator", "Manager", "Employee"],
   },
   {
