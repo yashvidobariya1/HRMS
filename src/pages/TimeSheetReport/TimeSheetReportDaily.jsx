@@ -11,7 +11,7 @@ import { GrDocumentDownload } from "react-icons/gr";
 import { useSelector } from "react-redux";
 // import { CropLandscapeOutlined } from "@mui/icons-material";
 import { Checkbox, MenuItem, Select, TextField } from "@mui/material";
-import AssignClient from "../../SeparateCom/AssignClient";
+// import AssignClient from "../../SeparateCom/AssignClient";
 import {
   Table,
   TableBody,
@@ -21,24 +21,23 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
 import { BsHourglassSplit } from "react-icons/bs";
-import { data } from "react-router";
 
 const TimeSheetReportDaily = () => {
-  // const location = useLocation();
-  // const queryParams = new URLSearchParams(location.search);
-  // const EmployeeId = queryParams.get("EmployeeId");
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
   const [loading, setLoading] = useState(false);
+  const startDate = moment().format("YYYY-MM-DD");
+  const endDate = moment().format("YYYY-MM-DD");
   const [formData, setFormData] = useState({
-    startDate: "",
+    startDate: startDate,
     endDate: "",
-    format: "",
   });
+  const [selectedStartDate, setSelectedStartDate] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [selectedEndDate, setSelectedEndDate] = useState("");
   const [errors, setErrors] = useState({});
   const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
   const [timesheetReportList, setTimesheetReportList] = useState([]);
@@ -48,18 +47,15 @@ const TimeSheetReportDaily = () => {
   const [selectedEmployee, setSelectedEmployee] = useState([]);
   const [selectedClient, setselectedClient] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState("");
-  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
-  const [selectedClientId, setSelectedClientId] = useState("");
-  const [Clientdata, setClientdata] = useState([]);
-  const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
-  const startYear = moment(startDate).year();
+  // const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  // const startYear = moment(startDate).year();
   const currentYear = moment().year();
   const currentMonth = moment().month() + 1;
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [employeeClockinDropwdown, setEmployeeClockinDropwdown] =
-    useState(false);
-  const [employeeClockoutDropwdown, setEmployeeClockoutDropwdown] =
-    useState(false);
+  // const [employeeClockinDropwdown, setEmployeeClockinDropwdown] =
+  //   useState(false);
+  // const [employeeClockoutDropwdown, setEmployeeClockoutDropwdown] =
+  //   useState(false);
   const today = moment().format("YYYY-MM-DD");
   const [totalTimesheet, settotalTimesheet] = useState([]);
   const [clockInData, setClockInData] = useState({
@@ -71,8 +67,8 @@ const TimeSheetReportDaily = () => {
     date: moment().format("YYYY-MM-DD"),
     endTime: moment().format("HH:mm"),
   });
-  const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  // const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
+  // const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const jobRoleisworkFromOffice = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
@@ -86,55 +82,65 @@ const TimeSheetReportDaily = () => {
   // const [selectedWeek, setSelectedWeek] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
-  const [appliedFilters, setAppliedFilters] = useState({
-    year: currentYear,
-    month: currentMonth,
-    // week: "",
-  });
+  // const [appliedFilters, setAppliedFilters] = useState({
+  //   year: currentYear,
+  //   month: currentMonth,
+  //   // week: "",
+  // });
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  // const handlePageChange = (pageNumber) => {
+  //   setCurrentPage(pageNumber);
+  // };
 
-  const handlePerPageChange = (e) => {
-    // setPerPage(parseInt(e.target.value, 10));
-    setPerPage(e);
-    setCurrentPage(1);
-  };
+  // const handlePerPageChange = (e) => {
+  //   // setPerPage(parseInt(e.target.value, 10));
+  //   setPerPage(e);
+  //   setCurrentPage(1);
+  // };
 
-  const handlePopupClose = () => {
-    setOpenJobTitleModal(true);
-  };
+  // const handlePopupClose = () => {
+  //   setOpenJobTitleModal(true);
+  // };
 
-  const handleJobTitleSelect = (selectedTitle) => {
-    setSelectedJobId(selectedTitle);
-    const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
-    if (selectedJob) {
-      setIsWorkFromOffice(selectedJob.isWorkFromOffice);
-      // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
-    }
-    setOpenJobTitleModal(true);
-  };
+  // const handleJobTitleSelect = (selectedTitle) => {
+  //   setSelectedJobId(selectedTitle);
+  //   const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
+  //   if (selectedJob) {
+  //     setIsWorkFromOffice(selectedJob.isWorkFromOffice);
+  //     // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+  //   }
+  //   setOpenJobTitleModal(true);
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    if (name === "startDate") {
+      setSelectedStartDate(value);
+    } else if (name === "endDate") {
+      setSelectedEndDate(value);
+    }
   };
 
   const validate = () => {
     let newErrors = {};
-    if (!formData.startDate) {
+
+    if (!selectedStartDate) {
       newErrors.startDate = "Start date is required";
     }
-    if (!formData.endDate) {
-      newErrors.endDate = "End date is required";
-    }
-    // if (!formData.format) {
-    //   newErrors.format = "Format is required";
+
+    // if (!selectedEndDate) {
+    //   newErrors.endDate = "End date is required";
     // }
+
+    if (selectedEmployee.length === 0) {
+      newErrors.selectedEmployee = "Please select at least one employee";
+    }
+
+    if (selectedClient.length === 0) {
+      newErrors.selectedClient = "Please select at least one client";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -187,40 +193,52 @@ const TimeSheetReportDaily = () => {
     }
   };
 
-  const handleEmployeeChange = (employeeId) => {
-    setSelectedEmployee(employeeId);
-    setSelectedClientId("");
-    setSelectedJobId("");
+  const handleEmployeeChange = (value) => {
+    const lastValue = value[value.length - 1];
+    console.log("last value", lastValue);
+
+    if (lastValue === "All employee") {
+      if (selectedEmployee.length === employeeList.length) {
+        setSelectedEmployee([]);
+      } else {
+        setSelectedEmployee(employeeList.map((e) => e._id));
+      }
+    } else {
+      const filteredValue = value.filter((v) => v !== "All employee");
+      setSelectedEmployee(filteredValue);
+    }
   };
 
-  const handleClientChange = (clientId) => {
-    setselectedClient(clientId);
-    console.log("clientid", clientId);
-    setSelectedClientId("");
-    setSelectedJobId("");
+  const handleClientChange = (value) => {
+    if (value[value.length - 1] === "Allclients") {
+      if (selectedClient.length === clientList.length) {
+        setselectedClient([]);
+      } else {
+        setselectedClient(clientList.map((c) => c._id));
+      }
+    } else {
+      setselectedClient(value);
+    }
   };
 
   const GetTimesheetReport = async () => {
     try {
       setLoading(true);
       const filters = {
-        jobId: selectedEmployee ? selectedJobId : jobRoleId,
-        // userId: EmployeeId,
-        clientId: selectedClientId,
-        userId: selectedEmployee,
+        userIds: selectedEmployee,
+        clientIds: selectedClient,
       };
 
-      // console.log("filter", filters);
-
-      const { year, month } = appliedFilters;
-
+      console.log("filter", filters);
+      const frequency = "Daily";
+      // const { year, month } = appliedFilters;
       const response = await PostCall(
-        `/getTimesheetReport?page=${currentPage}&limit=${perPage}&year=${year}&month=${month}&search=${debouncedSearch}&clientId=${selectedClientId}`,
+        `/getTimesheetReport?page=${currentPage}&limit=${perPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}`,
         filters
       );
 
       if (response?.data?.status === 200) {
-        setTimesheetReportList(response?.data?.report);
+        setTimesheetReportList(response?.data?.reports);
         settotalTimesheet(response.data.totalReports);
         setTotalPages(response?.data?.totalPages);
       } else {
@@ -259,14 +277,14 @@ const TimeSheetReportDaily = () => {
     }
   };
 
-  const applyFilters = () => {
-    setAppliedFilters({
-      year: selectedYear,
-      month: selectedMonth,
-      // week: selectedWeek,
-    });
-    setCurrentPage(1);
-  };
+  // const applyFilters = () => {
+  //   setAppliedFilters({
+  //     year: selectedYear,
+  //     month: selectedMonth,
+  //     // week: selectedWeek,
+  //   });
+  //   setCurrentPage(1);
+  // };
 
   const months = moment
     .months()
@@ -281,92 +299,6 @@ const TimeSheetReportDaily = () => {
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
-
-  // const weeks = Array.from({ length: 5 }, (_, i) => i + 1);
-
-  const handleClockInDropdown = () => {
-    setEmployeeClockinDropwdown((prev) => !prev);
-  };
-
-  const handleClockOutDropdown = () => {
-    setEmployeeClockoutDropwdown((prev) => !prev);
-  };
-
-  const handleClockInChange = (e) => {
-    const { name, value } = e.target;
-    setClockInData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // console.log("value", clockInData);
-  };
-
-  const handleClockOutChange = (e) => {
-    const { name, value } = e.target;
-    setClockOutData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // console.log("value", clockOutData);
-  };
-
-  const handleClockInSubmit = async () => {
-    const clockindata = {
-      ...clockInData,
-      userId: selectedEmployee,
-      jobId: selectedJobId || jobRoleId,
-      clientId: selectedClientId,
-    };
-    // console.log("clockindata", clockindata);
-    try {
-      const response = await PostCall(`/clockInForEmployee`, clockindata);
-      if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "success");
-        setEmployeeClockinDropwdown(false);
-        GetTimesheetReport();
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error fetching employee clockin:", error);
-      showToast("Clock-in error", "error");
-    }
-  };
-
-  const handleClockOutSubmit = async () => {
-    const clockoutdata = {
-      ...clockOutData,
-      userId: selectedEmployee,
-      jobId: selectedJobId || jobRoleId,
-      clientId: selectedClientId,
-    };
-    // console.log("clockoutdata", clockoutdata);
-    try {
-      const response = await PostCall(`/clockOutForEmployee`, clockoutdata);
-      if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "success");
-        setEmployeeClockoutDropwdown(false);
-        GetTimesheetReport();
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (err) {
-      console.error("Clock-out error:", err);
-      showToast("Clock-out error", "error");
-    }
-  };
-
-  const handleClose = () => {
-    setEmployeeClockinDropwdown(false);
-    setEmployeeClockoutDropwdown(false);
-  };
-
-  useEffect(() => {
-    if (selectedEmployee) {
-      Getjobtitledata();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedEmployee]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -398,45 +330,6 @@ const TimeSheetReportDaily = () => {
     }
   };
 
-  const GetClientdata = async () => {
-    const payload = {
-      jobId: selectedEmployee ? selectedJobId : jobRoleId,
-      userId: selectedEmployee,
-    };
-
-    // if (userRole === "Superadmin" ) {
-    // payload.userId = selectedEmployee;
-    // }
-    try {
-      const response = await PostCall(`/getUsersAssignClients`, payload);
-
-      if (response?.data?.status === 200) {
-        const clientId = response.data.assignClients;
-        // console.log("job title", clientId);
-        setClientdata(clientId);
-
-        if (clientId.length > 1) {
-          setopenClietnSelectModal(false);
-        } else {
-          setSelectedClientId(clientId[0]?.clientId);
-          setopenClietnSelectModal(true);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const handlePopupCloseForclient = () => {
-    setopenClietnSelectModal(true);
-  };
-
-  const handleClientSelect = (selectedTitle) => {
-    setSelectedClientId(selectedTitle);
-    console.log("clientid", selectedClientId);
-    setopenClietnSelectModal(true);
-  };
-
   useEffect(() => {
     userRole !== "Employee" && fetchEmployeeList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -444,59 +337,45 @@ const TimeSheetReportDaily = () => {
 
   const handleFilter = () => {
     if (validate()) {
-      console.log("Filtering with values:", {
-        selectedEmployee,
-        selectedClient,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-      });
+      GetTimesheetReport();
     }
   };
 
   useEffect(() => {
-    const GetTimesheet =
-      (selectedEmployee &&
-        selectedJobId &&
-        selectedClientId &&
-        appliedFilters) ||
-      (!selectedEmployee &&
-        appliedFilters &&
-        ((jobRoleId && jobRoleisworkFromOffice) ||
-          (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
-          (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
-      (selectedJobId && isWorkFromOffice);
-
-    if (GetTimesheet) {
-      GetTimesheetReport();
+    if (clientList.length > 0 && selectedClient.length === 0) {
+      setselectedClient(clientList.map((c) => c._id));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    selectedEmployee,
-    selectedJobId,
-    selectedClientId,
-    jobRoleId,
-    isWorkFromOffice,
-    jobRoleisworkFromOffice,
-    appliedFilters,
-  ]);
+  }, [clientList]);
 
   useEffect(() => {
-    const GetClientData =
-      (selectedEmployee && selectedJobId && !isWorkFromOffice) ||
-      (!selectedEmployee && jobRoleId && !jobRoleisworkFromOffice);
-
-    if (GetClientData) {
-      GetClientdata();
+    if (employeeList.length > 0 && selectedEmployee.length === 0) {
+      setSelectedEmployee(employeeList.map((e) => e._id));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    selectedEmployee,
-    selectedJobId,
-    jobRoleId,
-    isWorkFromOffice,
-    jobRoleisworkFromOffice,
-    // selectedClientId,
-  ]);
+  }, [employeeList]);
+
+  useEffect(() => {
+    if (selectedEmployee?.length > 0 && selectedClient?.length > 0) {
+      GetTimesheetReport();
+    }
+  }, [selectedClient, selectedEmployee, debouncedSearch]);
+
+  // useEffect(() => {
+  //   const GetClientData =
+  //     (selectedEmployee && selectedJobId && !isWorkFromOffice) ||
+  //     (!selectedEmployee && jobRoleId && !jobRoleisworkFromOffice);
+
+  //   if (GetClientData) {
+  //     GetClientdata();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [
+  //   selectedEmployee,
+  //   selectedJobId,
+  //   jobRoleId,
+  //   isWorkFromOffice,
+  //   jobRoleisworkFromOffice,
+  //   // selectedClientId,
+  // ]);
 
   return (
     <div className="timesheet-list-container">
@@ -517,38 +396,6 @@ const TimeSheetReportDaily = () => {
       <div className="timesheet-flex">
         <div className="timesheet-title">
           <h1>Time Sheet Report</h1>
-          {/* <div className="timesheet-report-download-container">
-            <div className="timesheet-input-container">
-              <label className="label">Format</label>
-              <Select
-                name="format"
-                className="timesheet-input-dropdown Download"
-                value={formData?.format}
-                onChange={handleChange}
-                displayEmpty
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      width: 120,
-                      textOverflow: "ellipsis",
-                      maxHeight: 200,
-                      whiteSpace: "nowrap",
-                    },
-                  },
-                }}
-              >
-                <MenuItem value="" disabled>
-                  Select format
-                </MenuItem>
-                <MenuItem value="pdf">PDF</MenuItem>
-                <MenuItem value="excel">Excel</MenuItem>
-              </Select>
-              {errors?.format && <p className="error-text">{errors?.format}</p>}
-            </div>
-            <button onClick={downloadTimesheetReport}>
-              <GrDocumentDownload />
-            </button>
-          </div> */}
         </div>
       </div>
 
@@ -563,14 +410,18 @@ const TimeSheetReportDaily = () => {
                 onChange={(e) => handleEmployeeChange(e.target.value)}
                 displayEmpty
                 multiple
-                renderValue={(selected) =>
-                  selected.length === 0
-                    ? "All Employee"
-                    : employeeList
-                        .filter((c) => selected.includes(c._id))
-                        .map((c) => c.userName)
-                        .join(", ")
-                }
+                renderValue={(selected) => {
+                  if (selected.length === 0) {
+                    return <>Select Employee</>;
+                  }
+                  if (selected.length === employeeList.length) {
+                    return "All Employee";
+                  }
+                  return employeeList
+                    .filter((c) => selected.includes(c._id))
+                    .map((c) => c.userName)
+                    .join(", ");
+                }}
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -585,17 +436,28 @@ const TimeSheetReportDaily = () => {
                 }}
               >
                 {currentRole === "Superadmin" && (
-                  <MenuItem value="Allemployee">All Employee</MenuItem>
+                  <MenuItem value="All employee">
+                    <Checkbox
+                      checked={
+                        selectedEmployee.length === employeeList.length &&
+                        employeeList.length > 0
+                      }
+                    />
+                    All Employee
+                  </MenuItem>
                 )}
                 {employeeList.map((employee) => (
                   <MenuItem key={employee._id} value={employee._id}>
                     <Checkbox
-                      checked={selectedEmployee.indexOf(employee._id) > -1}
+                      checked={selectedEmployee.includes(employee._id)}
                     />
                     {employee.userName}
                   </MenuItem>
                 ))}
               </Select>
+              {errors?.selectedEmployee && (
+                <p className="error-text">{errors.selectedEmployee}</p>
+              )}
             </div>
           )}
 
@@ -608,14 +470,18 @@ const TimeSheetReportDaily = () => {
                 value={selectedClient}
                 onChange={(e) => handleClientChange(e.target.value)}
                 displayEmpty
-                renderValue={(selected) =>
-                  selected.length === 0
-                    ? "All Clients"
-                    : clientList
-                        .filter((c) => selected.includes(c._id))
-                        .map((c) => c.clientName)
-                        .join(", ")
-                }
+                renderValue={(selected) => {
+                  if (selected.length === 0) {
+                    return <>Select Client</>;
+                  }
+                  if (selected.length === clientList.length) {
+                    return "All Clients";
+                  }
+                  return clientList
+                    .filter((c) => selected.includes(c._id))
+                    .map((c) => c.clientName)
+                    .join(", ");
+                }}
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -629,6 +495,16 @@ const TimeSheetReportDaily = () => {
                   },
                 }}
               >
+                <MenuItem value="Allclients">
+                  <Checkbox
+                    checked={
+                      selectedClient.length === clientList.length &&
+                      clientList.length > 0
+                    }
+                  />
+                  All Clients
+                </MenuItem>
+
                 {clientList.map((client) => (
                   <MenuItem key={client._id} value={client._id}>
                     <Checkbox
@@ -638,6 +514,9 @@ const TimeSheetReportDaily = () => {
                   </MenuItem>
                 ))}
               </Select>
+              {errors?.selectedClient && (
+                <p className="error-text">{errors.selectedClient}</p>
+              )}
             </div>
           )}
 
@@ -648,7 +527,7 @@ const TimeSheetReportDaily = () => {
                 type="date"
                 name="startDate"
                 className="timesheet-input"
-                value={formData?.startDate}
+                value={selectedStartDate}
                 onChange={handleChange}
                 min={minDate}
                 max={maxDate}
@@ -657,41 +536,43 @@ const TimeSheetReportDaily = () => {
                 <p className="error-text">{errors?.startDate}</p>
               )}
             </div>
+
             <div className="timesheet-input-container">
               <label className="label">End Date</label>
               <input
                 type="date"
                 name="endDate"
                 className="timesheet-input"
-                value={formData?.endDate}
+                value={selectedEndDate}
                 onChange={handleChange}
                 min={minDate}
                 max={maxDate}
               />
-              {errors?.endDate && (
+              {/* {errors?.endDate && (
                 <p className="error-text">{errors?.endDate}</p>
-              )}
+              )} */}
             </div>
+
             <button onClick={handleFilter}>Filter</button>
           </div>
         </div>
 
-        {userRole !== "Employee" ? (
+        {/* {userRole !== "Employee" ? (
           <div className="timesheet-button-container">
             <button
-              onClick={handleClockInDropdown}
+              // onClick={handleClockInDropdown}
               className="timesheet-clock-in-btn"
             >
               Clock In
             </button>
             <button
-              onClick={handleClockOutDropdown}
+              // onClick={handleClockOutDropdown}
               className="timesheet-clock-out-btn"
             >
               Clock Out
             </button>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
 
       <div className="timesheetreport-searchbar-clockin">
@@ -723,36 +604,32 @@ const TimeSheetReportDaily = () => {
                   <TableCell>Job Role</TableCell>
                   <TableCell>Client Name</TableCell>
                   <TableCell>Check-in/Check-Out</TableCell>
-                  <TableCell>Time</TableCell>
+                  <TableCell>Working Hours</TableCell>
+                  <TableCell>Over Time</TableCell>
+                  <TableCell>Total Hours</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {timesheetReportList.map((row, index) => {
-                  const clockinTime =
-                    row.data?.timesheetData?.clockinTime || [];
-
-                  return (
+                {timesheetReportList && timesheetReportList.length > 0 ? (
+                  timesheetReportList.map((row, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         {moment(row.date).format("DD/MM/YYYY")}
                       </TableCell>
-                      <TableCell>{row.name}</TableCell>
-                      <TableCell>{row.role}</TableCell>
-                      <TableCell>{row.clientname}</TableCell>
-
+                      <TableCell>{row.userName}</TableCell>
+                      <TableCell>{row.jobRole}</TableCell>
+                      <TableCell>{row.clientName}</TableCell>
                       <TableCell>
-                        {clockinTime.length > 0
-                          ? clockinTime.map((item, i) => (
+                        {row.clockinTime && row.clockinTime.length > 0
+                          ? row.clockinTime.map((item, i) => (
                               <div key={i} className="timing-container">
                                 <div className="timing-entry">
                                   <span className="clockin">
                                     {moment(item.clockIn).format("LT")} |{" "}
                                   </span>
                                   <span className="clockout">
-                                    {item.clockOut[index] ? (
-                                      <>
-                                        {moment(item.clockOut).format("LT")} |{" "}
-                                      </>
+                                    {item.clockOut ? (
+                                      <>{moment(item.clockOut).format("LT")}</>
                                     ) : (
                                       <BsHourglassSplit />
                                     )}
@@ -760,15 +637,20 @@ const TimeSheetReportDaily = () => {
                                 </div>
                               </div>
                             ))
-                          : ""}
+                          : "-"}
                       </TableCell>
-
-                      <TableCell>
-                        {row.data?.timesheetData?.totalHours}
-                      </TableCell>
+                      <TableCell>{row.workingHours}</TableCell>
+                      <TableCell>{row.overTime}</TableCell>
+                      <TableCell>{row.totalHours}</TableCell>
                     </TableRow>
-                  );
-                })}
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center">
+                      <p>No data found</p>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>

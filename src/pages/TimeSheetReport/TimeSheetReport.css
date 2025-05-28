@@ -26,7 +26,7 @@
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 10px;
 }
 
 .timesheet-report-filter {
@@ -230,9 +230,15 @@
   flex-wrap: wrap;
 }
 
+.timesheetreport-custom-table p {
+  margin: 0;
+  justify-content: center;
+  display: flex;
+}
+
 @media screen and (max-width: 767px) {
   .timesheet-report-download-container button {
-    margin-top: 14px !important;
+    margin-top: 14px;
   }
 
   .timesheet-report-filter-container {
@@ -276,7 +282,7 @@
     gap: 18px;
   }
 
-  .timesheet-input-container input,
+  /* .timesheet-input-container input, */
   .timesheet-input-container select {
     width: calc(100% - 20px);
   }
@@ -286,7 +292,7 @@
   }
 
   .timesheet-report-download-container button {
-    margin-top: 0;
+    margin-top: 18px;
   }
 
   .timesheet-report-filter-container {
@@ -303,3 +309,9 @@
     font-size: 12px !important;
   }
 }
+
+/* @media screen and (max-width: 380px) {
+  .timesheet-report-download-container button {
+    margin-top: 0px;
+  }
+} */

@@ -10,7 +10,7 @@ import moment from "moment";
 import { GrDocumentDownload } from "react-icons/gr";
 import { useSelector } from "react-redux";
 // import { CropLandscapeOutlined } from "@mui/icons-material";
-import { MenuItem, Select, TextField } from "@mui/material";
+import { Checkbox, MenuItem, Select, TextField } from "@mui/material";
 import AssignClient from "../../SeparateCom/AssignClient";
 import {
   Table,
@@ -41,8 +41,10 @@ const TimeSheetReportMonthly = () => {
   const [timesheetReportList, setTimesheetReportList] = useState([]);
   const [JobTitledata, setJobTitledata] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState([]);
+  const [selectedClient, setselectedClient] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState("");
+  const [clientList, setClientList] = useState([]);
   const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [Clientdata, setClientdata] = useState([]);
@@ -127,9 +129,6 @@ const TimeSheetReportMonthly = () => {
     if (!formData.endDate) {
       newErrors.endDate = "End date is required";
     }
-    if (!formData.format) {
-      newErrors.format = "Format is required";
-    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -184,6 +183,13 @@ const TimeSheetReportMonthly = () => {
 
   const handleEmployeeChange = (employeeId) => {
     setSelectedEmployee(employeeId);
+    setSelectedClientId("");
+    setSelectedJobId("");
+  };
+
+  const handleClientChange = (clientId) => {
+    setselectedClient(clientId);
+    console.log("clientid", clientId);
     setSelectedClientId("");
     setSelectedJobId("");
   };
@@ -348,31 +354,6 @@ const TimeSheetReportMonthly = () => {
     setEmployeeClockinDropwdown(false);
     setEmployeeClockoutDropwdown(false);
   };
-
-  const rows = [
-    {
-      name: "Alice",
-      role: "Developer",
-      client: "ABC Corp",
-      checkIn: "09:00",
-      checkOut: "17:30",
-    },
-    {
-      name: "Bob",
-      role: "Designer",
-      client: "XYZ Ltd",
-      checkIn: "10:00",
-      checkOut: "18:00",
-    },
-    {
-      name: "Charlie",
-      role: "Manager",
-      client: "123 Inc",
-      checkIn: "08:30",
-      checkOut: "16:00",
-    },
-  ];
-
   useEffect(() => {
     if (selectedEmployee) {
       Getjobtitledata();
@@ -396,9 +377,12 @@ const TimeSheetReportMonthly = () => {
 
   const fetchEmployeeList = async () => {
     try {
-      const response = await GetCall(`/getUsers?companyId=${companyId}`);
+      const response = await GetCall(
+        `/getAllUsersAndClients?companyId=${companyId}`
+      );
       if (response?.data?.status === 200) {
         setEmployeeList(response?.data?.users);
+        setClientList(response?.data.clients);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -452,7 +436,14 @@ const TimeSheetReportMonthly = () => {
   }, [companyId]);
 
   const handleFilter = () => {
-    alert("abc");
+    if (validate()) {
+      console.log("Filtering with values:", {
+        selectedEmployee,
+        selectedClient,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+      });
+    }
   };
 
   useEffect(() => {
@@ -502,7 +493,7 @@ const TimeSheetReportMonthly = () => {
 
   return (
     <div className="timesheet-list-container">
-      {!openJobTitleModal && JobTitledata.length > 1 && (
+      {/* {!openJobTitleModal && JobTitledata.length > 1 && (
         <JobTitleForm
           onClose={handlePopupClose}
           jobTitledata={JobTitledata}
@@ -515,7 +506,7 @@ const TimeSheetReportMonthly = () => {
           Clientdata={Clientdata}
           onClientSelect={handleClientSelect}
         />
-      )}
+      )} */}
       <div className="timesheet-flex">
         <div className="timesheet-title">
           <h1>Time Sheet Report</h1>
@@ -564,6 +555,15 @@ const TimeSheetReportMonthly = () => {
                 value={selectedEmployee}
                 onChange={(e) => handleEmployeeChange(e.target.value)}
                 displayEmpty
+                multiple
+                renderValue={(selected) =>
+                  selected.length === 0
+                    ? "All Employee"
+                    : employeeList
+                        .filter((c) => selected.includes(c._id))
+                        .map((c) => c.userName)
+                        .join(", ")
+                }
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -582,6 +582,9 @@ const TimeSheetReportMonthly = () => {
                 </MenuItem>
                 {employeeList.map((employee) => (
                   <MenuItem key={employee._id} value={employee._id}>
+                    <Checkbox
+                      checked={selectedEmployee.indexOf(employee._id) > -1}
+                    />
                     {employee.userName}
                   </MenuItem>
                 ))}
@@ -594,9 +597,18 @@ const TimeSheetReportMonthly = () => {
               <label className="label">Client</label>
               <Select
                 className="timesheet-input-dropdown"
-                value={selectedEmployee}
-                onChange={(e) => handleEmployeeChange(e.target.value)}
+                multiple
+                value={selectedClient}
+                onChange={(e) => handleClientChange(e.target.value)}
                 displayEmpty
+                renderValue={(selected) =>
+                  selected.length === 0
+                    ? "All Clients"
+                    : clientList
+                        .filter((c) => selected.includes(c._id))
+                        .map((c) => c.clientName)
+                        .join(", ")
+                }
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -610,18 +622,17 @@ const TimeSheetReportMonthly = () => {
                   },
                 }}
               >
-                <MenuItem value="" disabled>
-                  Select Client
-                </MenuItem>
-                {employeeList.map((employee) => (
-                  <MenuItem key={employee._id} value={employee._id}>
-                    {employee.userName}
+                {clientList.map((client) => (
+                  <MenuItem key={client._id} value={client._id}>
+                    <Checkbox
+                      checked={selectedClient.indexOf(client._id) > -1}
+                    />
+                    {client.clientName}
                   </MenuItem>
                 ))}
               </Select>
             </div>
           )}
-
           <div className="timesheet-report-download-container">
             <div className="timesheet-input-container">
               <label className="label">Start Date</label>
