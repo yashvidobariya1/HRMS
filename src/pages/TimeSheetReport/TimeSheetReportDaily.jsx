@@ -10,7 +10,14 @@ import moment from "moment";
 import { GrDocumentDownload } from "react-icons/gr";
 import { useSelector } from "react-redux";
 // import { CropLandscapeOutlined } from "@mui/icons-material";
-import { Checkbox, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Checkbox,
+  MenuItem,
+  Select,
+  TableFooter,
+  TablePagination,
+  TextField,
+} from "@mui/material";
 // import AssignClient from "../../SeparateCom/AssignClient";
 import {
   Table,
@@ -26,26 +33,20 @@ import { BsHourglassSplit } from "react-icons/bs";
 const TimeSheetReportDaily = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(50);
   const [loading, setLoading] = useState(false);
   const startDate = moment().format("YYYY-MM-DD");
   const endDate = moment().format("YYYY-MM-DD");
-  const [formData, setFormData] = useState({
-    startDate: startDate,
-    endDate: "",
-  });
-  const [selectedStartDate, setSelectedStartDate] = useState(
-    moment().format("YYYY-MM-DD")
-  );
+  const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [errors, setErrors] = useState({});
-  const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [timesheetReportList, setTimesheetReportList] = useState([]);
-  const [JobTitledata, setJobTitledata] = useState([]);
+  const [isFromofficeWork, setisFromofficeWork] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
   const [clientList, setClientList] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState([]);
-  const [selectedClient, setselectedClient] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
+  const [selectedClient, setselectedClient] = useState("allClients");
   const [selectedJobId, setSelectedJobId] = useState("");
   // const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
   // const startYear = moment(startDate).year();
@@ -82,35 +83,6 @@ const TimeSheetReportDaily = () => {
   // const [selectedWeek, setSelectedWeek] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
-  // const [appliedFilters, setAppliedFilters] = useState({
-  //   year: currentYear,
-  //   month: currentMonth,
-  //   // week: "",
-  // });
-
-  // const handlePageChange = (pageNumber) => {
-  //   setCurrentPage(pageNumber);
-  // };
-
-  // const handlePerPageChange = (e) => {
-  //   // setPerPage(parseInt(e.target.value, 10));
-  //   setPerPage(e);
-  //   setCurrentPage(1);
-  // };
-
-  // const handlePopupClose = () => {
-  //   setOpenJobTitleModal(true);
-  // };
-
-  // const handleJobTitleSelect = (selectedTitle) => {
-  //   setSelectedJobId(selectedTitle);
-  //   const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
-  //   if (selectedJob) {
-  //     setIsWorkFromOffice(selectedJob.isWorkFromOffice);
-  //     // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
-  //   }
-  //   setOpenJobTitleModal(true);
-  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -145,79 +117,66 @@ const TimeSheetReportDaily = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const downloadTimesheetReport = async () => {
-    if (validate()) {
-      const data = {
-        ...formData,
-        jobId: selectedJobId ? selectedJobId : jobRoleId,
-        // userId: EmployeeId ? EmployeeId : "",
-        userId: selectedEmployee,
-      };
-      try {
-        setLoading(true);
-        const response = await PostCall(`/downloadTimesheetReport`, data);
-        const base64 =
-          formData.format === "pdf"
-            ? response?.data?.pdfBase64
-            : response?.data?.excelbase64;
-        // console.log("Base64 PDF:", base64);
-        // console.log("response:", response);
-
-        if (response?.data?.status === 200) {
-          let fixedBase64 = base64?.replace(/-/g, "+")?.replace(/_/g, "/");
-
-          while (fixedBase64?.length % 4 !== 0) {
-            fixedBase64 += "=";
-          }
-
-          const binary = Uint8Array.from(atob(fixedBase64), (c) =>
-            c.charCodeAt(0)
-          );
-
-          const blob = new Blob([binary], { type: response?.data?.mimeType });
-
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = response?.data?.fileName;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        } else {
-          showToast(response?.data?.message, "error");
-        }
-        setLoading(false);
-      } catch (error) {
-        console.log("Error while downloading timesheet report.", error);
-        showToast("An error occurred while processing your request.", "error");
-      }
-    }
+  const handleCheckboxChange = (event) => {
+    const checked = event.target.checked;
+    setisFromofficeWork(checked);
+    setselectedClient("");
+    setSelectedEmployee("");
+    setSelectedStartDate("");
+    setSelectedEndDate("");
   };
 
   const handleEmployeeChange = (value) => {
-    const lastValue = value[value.length - 1];
-    console.log("last value", lastValue);
+    setSelectedEmployee(value);
+    if (!selectedClient && value !== "allUsers") {
+      const formdata = {
+        userId: value,
+        isWorkFromOffice: isFromofficeWork,
+      };
+      getAllClientsOfUser(formdata);
+    }
+  };
 
-    if (lastValue === "All employee") {
-      if (selectedEmployee.length === employeeList.length) {
-        setSelectedEmployee([]);
+  const getAllClientsOfUser = async (formdata) => {
+    try {
+      setLoading(true);
+      const response = await PostCall(`/getAllClientsOfUser`, formdata);
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "error");
+        setClientList(response.data.clients);
       } else {
-        setSelectedEmployee(employeeList.map((e) => e._id));
+        showToast(response?.data?.message, "error");
       }
-    } else {
-      const filteredValue = value.filter((v) => v !== "All employee");
-      setSelectedEmployee(filteredValue);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   };
 
   const handleClientChange = (value) => {
-    if (value[value.length - 1] === "Allclients") {
-      if (selectedClient.length === clientList.length) {
-        setselectedClient([]);
+    setselectedClient(value);
+    if (!selectedEmployee && value !== "allClients") {
+      const formdata = {
+        clientId: value,
+        isWorkFromOffice: isFromofficeWork,
+      };
+      getAllUsersOfClient(formdata);
+    }
+  };
+
+  const getAllUsersOfClient = async (formdata) => {
+    try {
+      setLoading(true);
+      const response = await PostCall(`/getAllUsersOfClient`, formdata);
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "error");
+        setEmployeeList(response?.data.users);
       } else {
-        setselectedClient(clientList.map((c) => c._id));
+        showToast(response?.data?.message, "error");
       }
-    } else {
-      setselectedClient(value);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -225,15 +184,15 @@ const TimeSheetReportDaily = () => {
     try {
       setLoading(true);
       const filters = {
-        userIds: selectedEmployee,
-        clientIds: selectedClient,
+        userId: selectedEmployee,
+        clientId: selectedClient,
       };
 
       console.log("filter", filters);
       const frequency = "Daily";
       // const { year, month } = appliedFilters;
       const response = await PostCall(
-        `/getTimesheetReport?page=${currentPage}&limit=${perPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}`,
+        `/getTimesheetReport?page=${currentPage}&limit=${rowsPerPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isFromofficeWork}`,
         filters
       );
 
@@ -250,69 +209,9 @@ const TimeSheetReportDaily = () => {
     }
   };
 
-  const Getjobtitledata = async () => {
-    try {
-      let response;
-      if (selectedEmployee) {
-        response = await GetCall(
-          `/getUserJobTitles?EmployeeId=${selectedEmployee}`
-        );
-      } else {
-        response = await GetCall(`/getUserJobTitles`);
-      }
-
-      if (response?.data?.status === 200) {
-        const { multipleJobTitle, jobTitles } = response?.data;
-        setJobTitledata(jobTitles);
-
-        if (multipleJobTitle) {
-          setOpenJobTitleModal(false);
-        } else {
-          setSelectedJobId(jobTitles[0]?.jobId);
-          setOpenJobTitleModal(true);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  // const applyFilters = () => {
-  //   setAppliedFilters({
-  //     year: selectedYear,
-  //     month: selectedMonth,
-  //     // week: selectedWeek,
-  //   });
-  //   setCurrentPage(1);
-  // };
-
-  const months = moment
-    .months()
-    .map((month, index) => ({
-      name: moment().month(index).format("MMM"),
-      value: index + 1,
-    }))
-    .filter(
-      (month) => selectedYear < currentYear || month.value <= currentMonth
-    );
-
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-    }, 1000);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchQuery]);
 
   const fetchEmployeeList = async () => {
     try {
@@ -330,69 +229,50 @@ const TimeSheetReportDaily = () => {
     }
   };
 
-  useEffect(() => {
-    userRole !== "Employee" && fetchEmployeeList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyId]);
+  const handleChangePage = (newPage) => {
+    setPage(newPage);
+  };
 
-  const handleFilter = () => {
-    if (validate()) {
-      GetTimesheetReport();
-    }
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   useEffect(() => {
-    if (clientList.length > 0 && selectedClient.length === 0) {
-      setselectedClient(clientList.map((c) => c._id));
-    }
-  }, [clientList]);
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   useEffect(() => {
-    if (employeeList.length > 0 && selectedEmployee.length === 0) {
-      setSelectedEmployee(employeeList.map((e) => e._id));
-    }
-  }, [employeeList]);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
-    if (selectedEmployee?.length > 0 && selectedClient?.length > 0) {
+    userRole !== "Employee" && fetchEmployeeList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId, isFromofficeWork]);
+
+  useEffect(() => {
+    if (selectedEmployee && selectedClient) {
       GetTimesheetReport();
     }
-  }, [selectedClient, selectedEmployee, debouncedSearch]);
-
-  // useEffect(() => {
-  //   const GetClientData =
-  //     (selectedEmployee && selectedJobId && !isWorkFromOffice) ||
-  //     (!selectedEmployee && jobRoleId && !jobRoleisworkFromOffice);
-
-  //   if (GetClientData) {
-  //     GetClientdata();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [
-  //   selectedEmployee,
-  //   selectedJobId,
-  //   jobRoleId,
-  //   isWorkFromOffice,
-  //   jobRoleisworkFromOffice,
-  //   // selectedClientId,
-  // ]);
+  }, [
+    selectedClient,
+    selectedEmployee,
+    debouncedSearch,
+    selectedStartDate,
+    selectedEndDate,
+    isFromofficeWork,
+    rowsPerPage,
+  ]);
 
   return (
     <div className="timesheet-list-container">
-      {/* {!openJobTitleModal && JobTitledata.length > 1 && (
-        <JobTitleForm
-          onClose={handlePopupClose}
-          jobTitledata={JobTitledata}
-          onJobTitleSelect={handleJobTitleSelect}
-        />
-      )}
-      {!openClietnSelectModal && Clientdata.length > 1 && (
-        <AssignClient
-          onClose={handlePopupCloseForclient}
-          Clientdata={Clientdata}
-          onClientSelect={handleClientSelect}
-        />
-      )} */}
       <div className="timesheet-flex">
         <div className="timesheet-title">
           <h1>Time Sheet Report</h1>
@@ -409,52 +289,29 @@ const TimeSheetReportDaily = () => {
                 value={selectedEmployee}
                 onChange={(e) => handleEmployeeChange(e.target.value)}
                 displayEmpty
-                multiple
-                renderValue={(selected) => {
-                  if (selected.length === 0) {
-                    return <>Select Employee</>;
-                  }
-                  if (selected.length === employeeList.length) {
-                    return "All Employee";
-                  }
-                  return employeeList
-                    .filter((c) => selected.includes(c._id))
-                    .map((c) => c.userName)
-                    .join(", ");
-                }}
                 MenuProps={{
                   PaperProps: {
                     style: {
                       width: 150,
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
                       maxHeight: 200,
-                      scrollbarWidth: "thin",
                       overflowX: "auto",
                     },
                   },
                 }}
               >
-                {currentRole === "Superadmin" && (
-                  <MenuItem value="All employee">
-                    <Checkbox
-                      checked={
-                        selectedEmployee.length === employeeList.length &&
-                        employeeList.length > 0
-                      }
-                    />
-                    All Employee
-                  </MenuItem>
-                )}
-                {employeeList.map((employee) => (
-                  <MenuItem key={employee._id} value={employee._id}>
-                    <Checkbox
-                      checked={selectedEmployee.includes(employee._id)}
-                    />
-                    {employee.userName}
+                <MenuItem value="" disabled>
+                  Select Employee
+                </MenuItem>
+                {/* {!isFromofficeWork && ( */}
+                <MenuItem value="allUsers">All Employees</MenuItem>
+                {/* )} */}
+                {employeeList.map((emp) => (
+                  <MenuItem key={emp._id} value={emp._id}>
+                    {emp.userName}
                   </MenuItem>
                 ))}
               </Select>
+
               {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
               )}
@@ -462,60 +319,38 @@ const TimeSheetReportDaily = () => {
           )}
 
           {userRole !== "Employee" && (
-            <div className="filter-client-selection">
+            <div className="filter-employee-selection">
               <label className="label">Client</label>
               <Select
                 className="timesheet-input-dropdown"
-                multiple
                 value={selectedClient}
                 onChange={(e) => handleClientChange(e.target.value)}
                 displayEmpty
-                renderValue={(selected) => {
-                  if (selected.length === 0) {
-                    return <>Select Client</>;
-                  }
-                  if (selected.length === clientList.length) {
-                    return "All Clients";
-                  }
-                  return clientList
-                    .filter((c) => selected.includes(c._id))
-                    .map((c) => c.clientName)
-                    .join(", ");
-                }}
                 MenuProps={{
                   PaperProps: {
                     style: {
                       width: 150,
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
                       maxHeight: 200,
-                      scrollbarWidth: "thin",
                       overflowX: "auto",
                     },
                   },
                 }}
               >
-                <MenuItem value="Allclients">
-                  <Checkbox
-                    checked={
-                      selectedClient.length === clientList.length &&
-                      clientList.length > 0
-                    }
-                  />
-                  All Clients
+                <MenuItem value="" disabled>
+                  Select Clients
                 </MenuItem>
-
+                {/* {!isFromofficeWork && ( */}
+                <MenuItem value="allClients">All Clients</MenuItem>
+                {/* )} */}
                 {clientList.map((client) => (
                   <MenuItem key={client._id} value={client._id}>
-                    <Checkbox
-                      checked={selectedClient.indexOf(client._id) > -1}
-                    />
                     {client.clientName}
                   </MenuItem>
                 ))}
               </Select>
-              {errors?.selectedClient && (
-                <p className="error-text">{errors.selectedClient}</p>
+
+              {errors?.selectedEmployee && (
+                <p className="error-text">{errors.selectedEmployee}</p>
               )}
             </div>
           )}
@@ -553,26 +388,22 @@ const TimeSheetReportDaily = () => {
               )} */}
             </div>
 
-            <button onClick={handleFilter}>Filter</button>
+            {/* <button onClick={handleFilter}>Filter</button> */}
           </div>
         </div>
+      </div>
 
-        {/* {userRole !== "Employee" ? (
-          <div className="timesheet-button-container">
-            <button
-              // onClick={handleClockInDropdown}
-              className="timesheet-clock-in-btn"
-            >
-              Clock In
-            </button>
-            <button
-              // onClick={handleClockOutDropdown}
-              className="timesheet-clock-out-btn"
-            >
-              Clock Out
-            </button>
-          </div>
-        ) : null} */}
+      <div className="timesheetreport-officework">
+        <div className="timesheetreport-isfromofficework">
+          <input
+            type="checkbox"
+            data-testid="send-link"
+            name="isFromofficeWork"
+            checked={isFromofficeWork}
+            onChange={handleCheckboxChange}
+          />
+        </div>
+        <label>Office Work?</label>
       </div>
 
       <div className="timesheetreport-searchbar-clockin">
@@ -652,6 +483,24 @@ const TimeSheetReportDaily = () => {
                   </TableRow>
                 )}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={10}>
+                    <div className="timesheetreport-count">
+                      <p>Total Hours:</p>
+                      <TablePagination
+                        component="div"
+                        count={totalTimesheet}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[50, 100, 200]}
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
             </Table>
           </TableContainer>
         </>

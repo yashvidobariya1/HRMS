@@ -75,9 +75,9 @@
 .logo-details img {
   border-radius: var(--border-radius);
   border: 1px solid var(--primary-text-white);
-  height: 30px;
-  width: 30px;
-  margin: 5px;
+  height: 38px;
+  width: 38px;
+  /* padding: 5px; */
 }
 
 .home-subheader {

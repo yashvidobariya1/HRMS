@@ -21,7 +21,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     useSelector((state) => state.companySelect.companySelect)
   );
   const [expandedItems, setExpandedItems] = useState({});
-
   const toggleExpand = (title) => {
     setExpandedItems((prev) => ({
       ...prev,
@@ -255,20 +254,44 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                       </div>
                       {expandedItems[item.title] && !isCollapsed && (
                         <ul className="sidebar-submenu">
-                          {item.subItems.map((subItem, subIndex) => (
-                            <li key={subIndex} className="sidebar-subitem">
-                              <NavLink
-                                to={subItem.link}
-                                className={({ isActive }) =>
-                                  isActive ? "active" : ""
-                                }
-                              >
-                                <span className="link_name">
-                                  {subItem.title}
-                                </span>
-                              </NavLink>
-                            </li>
-                          ))}
+                          {item.subItems
+                            .filter((subItem) => {
+                              // Hide "My Report" for Superadmin
+                              if (
+                                subItem.title === "My Report" &&
+                                currentRole === "Superadmin"
+                              ) {
+                                return false;
+                              }
+
+                              // Hide Daily/Weekly/Monthly Report for Employee
+                              if (
+                                [
+                                  "Daily Report",
+                                  "Weekly Report",
+                                  "Monthly Report",
+                                ].includes(subItem.title) &&
+                                currentRole === "Employee"
+                              ) {
+                                return false;
+                              }
+
+                              return true;
+                            })
+                            .map((subItem, subIndex) => (
+                              <li key={subIndex} className="sidebar-subitem">
+                                <NavLink
+                                  to={subItem.link}
+                                  className={({ isActive }) =>
+                                    isActive ? "active" : ""
+                                  }
+                                >
+                                  <span className="link_name">
+                                    {subItem.title}
+                                  </span>
+                                </NavLink>
+                              </li>
+                            ))}
                         </ul>
                       )}
                     </>

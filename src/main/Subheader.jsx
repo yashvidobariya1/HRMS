@@ -59,6 +59,7 @@ const pageNames = {
   daily: "Daily Report",
   weekly: "Weekly Report",
   monthly: "Monthly Report",
+  myreport: "My Report",
 };
 
 const Subheader = () => {

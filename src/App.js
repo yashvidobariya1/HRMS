@@ -52,6 +52,7 @@ import TimeSheetReportDaily from "./pages/TimeSheetReport/TimeSheetReportDaily";
 import TimeSheetReportWeekly from "./pages/TimeSheetReport/TimeSheetReportWeekly";
 import TimeSheetReport from "./pages/Client/ViewReport";
 import TimeSheetReportMonthly from "./pages/TimeSheetReport/TimeReportMonthly";
+import TimesheetReportMy from "./pages/TimeSheetReport/TimesheetReportMy";
 
 // Layout wrapper
 function MainLayout({ children, path }) {
@@ -266,6 +267,11 @@ const protectedRoutes = [
   {
     path: "/timesheetreport/monthly",
     component: <TimeSheetReportMonthly />,
+    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/timesheetreport/myreport",
+    component: <TimesheetReportMy />,
     roles: ["Superadmin", "Administrator", "Manager", "Employee"],
   },
   {

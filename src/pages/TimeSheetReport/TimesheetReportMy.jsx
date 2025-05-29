@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
 
-const TimeSheetReportDaily = () => {
+const TimeSheetReportMy = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
@@ -34,9 +34,7 @@ const TimeSheetReportDaily = () => {
     startDate: startDate,
     endDate: "",
   });
-  const [selectedStartDate, setSelectedStartDate] = useState(
-    moment().format("YYYY-MM-DD")
-  );
+  const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [errors, setErrors] = useState({});
   const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
@@ -238,7 +236,7 @@ const TimeSheetReportDaily = () => {
       );
 
       if (response?.data?.status === 200) {
-        setTimesheetReportList(response?.data?.data);
+        setTimesheetReportList(response?.data?.reports);
         settotalTimesheet(response.data.totalReports);
         setTotalPages(response?.data?.totalPages);
       } else {
@@ -335,11 +333,11 @@ const TimeSheetReportDaily = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId]);
 
-  const handleFilter = () => {
-    if (validate()) {
-      GetTimesheetReport();
-    }
-  };
+  // const handleFilter = () => {
+  //   if (validate()) {
+  //     GetTimesheetReport();
+  //   }
+  // };
 
   useEffect(() => {
     if (clientList.length > 0 && selectedClient.length === 0) {
@@ -357,7 +355,7 @@ const TimeSheetReportDaily = () => {
     if (selectedEmployee?.length > 0 && selectedClient?.length > 0) {
       GetTimesheetReport();
     }
-  }, [selectedClient, selectedEmployee]);
+  }, [selectedClient, selectedEmployee, debouncedSearch]);
 
   // useEffect(() => {
   //   const GetClientData =
@@ -401,7 +399,7 @@ const TimeSheetReportDaily = () => {
 
       <div className="timesheet-report-filter-container">
         <div className="filter-timsheetreport-main">
-          {userRole !== "Employee" && (
+          {/* {userRole !== "Employee" && (
             <div className="filter-employee-selection">
               <label className="label">Employee</label>
               <Select
@@ -459,7 +457,7 @@ const TimeSheetReportDaily = () => {
                 <p className="error-text">{errors.selectedEmployee}</p>
               )}
             </div>
-          )}
+          )} */}
 
           {userRole !== "Employee" && (
             <div className="filter-client-selection">
@@ -553,11 +551,11 @@ const TimeSheetReportDaily = () => {
               )} */}
             </div>
 
-            <button onClick={handleFilter}>Filter</button>
+            {/* <button onClick={handleFilter}>Filter</button> */}
           </div>
         </div>
 
-        {userRole !== "Employee" ? (
+        {/* {userRole !== "Employee" ? (
           <div className="timesheet-button-container">
             <button
               // onClick={handleClockInDropdown}
@@ -572,7 +570,7 @@ const TimeSheetReportDaily = () => {
               Clock Out
             </button>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
 
       <div className="timesheetreport-searchbar-clockin">
@@ -610,8 +608,8 @@ const TimeSheetReportDaily = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {timesheetReportList?.map((row, index) => {
-                  return (
+                {timesheetReportList && timesheetReportList.length > 0 ? (
+                  timesheetReportList.map((row, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         {moment(row.date).format("DD/MM/YYYY")}
@@ -643,8 +641,14 @@ const TimeSheetReportDaily = () => {
                       <TableCell>{row.overTime}</TableCell>
                       <TableCell>{row.totalHours}</TableCell>
                     </TableRow>
-                  );
-                })}
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} align="center">
+                      <p>No data found</p>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -654,4 +658,4 @@ const TimeSheetReportDaily = () => {
   );
 };
 
-export default TimeSheetReportDaily;
+export default TimeSheetReportMy;

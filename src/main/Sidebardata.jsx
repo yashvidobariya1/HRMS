@@ -149,6 +149,10 @@ export const SidebarData = [
             title: "Monthly Report",
             link: "/timesheetreport/monthly",
           },
+          {
+            title: "My Report",
+            link: "/timesheetreport/myreport",
+          },
         ],
       },
     ],
