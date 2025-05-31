@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./TimeSheetReport.css";
-import JobTitleForm from "../../SeparateCom/RoleSelect";
-// import { useLocation } from "react-router";
 import { GetCall, PostCall } from "../../ApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
-// import TimesheetTable from "../../SeparateCom/TimesheetTable";
 import moment from "moment";
-import { GrDocumentDownload } from "react-icons/gr";
 import { useSelector } from "react-redux";
-// import { CropLandscapeOutlined } from "@mui/icons-material";
 import {
-  Checkbox,
   MenuItem,
   Select,
   TableFooter,
@@ -31,11 +25,8 @@ import {
 import { BsHourglassSplit } from "react-icons/bs";
 
 const TimeSheetReportDaily = () => {
-  const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const startDate = moment().format("YYYY-MM-DD");
-  const endDate = moment().format("YYYY-MM-DD");
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [errors, setErrors] = useState({});
@@ -47,42 +38,14 @@ const TimeSheetReportDaily = () => {
   const [clientList, setClientList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
   const [selectedClient, setselectedClient] = useState("allClients");
-  const [selectedJobId, setSelectedJobId] = useState("");
-  // const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
-  // const startYear = moment(startDate).year();
-  const currentYear = moment().year();
-  const currentMonth = moment().month() + 1;
-  const [selectedYear, setSelectedYear] = useState(currentYear);
-  // const [employeeClockinDropwdown, setEmployeeClockinDropwdown] =
-  //   useState(false);
-  // const [employeeClockoutDropwdown, setEmployeeClockoutDropwdown] =
-  //   useState(false);
-  const today = moment().format("YYYY-MM-DD");
-  const [totalTimesheet, settotalTimesheet] = useState([]);
-  const [clockInData, setClockInData] = useState({
-    date: moment().format("YYYY-MM-DD"),
-    startTime: moment().format("HH:mm"),
-  });
-  const currentRole = useSelector((state) => state.userInfo.userInfo.role);
-  const [clockOutData, setClockOutData] = useState({
-    date: moment().format("YYYY-MM-DD"),
-    endTime: moment().format("HH:mm"),
-  });
-  // const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
-  // const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-  const jobRoleisworkFromOffice = useSelector(
-    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
-  );
-  const jobRoleId = useSelector(
-    (state) => state.jobRoleSelect.jobRoleSelect.jobId
-  );
+  const [totalTimesheet, settotalTimesheet] = useState(0);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
-  // const [selectedWeek, setSelectedWeek] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const [totalHourCount, settotalHourCount] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,28 +57,28 @@ const TimeSheetReportDaily = () => {
     }
   };
 
-  const validate = () => {
-    let newErrors = {};
+  // const validate = () => {
+  //   let newErrors = {};
 
-    if (!selectedStartDate) {
-      newErrors.startDate = "Start date is required";
-    }
+  //   if (!selectedStartDate) {
+  //     newErrors.startDate = "Start date is required";
+  //   }
 
-    // if (!selectedEndDate) {
-    //   newErrors.endDate = "End date is required";
-    // }
+  //   // if (!selectedEndDate) {
+  //   //   newErrors.endDate = "End date is required";
+  //   // }
 
-    if (selectedEmployee.length === 0) {
-      newErrors.selectedEmployee = "Please select at least one employee";
-    }
+  //   if (selectedEmployee.length === 0) {
+  //     newErrors.selectedEmployee = "Please select at least one employee";
+  //   }
 
-    if (selectedClient.length === 0) {
-      newErrors.selectedClient = "Please select at least one client";
-    }
+  //   if (selectedClient.length === 0) {
+  //     newErrors.selectedClient = "Please select at least one client";
+  //   }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
   const handleCheckboxChange = (event) => {
     const checked = event.target.checked;
@@ -190,7 +153,6 @@ const TimeSheetReportDaily = () => {
 
       console.log("filter", filters);
       const frequency = "Daily";
-      // const { year, month } = appliedFilters;
       const response = await PostCall(
         `/getTimesheetReport?page=${currentPage}&limit=${rowsPerPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isFromofficeWork}`,
         filters
@@ -199,7 +161,7 @@ const TimeSheetReportDaily = () => {
       if (response?.data?.status === 200) {
         setTimesheetReportList(response?.data?.reports);
         settotalTimesheet(response.data.totalReports);
-        setTotalPages(response?.data?.totalPages);
+        settotalHourCount(response.data.totalHours);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -258,7 +220,7 @@ const TimeSheetReportDaily = () => {
   }, [companyId, isFromofficeWork]);
 
   useEffect(() => {
-    if (selectedEmployee && selectedClient) {
+    if (selectedEmployee || selectedClient) {
       GetTimesheetReport();
     }
   }, [
@@ -302,9 +264,7 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="" disabled>
                   Select Employee
                 </MenuItem>
-                {/* {!isFromofficeWork && ( */}
                 <MenuItem value="allUsers">All Employees</MenuItem>
-                {/* )} */}
                 {employeeList.map((emp) => (
                   <MenuItem key={emp._id} value={emp._id}>
                     {emp.userName}
@@ -339,9 +299,7 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="" disabled>
                   Select Clients
                 </MenuItem>
-                {/* {!isFromofficeWork && ( */}
                 <MenuItem value="allClients">All Clients</MenuItem>
-                {/* )} */}
                 {clientList.map((client) => (
                   <MenuItem key={client._id} value={client._id}>
                     {client.clientName}
@@ -383,9 +341,6 @@ const TimeSheetReportDaily = () => {
                 min={minDate}
                 max={maxDate}
               />
-              {/* {errors?.endDate && (
-                <p className="error-text">{errors?.endDate}</p>
-              )} */}
             </div>
 
             {/* <button onClick={handleFilter}>Filter</button> */}
@@ -433,7 +388,9 @@ const TimeSheetReportDaily = () => {
                   <TableCell>Date</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Job Role</TableCell>
-                  <TableCell>Client Name</TableCell>
+                  <TableCell>
+                    {isFromofficeWork ? "Location Name" : "Client Name"}{" "}
+                  </TableCell>
                   <TableCell>Check-in/Check-Out</TableCell>
                   <TableCell>Working Hours</TableCell>
                   <TableCell>Over Time</TableCell>
@@ -449,7 +406,9 @@ const TimeSheetReportDaily = () => {
                       </TableCell>
                       <TableCell>{row.userName}</TableCell>
                       <TableCell>{row.jobRole}</TableCell>
-                      <TableCell>{row.clientName}</TableCell>
+                      <TableCell>
+                        {isFromofficeWork ? row.locationName : row.clientName}
+                      </TableCell>
                       <TableCell>
                         {row.clockinTime && row.clockinTime.length > 0
                           ? row.clockinTime.map((item, i) => (
@@ -487,7 +446,7 @@ const TimeSheetReportDaily = () => {
                 <TableRow>
                   <TableCell colSpan={10}>
                     <div className="timesheetreport-count">
-                      <p>Total Hours:</p>
+                      <p>Total Hours: {totalHourCount}</p>
                       <TablePagination
                         component="div"
                         count={totalTimesheet}

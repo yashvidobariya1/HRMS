@@ -219,7 +219,7 @@
 .timesheetreport-custom-table td {
   color: var(--secondary-dark-gray);
   border-bottom: 1px solid var(--neutral-light-gray);
-  padding: 12px;
+  padding: 8px;
   text-align: left;
 }
 
@@ -234,6 +234,7 @@
   margin: 0;
   justify-content: center;
   display: flex;
+  font-size: 14px;
 }
 
 .timesheetreport-officework {
@@ -322,7 +323,7 @@
   }
 
   .timesheet-report-custom-table .MuiTableCell-root {
-    padding: 8px;
+    padding: 6px;
     font-size: 12px !important;
   }
 }
