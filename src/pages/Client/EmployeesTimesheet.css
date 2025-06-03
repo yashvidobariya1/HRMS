@@ -73,6 +73,7 @@
 .employeetimesheet-table .MuiTableCell-head {
   font-weight: bold !important;
   color: var(--sidebar-title-primary-white);
+  padding: 12px;
 }
 
 .employeetimesheet-table tbody,
@@ -82,11 +83,12 @@
 
 .employeetimesheet-table td {
   color: var(--secondary-dark-gray) !important;
+  padding: 12px;
   /* border-bottom: var(--neutral-light-gray) !important; */
 }
 
 .employeetimesheet-table .MuiTableCell-root .MuiTableCell-body {
-  font-size: 15px !important;
+  font-size: 14px !important;
   color: var(--secondary-dark-gray) !important;
 }
 
@@ -197,7 +199,7 @@
   }
 
   .employeetimesheet-table .MuiTableCell-root {
-    padding: 12px;
+    padding: 10px;
   }
 
   .employeetimeesheet-timing {
@@ -232,5 +234,9 @@
 
   .Employeetimesheet-reason p {
     font-size: 12px;
+  }
+
+  .employeetimesheet-table .MuiTableCell-root {
+    padding: 8px;
   }
 }

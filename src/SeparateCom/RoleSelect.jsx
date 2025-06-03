@@ -15,12 +15,19 @@ const JobTitleForm = ({ onClose, jobTitledata, onJobTitleSelect }) => {
     }
     // console.log("Selected Job Title:", jobTitle);
     onJobTitleSelect(jobTitle);
-    onClose();
+    onClose(false);
+  };
+
+  const previewClose = () => {
+    onClose(true);
   };
 
   return (
     <div className="roleselect-overlay">
       <form onSubmit={handleSubmit} className="roleselect-modal">
+        <button className="roleselect-close-btn" onClick={previewClose}>
+          ×
+        </button>
         <h1>Select Job Role</h1>
         <div className="jobtitleselect">
           {/* <select

@@ -18,8 +18,165 @@
   margin: 10px 0;
 }
 
-@media screen and (max-width: 400px) {
+.no-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.viewstatus-scrollable-table-wrapper .MuiTableContainer-root {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  margin: 10px 0;
+  background-color: var(--primary-text-white);
+  border-radius: var(--border-radius) !important;
+}
+
+.viewstatus-table {
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: var(--border-radius);
+}
+
+.viewstatus-table table {
+  border-collapse: separate;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.viewstatus-table .MuiTableHead-root {
+  color: var(--sidebar-title-primary-white);
+  background-color: var(--table-heading-neutral-dark-blue);
+  border-collapse: separate;
+}
+
+.viewstatus-table .MuiTableCell-head {
+  font-weight: bold !important;
+  color: var(--sidebar-title-primary-white);
+  padding: 12px;
+}
+
+.viewstatus-table tbody,
+.MuiTableFooter-root {
+  background-color: var(--primary-text-white);
+}
+
+.viewstatus-table td {
+  color: var(--secondary-dark-gray) !important;
+  padding: 12px;
+  /* border-bottom: var(--neutral-light-gray) !important; */
+}
+
+.viewstatus-table .MuiTableCell-root .MuiTableCell-body {
+  font-size: 15px !important;
+  color: var(--secondary-dark-gray) !important;
+}
+
+.viewstatus-table .MuiIconButton-root {
+  font-size: 16px !important;
+  color: var(--secondary-dark-gray) !important;
+}
+
+.viewstatus-table .MuiTableSortLabel-root.Mui-active,
+.viewstatus-table .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon,
+.viewstatus-table .MuiTableSortLabel-root:hover {
+  color: var(--sidebar-title-primary-white) !important;
+}
+
+.viewstatus-table .MuiSelect-select {
+  color: var(--secondary-dark-gray);
+}
+
+.viewstatus-table .MuiIconButton-root.Mui-disabled {
+  color: var(--sidebar-hover) !important;
+  opacity: 0.6;
+}
+
+.viewstatus-table .MuiIconButton-root {
+  color: var(--sidebar-hover) !important;
+}
+
+.viewstatus-table .MuiSelect-icon {
+  color: var(--sidebar-hover) !important;
+  fill: var(--sidebar-hover);
+}
+
+.viewstatus-table .MuiMenu-list {
+  background: var(--primary-text-white) !important;
+  border: 1px solid var(--neutral-light-gray);
+  color: var(--sidebar-bg);
+}
+
+.viewstatus-timing {
+  padding: 5px 10px;
+  background-color: var(--neutral-light-gray);
+  margin-bottom: 5px;
+  border: 1px solid var(--neutral-light-gray);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.viewstatus-timesheetclockin {
+  color: var(--secondary-dark-gray) #333333;
+  font-weight: 500;
+}
+
+.viewstatus-timesheetclockout {
+  font-weight: 600;
+  color: var(--primary-button);
+}
+
+.viewstatus-timesheet-timming {
+  font-weight: 500;
+  color: var(--secondary-teal);
+}
+
+.viewstatus-count {
+  display: flex;
+  justify-content: space-between;
+}
+
+.viewstatus-count .MuiTablePagination-root {
+  overflow: hidden;
+}
+
+.viewstatus-table .MuiTableCell-footer {
+  padding: 0 10px !important;
+}
+
+.viewstatus-count {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 767px) {
+  .viewstatus-table {
+    font-size: 12px;
+  }
+
+  .viewstatus-table .MuiTableCell-root {
+    padding: 10px;
+  }
+}
+
+@media screen and (max-width: 575px) {
   .status-list-flex {
     display: block;
+  }
+
+  .viewstatus-count p {
+    margin: 5px;
+    font-size: 12px;
+  }
+
+  .viewstatus-table .MuiTableCell-root {
+    padding: 8px;
+  }
+
+  .viewstatus-action {
+    margin: 5px 0;
   }
 }

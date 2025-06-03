@@ -1,13 +1,18 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const ProtectedRoute = ({ children, allowedRoles, path }) => {
   const token = localStorage.getItem("token");
   const userInfo = useSelector((state) => state.userInfo.userInfo);
 
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   const employeeFormFilled = useSelector(
     (state) => state.employeeformFilled.employeeformFilled
   );
+
+  const { id: routeUserId } = useParams();
 
   if (path === "/employeestimesheet") return children;
 
@@ -16,12 +21,20 @@ const ProtectedRoute = ({ children, allowedRoles, path }) => {
   }
 
   if (
+    currentPath.startsWith("/editemployee/") &&
+    routeUserId &&
+    routeUserId !== userInfo._id
+  ) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const targetPath = `/editemployee/${userInfo._id}`;
+  if (
     employeeFormFilled === false &&
     allowedRoles.includes(userInfo.role) &&
-    path !== "/addemployee" &&
-    path !== "/viewtimesheetreport"
+    currentPath !== targetPath
   ) {
-    return <Navigate to={`/editemployee/${userInfo._id}`} />;
+    return <Navigate to={targetPath} replace />;
   }
 
   if (!allowedRoles.includes(userInfo.role)) {

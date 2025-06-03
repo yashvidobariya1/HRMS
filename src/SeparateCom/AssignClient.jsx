@@ -15,12 +15,20 @@ const AssignClient = ({ onClose, Clientdata, onClientSelect }) => {
     }
     // console.log("Selected client:", AssignClient);
     onClientSelect(AssignClient);
-    onClose();
+    onClose(false);
+  };
+
+  const previewClose = () => {
+    console.log("Preview close called");
+    onClose(true);
   };
 
   return (
     <div className="clientSelect-overlay">
       <form onSubmit={handleSubmit} className="clientSelect-modal">
+        <button className="clientSelect-close-btn" onClick={previewClose}>
+          ×
+        </button>
         <h1>Select Assign Client</h1>
         <div className="AssignClientselect">
           <Select

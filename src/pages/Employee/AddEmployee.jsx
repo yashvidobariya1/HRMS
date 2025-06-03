@@ -13,6 +13,7 @@ import countryNames from "../../Data/AllCountryList.json";
 import VisaCategory from "../../Data/VisaCategory.json";
 import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
 import { Checkbox, MenuItem, Select } from "@mui/material";
+import moment from "moment";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ const AddEmployee = () => {
       homeTelephone: "",
       email: "",
       niNumber: "",
-      sendRegistrationLink: false,
+      // sendRegistrationLink: false,
     },
     addressDetails: {
       address: "",
@@ -297,10 +298,10 @@ const AddEmployee = () => {
 
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
+          navigate("/employees");
         } else {
           showToast(response?.data?.message, "error");
         }
-        navigate("/employees");
       } catch (error) {
         showToast(error, "error");
       } finally {
@@ -798,10 +799,10 @@ const AddEmployee = () => {
           newErrors.niNumber =
             "Invalid NI Number format. Use format: QQ 88 77 77 A";
         }
-        if (!formData.personalDetails?.sendRegistrationLink) {
-          newErrors.sendRegistrationLink =
-            "Please check the box to send the registration link.";
-        }
+        // if (!formData.personalDetails?.sendRegistrationLink) {
+        //   newErrors.sendRegistrationLink =
+        //     "Please check the box to send the registration link.";
+        // }
         break;
 
       case "Address Details":
@@ -1252,7 +1253,9 @@ const AddEmployee = () => {
                         className: "custom-dropdown-menu",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
+                        overflowX: "auto",
                         maxHeight: 200,
+                        scrollbarWidth: "thin",
                       },
                     },
                   }}
@@ -1302,6 +1305,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         maxHeight: 200,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                       },
                     },
                   }}
@@ -1379,7 +1384,7 @@ const AddEmployee = () => {
               <div className="addemployee-input-container"></div>
             </div>
 
-            <div className="addemployee-registration-link">
+            {/* <div className="addemployee-registration-link">
               <input
                 type="checkbox"
                 data-testid="send-link"
@@ -1391,7 +1396,7 @@ const AddEmployee = () => {
             </div>
             {errors?.sendRegistrationLink && (
               <p className="error-text">{errors?.sendRegistrationLink}</p>
-            )}
+            )} */}
           </div>
         )}
 
@@ -1423,6 +1428,8 @@ const AddEmployee = () => {
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                           maxHeight: 200,
+                          scrollbarWidth: "thin",
+                          overflowX: "auto",
                         },
                       },
                     }}
@@ -1803,6 +1810,8 @@ const AddEmployee = () => {
                           textOverflow: "ellipsis",
                           maxHeight: 200,
                           whiteSpace: "nowrap",
+                          scrollbarWidth: "thin",
+                          overflowX: "auto",
                         },
                       },
                     }}
@@ -2044,7 +2053,7 @@ const AddEmployee = () => {
                   _id: i,
                   Name: job.jobTitle,
                   annualSalary: job.annualSalary,
-                  joiningDate: job.joiningDate,
+                  joiningDate: moment(job.joiningDate).format("DD/MM/YYYY"),
                 }))}
                 actions={{
                   // ShowdropwornAction,
@@ -2149,14 +2158,42 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Relationship To You</label>
-                <input
+                {/* <input
                   type="text"
                   name="relationshipToYou"
                   className="addemployee-input"
                   value={formData?.kinDetails?.relationshipToYou}
                   onChange={handleChange}
                   placeholder="Enter Relationship"
-                />
+                /> */}
+                <Select
+                  name="relationshipToYou"
+                  data-testid="relationshipToYou-select"
+                  className="addemployee-input-dropdown"
+                  displayEmpty
+                  value={formData?.kinDetails?.relationshipToYou || ""}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        maxHeight: 200,
+                        whiteSpace: "nowrap",
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
+                      },
+                    },
+                  }}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="" disabled>
+                    Select Relationship Type
+                  </MenuItem>
+                  <MenuItem value="Spouse">Spouse</MenuItem>
+                  <MenuItem value="Child">Child</MenuItem>
+                  <MenuItem value="Friend">Friend</MenuItem>
+                  <MenuItem value="Siblings">Siblings</MenuItem>
+                </Select>
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Post Code*</label>
@@ -2527,6 +2564,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         maxHeight: 200,
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
                       },
                     },
                   }}
@@ -2687,6 +2726,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         maxHeight: 200,
                         whiteSpace: "nowrap",
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
                       },
                     },
                   }}
@@ -2868,33 +2909,19 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         maxHeight: 200,
                         whiteSpace: "nowrap",
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
                       },
                     },
                   }}
-                  onChange={(e) => {
-                    handleChange(e);
-                    const selectedContract = contracts.find(
-                      (contract) => contract._id === e.target.value
-                    );
-                    setFormData((prev) => ({
-                      ...prev,
-                      contractDetails: {
-                        ...prev.contractDetails,
-                        contractDocument: selectedContract
-                          ? selectedContract.contractDocument
-                          : "",
-                      },
-                    }));
-                  }}
+                  onChange={handleChange}
                 >
                   <MenuItem value="" disabled>
                     Select Contract Type
                   </MenuItem>
-                  {contracts?.map((contract) => (
-                    <MenuItem value={contract?._id} key={contract?._id}>
-                      {contract.contractType}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="FullTime">Full Time</MenuItem>
+                  <MenuItem value="PartTime">Part Time</MenuItem>
+                  <MenuItem value="FixTerm">Fix Term</MenuItem>
                 </Select>
               </div>
 
@@ -2930,6 +2957,7 @@ const AddEmployee = () => {
                   data-testid="contractDocument-select"
                   value={formData?.contractDetails?.contractDocument || ""}
                   displayEmpty
+                  onChange={handleChange}
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -2937,6 +2965,8 @@ const AddEmployee = () => {
                         textOverflow: "ellipsis",
                         maxHeight: 200,
                         whiteSpace: "nowrap",
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
                       },
                     },
                   }}
@@ -2944,19 +2974,11 @@ const AddEmployee = () => {
                   <MenuItem value="" disabled>
                     Select Contract Document
                   </MenuItem>
-                  {contracts
-                    ?.filter(
-                      (contract) =>
-                        contract._id === formData?.contractDetails?.contractType
-                    )
-                    ?.map((contract) => (
-                      <MenuItem
-                        value={contract.contractDocument}
-                        key={contract._id}
-                      >
-                        {contract.contractDocument}
-                      </MenuItem>
-                    ))}
+                  {contracts?.map((contract) => (
+                    <MenuItem value={contract?._id} key={contract?._id}>
+                      {contract.contractType}
+                    </MenuItem>
+                  ))}
                 </Select>
               </div>
             </div>
@@ -2986,7 +3008,13 @@ const AddEmployee = () => {
 
       {currentStep < steps.length && (
         <div className="addemployee-next-button">
-          <button onClick={prevStep} disabled={!employeeFormFilled}>
+          <button
+            onClick={prevStep}
+            disabled={
+              (employeeFormFilled && currentStep < 2) ||
+              (!employeeFormFilled && currentStep < 3)
+            }
+          >
             Previous
           </button>
           <button onClick={nextStep}>

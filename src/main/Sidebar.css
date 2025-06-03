@@ -75,8 +75,8 @@
 .logo-details img {
   border-radius: var(--border-radius);
   border: 1px solid var(--primary-text-white);
-  height: 30px;
-  width: 30px;
+  height: 38px;
+  width: 38px;
   /* padding: 5px; */
 }
 
@@ -103,7 +103,7 @@
 
 .nav-links {
   margin: 0;
-  padding: 0 20px;
+  padding: 0 15px;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
@@ -207,6 +207,7 @@
   position: fixed;
   background: var(--primary-text-white);
   border-radius: 20px;
+  z-index: 10;
 }
 
 .sidebar-Toggle-menu.collapsed {
@@ -235,7 +236,7 @@
   color: var(--sidebar-title-primary-white);
   border: 1px solid var(--sidebar-hover);
   width: 100%;
-  max-width: 205px;
+  max-width: 200px;
   outline: none;
 }
 
@@ -245,6 +246,7 @@
   color: var(--sidebar-title-primary-white);
   border: none;
   outline: none;
+  font-size: 14px !important;
 }
 
 .company-dropdown .MuiSelect-icon {
@@ -263,6 +265,7 @@
   .sidebar .logo-details img {
     width: 30px;
     height: 30px;
+    margin: 0;
   }
 
   .setting-form-container {
@@ -274,8 +277,7 @@
   }
 
   .logo-details {
-    /* padding: 23px; */
-    padding: 33px;
+    padding: 30px 10px !important;
   }
 
   .sidebar {
@@ -316,6 +318,10 @@
   .company-dropdown {
     padding: 3px;
   }
+
+  .sidebar .logo-details .logo-text {
+    padding: 0;
+  }
 }
 
 @media screen and (max-width: 600px) {
@@ -336,8 +342,9 @@
 
 @media screen and (max-width: 500px) {
   .sidebar .logo-details img {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
+    margin: 0;
   }
 }
 
@@ -348,5 +355,9 @@
 
   .sidebar .nav-links li a {
     padding: 8px 15px !important;
+  }
+
+  .logo_name {
+    gap: 5px;
   }
 }

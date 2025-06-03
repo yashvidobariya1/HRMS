@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { FaLocationDot } from "react-icons/fa6";
+import React, { useEffect, useRef, useState } from "react";
+import { FaDownload, FaLocationDot } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 import "./Location.css";
 import Loader from "../Helper/Loader";
@@ -10,9 +10,12 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { TextField } from "@mui/material";
 import { useSelector } from "react-redux";
+import QRCode from "react-qr-code";
+import moment from "moment";
 
 const Location = () => {
   const navigate = useNavigate();
+  const qrCodeRef = useRef();
   const [loading, setLoading] = useState(false);
   const [locationList, setLocationList] = useState([]);
   const [locationName, setLocationName] = useState("");
@@ -26,6 +29,7 @@ const Location = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalLocations, settotalLocations] = useState([]);
   const companyId = useSelector((state) => state.companySelect.companySelect);
+  const [QRvalue, setQRvalue] = useState("");
 
   const handleAction = (id) => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
@@ -69,7 +73,7 @@ const Location = () => {
 
       if (response?.data?.status === 200) {
         setLocationList(response?.data?.locations);
-        settotalLocations(response.data?.totalLocations);
+        settotalLocations(response?.data?.totalLocations);
         setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
@@ -104,7 +108,14 @@ const Location = () => {
     GetLocations();
   };
 
-  const headers = ["Location Name", "Address", "City", "Post Code", "Action"];
+  const headers = [
+    "Location Name",
+    "Address",
+    "City",
+    "Post Code",
+    "Active QR",
+    "Action",
+  ];
 
   const handlePerPageChange = (e) => {
     // setLocationPerPage(parseInt(e.target.value, 10));
@@ -116,6 +127,94 @@ const Location = () => {
   const HandleGenerateQrCode = (id) => {
     // console.log("id", id);
     navigate(`/location/generateqrcode?locationId=${id}`);
+  };
+
+  const HandleGenerateNewQrCode = async (
+    id,
+    param1,
+    param2,
+    param3,
+    param4,
+    qrValue
+  ) => {
+    const newQRName = `${qrValue}-${moment().format(
+      "YYYYMMDDHHmmssSSS"
+    )}${Math.floor(Math.random() * 1000)}`;
+    setQRvalue(newQRName);
+    setTimeout(() => {
+      const qrCodeSVG = qrCodeRef.current.querySelector("svg");
+
+      if (qrCodeSVG) {
+        const svgData = new XMLSerializer().serializeToString(qrCodeSVG);
+        const img = new Image();
+        const svgBlob = new Blob([svgData], { type: "image/svg+xml" });
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        img.onload = async () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          const pngBase64 = canvas.toDataURL("image/png");
+          const formdata = {
+            qrValue: newQRName,
+            qrCode: pngBase64,
+          };
+          try {
+            setLoading(true);
+            const response = await PostCall(
+              `/generateQRCodeForLocation/${id}`,
+              formdata
+            );
+            // console.log("response", response);
+            if (response?.data?.status === 200) {
+              showToast(response?.data?.message, "success");
+              GetLocations();
+            } else {
+              showToast(response?.data?.message, "error");
+            }
+            setLoading(false);
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        };
+
+        img.src = svgUrl;
+      }
+    }, 0);
+  };
+
+  const handleDownloadBase64 = async (e, qrURL, qrName) => {
+    e.stopPropagation();
+
+    const timestamp = moment().format("YYYYMMDD-HHmmss");
+    const fileName = `${qrName || "qr-code"}-${timestamp}.png`.replace(
+      /\s+/g,
+      "_"
+    );
+
+    try {
+      const response = await fetch(qrURL, { mode: "cors" });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+
+      // Append for Safari
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      showToast("QR Code downloaded successfully!", "success");
+    } catch (err) {
+      console.error("Download failed:", err);
+      showToast("Failed to download QR Code.", "error");
+    }
   };
 
   // const HandleViewHoliday = (id) => {
@@ -132,7 +231,8 @@ const Location = () => {
       label: "Delete",
       onClick: HandleDeleteLocation,
     },
-    { label: "QRCode", onClick: HandleGenerateQrCode },
+    // { label: "QRCode", onClick: HandleGenerateQrCode },
+    { label: "New QRCode", onClick: HandleGenerateNewQrCode },
     // {
     //   label: "Holiday",
     //   onClick: HandleViewHoliday,
@@ -191,14 +291,39 @@ const Location = () => {
         </div>
       ) : (
         <>
+          <div className="qr-code" ref={qrCodeRef}>
+            <QRCode className="client-generated-code" value={QRvalue} />
+          </div>
           <CommonTable
             headers={headers}
             data={locationList?.map((location) => ({
-              _id: location._id,
-              Name: location.locationName,
-              Address: location.address,
-              City: location.city,
-              Postcode: location.postcode,
+              _id: location?._id,
+              Name: location?.locationName,
+              Address: location?.address,
+              City: location?.city,
+              Postcode: location?.postcode,
+              latestQRCode: location?.latestQRCode ? (
+                <div
+                  className="qr-container"
+                  onClick={(event) =>
+                    handleDownloadBase64(
+                      event,
+                      location?.latestQRCode,
+                      location?.qrValue
+                    )
+                  }
+                >
+                  <img
+                    src={location?.latestQRCode}
+                    alt="QR Code"
+                    className="qr-image"
+                  />
+                  <FaDownload className="download-icon" />
+                </div>
+              ) : (
+                "No Active QR"
+              ),
+              qrValue: location?.qrValue,
             }))}
             actions={{
               showDropdownAction,

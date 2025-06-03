@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { GetCall, PostCall } from "../../ApiServices";
 import "./Client.css";
@@ -11,9 +11,13 @@ import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 import Loader from "../Helper/Loader";
+import QRCode from "react-qr-code";
+import moment from "moment";
+import { FaDownload } from "react-icons/fa6";
 
 const Client = () => {
   const navigate = useNavigate();
+  const qrCodeRef = useRef();
   const [loading, setLoading] = useState(false);
   const [clientList, setClientList] = useState([]);
   const [showDropdownAction, setShowDropdownAction] = useState(null);
@@ -31,6 +35,8 @@ const Client = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalClient, settotalClient] = useState([]);
+  const [QRvalue, setQRvalue] = useState("");
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -73,7 +79,7 @@ const Client = () => {
 
       if (response?.data?.status === 200) {
         setClientList(response?.data?.clients);
-        settotalClient(response.data.totalClients);
+        settotalClient(response?.data?.totalClients);
         setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
@@ -112,6 +118,7 @@ const Client = () => {
     "Email",
     "City",
     "Mobile Number",
+    "Active QR",
     "Action",
   ];
 
@@ -120,19 +127,102 @@ const Client = () => {
     setCurrentPage(1);
   };
 
-  const actions = [
-    // { label: "Edit", onClick: HandleEditClient },
-    // { label: "Delete", onClick: HandleDeleteClient },
-    // { label: "Reports List", onClick: HandleReportList },
-  ];
+  const actions = [];
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
   const HandleGenerateQrCode = (id) => {
-    // console.log("id", id);
     navigate(`/clients/generateqrcode?clientId=${id}`);
+  };
+
+  const HandleGenerateNewQrCode = async (
+    id,
+    param1,
+    param2,
+    param3,
+    param4,
+    qrValue
+  ) => {
+    const newQRName = `${qrValue}-${moment().format(
+      "YYYYMMDDHHmmssSSS"
+    )}${Math.floor(Math.random() * 1000)}`;
+    setQRvalue(newQRName);
+    setTimeout(() => {
+      const qrCodeSVG = qrCodeRef.current.querySelector("svg");
+
+      if (qrCodeSVG) {
+        const svgData = new XMLSerializer().serializeToString(qrCodeSVG);
+        const img = new Image();
+        const svgBlob = new Blob([svgData], { type: "image/svg+xml" });
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        img.onload = async () => {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          const pngBase64 = canvas.toDataURL("image/png");
+          const formdata = {
+            qrValue: newQRName,
+            qrCode: pngBase64,
+          };
+          try {
+            setLoading(true);
+            const response = await PostCall(
+              `/generateQRCodeForClient/${id}`,
+              formdata
+            );
+            // console.log("response", response);
+            if (response?.data?.status === 200) {
+              showToast(response?.data?.message, "success");
+              GetClients();
+            } else {
+              showToast(response?.data?.message, "error");
+            }
+            setLoading(false);
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        };
+
+        img.src = svgUrl;
+      }
+    }, 0);
+  };
+
+  const handleDownloadBase64 = async (e, qrURL, qrName) => {
+    e.stopPropagation();
+
+    const timestamp = moment().format("YYYYMMDD-HHmmss");
+    const fileName = `${qrName || "qr-code"}-${timestamp}.png`.replace(
+      /\s+/g,
+      "_"
+    );
+
+    try {
+      const response = await fetch(qrURL, { mode: "cors" });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+
+      // Append for Safari
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      showToast("QR Code downloaded successfully!", "success");
+    } catch (err) {
+      console.error("Download failed:", err);
+      showToast("Failed to download QR Code.", "error");
+    }
   };
 
   useEffect(() => {
@@ -167,8 +257,12 @@ const Client = () => {
     );
   }
 
+  // if (userRole === "Superadmin" || userRole === "Administrator") {
+  //   actions.push({ label: "QRCode", onClick: HandleGenerateQrCode });
+  // }
+
   if (userRole === "Superadmin" || userRole === "Administrator") {
-    actions.push({ label: "QRCode", onClick: HandleGenerateQrCode });
+    actions.push({ label: "New QRCode", onClick: HandleGenerateNewQrCode });
   }
 
   return (
@@ -202,6 +296,9 @@ const Client = () => {
         </div>
       ) : (
         <>
+          <div className="qr-code" ref={qrCodeRef}>
+            <QRCode className="client-generated-code" value={QRvalue} />
+          </div>
           <CommonTable
             headers={tableHeaders}
             data={clientList?.map((clients) => ({
@@ -210,6 +307,29 @@ const Client = () => {
               email: clients?.email,
               City: clients?.city,
               contactNumber: clients?.contactNumber,
+              latestQRCode: clients?.latestQRCode,
+              latestQRCode: clients?.latestQRCode ? (
+                <div
+                  className="qr-container"
+                  onClick={(event) =>
+                    handleDownloadBase64(
+                      event,
+                      clients?.latestQRCode,
+                      clients?.qrValue
+                    )
+                  }
+                >
+                  <img
+                    src={clients?.latestQRCode}
+                    alt="QR Code"
+                    className="qr-image"
+                  />
+                  <FaDownload className="download-icon" />
+                </div>
+              ) : (
+                "No Active QR"
+              ),
+              qrValue: clients?.qrValue,
             }))}
             actions={{
               actionsList: actions,
