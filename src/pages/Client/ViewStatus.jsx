@@ -330,26 +330,7 @@ const ViewStatus = () => {
                         }
                         onClick={() => handleSort("totalWorkingHours")}
                       >
-                        Total Working
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell
-                      sortDirection={
-                        sortConfig.key === "totalHours"
-                          ? sortConfig.direction
-                          : false
-                      }
-                    >
-                      <TableSortLabel
-                        active={sortConfig.key === "totalHours"}
-                        direction={
-                          sortConfig.key === "totalHours"
-                            ? sortConfig.direction
-                            : "asc"
-                        }
-                        onClick={() => handleSort("totalHours")}
-                      >
-                        Total Hours
+                        Working Hours
                       </TableSortLabel>
                     </TableCell>
                     <TableCell
@@ -369,6 +350,25 @@ const ViewStatus = () => {
                         onClick={() => handleSort("overTime")}
                       >
                         Over Time
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell
+                      sortDirection={
+                        sortConfig.key === "totalHours"
+                          ? sortConfig.direction
+                          : false
+                      }
+                    >
+                      <TableSortLabel
+                        active={sortConfig.key === "totalHours"}
+                        direction={
+                          sortConfig.key === "totalHours"
+                            ? sortConfig.direction
+                            : "asc"
+                        }
+                        onClick={() => handleSort("totalHours")}
+                      >
+                        Total Hours
                       </TableSortLabel>
                     </TableCell>
                   </TableRow>

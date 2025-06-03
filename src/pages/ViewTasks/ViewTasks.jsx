@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -37,14 +37,15 @@ const ViewTasks = () => {
   const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [Clientdata, setClientdata] = useState([]);
-  const todayDate = new Date().toISOString().split("T")[0];
+  // const todayDate = new Date().toISOString().split("T")[0];
+  const todayDate = moment().format("YYYY-MM-DD");
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
   const jobRoleisworkFromOffice = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
-  const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
+  const [isWorkFromOffice, setIsWorkFromOffice] = useState(false);
   const AllowstartDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(AllowstartDate).year();
   const currentYear = moment().year();
@@ -217,8 +218,16 @@ const ViewTasks = () => {
     }
   };
 
-  const handleClientPopupClose = () => {
+  const handleClientPopupClose = (value) => {
+    console.log("handleClientPopupClose", value);
     setopenClietnSelectModal(true);
+    if (value) {
+      setSelectedEmployee("");
+      setTaskList([]);
+      setSelectedJobId("");
+      setIsWorkFromOffice(false);
+      setSelectedClientId("");
+    }
   };
 
   const handleClientSelect = (selectedTitle) => {
@@ -250,7 +259,7 @@ const ViewTasks = () => {
     //   }
     // }
     if (!formData.startTime) newErrors.startTime = "Start Time is required";
-    // if (!formData.endTime) newErrors.endTime = "End Time is required";
+    if (!formData.endTime) newErrors.endTime = "End Time is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -338,8 +347,16 @@ const ViewTasks = () => {
     // setShowDropdownAction(null);
   };
 
-  const handleJobPopupClose = () => {
+  const handleJobPopupClose = (value) => {
+    console.log("handleJobPopupClose", value);
     setOpenJobTitleModal(true);
+    if (value) {
+      setSelectedEmployee("");
+      setTaskList([]);
+      setSelectedJobId("");
+      setIsWorkFromOffice(false);
+      setSelectedClientId("");
+    }
   };
 
   const handleJobTitleSelect = (selectedTitle) => {
@@ -640,7 +657,7 @@ const ViewTasks = () => {
       </div>
 
       {userRole !== "Employee" && (
-        <div className="viewhour-employee-list">
+        <div className="viewtask-employee-list">
           <Select
             className="viewtask-input-dropdown"
             value={selectedEmployee}

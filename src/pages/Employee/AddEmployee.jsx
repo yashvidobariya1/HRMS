@@ -2158,14 +2158,42 @@ const AddEmployee = () => {
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Relationship To You</label>
-                <input
+                {/* <input
                   type="text"
                   name="relationshipToYou"
                   className="addemployee-input"
                   value={formData?.kinDetails?.relationshipToYou}
                   onChange={handleChange}
                   placeholder="Enter Relationship"
-                />
+                /> */}
+                <Select
+                  name="relationshipToYou"
+                  data-testid="relationshipToYou-select"
+                  className="addemployee-input-dropdown"
+                  displayEmpty
+                  value={formData?.kinDetails?.relationshipToYou || ""}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 200,
+                        textOverflow: "ellipsis",
+                        maxHeight: 200,
+                        whiteSpace: "nowrap",
+                        scrollbarWidth: "thin",
+                        overflowX: "auto",
+                      },
+                    },
+                  }}
+                  onChange={handleChange}
+                >
+                  <MenuItem value="" disabled>
+                    Select Relationship Type
+                  </MenuItem>
+                  <MenuItem value="Spouse">Spouse</MenuItem>
+                  <MenuItem value="Child">Child</MenuItem>
+                  <MenuItem value="Friend">Friend</MenuItem>
+                  <MenuItem value="Siblings">Siblings</MenuItem>
+                </Select>
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Post Code*</label>

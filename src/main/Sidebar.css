@@ -103,7 +103,7 @@
 
 .nav-links {
   margin: 0;
-  padding: 0 20px;
+  padding: 0 15px;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
@@ -246,6 +246,7 @@
   color: var(--sidebar-title-primary-white);
   border: none;
   outline: none;
+  font-size: 14px !important;
 }
 
 .company-dropdown .MuiPaper-elevation {
@@ -308,8 +309,7 @@
   }
 
   .logo-details {
-    /* padding: 23px; */
-    padding: 33px;
+    padding: 30px 10px !important;
   }
 
   .sidebar {
@@ -350,6 +350,10 @@
   .company-dropdown {
     padding: 3px;
   }
+
+  .sidebar .logo-details .logo-text {
+    padding: 0;
+  }
 }
 
 @media screen and (max-width: 600px) {
@@ -378,10 +382,6 @@
     height: 28px;
     margin: 0;
   }
-
-  .logo_name {
-    gap: 5px;
-  }
 }
 
 @media screen and (max-width: 400) {
@@ -391,5 +391,9 @@
 
   .sidebar .nav-links li a {
     padding: 8px 15px !important;
+  }
+
+  .logo_name {
+    gap: 5px;
   }
 }

@@ -235,16 +235,16 @@ const EmployeesTimesheet = () => {
   // );
 
   useEffect(() => {
-    GetEmployeesStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, reportPerPage]);
-
-  useEffect(() => {
     if (token) {
       localStorage.setItem("token", JSON.stringify(token));
       dispatch(setUserInfo({ role: "Client" }));
     }
   }, [token, dispatch]);
+
+  useEffect(() => {
+    GetEmployeesStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, reportPerPage]);
 
   return (
     <div className="employee-report-list-container">

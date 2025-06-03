@@ -673,6 +673,7 @@ const CommonTable = ({
                               "roleWisePoints",
                               "reason",
                               "reasonOfLeave",
+                              "qrValue"
                             ].includes(key)
                         )
                         .map((key, index) => (
@@ -933,7 +934,8 @@ const CommonTable = ({
                                       item?.Name,
                                       item?.leaves || "",
                                       item?.SelectionDuration || "",
-                                      item?.TotalLeaveDays || 0
+                                      item?.TotalLeaveDays || 0,
+                                      item?.qrValue
                                     );
                                     handleMenuClose();
                                   }}

@@ -61,8 +61,15 @@ const AbsenceReport = () => {
     setCurrentPage(1);
   };
 
-  const handlePopupClose = () => {
+  const handlePopupClose = (value) => {
     setOpenJobTitleModal(true);
+    if (value) {
+      setSelectedEmployee("");
+      setSelectedJobId("");
+      setSelectedClientId("");
+      setIsWorkFromOffice(false);
+      setAbsenceReportList([]);
+    }
   };
 
   const handleJobTitleSelect = (selectedTitle) => {
@@ -203,8 +210,15 @@ const AbsenceReport = () => {
     }
   };
 
-  const handleClientPopupClose = () => {
+  const handleClientPopupClose = (value) => {
     setopenClietnSelectModal(true);
+    if (value) {
+      setSelectedEmployee("");
+      setSelectedJobId("");
+      setSelectedClientId("");
+      setIsWorkFromOffice(false);
+      setAbsenceReportList([]);
+    }
   };
 
   const handleClientSelect = (selectedTitle) => {

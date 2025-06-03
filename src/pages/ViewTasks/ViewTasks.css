@@ -185,7 +185,7 @@
   background-color: var(--table-heading-neutral-dark-blue);
 }
 
-.View-task-main .viewhour-event {
+/* .View-task-main .viewhour-event {
   background-color: var(--sidebar-neutral-light-gray);
   margin-top: 2.5px !important;
   color: var(--sidebar-title-primary-white);
@@ -196,7 +196,7 @@
   background-color: var(--secondary-teal);
   margin-top: 2.5px !important;
   margin-bottom: 2.5px !important;
-}
+} */
 
 .View-task-main .fc-col-header-cell-cushion {
   color: var(--sidebar-title-primary-white);
@@ -259,6 +259,10 @@
   align-items: center;
 }
 
+.View-task-list h1 {
+  margin: 0;
+}
+
 .viewtask-dropdown {
   margin: 0;
   padding: 12px;
@@ -301,6 +305,12 @@
 
 .viewtask-input-dropdown .MuiSelect-icon {
   color: var(--secondary-dark-gray);
+}
+
+.viewtask-employee-list {
+  justify-content: end;
+  display: flex;
+  /* margin: 10px 0; */
 }
 
 @media (max-width: 767px) {

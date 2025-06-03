@@ -163,6 +163,10 @@
   border-radius: var(--border-radius) !important;
 }
 
+.custom-table th {
+  padding: 12px;
+}
+
 .custom-table table {
   /* border-collapse: separate; */
   border-radius: var(--border-radius);
