@@ -44,7 +44,6 @@ const TimeSheetReportDaily = () => {
   const [clientList, setClientList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
   const [selectedClient, setselectedClient] = useState("allClients");
-  const [totalTimesheet, settotalTimesheet] = useState(0);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
@@ -74,13 +73,6 @@ const TimeSheetReportDaily = () => {
 
   const handleEmployeeChange = (value) => {
     setSelectedEmployee(value);
-    if (!selectedClient && value !== "allUsers") {
-      const formdata = {
-        userId: value,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      getAllClientsOfUser(formdata);
-    }
   };
 
   const getAllClientsOfUser = async (formdata) => {
@@ -101,13 +93,6 @@ const TimeSheetReportDaily = () => {
 
   const handleClientChange = (value) => {
     setselectedClient(value);
-    if (!selectedEmployee && value !== "allClients") {
-      const formdata = {
-        clientId: value,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      getAllUsersOfClient(formdata);
-    }
   };
 
   const getAllUsersOfClient = async (formdata) => {
@@ -144,7 +129,6 @@ const TimeSheetReportDaily = () => {
 
       if (response?.data?.status === 200) {
         setTimesheetReportList(response?.data?.reports);
-        settotalTimesheet(response.data.totalReports);
         settotalHourCount(response.data.totalHours);
       } else {
         showToast(response?.data?.message, "error");
@@ -204,9 +188,31 @@ const TimeSheetReportDaily = () => {
   }, [companyId, isFromofficeWork]);
 
   useEffect(() => {
-    if (selectedEmployee || selectedClient) {
-      GetTimesheetReport();
+    if (
+      selectedEmployee &&
+      selectedEmployee !== "allUsers" &&
+      !isFromofficeWork
+    ) {
+      const formdata = {
+        userId: selectedEmployee,
+        isWorkFromOffice: isFromofficeWork,
+      };
+      getAllClientsOfUser(formdata);
     }
+  }, [selectedEmployee]);
+
+  useEffect(() => {
+    if (selectedClient && selectedClient !== "allClients") {
+      const formdata = {
+        clientId: selectedClient,
+        isWorkFromOffice: isFromofficeWork,
+      };
+      getAllUsersOfClient(formdata);
+    }
+  }, [selectedClient]);
+
+  useEffect(() => {
+    GetTimesheetReport();
   }, [
     selectedClient,
     selectedEmployee,
@@ -264,7 +270,7 @@ const TimeSheetReportDaily = () => {
             </div>
           )}
 
-          {userRole !== "Employee" && (
+          {userRole !== "Employee" && !isFromofficeWork && (
             <div className="filter-employee-selection">
               <label className="label">Client</label>
               <Select
@@ -285,9 +291,7 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="" disabled>
                   Select Clients
                 </MenuItem>
-                {/* {!isFromofficeWork && ( */}
                 <MenuItem value="allClients">All Clients</MenuItem>
-                {/* )} */}
                 {clientList.map((client) => (
                   <MenuItem key={client._id} value={client._id}>
                     {client.clientName}
@@ -440,7 +444,11 @@ const TimeSheetReportDaily = () => {
                       <p>Total Hours: {totalHourCount}</p>
                       <TablePagination
                         component="div"
-                        count={totalTimesheet}
+                        count={
+                          Array.isArray(timesheetReportList)
+                            ? timesheetReportList.length
+                            : timesheetReportList
+                        }
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}

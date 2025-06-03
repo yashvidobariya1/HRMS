@@ -34,10 +34,8 @@ const TimesheetReportMy = () => {
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [timesheetReportList, setTimesheetReportList] = useState([]);
   const [isFromofficeWork, setisFromofficeWork] = useState(false);
-  const [employeeList, setEmployeeList] = useState([]);
   const [clientList, setClientList] = useState([]);
   const [selectedClient, setselectedClient] = useState("allClients");
-  const [totalTimesheet, settotalTimesheet] = useState(0);
   const userId = useSelector((state) => state.userInfo.userInfo._id);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
@@ -86,7 +84,6 @@ const TimesheetReportMy = () => {
 
       if (response?.data?.status === 200) {
         setTimesheetReportList(response?.data?.reports);
-        settotalTimesheet(response.data.totalReports);
         settotalHourCount(response.data.totalHours);
       } else {
         showToast(response?.data?.message, "error");
@@ -107,7 +104,6 @@ const TimesheetReportMy = () => {
         `/getAllUsersAndClients?companyId=${companyId}`
       );
       if (response?.data?.status === 200) {
-        setEmployeeList(response?.data?.users);
         setClientList(response?.data.clients);
       } else {
         showToast(response?.data?.message, "error");
@@ -331,7 +327,11 @@ const TimesheetReportMy = () => {
                       <p>Total Hours: {totalHourCount}</p>
                       <TablePagination
                         component="div"
-                        count={totalTimesheet}
+                        count={
+                          Array.isArray(timesheetReportList)
+                            ? timesheetReportList.length
+                            : timesheetReportList
+                        }
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
