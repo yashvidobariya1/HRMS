@@ -968,14 +968,14 @@ const Dashboard = () => {
                                 <td>
                                   {clock.clockIn
                                     ? moment(clock.clockIn).format(
-                                        "MM/DD/YYYY h:mm:ss A"
+                                        "DD/MM/YYYY h:mm:ss A"
                                       )
                                     : "-"}
                                 </td>
                                 <td>
                                   {clock.clockOut ? (
                                     moment(clock.clockOut).format(
-                                      "MM/DD/YYYY h:mm:ss A"
+                                      "DD/MM/YYYY h:mm:ss A"
                                     )
                                   ) : (
                                     <b className="active">Active</b>
@@ -1182,6 +1182,8 @@ const Dashboard = () => {
                               textOverflow: "ellipsis",
                               whiteSpace: "nowrap",
                               maxHeight: 200,
+                              scrollbarWidth: "thin",
+                              overflowX: "auto",
                             },
                           },
                         }}

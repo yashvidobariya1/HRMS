@@ -56,6 +56,10 @@ const pageNames = {
   clients: "Clients",
   jobtitles: "Job Titles",
   addjobtitles: "Add Job Title",
+  daily: "Daily Report",
+  weekly: "Weekly Report",
+  monthly: "Monthly Report",
+  myreport: "My Report",
 };
 
 const Subheader = () => {

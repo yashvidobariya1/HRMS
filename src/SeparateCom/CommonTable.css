@@ -192,10 +192,14 @@
   background-color: var(--primary-text-white);
 }
 
+.custom-table th {
+  padding: 12px;
+}
+
 .custom-table td {
   color: var(--secondary-dark-gray);
   border-bottom: 1px solid var(--neutral-light-gray);
-  padding: 14px;
+  padding: 12px;
   text-align: left;
 }
 

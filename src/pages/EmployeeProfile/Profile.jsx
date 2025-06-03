@@ -573,6 +573,8 @@ const Profile = () => {
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                           maxHeight: 192,
+                          scrollbarWidth: "thin",
+                          overflowX: "auto",
                         },
                       },
                     }}

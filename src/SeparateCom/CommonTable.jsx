@@ -563,7 +563,7 @@ const CommonTable = ({
                     <TableRow>
                       <TableCell>
                         {/* {console.log("timesheetdate", item)} */}
-                        {moment(item.timesheetdate).format("YYYY-MM-DD")} (
+                        {moment(item.timesheetdate).format("DD-MM-YYYY")} (
                         {moment(item.timesheetdate).format("ddd")})
                       </TableCell>
                       <TableCell colSpan={headers.length - 1}>
@@ -701,7 +701,7 @@ const CommonTable = ({
                               (() => {
                                 if (key === "timesheetdate") {
                                   return moment(item[key]).format(
-                                    "YYYY-MM-DD (ddd)"
+                                    "DD/MM/YYYY (ddd)"
                                   );
                                 }
 
@@ -850,14 +850,25 @@ const CommonTable = ({
                                             key={template._id}
                                             value={template._id}
                                             onClick={() => {
-                                              const link =
-                                                document.createElement("a");
-                                              link.href = template.templateUrl;
-                                              link.download =
-                                                template.templateName;
-                                              document.body.appendChild(link);
-                                              link.click();
-                                              document.body.removeChild(link);
+                                              fetch(template.templateUrl)
+                                                .then((res) => res.blob())
+                                                .then((blob) => {
+                                                  const url =
+                                                    window.URL.createObjectURL(
+                                                      blob
+                                                    );
+                                                  const a =
+                                                    document.createElement("a");
+                                                  a.href = url;
+                                                  a.download =
+                                                    template.templateName;
+                                                  document.body.appendChild(a);
+                                                  a.click();
+                                                  a.remove();
+                                                  window.URL.revokeObjectURL(
+                                                    url
+                                                  );
+                                                });
                                             }}
                                           >
                                             {template.templateName}

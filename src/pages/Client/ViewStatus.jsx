@@ -18,9 +18,9 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TableSortLabel,
   TextField,
   Typography,
+  TableSortLabel,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import moment from "moment";
@@ -40,7 +40,7 @@ const ViewStatus = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [openRows, setOpenRows] = useState({});
-  const [page, setPage] = useState(0);
+  const [totalReports, setTotalReports] = useState(0);
   const [totalemployeereport, setTotalemployeereport] = useState("");
   const [sortConfig, setSortConfig] = React.useState({
     key: "",
@@ -140,8 +140,9 @@ const ViewStatus = () => {
       if (response?.data?.status === 200) {
         setStatusList(response?.data?.reports?.employeeTimesheetData);
         setTotalemployeereport(response?.data?.reports.totalHoursOfEmployees);
+        setTotalReports(response?.data?.totalReports);
         // settotalEmployees(response.data.totalEmployees);
-        setTotalPages(response?.data?.totalPages);
+        setTotalPages(response?.data?.totalReports);
       } else {
         showToast(response?.data?.message);
       }
@@ -247,11 +248,11 @@ const ViewStatus = () => {
             isSearchQuery={false}
             totalData={totalEmployees}
           /> */}
-          <div className="scrollable-table-wrapper">
+          <div className="viewstatus-scrollable-table-wrapper">
             <TableContainer>
               <Table
                 aria-label="collapsible table"
-                className="employeetimesheet-table"
+                className="viewstatus-table"
               >
                 <TableHead>
                   <TableRow>
@@ -375,7 +376,7 @@ const ViewStatus = () => {
                 <TableBody>
                   {paginatedRows && paginatedRows.length > 0 ? (
                     paginatedRows.map((row, index) => {
-                      const actualIndex = page * reportPerPage + index;
+                      const actualIndex = totalPages * reportPerPage + index;
                       return (
                         <React.Fragment key={actualIndex}>
                           <TableRow>
@@ -427,7 +428,7 @@ const ViewStatus = () => {
                                         <TableRow key={entry?.date}>
                                           <TableCell>
                                             {moment(entry?.date).format(
-                                              "YYYY-MM-DD (ddd)"
+                                              "DD/MM/YYYY (ddd)"
                                             )}
                                           </TableCell>
                                           <TableCell>
@@ -435,20 +436,20 @@ const ViewStatus = () => {
                                               (clockEntry) => (
                                                 <div
                                                   key={clockEntry?._id}
-                                                  className="employeetimeesheet-timing"
+                                                  className="viewstatus-timing"
                                                 >
-                                                  <span className="employee-timesheetclockin">
+                                                  <span className="viewstatus-timesheetclockin">
                                                     {moment(
                                                       clockEntry?.clockIn
                                                     ).format("LT")}{" "}
                                                     |{" "}
                                                   </span>
-                                                  <span className="employee-timesheetclockout">
+                                                  <span className="viewstatus-timesheetclockout">
                                                     {moment(
                                                       clockEntry?.clockOut
                                                     ).format("LT")}{" "}
                                                   </span>
-                                                  <span className="employee-timesheet-timming">
+                                                  <span className="viewstatus-timesheet-timming">
                                                     | {clockEntry?.totalTiming}
                                                   </span>
                                                 </div>
@@ -486,13 +487,13 @@ const ViewStatus = () => {
                 <TableFooter>
                   <TableRow>
                     <TableCell colSpan={10}>
-                      <div className="employeetimesheet-count">
+                      <div className="viewstatus-count">
                         <p>
                           Total Hours: <b>{totalemployeereport}</b>
                         </p>
                         <TablePagination
                           component="div"
-                          count={totalPages}
+                          count={totalReports}
                           page={currentPage - 1}
                           onPageChange={handlePageChange}
                           rowsPerPage={reportPerPage}

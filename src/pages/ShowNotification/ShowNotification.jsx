@@ -155,7 +155,7 @@ const ShowNotification = () => {
             type: notification?.type,
             message: notification?.message,
             createdAt: moment(notification?.createdAt).format(
-              "DD-MM-YYYY hh:mm A"
+              "DD/MM/YYYY hh:mm A"
             ),
             isRead: notification.isRead,
             read: (

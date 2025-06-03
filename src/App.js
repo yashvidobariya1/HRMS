@@ -25,7 +25,7 @@ import Job from "./pages/Job/Job";
 import Candidate from "./pages/Candidate/Candidate";
 import ChangePassword from "./pages/EmployeeProfile/ChangePassword";
 import Viewhours from "./pages/ViewHours/Viewhours";
-import TimeSheetReport from "./pages/TimeSheetReport/TimeSheetReport";
+// import TimeSheetReport from "./pages/TimeSheetReport/TimeSheetReport";
 import AbsenceReport from "./pages/AbsenceReport/AbsenceReport";
 import AddCompany from "./pages/Settings/AddCompany";
 import Profile from "./pages/EmployeeProfile/Profile";
@@ -48,6 +48,11 @@ import ApplyJob from "./pages/Applypost/ApplyJob";
 import GenerateQRcodeForClient from "./pages/GenerateQRcode/GenerateQRcodeForClient";
 import JobTitles from "./pages/JobTitles/JobTitles";
 import AddJobTitles from "./pages/JobTitles/AddJobTitles";
+import TimeSheetReportDaily from "./pages/TimeSheetReport/TimeSheetReportDaily";
+import TimeSheetReportWeekly from "./pages/TimeSheetReport/TimeSheetReportWeekly";
+import TimeSheetReport from "./pages/Client/ViewReport";
+import TimeSheetReportMonthly from "./pages/TimeSheetReport/TimeReportMonthly";
+import TimesheetReportMy from "./pages/TimeSheetReport/TimesheetReportMy";
 
 // Layout wrapper
 function MainLayout({ children, path }) {
@@ -244,9 +249,29 @@ const protectedRoutes = [
     component: <Viewhours />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
+  // {
+  //   path: "/timesheetreport",
+  //   component: <TimeSheetReport />,
+  //   roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+  // },
   {
-    path: "/timesheetreport",
-    component: <TimeSheetReport />,
+    path: "/timesheetreport/daily",
+    component: <TimeSheetReportDaily />,
+    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/timesheetreport/weekly",
+    component: <TimeSheetReportWeekly />,
+    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/timesheetreport/monthly",
+    component: <TimeSheetReportMonthly />,
+    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/timesheetreport/myreport",
+    component: <TimesheetReportMy />,
     roles: ["Superadmin", "Administrator", "Manager", "Employee"],
   },
   {
@@ -322,6 +347,40 @@ const protectedRoutes = [
 ];
 
 const App = () => {
+  // useEffect(() => {
+  //   document.addEventListener("contextmenu", (e) => e.preventDefault());
+  //   document.onkeydown = function (e) {
+  //     if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+  //       return false;
+  //     }
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   // Disable right-click
+  //   const handleContextMenu = (e) => {
+  //     e.preventDefault();
+  //   };
+
+  //   // Disable certain keyboard shortcuts
+  //   const handleKeyDown = (e) => {
+  //     if (
+  //       e.key === "F12" ||
+  //       (e.ctrlKey && e.shiftKey && ["I", "C", "J"].includes(e.key)) || // Ctrl+Shift+I/C/J
+  //       (e.ctrlKey && e.key === "U") // Ctrl+U (View Source)
+  //     ) {
+  //       e.preventDefault();
+  //     }
+  //   };
+
+  //   document.addEventListener("contextmenu", handleContextMenu);
+  //   document.addEventListener("keydown", handleKeyDown);
+
+  //   return () => {
+  //     document.removeEventListener("contextmenu", handleContextMenu);
+  //     document.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, []);
 
   return (
     <>

@@ -45,7 +45,7 @@ const ViewTasks = () => {
   const jobRoleisworkFromOffice = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
-  const [isWorkFromOffice, setIsWorkFromOffice] = useState(false);
+  const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
   const AllowstartDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(AllowstartDate).year();
   const currentYear = moment().year();
@@ -218,16 +218,8 @@ const ViewTasks = () => {
     }
   };
 
-  const handleClientPopupClose = (value) => {
-    console.log("handleClientPopupClose", value);
+  const handleClientPopupClose = () => {
     setopenClietnSelectModal(true);
-    if (value) {
-      setSelectedEmployee("");
-      setTaskList([]);
-      setSelectedJobId("");
-      setIsWorkFromOffice(false);
-      setSelectedClientId("");
-    }
   };
 
   const handleClientSelect = (selectedTitle) => {
@@ -248,16 +240,15 @@ const ViewTasks = () => {
       if (!formData.startDate) newErrors.startDate = "Start Date is required";
       // if (!formData.endDate) newErrors.endDate = "End Date is required";
     }
+    if (formData.startDate && formData.endDate) {
+      const start = moment(formData.startDate, "YYYY-MM-DD");
+      const end = moment(formData.endDate, "YYYY-MM-DD");
 
-    // if (formData.startDate && formData.endDate) {
-    //   const start = moment(formData.startDate, "YYYY-MM-DD");
-    //   const end = moment(formData.endDate, "YYYY-MM-DD");
-
-    //   if (start.isAfter(end)) {
-    //     newErrors.startDate = "Start Date cannot be after End Date";
-    //     newErrors.endDate = "End Date cannot be before Start Date";
-    //   }
-    // }
+      if (start.isAfter(end)) {
+        newErrors.startDate = "Start Date cannot be after End Date";
+        newErrors.endDate = "End Date cannot be before Start Date";
+      }
+    }
     if (!formData.startTime) newErrors.startTime = "Start Time is required";
     if (!formData.endTime) newErrors.endTime = "End Time is required";
     setErrors(newErrors);
@@ -347,16 +338,12 @@ const ViewTasks = () => {
     // setShowDropdownAction(null);
   };
 
-  const handleJobPopupClose = (value) => {
-    console.log("handleJobPopupClose", value);
+  const handleJobPopupClose = () => {
     setOpenJobTitleModal(true);
-    if (value) {
-      setSelectedEmployee("");
-      setTaskList([]);
-      setSelectedJobId("");
-      setIsWorkFromOffice(false);
-      setSelectedClientId("");
-    }
+    setSelectedEmployee("");
+    // setSelectedJobId("");
+    // setSelectedClientId("");
+    // setIsWorkFromOffice("");
   };
 
   const handleJobTitleSelect = (selectedTitle) => {
@@ -670,8 +657,6 @@ const ViewTasks = () => {
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
                   maxHeight: 200,
-                  scrollbarWidth: "thin",
-                  overflowX: "auto",
                 },
               },
             }}

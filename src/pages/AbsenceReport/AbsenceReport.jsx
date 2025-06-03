@@ -421,6 +421,8 @@ const AbsenceReport = () => {
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
                   maxHeight: 200,
+                  scrollbarWidth: "thin",
+                  overflowX: "auto",
                 },
               },
             }}
@@ -446,7 +448,7 @@ const AbsenceReport = () => {
           <CommonTable
             headers={["Absence Date", "Status"]}
             data={absenceReportList.map((absencesheet) => ({
-              absencesheetdate: absencesheet.date,
+              absencesheetdate: moment(absencesheet.date).format("DD/MM/YYYY"),
               absencesheetstatus: absencesheet.status,
             }))}
             currentPage={currentPage}

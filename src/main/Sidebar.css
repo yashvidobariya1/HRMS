@@ -249,8 +249,40 @@
   font-size: 14px !important;
 }
 
+.company-dropdown .MuiPaper-elevation {
+  overflow: auto;
+}
+
 .company-dropdown .MuiSelect-icon {
   color: var(--sidebar-title-primary-white);
+}
+
+.company-dropdown .MuiSelect-select {
+  font-size: 14px !important;
+}
+
+.company-dropdown .MuiMenuItem-root .MuiMenuItem-gutters .Mui-selected {
+  overflow-y: auto !important;
+}
+
+.sidebar-submenu {
+  padding-left: 38px;
+}
+
+.sidebar-subitem .link_name {
+  font-size: 0.9rem;
+}
+
+.sidebar-collapsible-header-custom {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  gap: 20px;
+  padding: 8px;
+  color: var(--sidebar-title-primary-white);
+  border-radius: var(--border-radius);
+  transition: 0.3s ease;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 767px) {
@@ -326,7 +358,7 @@
 
 @media screen and (max-width: 600px) {
   .logo-details {
-    padding: 31px !important;
+    padding: 30px 10px !important;
   }
 
   .content {
@@ -337,6 +369,10 @@
   .sidebar-Toggle-menu {
     left: 238px;
     top: 80px;
+  }
+
+  .sidebar .logo-details .logo-text {
+    padding: 0;
   }
 }
 

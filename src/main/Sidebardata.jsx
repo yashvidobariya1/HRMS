@@ -135,8 +135,25 @@ export const SidebarData = [
       {
         title: "Timesheet Report",
         icon: <BiSolidSpreadsheet />,
-        link: "/timesheetreport",
         allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
+        subItems: [
+          {
+            title: "Daily Report",
+            link: "/timesheetreport/daily",
+          },
+          {
+            title: "Weekly Report",
+            link: "/timesheetreport/weekly",
+          },
+          {
+            title: "Monthly Report",
+            link: "/timesheetreport/monthly",
+          },
+          {
+            title: "My Report",
+            link: "/timesheetreport/myreport",
+          },
+        ],
       },
     ],
   },

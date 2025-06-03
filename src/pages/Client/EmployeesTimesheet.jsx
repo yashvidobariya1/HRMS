@@ -46,7 +46,6 @@ const EmployeesTimesheet = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [status, setStatus] = useState("");
-  const [page, setPage] = useState(0);
   const [totalemployeereport, setTotalemployeereport] = useState("");
   const [rejectReason, setrejectReason] = useState("");
   const [actionBy, setActionby] = useState("");
@@ -158,7 +157,7 @@ const EmployeesTimesheet = () => {
         // setStartDate(response?.data?.report?.startDate);
         // setEndDate(response?.data?.report?.endDate);
         setDateEmployee(response?.data?.reports);
-        setTotalPages(response?.data?.totalPages);
+        setTotalPages(response?.data?.totalReports);
       } else {
         showToast(response?.data?.message);
       }
@@ -441,10 +440,11 @@ const EmployeesTimesheet = () => {
                     </TableCell>
                   </TableRow>
                 </TableHead>
+
                 <TableBody>
                   {paginatedRows && paginatedRows.length > 0 ? (
                     paginatedRows.map((row, index) => {
-                      const actualIndex = page * reportPerPage + index;
+                      const actualIndex = totalPages * reportPerPage + index;
                       return (
                         <React.Fragment key={actualIndex}>
                           <TableRow>
@@ -496,7 +496,7 @@ const EmployeesTimesheet = () => {
                                         <TableRow key={entry?.date}>
                                           <TableCell>
                                             {moment(entry?.date).format(
-                                              "YYYY-MM-DD (ddd)"
+                                              "DD/MM/YYYY (ddd)"
                                             )}
                                           </TableCell>
                                           <TableCell>

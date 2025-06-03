@@ -509,8 +509,12 @@ const TimeSheetReport = () => {
 
   useEffect(() => {
     const GetTimesheet =
-      (selectedEmployee && selectedJobId && selectedClientId) ||
+      (selectedEmployee &&
+        selectedJobId &&
+        selectedClientId &&
+        appliedFilters) ||
       (!selectedEmployee &&
+        appliedFilters &&
         ((jobRoleId && jobRoleisworkFromOffice) ||
           (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
           (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
@@ -765,6 +769,8 @@ const TimeSheetReport = () => {
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
                   maxHeight: 200,
+                  scrollbarWidth: "thin",
+                  overflowX: "auto",
                 },
               },
             }}

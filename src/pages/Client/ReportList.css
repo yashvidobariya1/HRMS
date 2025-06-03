@@ -64,6 +64,54 @@
   color: var(--secondary-dark-gray);
 }
 
+.reportlist-dropdown {
+  margin: 0;
+  padding: 10px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.reportlist-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.reportlist-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
+.report-download-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  /* align-items: end; */
+}
+
+.report-download-container button {
+  /* width: 41px; */
+  height: 40px;
+  font-size: var(--font-size-h5);
+  background-color: var(--primary-button);
+  border-radius: var(--border-radius);
+  color: var(--primary-text-white);
+  border: none;
+  margin-top: 18px;
+  padding: 5px 20px;
+  flex-wrap: wrap;
+}
+
+.report-input-container input,
+.report-input-container select {
+  margin: 0;
+  padding: 10px !important;
+}
+
 @media screen and (max-width: 992px) {
   .report-list-download-container button {
     margin-top: 17px;
@@ -72,6 +120,10 @@
 
 @media screen and (max-width: 767px) {
   .report-list-download-container button {
+    margin-top: 14px;
+  }
+
+  .report-download-container button {
     margin-top: 14px;
   }
 }
@@ -88,14 +140,30 @@
   .report-list-download-container button {
     margin-top: 19px;
   }
+
+  .report-download-container button {
+    margin-top: 18px;
+  }
+
+  .report-input-container select {
+    width: calc(100% - 20px);
+  }
+
+  .report-input-container select {
+    width: 100%;
+  }
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 420px) {
   .report-list-download-container button {
     max-height: 38px;
   }
 
   .report-list-download-container {
     flex-wrap: wrap;
+  }
+
+  .report-download-container button {
+    margin-top: 0px;
   }
 }

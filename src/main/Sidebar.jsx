@@ -10,6 +10,7 @@ import { GetCall } from "../ApiServices";
 import { setCompanySelect } from "../store/selectCompanySlice";
 import { Select, MenuItem } from "@mui/material";
 import { showToast } from "./ToastManager";
+import { MdOutlineExpandMore, MdChevronRight } from "react-icons/md";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const currentRole = useSelector((state) => state.userInfo.userInfo.role);
@@ -19,6 +20,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const [selectedCompanyId, setSelectedCompanyId] = useState(
     useSelector((state) => state.companySelect.companySelect)
   );
+  const [expandedItems, setExpandedItems] = useState({});
+  const toggleExpand = (title) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  };
 
   const filterSidebarData = (data, role) => {
     return data
@@ -164,6 +172,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                           width: 200, // same as Select
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          scrollbarWidth: "thin",
+                          overflowX: "auto",
                           maxHeight: 192,
                         },
                       },
@@ -183,7 +193,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                         style={{
                           // overflow: "hidden",
                           textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          // whiteSpace: "nowrap",
                         }}
                       >
                         {company.companyDetails.businessName}
@@ -220,15 +230,82 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               </li>
               {section?.items?.map((item, itemIndex) => (
                 <li key={itemIndex}>
-                  <NavLink
-                    to={item.link}
-                    className={({ isActive }) => (isActive ? "active" : "")}
-                  >
-                    <div className="sidebar-icon">{item.icon}</div>
-                    {!isCollapsed && (
-                      <span className="link_name">{item.title}</span>
-                    )}
-                  </NavLink>
+                  {item.subItems ? (
+                    <>
+                      <div
+                        className={`sidebar-collapsible-header ${
+                          expandedItems[item.title] ? "expanded" : ""
+                        } sidebar-collapsible-header-custom`}
+                        onClick={() => toggleExpand(item.title)}
+                      >
+                        <div className="sidebar-icon">{item.icon}</div>
+                        {!isCollapsed && (
+                          <>
+                            <span className="link_name">{item.title}</span>
+                            <span style={{ marginLeft: "auto" }}>
+                              {expandedItems[item.title] ? (
+                                <MdOutlineExpandMore />
+                              ) : (
+                                <MdChevronRight />
+                              )}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                      {expandedItems[item.title] && !isCollapsed && (
+                        <ul className="sidebar-submenu">
+                          {item.subItems
+                            .filter((subItem) => {
+                              // Hide "My Report" for Superadmin
+                              if (
+                                subItem.title === "My Report" &&
+                                currentRole === "Superadmin"
+                              ) {
+                                return false;
+                              }
+
+                              // Hide Daily/Weekly/Monthly Report for Employee
+                              if (
+                                [
+                                  "Daily Report",
+                                  "Weekly Report",
+                                  "Monthly Report",
+                                ].includes(subItem.title) &&
+                                currentRole === "Employee"
+                              ) {
+                                return false;
+                              }
+
+                              return true;
+                            })
+                            .map((subItem, subIndex) => (
+                              <li key={subIndex} className="sidebar-subitem">
+                                <NavLink
+                                  to={subItem.link}
+                                  className={({ isActive }) =>
+                                    isActive ? "active" : ""
+                                  }
+                                >
+                                  <span className="link_name">
+                                    {subItem.title}
+                                  </span>
+                                </NavLink>
+                              </li>
+                            ))}
+                        </ul>
+                      )}
+                    </>
+                  ) : (
+                    <NavLink
+                      to={item.link}
+                      className={({ isActive }) => (isActive ? "active" : "")}
+                    >
+                      <div className="sidebar-icon">{item.icon}</div>
+                      {!isCollapsed && (
+                        <span className="link_name">{item.title}</span>
+                      )}
+                    </NavLink>
+                  )}
                 </li>
               ))}
             </div>

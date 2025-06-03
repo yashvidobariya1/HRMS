@@ -26,10 +26,20 @@ const ReportList = () => {
   const [minDate, setMinDate] = useState(
     moment(process.env.REACT_APP_START_DATE).format("YYYY-MM-DD")
   );
+  const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
+  const startYear = moment(startDate).year();
+  const currentYear = moment().year();
+  const currentMonth = moment().month() + 1;
+  const [selectedYear, setSelectedYear] = useState(currentYear);
   const [maxDate, setMaxDate] = useState(moment().format("YYYY-MM-DD"));
   const [formData, setFormData] = useState({
     startDate: "",
     endDate: "",
+  });
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [appliedFilters, setAppliedFilters] = useState({
+    year: currentYear,
+    month: currentMonth,
   });
   const [errors, setErrors] = useState({});
   // const location = useLocation();
@@ -90,6 +100,16 @@ const ReportList = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  const months = moment
+    .months()
+    .map((month, index) => ({
+      name: moment().month(index).format("MMM"),
+      value: index + 1,
+    }))
+    .filter(
+      (month) => selectedYear < currentYear || month.value <= currentMonth
+    );
 
   // const HandleGenerateReport = async () => {
   //   if (
@@ -161,6 +181,14 @@ const ReportList = () => {
     }
   };
 
+  const handleFilter = async () => {
+    setAppliedFilters({
+      year: selectedYear,
+      month: selectedMonth,
+    });
+    console.log("set filter", selectedYear, selectedMonth);
+  };
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
@@ -195,6 +223,91 @@ const ReportList = () => {
       <div className="report-list-flex">
         <div className="report-list-title">
           <h1>Report List</h1>
+        </div>
+        <div className="report-download-container">
+          <div className="report-input-container">
+            <label className="label">Client</label>
+            <Select
+              className="reportlist-dropdown"
+              value={selectedClient}
+              onChange={(e) => setSelectedClient(e.target.value)}
+              displayEmpty
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 150,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 200,
+                  },
+                },
+              }}
+            >
+              <MenuItem value="allClients">All Clients</MenuItem>
+              {clientList.map((client) => (
+                <MenuItem key={client._id} value={client._id}>
+                  {client.clientName}
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
+          <div className="report-input-container">
+            <label className="label">Month</label>
+            <Select
+              className="reportlist-dropdown"
+              value={selectedMonth}
+              displayEmpty
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 80,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 192,
+                  },
+                },
+              }}
+            >
+              {/* <MenuItem value="All">All</MenuItem> */}
+              {months?.map((month) => (
+                <MenuItem key={month.value} value={month.value}>
+                  {month.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {/* {errors?.startDate && (
+              <p className="error-text">{errors?.startDate}</p>
+            )} */}
+          </div>
+          <div className="report-input-container">
+            <label className="label">Year</label>
+            <Select
+              value={selectedYear}
+              className="reportlist-dropdown"
+              onChange={(e) => setSelectedYear(e.target.value)}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    width: 80,
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxHeight: 192,
+                  },
+                },
+              }}
+            >
+              {[...Array(currentYear - startYear + 1)].map((_, index) => {
+                const year = startYear + index;
+                return (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </div>
+          <button onClick={handleFilter}>Filter</button>
         </div>
         {/* <div className="report-list-download-container">
           <div className="report-list-input-container">
@@ -246,29 +359,6 @@ const ReportList = () => {
           className="common-searchbar"
           onChange={handleSearchChange}
         />
-        <Select
-          className="report-list-input-dropdown"
-          value={selectedClient}
-          onChange={(e) => setSelectedClient(e.target.value)}
-          displayEmpty
-          MenuProps={{
-            PaperProps: {
-              style: {
-                width: 150,
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxHeight: 200,
-              },
-            },
-          }}
-        >
-          <MenuItem value="allClients">All Clients</MenuItem>
-          {clientList.map((client) => (
-            <MenuItem key={client._id} value={client._id}>
-              {client.clientName}
-            </MenuItem>
-          ))}
-        </Select>
       </div>
 
       {loading ? (
@@ -282,10 +372,10 @@ const ReportList = () => {
             data={reportList?.map((report) => ({
               _id: report._id,
               clientName: report?.clientName,
-              startDate: report?.startDate,
-              endDate: report?.endDate,
+              startDate: moment(report?.startDate).format("DD/MM/YYYY"),
+              endDate: moment(report?.endDate).format("DD/MM/YYYY"),
               generatedDate: moment(report?.createdAt).format(
-                "YYYY-MM-DD hh:mm A"
+                "DD/MM/YYYY hh:mm A"
               ),
               actionBy: report?.actionBy,
               reportstatus: report?.status,

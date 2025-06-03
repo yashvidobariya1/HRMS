@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import { TextField } from "@mui/material";
 import Loader from "../Helper/Loader";
+import moment from "moment";
 
 const Leaves = () => {
   const [leaveList, setLeaveList] = useState([]);
@@ -241,7 +242,7 @@ const Leaves = () => {
               data={leaveList?.map((leave) => ({
                 _id: leave._id,
                 Name: leave.userName,
-                startDate: leave.startDate,
+                startDate: moment(leave.startDate).format("DD/MM/YYYY"),
                 selectionDuration: leave.selectionDuration,
                 status: leave.status,
                 leaveType: leave.leaveType,

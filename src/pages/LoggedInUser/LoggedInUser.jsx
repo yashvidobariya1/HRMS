@@ -158,11 +158,11 @@ const LoggedInUser = () => {
             // UserIPAddess: loggeduser?.userIPAddess,
             // lastTimeLoggedIn: loggeduser?.lastTimeLoggedIn?.toString().slice(0, 19).replace("T", " "),
             LastTimeLoggedIn: moment(loggeduser?.lastTimeLoggedIn).format(
-              "YYYY/MM/DD hh:mm A"
+              "DD/MM/YYYY hh:mm A"
             ),
             // lastTimeLoggedOut: loggeduser?.lastTimeLoggedOut?.toString().slice(0, 19).replace("T", " "),
             LastTimeLoggedOut: moment(loggeduser?.lastTimeLoggedOut).format(
-              "YYYY/MM/DD hh:mm A"
+              "DD/MM/YYYY hh:mm A"
             ),
             IsActive: loggeduser?.isActive ? "Logged In" : "Logged Out",
             UsedBrowser: loggeduser?.browser,

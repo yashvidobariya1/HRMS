@@ -9,6 +9,7 @@ import ApproveRejectConfirmation from "../../main/ApproveRejectConfirmation";
 // import { useSelector } from "react-redux";
 import { TextField } from "@mui/material";
 import { useSelector } from "react-redux";
+import moment from "moment";
 
 const LeavesRequest = () => {
   const [leaveList, setLeaveList] = useState([]);
@@ -281,7 +282,7 @@ const LeavesRequest = () => {
             data={leaveList?.map((leave) => ({
               _id: leave._id,
               Name: leave.userName,
-              StartDate: leave.startDate,
+              StartDate: moment(leave.startDate).format("DD/MM/YYYY"),
               SelectionDuration: leave.selectionDuration,
               TotalLeaveDays: leave.totalRequestedLeaves,
               NumberOfApproveLeaves: leave.totalApprovedLeaves,
