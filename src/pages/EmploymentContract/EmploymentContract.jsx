@@ -3,7 +3,7 @@ import { AiOutlineUpload } from "react-icons/ai";
 import Loader from "../Helper/Loader";
 import "../EmploymentContract/EmploymentContract.css";
 import CommonTable from "../../SeparateCom/CommonTable";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import moment from "moment";
@@ -12,6 +12,7 @@ import { TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 
 const EmploymentContract = () => {
+  const { PostCall, GetCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     contractName: "",

@@ -4,7 +4,7 @@
 // import moment from "moment";
 // import "react-big-calendar/lib/css/react-big-calendar.css";
 // import "./Holidays.css";
-// import { GetCall } from "../../ApiServices";
+// import { GetCall } from "../../useApiServices";
 // import Loader from "../Helper/Loader";
 // import CommonAddButton from "../../SeparateCom/CommonAddButton";
 // import { MdRateReview } from "react-icons/md";
@@ -241,7 +241,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./Holidays.css";
 import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
@@ -253,6 +253,7 @@ import Loader from "../Helper/Loader";
 import { MenuItem, Select } from "@mui/material";
 
 const Holidays = () => {
+  const { GetCall, PostCall } = useApiServices();
   const [events, setEvents] = useState([]);
   const [AllholidayList, setAllholidayList] = useState([]);
   const [loading, setLoading] = useState(false);

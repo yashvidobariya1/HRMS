@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./ApplyJob.css";
 import { useLocation } from "react-router";
-import { GetCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import ApplyJobForm from "./ApplyJobForm";
 import Loader from "../Helper/Loader";
 
 const ApplyJob = () => {
+  const { GetCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [jobDetails, setJobDetails] = useState(null);
   const [jobDeleted, setJobDeleted] = useState(false);

@@ -3,9 +3,10 @@ import { useLocation } from "react-router";
 import "./ApplyJobForm.css";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
-import { PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 
 const ApplyJobForm = () => {
+  const { PostCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [FileName, setFileName] = useState(null);

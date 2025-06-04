@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./TimeSheetReport.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 import moment from "moment";
@@ -25,6 +25,7 @@ import {
 import { BsHourglassSplit } from "react-icons/bs";
 
 const TimeSheetReportDaily = () => {
+  const { PostCall } = useApiServices();
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState("");
@@ -59,8 +60,8 @@ const TimeSheetReportDaily = () => {
   const handleCheckboxChange = (event) => {
     const checked = event.target.checked;
     setisFromofficeWork(checked);
-    setselectedClient("");
-    setSelectedEmployee("");
+    setselectedClient("allClients");
+    setSelectedEmployee("allUsers");
     setSelectedStartDate("");
     setSelectedEndDate("");
   };
@@ -69,13 +70,20 @@ const TimeSheetReportDaily = () => {
     setSelectedEmployee(value);
   };
 
-  const getAllClientsOfUser = async (formdata) => {
+  const getAllClientsOfUser = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(`/getAllClientsOfUser`, formdata);
+      const formdata = {
+        userId: selectedEmployee,
+        isWorkFromOffice: isFromofficeWork,
+      };
+      const response = await PostCall(
+        `/getAllClientsOfUser?companyId=${companyId}`,
+        formdata
+      );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
-        setClientList(response.data.clients);
+        setClientList(response?.data.clients);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -89,10 +97,17 @@ const TimeSheetReportDaily = () => {
     setselectedClient(value);
   };
 
-  const getAllUsersOfClient = async (formdata) => {
+  const getAllUsersOfClient = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(`/getAllUsersOfClient`, formdata);
+      const formdata = {
+        clientId: selectedClient,
+        isWorkFromOffice: isFromofficeWork,
+      };
+      const response = await PostCall(
+        `/getAllUsersOfClient?companyId=${companyId}`,
+        formdata
+      );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
         setEmployeeList(response?.data.users);
@@ -136,21 +151,21 @@ const TimeSheetReportDaily = () => {
     setSearchQuery(event.target.value);
   };
 
-  const fetchEmployeeList = async () => {
-    try {
-      const response = await GetCall(
-        `/getAllUsersAndClients?companyId=${companyId}`
-      );
-      if (response?.data?.status === 200) {
-        setEmployeeList(response?.data?.users);
-        setClientList(response?.data.clients);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error fetching employee list:", error);
-    }
-  };
+  // const fetchEmployeeList = async () => {
+  //   try {
+  //     const response = await GetCall(
+  //       `/getAllUsersAndClients?companyId=${companyId}`
+  //     );
+  //     if (response?.data?.status === 200) {
+  //       setEmployeeList(response?.data?.users);
+  //       setClientList(response?.data.clients);
+  //     } else {
+  //       showToast(response?.data?.message, "error");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching employee list:", error);
+  //   }
+  // };
 
   const handleChangePage = (newPage) => {
     setPage(newPage);
@@ -175,34 +190,22 @@ const TimeSheetReportDaily = () => {
     };
   }, [searchQuery]);
 
-  useEffect(() => {
-    userRole !== "Employee" && fetchEmployeeList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyId, isFromofficeWork]);
+  // useEffect(() => {
+  //   userRole !== "Employee" && fetchEmployeeList();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [companyId, isFromofficeWork]);
 
   useEffect(() => {
-    if (
-      selectedEmployee &&
-      selectedEmployee !== "allUsers" &&
-      !isFromofficeWork
-    ) {
-      const formdata = {
-        userId: selectedEmployee,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      getAllClientsOfUser(formdata);
+    if (selectedEmployee && !isFromofficeWork) {
+      getAllClientsOfUser();
     }
-  }, [selectedEmployee]);
+  }, [selectedEmployee, companyId]);
 
   useEffect(() => {
-    if (selectedClient && selectedClient !== "allClients") {
-      const formdata = {
-        clientId: selectedClient,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      getAllUsersOfClient(formdata);
+    if (selectedClient) {
+      getAllUsersOfClient();
     }
-  }, [selectedClient]);
+  }, [selectedClient, companyId, isFromofficeWork]);
 
   useEffect(() => {
     // if (selectedEmployee || selectedClient) {
@@ -249,7 +252,9 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="" disabled>
                   Select Employee
                 </MenuItem>
-                <MenuItem value="allUsers">All Employees</MenuItem>
+                <MenuItem value="allUsers" selected>
+                  All Employees
+                </MenuItem>
                 {employeeList.map((emp) => (
                   <MenuItem key={emp._id} value={emp._id}>
                     {emp.userName}
@@ -284,7 +289,9 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="" disabled>
                   Select Clients
                 </MenuItem>
-                <MenuItem value="allClients">All Clients</MenuItem>
+                <MenuItem value="allClients" selected>
+                  All Clients
+                </MenuItem>
                 {clientList.map((client) => (
                   <MenuItem key={client._id} value={client._id}>
                     {client.clientName}

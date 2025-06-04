@@ -4,7 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 // import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./ViewTasks.css";
 import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
@@ -18,6 +18,7 @@ import { MenuItem, Select } from "@mui/material";
 import AssignClient from "../../SeparateCom/AssignClient";
 
 const ViewTasks = () => {
+  const { PostCall, GetCall } = useApiServices();
   const calendarRef = useRef(null);
   // const Navigate = useNavigate();
   const [events, setEvents] = useState([]);

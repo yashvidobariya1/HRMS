@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { GetCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./ReportList.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { MenuItem, Select, TextField } from "@mui/material";
 
 const ReportList = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [reportList, setReportList] = useState([]);

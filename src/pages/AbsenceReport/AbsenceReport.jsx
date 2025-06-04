@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./AbsenceReport.css";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 // import { useLocation } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 import moment from "moment";
@@ -16,6 +16,7 @@ const AbsenceReport = () => {
   // const location = useLocation();
   // const queryParams = new URLSearchParams(location.search);
   // const EmployeeId = queryParams.get("EmployeeId");
+  const { PostCall, GetCall } = useApiServices();
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(50);

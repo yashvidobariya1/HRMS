@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./ChangePassword.css";
-import { PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import Loader from "../Helper/Loader";
 import { useNavigate } from "react-router";
 import { showToast } from "../../main/ToastManager";
 import { useSelector } from "react-redux";
 
 const ChangePassword = () => {
+  const { PostCall } = useApiServices();
   const navigate = useNavigate();
   // const userID = useState(JSON.parse(localStorage.getItem("userId")));
   const user = useSelector((state) => state.userInfo.userInfo);

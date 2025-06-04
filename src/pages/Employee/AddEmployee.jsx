@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { IoAddOutline } from "react-icons/io5";
 import "./AddEmployee.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import { FaCheck } from "react-icons/fa";
@@ -16,6 +16,7 @@ import { Checkbox, MenuItem, Select } from "@mui/material";
 import moment from "moment";
 
 const AddEmployee = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const user = useSelector((state) => state.userInfo.userInfo);
   const [ShowdropwornAction, SetShowdropwornAction] = useState(null);

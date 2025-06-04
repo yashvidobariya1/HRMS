@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./TimeSheetReport.css";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 // import { useLocation } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 // import TimesheetTable from "../../SeparateCom/TimesheetTable";
@@ -15,6 +15,7 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import { MenuItem, Select, TextField } from "@mui/material";
 import AssignClient from "../../SeparateCom/AssignClient";
 const TimeSheetReport = () => {
+  const { GetCall, PostCall } = useApiServices();
   // const location = useLocation();
   // const queryParams = new URLSearchParams(location.search);
   // const EmployeeId = queryParams.get("EmployeeId");

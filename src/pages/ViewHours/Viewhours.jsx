@@ -3,7 +3,7 @@
 // // import moment from "moment";
 // import "react-big-calendar/lib/css/react-big-calendar.css";
 // import "./Viewhours.css";
-// import { GetCall, PostCall } from "../../ApiServices";
+// import { GetCall, PostCall } from "../../useApiServices";
 // import Loader from "../Helper/Loader";
 // import JobTitleForm from "../../SeparateCom/RoleSelect";
 // import moment from "moment-timezone";
@@ -245,39 +245,31 @@
 // =========full calender======
 
 import React, { useState, useEffect } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import listPlugin from "@fullcalendar/list";
-import interactionPlugin from "@fullcalendar/interaction";
-// import { useLocation } from "react-router";
 import { useSelector } from "react-redux";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 import "./Viewhours.css";
-import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
 import Loader from "../Helper/Loader";
 import AssignClient from "../../SeparateCom/AssignClient";
 import { showToast } from "../../main/ToastManager";
 import { MenuItem, Select } from "@mui/material";
+import CommonTable from "../../SeparateCom/CommonTable";
 
 const Viewhours = () => {
-  const [events, setEvents] = useState([]);
+  const { GetCall, PostCall } = useApiServices();
+  // const [events, setEvents] = useState([]);
   const [AlltimesheetList, setAlltimesheetList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
   const [JobTitledata, setJobTitledata] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState("");
-  const [viewMode, setViewMode] = useState("dayGridMonth");
+  // const [viewMode, setViewMode] = useState("dayGridMonth");
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
-  // const location = useLocation();
-  // const queryParams = new URLSearchParams(location.search);
-  // const EmployeeId = queryParams.get("EmployeeId");
   const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [Clientdata, setClientdata] = useState([]);
-  const [isWorkFromOffice, setIsWorkFromOffice] = useState("");
+  const [isWorkFromOffice, setIsWorkFromOffice] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
@@ -287,6 +279,25 @@ const Viewhours = () => {
   const jobRoleisworkFromOffice = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
+  const [showDropdownAction, setShowDropdownAction] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [clientPerPage, setClientPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalClient, setTotalClient] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const [selectedStartDate, setSelectedStartDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const actions = [];
+
+  const tableHeaders = [
+    "Client Name",
+    "Email",
+    "City",
+    "Mobile Number",
+    "Active QR",
+    "Action",
+  ];
 
   const handleEmployeeChange = (employeeId) => {
     setSelectedEmployee(employeeId);
@@ -294,17 +305,33 @@ const Viewhours = () => {
     setSelectedJobId("");
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleClientPerPageChange = (e) => {
+    setClientPerPage(e);
+    setCurrentPage(1);
+  };
+
+  const handleAction = (id) => {
+    setShowDropdownAction(showDropdownAction === id ? null : id);
+  };
+
   const getAlltimesheet = async () => {
     try {
       setLoading(true);
       // console.log("setSelectedEmployee", selectedEmployee);
       const filters = {
-        jobId: selectedEmployee ? selectedJobId : jobRoleId,
+        // jobId: selectedEmployee ? selectedJobId : jobRoleId,
         userId: selectedEmployee,
         clientId: selectedClientId,
       };
 
-      const response = await PostCall("/getAllTimesheets", filters);
+      const response = await PostCall(
+        `/getAllTimesheets?isWorkFromOffice=${isWorkFromOffice}&page=${currentPage}&limit=${clientPerPage}&search=${debouncedSearch}&startDate=${selectedStartDate}&endDate=${selectedEndDate}`,
+        filters
+      );
       if (response?.data?.status === 200) {
         setAlltimesheetList(response?.data.timesheets);
       } else {
@@ -335,7 +362,7 @@ const Viewhours = () => {
           setOpenJobTitleModal(false);
         } else {
           setSelectedJobId(jobTitles[0]?.jobId);
-          setIsWorkFromOffice(jobTitles[0]?.isWorkFromOffice);
+          // setIsWorkFromOffice(jobTitles[0]?.isWorkFromOffice);
           getAlltimesheet();
           setOpenJobTitleModal(true);
         }
@@ -347,8 +374,16 @@ const Viewhours = () => {
     }
   };
 
-  const handlePopupClose = () => {
+  const handlePopupClose = (value) => {
     setOpenJobTitleModal(true);
+    if (value) {
+      setSelectedJobId("");
+      // setIsWorkFromOffice(false);
+      setSelectedClientId("");
+      setSelectedEmployee("");
+      setAlltimesheetList([]);
+      // setEvents([]);
+    }
   };
 
   const fetchEmployeeList = async () => {
@@ -366,11 +401,11 @@ const Viewhours = () => {
 
   const handleJobTitleSelect = (selectedTitle) => {
     setSelectedJobId(selectedTitle);
-    const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
-    if (selectedJob) {
-      setIsWorkFromOffice(selectedJob.isWorkFromOffice);
-      // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
-    }
+    // const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
+    // if (selectedJob) {
+    //   setIsWorkFromOffice(selectedJob.isWorkFromOffice);
+    //   // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
+    // }
     setOpenJobTitleModal(true);
   };
 
@@ -403,8 +438,16 @@ const Viewhours = () => {
     }
   };
 
-  const handlePopupCloseForclient = () => {
+  const handlePopupCloseForclient = (value) => {
     setopenClietnSelectModal(true);
+    if (value) {
+      setSelectedClientId("");
+      setSelectedJobId("");
+      // setIsWorkFromOffice(false);
+      setSelectedEmployee("");
+      setAlltimesheetList([]);
+      // setEvents([]);
+    }
   };
 
   const handleClientSelect = (selectedTitle) => {
@@ -425,18 +468,18 @@ const Viewhours = () => {
   }, [selectedEmployee]);
 
   useEffect(() => {
-    const GetTimesheet =
-      (selectedEmployee && selectedJobId && selectedClientId) ||
-      (!selectedEmployee &&
-        ((jobRoleId && jobRoleisworkFromOffice) ||
-          (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
-          (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
-      (selectedJobId && isWorkFromOffice);
+    // const GetTimesheet =
+    //   (selectedEmployee && selectedJobId && selectedClientId) ||
+    //   (!selectedEmployee &&
+    //     ((jobRoleId && jobRoleisworkFromOffice) ||
+    //       (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
+    //       (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
+    //   (selectedJobId && isWorkFromOffice);
 
-    if (GetTimesheet) {
-      // console.log("timesheet api call");
-      getAlltimesheet();
-    }
+    // if (GetTimesheet) {
+    // console.log("timesheet api call");
+    getAlltimesheet();
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
@@ -464,61 +507,61 @@ const Viewhours = () => {
     jobRoleisworkFromOffice,
   ]);
 
-  useEffect(() => {
-    const transformedEvents = AlltimesheetList.flatMap((timesheet) => {
-      const clockEvents = timesheet.clockinTime.map((clock) => ({
-        title: `Clock-In: ${new Date(clock.clockIn).toLocaleTimeString()}`,
-        start: clock.clockIn,
-        end: clock.clockOut || undefined,
-        color: clock.clockOut ? "#20c997" : "#dc3545",
-        extendedProps: {
-          description: `Clock In: ${new Date(
-            clock.clockIn
-          ).toLocaleTimeString()} - Clock Out: ${
-            clock.clockOut
-              ? new Date(clock.clockOut).toLocaleTimeString()
-              : "N/A"
-          }`,
-        },
-      }));
+  // useEffect(() => {
+  //   const transformedEvents = AlltimesheetList.flatMap((timesheet) => {
+  //     const clockEvents = timesheet.clockinTime.map((clock) => ({
+  //       title: `Clock-In: ${new Date(clock.clockIn).toLocaleTimeString()}`,
+  //       start: clock.clockIn,
+  //       end: clock.clockOut || undefined,
+  //       color: clock.clockOut ? "#20c997" : "#dc3545",
+  //       extendedProps: {
+  //         description: `Clock In: ${new Date(
+  //           clock.clockIn
+  //         ).toLocaleTimeString()} - Clock Out: ${
+  //           clock.clockOut
+  //             ? new Date(clock.clockOut).toLocaleTimeString()
+  //             : "N/A"
+  //         }`,
+  //       },
+  //     }));
 
-      const totalHoursEvent = {
-        title: `${timesheet.totalHours} Total Hours`,
-        start: timesheet.date,
-        allDay: true,
-        classNames: ["viewhour-event"],
-        extendedProps: {
-          description: `${timesheet.totalHours} Total Hours`,
-        },
-      };
+  //     const totalHoursEvent = {
+  //       title: `${timesheet.totalHours} Total Hours`,
+  //       start: timesheet.date,
+  //       allDay: true,
+  //       classNames: ["viewhour-event"],
+  //       extendedProps: {
+  //         description: `${timesheet.totalHours} Total Hours`,
+  //       },
+  //     };
 
-      const OvertimeEvent = {
-        title: `${timesheet.overTime} Overtime`,
-        start: timesheet.date,
-        allDay: true,
-        classNames: ["viewhour-overtime"],
-        extendedProps: {
-          description: `${timesheet.overTime} Overtime`,
-        },
-      };
-      // console.log("OvertimeEvent", OvertimeEvent);
+  //     const OvertimeEvent = {
+  //       title: `${timesheet.overTime} Overtime`,
+  //       start: timesheet.date,
+  //       allDay: true,
+  //       classNames: ["viewhour-overtime"],
+  //       extendedProps: {
+  //         description: `${timesheet.overTime} Overtime`,
+  //       },
+  //     };
+  //     // console.log("OvertimeEvent", OvertimeEvent);
 
-      if (viewMode === "dayGridMonth") {
-        return [totalHoursEvent, OvertimeEvent];
-      }
+  //     if (viewMode === "dayGridMonth") {
+  //       return [totalHoursEvent, OvertimeEvent];
+  //     }
 
-      if (viewMode === "timeGridWeek" || "timeGridDay") {
-        return [...clockEvents, OvertimeEvent, totalHoursEvent];
-      }
-      return [];
-    });
+  //     if (viewMode === "timeGridWeek" || "timeGridDay") {
+  //       return [...clockEvents, OvertimeEvent, totalHoursEvent];
+  //     }
+  //     return [];
+  //   });
 
-    setEvents(transformedEvents);
-  }, [AlltimesheetList, viewMode]);
+  //   setEvents(transformedEvents);
+  // }, [AlltimesheetList, viewMode]);
 
   return (
     <div className="View-hour-main">
-      {!openJobTitleModal && JobTitledata.length > 1 && (
+      {/* {!openJobTitleModal && JobTitledata.length > 1 && (
         <JobTitleForm
           onClose={handlePopupClose}
           jobTitledata={JobTitledata}
@@ -531,16 +574,16 @@ const Viewhours = () => {
           Clientdata={Clientdata}
           onClientSelect={handleClientSelect}
         />
-      )}
+      )} */}
       <div className="viewhour-section">
         <h2>Working Hours</h2>
         <div className="indicate-color">
-          <p>
+          {/* <p>
             <span className="color-box black-box"></span>Total Hour
           </p>
           <p>
             <span className="color-box green-box"></span>Overtime
-          </p>
+          </p> */}
         </div>
       </div>
       {userRole !== "Employee" && (
@@ -557,8 +600,6 @@ const Viewhours = () => {
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
                   maxHeight: 200,
-                  scrollbarWidth: "thin",
-                  overflowX: "auto",
                 },
               },
             }}
@@ -580,7 +621,7 @@ const Viewhours = () => {
         </div>
       ) : (
         <div>
-          <FullCalendar
+          {/* <FullCalendar
             plugins={[
               dayGridPlugin,
               timeGridPlugin,
@@ -615,6 +656,31 @@ const Viewhours = () => {
                 delay: [100, 200],
               });
             }}
+          /> */}
+          <CommonTable
+            headers={tableHeaders}
+            data={AlltimesheetList?.map((timesheet) => ({
+              _id: timesheet._id,
+              Name: timesheet?.userName,
+              Role: timesheet?.jobTitle,
+              City: timesheet?.city,
+              contactNumber: timesheet?.contactNumber,
+              latestQRCode: timesheet?.latestQRCode,
+              qrValue: timesheet?.qrValue,
+            }))}
+            actions={{
+              actionsList: actions,
+            }}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            showPerPage={clientPerPage}
+            onPerPageChange={handleClientPerPageChange}
+            handleAction={handleAction}
+            isPagination="true"
+            isSearchQuery={true}
+            searchQuery={searchQuery}
+            totalData={totalClient}
           />
         </div>
       )}

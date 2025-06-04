@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { BsDot } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { GetCall } from "../ApiServices";
+import useApiServices from "../useApiServices";
 import { setJobRoleSelect } from "../store/selectJobeRoleSlice";
 import "./Subheader.css";
 import { MenuItem, Select } from "@mui/material";
@@ -63,6 +63,7 @@ const pageNames = {
 };
 
 const Subheader = () => {
+  const { GetCall } = useApiServices();
   const [jobTitleData, setJobTitleData] = useState([]);
   const dispatch = useDispatch();
   const location = useLocation();

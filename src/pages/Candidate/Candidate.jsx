@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router";
-import { GetCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./Candidate.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 
 const Candidate = () => {
   // const navigate = useNavigate();
+  const { GetCall, PostCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [candidateList, setCandidateList] = useState([]);
   const [showDropdownAction, setShowDropdownAction] = useState(null);

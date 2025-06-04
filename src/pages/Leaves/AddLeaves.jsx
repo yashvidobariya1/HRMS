@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../Helper/Loader";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import { useNavigate, useParams } from "react-router";
 import "./AddLeaves.css";
@@ -10,6 +10,7 @@ import { MenuItem, Select } from "@mui/material";
 import AssignClient from "../../SeparateCom/AssignClient";
 
 const AddLeaves = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   // const location = useLocation();
   // const queryParams = new URLSearchParams(location.search);

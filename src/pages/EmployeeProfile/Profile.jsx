@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Profile.css";
 // import { useSelector } from "react-redux";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { IoAddOutline } from "react-icons/io5";
@@ -11,6 +11,7 @@ import Loader from "../Helper/Loader";
 import { MenuItem, Select } from "@mui/material";
 
 const Profile = () => {
+  const { GetCall, PostCall } = useApiServices();
   // const user = useSelector((state) => state.userInfo.userInfo.user);
   // const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [loading, setLoading] = useState(false);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../Helper/Loader";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import { useNavigate, useParams } from "react-router";
 import "./AddHoliday.css";
@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 
 const AddHoliday = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
