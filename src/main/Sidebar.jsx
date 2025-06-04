@@ -169,12 +169,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                     MenuProps={{
                       PaperProps: {
                         style: {
-                          width: 200, // same as Select
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          scrollbarWidth: "thin",
-                          overflowX: "auto",
+                          width: 200,
                           maxHeight: 192,
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
                         },
                       },
                     }}
@@ -183,22 +181,17 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                       <MenuItem value="allCompany">All</MenuItem>
                     )}
                     {companyList.map((company) => (
-                      // <Tooltip
-                      //   title={company.companyDetails.businessName}
-                      //   key={company._id}
-                      // >
                       <MenuItem
                         key={company._id}
                         value={company._id}
                         style={{
-                          // overflow: "hidden",
+                          lineHeight: 1.4,
                           textOverflow: "ellipsis",
-                          // whiteSpace: "nowrap",
+                          whiteSpace: "normal",
                         }}
                       >
                         {company.companyDetails.businessName}
                       </MenuItem>
-                      // {/* </Tooltip> */}
                     ))}
                   </Select>
                 )}
@@ -256,15 +249,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                         <ul className="sidebar-submenu">
                           {item.subItems
                             .filter((subItem) => {
-                              // Hide "My Report" for Superadmin
                               if (
                                 subItem.title === "My Report" &&
                                 currentRole === "Superadmin"
                               ) {
                                 return false;
                               }
-
-                              // Hide Daily/Weekly/Monthly Report for Employee
                               if (
                                 [
                                   "Daily Report",
