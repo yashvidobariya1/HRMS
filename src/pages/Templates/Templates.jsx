@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { AiOutlineUpload } from "react-icons/ai";
 import Loader from "../Helper/Loader";
 import "../Templates/Templates.css";
@@ -22,6 +22,7 @@ import {
   // InputLabel,
   Checkbox,
   ListItemText,
+  ListSubheader,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 
@@ -48,7 +49,7 @@ const Templates = () => {
   const [selectedAssignuser, setSelectedAssignuser] = useState([]);
   const [assignUser, setassignUser] = useState([]);
   const [signatureRequired, setSignatureRequired] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const allowedFileTypes = [
@@ -61,6 +62,11 @@ const Templates = () => {
   const [totalPages, setTotalPages] = useState(0);
   const fileInputRef = useRef(null);
   const [totalTemplates, settotalTemplates] = useState([]);
+  const filteredUsers = useMemo(() => {
+    return assignUser.filter((user) =>
+      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, assignUser]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -545,7 +551,6 @@ const Templates = () => {
                   className="template-input-dropdwon"
                   onChange={(e) => {
                     const value = e.target.value;
-
                     if (value.includes("all")) {
                       if (selectedAssignuser.length === assignUser.length) {
                         setSelectedAssignuser([]);
@@ -556,12 +561,20 @@ const Templates = () => {
                       setSelectedAssignuser(value);
                     }
                   }}
+                  displayEmpty
                   MenuProps={{
+                    disableAutoFocusItem: true,
                     PaperProps: {
                       className: "custom-select-menu",
                     },
+                    MenuListProps: {
+                      onMouseDown: (e) => {
+                        if (e.target.closest(".search-textfield")) {
+                          e.stopPropagation();
+                        }
+                      },
+                    },
                   }}
-                  displayEmpty
                   renderValue={(selected) => {
                     if (selected.length === 0) {
                       return <strong>Select User</strong>;
@@ -578,6 +591,18 @@ const Templates = () => {
                     );
                   }}
                 >
+                  <ListSubheader>
+                    <TextField
+                      size="small"
+                      placeholder="Search User"
+                      fullWidth
+                      className="search-textfield"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                  </ListSubheader>
+
                   <MenuItem value="all">
                     <Checkbox
                       checked={selectedAssignuser.length === assignUser.length}
@@ -589,7 +614,7 @@ const Templates = () => {
                     <ListItemText primary="All" />
                   </MenuItem>
 
-                  {assignUser.map((user) => (
+                  {filteredUsers.map((user) => (
                     <MenuItem
                       key={user._id}
                       value={user._id}
@@ -613,7 +638,7 @@ const Templates = () => {
                     color="primary"
                   />
                 }
-                label="Signature Require ?"
+                label="Signature Require?"
                 style={{ marginTop: "16px" }}
               />
             </DialogContent>
@@ -623,7 +648,6 @@ const Templates = () => {
               <Button
                 onClick={() => handleAssignUser(templateId, selectedAssignuser)}
                 color="primary"
-                // disabled={!signatureRequired}
               >
                 Assign
               </Button>

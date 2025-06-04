@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./TimeSheetReport.css";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 // import { useLocation } from "react-router";
@@ -12,10 +12,12 @@ import { useSelector } from "react-redux";
 // import { CropLandscapeOutlined } from "@mui/icons-material";
 import {
   Checkbox,
+  ListSubheader,
   MenuItem,
   Select,
   TableFooter,
   TablePagination,
+  TableSortLabel,
   TextField,
 } from "@mui/material";
 // import AssignClient from "../../SeparateCom/AssignClient";
@@ -52,6 +54,24 @@ const TimeSheetReportDaily = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalHourCount, settotalHourCount] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [clientSearchTerm, setClientSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = React.useState({
+    key: "",
+    direction: "asc",
+  });
+
+  const filteredEmployeeList = useMemo(() => {
+    return employeeList.filter((user) =>
+      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, employeeList]);
+
+  const filteredClientList = useMemo(() => {
+    return clientList.filter((client) =>
+      client.clientName.toLowerCase().includes(clientSearchTerm.toLowerCase())
+    );
+  }, [clientList, clientSearchTerm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,9 +96,13 @@ const TimeSheetReportDaily = () => {
     setSelectedEmployee(value);
   };
 
-  const getAllClientsOfUser = async (formdata) => {
+  const getAllClientsOfUser = async () => {
     try {
       setLoading(true);
+      const formdata = {
+        userId: selectedEmployee,
+        isWorkFromOffice: isFromofficeWork,
+      };
       const response = await PostCall(`/getAllClientsOfUser`, formdata);
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
@@ -96,9 +120,13 @@ const TimeSheetReportDaily = () => {
     setselectedClient(value);
   };
 
-  const getAllUsersOfClient = async (formdata) => {
+  const getAllUsersOfClient = async () => {
     try {
       setLoading(true);
+      const formdata = {
+        clientId: selectedClient,
+        isWorkFromOffice: isFromofficeWork,
+      };
       const response = await PostCall(`/getAllUsersOfClient`, formdata);
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
@@ -144,22 +172,6 @@ const TimeSheetReportDaily = () => {
     setSearchQuery(event.target.value);
   };
 
-  const fetchEmployeeList = async () => {
-    try {
-      const response = await GetCall(
-        `/getAllUsersAndClients?companyId=${companyId}`
-      );
-      if (response?.data?.status === 200) {
-        setEmployeeList(response?.data?.users);
-        setClientList(response?.data.clients);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error fetching employee list:", error);
-    }
-  };
-
   const handleChangePage = (newPage) => {
     setPage(newPage);
   };
@@ -168,6 +180,61 @@ const TimeSheetReportDaily = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const keyMap = {
+    Date: "date",
+    Name: "userName",
+    JobRole: "jobRole",
+    totalHours: "totalHours",
+    overTime: "overTime",
+    workingHours: "workingHours",
+    clientName: "clientName",
+    locationName: "locationName",
+  };
+
+  const handleSort = (key) => {
+    const mappedKey = keyMap[key] || key;
+    setSortConfig((prevSort) => {
+      let direction = "asc";
+      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+        direction = "desc";
+      }
+      return { key: mappedKey, direction };
+    });
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (!Array.isArray(timesheetReportList)) return [];
+    if (!sortConfig.key) return [...timesheetReportList];
+    return [...timesheetReportList].sort((a, b) => {
+      const valueA = a[sortConfig.key] ?? "";
+      const valueB = b[sortConfig.key] ?? "";
+      // console.log("reportDetails", reportDetails);
+      if (typeof valueA === "string") {
+        return sortConfig.direction === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return sortConfig.direction === "asc"
+          ? valueA - valueB
+          : valueB - valueA;
+      }
+    });
+  }, [timesheetReportList, sortConfig]);
+
+  const filteredData = React.useMemo(() => {
+    return sortedData.filter((item) =>
+      Object.values(item).some(
+        (value) => value?.toString().toLowerCase().includes
+      )
+    );
+  }, [sortedData]);
+
+  const paginatedRows = React.useMemo(() => {
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return filteredData.slice(start, end);
+  }, [filteredData, currentPage, rowsPerPage]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -184,31 +251,14 @@ const TimeSheetReportDaily = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    userRole !== "Employee" && fetchEmployeeList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyId, isFromofficeWork]);
-
-  useEffect(() => {
-    if (
-      selectedEmployee &&
-      selectedEmployee !== "allUsers" &&
-      !isFromofficeWork
-    ) {
-      const formdata = {
-        userId: selectedEmployee,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      getAllClientsOfUser(formdata);
+    if (selectedEmployee && !isFromofficeWork) {
+      getAllClientsOfUser();
     }
   }, [selectedEmployee]);
 
   useEffect(() => {
-    if (selectedClient && selectedClient !== "allClients") {
-      const formdata = {
-        clientId: selectedClient,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      getAllUsersOfClient(formdata);
+    if (selectedClient) {
+      getAllUsersOfClient();
     }
   }, [selectedClient]);
 
@@ -245,26 +295,46 @@ const TimeSheetReportDaily = () => {
                 MenuProps={{
                   PaperProps: {
                     style: {
-                      width: 150,
-                      maxHeight: 200,
-                      overflowX: "auto",
+                      width: 200,
+                      maxHeight: 300,
+                    },
+                  },
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
                     },
                   },
                 }}
+                renderValue={(selected) => {
+                  if (!selected) return "Select Employee";
+                  if (selected === "allUsers") return "All Employees";
+                  const found = employeeList.find(
+                    (emp) => emp._id === selected
+                  );
+                  return found?.userName || "Unknown";
+                }}
               >
-                <MenuItem value="" disabled>
-                  Select Employee
-                </MenuItem>
-                {/* {!isFromofficeWork && ( */}
+                <ListSubheader>
+                  <TextField
+                    size="small"
+                    placeholder="Search Employee"
+                    fullWidth
+                    className="search-textfield"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
+
                 <MenuItem value="allUsers">All Employees</MenuItem>
-                {/* )} */}
-                {employeeList.map((emp) => (
+                {filteredEmployeeList.map((emp) => (
                   <MenuItem key={emp._id} value={emp._id}>
                     {emp.userName}
                   </MenuItem>
                 ))}
               </Select>
-
               {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
               )}
@@ -287,19 +357,40 @@ const TimeSheetReportDaily = () => {
                       overflowX: "auto",
                     },
                   },
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
+                    },
+                  },
+                }}
+                renderValue={(selected) => {
+                  if (!selected) return "Select Client";
+                  if (selected === "allClients") return "All Clients";
+                  const found = clientList.find((c) => c._id === selected);
+                  return found?.clientName || "Unknown";
                 }}
               >
-                <MenuItem value="" disabled>
-                  Select Clients
-                </MenuItem>
+                <ListSubheader>
+                  <TextField
+                    size="small"
+                    placeholder="Search Client"
+                    fullWidth
+                    className="search-textfield"
+                    value={clientSearchTerm}
+                    onChange={(e) => setClientSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
+
                 <MenuItem value="allClients">All Clients</MenuItem>
-                {clientList.map((client) => (
+                {filteredClientList.map((client) => (
                   <MenuItem key={client._id} value={client._id}>
                     {client.clientName}
                   </MenuItem>
                 ))}
               </Select>
-
               {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
               )}
@@ -381,21 +472,86 @@ const TimeSheetReportDaily = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Job Role</TableCell>
+                  <TableCell
+                    sortDirection={
+                      sortConfig.key === "date" ? sortConfig.direction : false
+                    }
+                  >
+                    <TableSortLabel
+                      active={sortConfig.key === "date"}
+                      direction={sortConfig.direction}
+                      onClick={() => handleSort("Date")}
+                    >
+                      Date
+                    </TableSortLabel>
+                  </TableCell>
                   <TableCell>
-                    {isFromofficeWork ? "Location Name" : "Client Name"}{" "}
+                    <TableSortLabel
+                      active={sortConfig.key === "userName"}
+                      direction={sortConfig.direction}
+                      onClick={() => handleSort("Name")}
+                    >
+                      Name
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={sortConfig.key === "jobRole"}
+                      direction={sortConfig.direction}
+                      onClick={() => handleSort("JobRole")}
+                    >
+                      Job Role
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={
+                        sortConfig.key ===
+                        (isFromofficeWork ? "locationName" : "clientName")
+                      }
+                      direction={sortConfig.direction}
+                      onClick={() =>
+                        handleSort(
+                          isFromofficeWork ? "locationName" : "clientName"
+                        )
+                      }
+                    >
+                      {isFromofficeWork ? "Location Name" : "Client Name"}
+                    </TableSortLabel>
                   </TableCell>
                   <TableCell>Check-in/Check-Out</TableCell>
-                  <TableCell>Working Hours</TableCell>
-                  <TableCell>Over Time</TableCell>
-                  <TableCell>Total Hours</TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={sortConfig.key === "workingHours"}
+                      direction={sortConfig.direction}
+                      onClick={() => handleSort("workingHours")}
+                    >
+                      Working Hours
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={sortConfig.key === "overTime"}
+                      direction={sortConfig.direction}
+                      onClick={() => handleSort("overTime")}
+                    >
+                      Over Time
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={sortConfig.key === "totalHours"}
+                      direction={sortConfig.direction}
+                      onClick={() => handleSort("totalHours")}
+                    >
+                      Total Hours
+                    </TableSortLabel>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {timesheetReportList && timesheetReportList.length > 0 ? (
-                  timesheetReportList.map((row, index) => (
+                {paginatedRows && paginatedRows.length > 0 ? (
+                  paginatedRows.map((row, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         {moment(row.date).format("DD/MM/YYYY")}

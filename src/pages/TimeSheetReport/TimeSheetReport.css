@@ -254,6 +254,14 @@
   padding: 0 10px !important;
 }
 
+.timesheetreport-custom-table .MuiTableSortLabel-root.Mui-active,
+.timesheetreport-custom-table
+  .MuiTableSortLabel-root.Mui-active
+  .MuiTableSortLabel-icon,
+.timesheetreport-custom-table .MuiTableSortLabel-root:hover {
+  color: var(--sidebar-title-primary-white) !important;
+}
+
 @media screen and (max-width: 767px) {
   .timesheet-report-download-container button {
     margin-top: 14px;
