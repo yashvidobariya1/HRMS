@@ -121,19 +121,23 @@ const LoggedInUser = () => {
             MenuProps={{
               PaperProps: {
                 style: {
-                  width: 100,
-                  textOverflow: "ellipsis",
+                  maxWidth: 100,
                   maxHeight: 200,
-                  whiteSpace: "nowrap",
+                  overflowX: "auto",
+                  scrollbarWidth: "thin",
                 },
               },
             }}
           >
-            <MenuItem value="" disabled>
+            <MenuItem value="" disabled className="menu-item">
               Select Time Period
             </MenuItem>
-            <MenuItem value="24">24 Hours</MenuItem>
-            <MenuItem value="48">48 Hours</MenuItem>
+            <MenuItem value="24" className="menu-item">
+              24 Hours
+            </MenuItem>
+            <MenuItem value="48" className="menu-item">
+              48 Hours
+            </MenuItem>
           </Select>
         </div>
       </div>

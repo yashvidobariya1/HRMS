@@ -244,7 +244,7 @@
 
 // =========full calender======
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import useApiServices from "../../useApiServices";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
@@ -253,7 +253,7 @@ import "tippy.js/dist/tippy.css";
 import Loader from "../Helper/Loader";
 import AssignClient from "../../SeparateCom/AssignClient";
 import { showToast } from "../../main/ToastManager";
-import { MenuItem, Select } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 import CommonTable from "../../SeparateCom/CommonTable";
 
 const Viewhours = () => {
@@ -288,6 +288,7 @@ const Viewhours = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const actions = [];
 
   const tableHeaders = [
@@ -298,6 +299,12 @@ const Viewhours = () => {
     "Active QR",
     "Action",
   ];
+
+  const filteremployeeList = useMemo(() => {
+    return employeeList.filter((loc) =>
+      loc?.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, employeeList]);
 
   const handleEmployeeChange = (employeeId) => {
     setSelectedEmployee(employeeId);
@@ -594,24 +601,58 @@ const Viewhours = () => {
             onChange={(e) => handleEmployeeChange(e.target.value)}
             displayEmpty
             MenuProps={{
+              disableAutoFocusItem: true,
               PaperProps: {
                 style: {
                   width: 150,
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
                   maxHeight: 200,
+                  overflowX: "auto",
+                  scrollbarWidth: "thin",
+                },
+              },
+              MenuListProps: {
+                onMouseDown: (e) => {
+                  if (e.target.closest(".search-textfield")) {
+                    e.stopPropagation();
+                  }
                 },
               },
             }}
+            renderValue={(selected) => {
+              if (!selected) return "Select Employee";
+              const found = employeeList.find((loc) => loc._id === selected);
+              return found?.userName || "Not Found";
+            }}
           >
-            <MenuItem value="" disabled>
+            <ListSubheader>
+              <TextField
+                size="small"
+                placeholder="Search Employee"
+                fullWidth
+                className="search-textfield"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+              />
+            </ListSubheader>
+            <MenuItem value="" disabled className="menu-item">
               Select Employee
             </MenuItem>
-            {employeeList.map((employee) => (
-              <MenuItem key={employee._id} value={employee._id}>
-                {employee.userName}
+            {filteremployeeList.length > 0 ? (
+              filteremployeeList.map((employee) => (
+                <MenuItem
+                  key={employee._id}
+                  value={employee._id}
+                  className="menu-item"
+                >
+                  {employee.userName}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled className="menu-item">
+                No Employee found
               </MenuItem>
-            ))}
+            )}
           </Select>
         </div>
       )}

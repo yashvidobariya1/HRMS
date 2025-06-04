@@ -189,6 +189,7 @@
   border: none;
   font-size: var(--font-size-small);
   outline: none;
+  width: 150px;
 }
 
 .absence-input-dropdown .MuiSelect-icon {

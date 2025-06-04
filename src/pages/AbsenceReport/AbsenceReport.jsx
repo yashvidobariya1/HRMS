@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./AbsenceReport.css";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 // import { useLocation } from "react-router";
@@ -9,7 +9,7 @@ import moment from "moment";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
-import { MenuItem, Select } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 import AssignClient from "../../SeparateCom/AssignClient";
 
 const AbsenceReport = () => {
@@ -39,6 +39,7 @@ const AbsenceReport = () => {
   const [totalAbsencesheet, settotalAbsencesheet] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [employeeList, setEmployeeList] = useState([]);
+  const [searchTerm, setsearchTerm] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
@@ -52,6 +53,12 @@ const AbsenceReport = () => {
     year: currentYear,
     month: currentMonth,
   });
+
+  const filteredEmployeeList = useMemo(() => {
+    return employeeList.filter((user) =>
+      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, employeeList]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -354,7 +361,7 @@ const AbsenceReport = () => {
               {[...Array(currentYear - startYear + 1)].map((_, index) => {
                 const year = startYear + index;
                 return (
-                  <MenuItem key={year} value={year}>
+                  <MenuItem key={year} value={year} className="menu-item">
                     {year}
                   </MenuItem>
                 );
@@ -383,15 +390,17 @@ const AbsenceReport = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    width: 80,
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
+                    maxWidth: 80,
                     maxHeight: 192,
+                    overflowX: "auto",
+                    scrollbarWidth: "thin",
                   },
                 },
               }}
             >
-              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="All" className="menu-item">
+                All
+              </MenuItem>
               {months?.map((month) => (
                 <MenuItem key={month.value} value={month.value}>
                   {month.name}
@@ -416,26 +425,58 @@ const AbsenceReport = () => {
             onChange={(e) => handleEmployeeChange(e.target.value)}
             displayEmpty
             MenuProps={{
+              disableAutoFocusItem: true,
               PaperProps: {
                 style: {
-                  width: 150,
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
+                  maxWidth: 150,
                   maxHeight: 200,
-                  scrollbarWidth: "thin",
                   overflowX: "auto",
+                  scrollbarWidth: "thin",
+                },
+              },
+              MenuListProps: {
+                onMouseDown: (e) => {
+                  if (e.target.closest(".search-textfield")) {
+                    e.stopPropagation();
+                  }
                 },
               },
             }}
+            renderValue={(selected) => {
+              if (!selected) return "Select Employee";
+              const found = employeeList.find((emp) => emp._id === selected);
+              return found?.userName || "Not found";
+            }}
           >
-            <MenuItem value="" disabled>
+            <ListSubheader>
+              <TextField
+                size="small"
+                placeholder="Search Country"
+                fullWidth
+                className="search-textfield"
+                value={searchTerm}
+                onChange={(e) => setsearchTerm(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+              />
+            </ListSubheader>
+            <MenuItem value="" disabled className="menu-item">
               Select Employee
             </MenuItem>
-            {employeeList.map((employee) => (
-              <MenuItem key={employee._id} value={employee._id}>
-                {employee.userName}
+            {filteredEmployeeList.length > 0 ? (
+              filteredEmployeeList.map((employee) => (
+                <MenuItem
+                  key={employee._id}
+                  value={employee._id}
+                  className="menu-item"
+                >
+                  {employee.userName}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled className="menu-item">
+                No Employees found
               </MenuItem>
-            ))}
+            )}
           </Select>
         </div>
       )}
