@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { showToast } from "../../main/ToastManager";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { useNavigate, useParams } from "react-router";
 import "./AddCompany.css";
 import Loader from "../Helper/Loader";
@@ -9,6 +9,7 @@ import countryNames from "../../Data/AllCountryList.json";
 import { MenuItem, Select } from "@mui/material";
 
 const AddCompany = () => {
+  const { GetCall, PostCall } = useApiServices();
   const { id } = useParams();
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});

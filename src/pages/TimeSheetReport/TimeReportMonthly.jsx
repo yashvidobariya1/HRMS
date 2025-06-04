@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./TimeSheetReport.css";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 // import { useLocation } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 // import TimesheetTable from "../../SeparateCom/TimesheetTable";
@@ -33,6 +33,7 @@ import {
 import { BsHourglassSplit } from "react-icons/bs";
 
 const TimeSheetReportDaily = () => {
+  const { GetCall, PostCall } = useApiServices();
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState("");

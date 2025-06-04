@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GetCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 import "./ShowNotification.css";
@@ -10,6 +10,7 @@ import { TextField } from "@mui/material";
 import Loader from "../Helper/Loader";
 
 const ShowNotification = () => {
+  const { GetCall } = useApiServices();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);

@@ -1,5 +1,5 @@
 // import React, { useState, useEffect } from "react";
-// import { PostCall } from "../../ApiServices";
+// import { PostCall } from "../../useApiServices";
 // import { showToast } from "../../main/ToastManager";
 // import moment from "moment";
 // import "./ClockIn.css";
@@ -517,7 +517,7 @@
 // export default CheckIn;
 
 import React, { useState, useEffect } from "react";
-import { PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import moment from "moment";
 import "./ClockIn.css";
@@ -532,6 +532,7 @@ import QrScanner from "qr-scanner";
 import AssignClient from "../../SeparateCom/AssignClient";
 
 const CheckIn = () => {
+  const { PostCall } = useApiServices();
   const userId = useSelector((state) => state.userInfo.userInfo._id);
   const [startTime, setStartTime] = useState(null);
   // const [endTime, setEndTime] = useState(null);

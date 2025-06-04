@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./TimeSheetReport.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 import moment from "moment";
@@ -27,6 +27,7 @@ import {
 import { BsHourglassSplit } from "react-icons/bs";
 
 const TimeSheetReportDaily = () => {
+  const { PostCall } = useApiServices();
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState("");
@@ -80,14 +81,14 @@ const TimeSheetReportDaily = () => {
   const handleCheckboxChange = (event) => {
     const checked = event.target.checked;
     setisFromofficeWork(checked);
-    setselectedClient("");
-    setSelectedEmployee("");
+    setselectedClient("allClients");
+    setSelectedEmployee("allUsers");
     setSelectedStartDate("");
     setSelectedEndDate("");
   };
 
   const handleEmployeeChange = (value) => {
-    setSelectedEmployee(value);
+    setSelectedEmployee(value);F
   };
 
   const getAllClientsOfUser = async () => {
@@ -97,7 +98,10 @@ const TimeSheetReportDaily = () => {
         userId: selectedEmployee,
         isWorkFromOffice: isFromofficeWork,
       };
-      const response = await PostCall(`/getAllClientsOfUser`, formdata);
+      const response = await PostCall(
+        `/getAllClientsOfUser?companyId=${companyId}`,
+        formdata
+      );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
         setClientList(response?.data.clients);
@@ -121,7 +125,10 @@ const TimeSheetReportDaily = () => {
         clientId: selectedClient,
         isWorkFromOffice: isFromofficeWork,
       };
-      const response = await PostCall(`/getAllUsersOfClient`, formdata);
+      const response = await PostCall(
+        `/getAllUsersOfClient?companyId=${companyId}`,
+        formdata
+      );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
         setEmployeeList(response?.data.users);
@@ -269,13 +276,13 @@ const TimeSheetReportDaily = () => {
     if (selectedEmployee && !isFromofficeWork) {
       getAllClientsOfUser();
     }
-  }, [selectedEmployee]);
+  }, [selectedEmployee, companyId]);
 
   useEffect(() => {
     if (selectedClient) {
       getAllUsersOfClient();
     }
-  }, [selectedClient]);
+  }, [selectedClient, companyId, isFromofficeWork]);
 
   useEffect(() => {
     // if (selectedEmployee || selectedClient) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./TimeSheetReport.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 import moment from "moment";
@@ -28,6 +28,7 @@ import {
 import { BsHourglassSplit } from "react-icons/bs";
 
 const TimesheetReportMy = () => {
+  const { GetCall, PostCall } = useApiServices();
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState("");

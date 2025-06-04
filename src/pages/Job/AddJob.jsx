@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./AddJob.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import moment from "moment";
@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { MenuItem, Select } from "@mui/material";
 
 const AddJob = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});

@@ -6,13 +6,14 @@ import "./Sidebar.css";
 import { RxDashboard } from "react-icons/rx";
 // import { IoCloseCircleSharp } from "react-icons/io5";
 import { FaChevronCircleLeft } from "react-icons/fa";
-import { GetCall } from "../ApiServices";
+import useApiServices from "../useApiServices";
 import { setCompanySelect } from "../store/selectCompanySlice";
 import { Select, MenuItem } from "@mui/material";
 import { showToast } from "./ToastManager";
 import { MdOutlineExpandMore, MdChevronRight } from "react-icons/md";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
+  const { GetCall } = useApiServices();
   const currentRole = useSelector((state) => state.userInfo.userInfo.role);
   const location = useLocation();
   const dispatch = useDispatch();
@@ -21,6 +22,9 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     useSelector((state) => state.companySelect.companySelect)
   );
   const [expandedItems, setExpandedItems] = useState({});
+  const isAnySubItemActive = (subItems) => {
+    return subItems?.some((subItem) => location.pathname === subItem.link);
+  };
   const toggleExpand = (title) => {
     setExpandedItems((prev) => ({
       ...prev,
@@ -216,88 +220,92 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               {!isCollapsed && <span className="link_name">Dashboard</span>}
             </NavLink>
           </li>
+
           {filteredSidebarData?.map((section, sectionIndex) => (
             <div key={sectionIndex}>
               <li className={`section-title ${isCollapsed ? "collapsed" : ""}`}>
                 {section.section}
               </li>
-              {section?.items?.map((item, itemIndex) => (
-                <li key={itemIndex}>
-                  {item.subItems ? (
-                    <>
-                      <div
-                        className={`sidebar-collapsible-header ${
-                          expandedItems[item.title] ? "expanded" : ""
-                        } sidebar-collapsible-header-custom`}
-                        onClick={() => toggleExpand(item.title)}
+
+              {section?.items?.map((item, itemIndex) => {
+                const isSubActive = isAnySubItemActive(item.subItems);
+
+                return (
+                  <li key={itemIndex}>
+                    {item.subItems ? (
+                      <>
+                        <div
+                          className={`sidebar-collapsible-header sidebar-collapsible-header-custom ${
+                            expandedItems[item.title] ? "expanded" : ""
+                          } ${isSubActive ? "active" : ""}`}
+                          onClick={() => toggleExpand(item.title)}
+                        >
+                          <div className="sidebar-icon">{item.icon}</div>
+                          {!isCollapsed && (
+                            <>
+                              <span className="link_name">{item.title}</span>
+                              <span style={{ marginLeft: "auto" }} className="expand-icon">
+                                {expandedItems[item.title] ? (
+                                  <MdOutlineExpandMore />
+                                ) : (
+                                  <MdChevronRight />
+                                )}
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        {expandedItems[item.title] && !isCollapsed && (
+                          <ul className="sidebar-submenu">
+                            {item.subItems
+                              .filter((subItem) => {
+                                if (
+                                  subItem.title === "My Report" &&
+                                  currentRole === "Superadmin"
+                                )
+                                  return false;
+                                if (
+                                  [
+                                    "Daily Report",
+                                    "Weekly Report",
+                                    "Monthly Report",
+                                  ].includes(subItem.title) &&
+                                  currentRole === "Employee"
+                                )
+                                  return false;
+                                return true;
+                              })
+                              .map((subItem, subIndex) => (
+                                <li key={subIndex} className="sidebar-subitem">
+                                  <NavLink
+                                    to={subItem.link}
+                                    className={({ isActive }) =>
+                                      isActive ? "sub-active" : ""
+                                    }
+                                  >
+                                    <span className="link_name">
+                                      {subItem.title}
+                                    </span>
+                                  </NavLink>
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                      </>
+                    ) : (
+                      <NavLink
+                        to={item.link}
+                        className={({ isActive }) => (isActive ? "active" : "")}
                       >
                         <div className="sidebar-icon">{item.icon}</div>
                         {!isCollapsed && (
-                          <>
-                            <span className="link_name">{item.title}</span>
-                            <span style={{ marginLeft: "auto" }}>
-                              {expandedItems[item.title] ? (
-                                <MdOutlineExpandMore />
-                              ) : (
-                                <MdChevronRight />
-                              )}
-                            </span>
-                          </>
+                          <span className="link_name">{item.title}</span>
                         )}
-                      </div>
-                      {expandedItems[item.title] && !isCollapsed && (
-                        <ul className="sidebar-submenu">
-                          {item.subItems
-                            .filter((subItem) => {
-                              if (
-                                subItem.title === "My Report" &&
-                                currentRole === "Superadmin"
-                              ) {
-                                return false;
-                              }
-                              if (
-                                [
-                                  "Daily Report",
-                                  "Weekly Report",
-                                  "Monthly Report",
-                                ].includes(subItem.title) &&
-                                currentRole === "Employee"
-                              ) {
-                                return false;
-                              }
-
-                              return true;
-                            })
-                            .map((subItem, subIndex) => (
-                              <li key={subIndex} className="sidebar-subitem">
-                                <NavLink
-                                  to={subItem.link}
-                                  className={({ isActive }) =>
-                                    isActive ? "active" : ""
-                                  }
-                                >
-                                  <span className="link_name">
-                                    {subItem.title}
-                                  </span>
-                                </NavLink>
-                              </li>
-                            ))}
-                        </ul>
-                      )}
-                    </>
-                  ) : (
-                    <NavLink
-                      to={item.link}
-                      className={({ isActive }) => (isActive ? "active" : "")}
-                    >
-                      <div className="sidebar-icon">{item.icon}</div>
-                      {!isCollapsed && (
-                        <span className="link_name">{item.title}</span>
-                      )}
-                    </NavLink>
-                  )}
-                </li>
-              ))}
+                      </NavLink>
+                    )}
+                  </li>
+                );
+              })}
             </div>
           ))}
         </ul>

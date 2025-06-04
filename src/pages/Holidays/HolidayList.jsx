@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Loader from "../Helper/Loader";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
@@ -13,6 +13,7 @@ import { MdAssignmentAdd } from "react-icons/md";
 import { MenuItem, Select } from "@mui/material";
 
 const HolidayList = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [AllholidayList, setAllholidayList] = useState([]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CommonTable from "../../SeparateCom/CommonTable";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 import "./LeaveRequest.css";
@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 
 const LeavesRequest = () => {
+  const { GetCall, PostCall } = useApiServices();
   const [leaveList, setLeaveList] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [duration, setDuration] = useState("");

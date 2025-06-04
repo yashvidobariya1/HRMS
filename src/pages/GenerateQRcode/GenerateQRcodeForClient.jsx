@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import { FaDownload } from "react-icons/fa6";
 import "./GenerateQRcodeForClient.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { useLocation } from "react-router";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
@@ -13,6 +13,7 @@ import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { useSelector } from "react-redux";
 
 const GenerateQRcodeForClient = () => {
+  const { GetCall, PostCall } = useApiServices();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const companyId = useSelector((state) => state.companySelect.companySelect);

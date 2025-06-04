@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { TextField } from "@mui/material";
 
 const Employee = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   // const user = useSelector((state) => state.userInfo.userInfo);
   const [loading, setLoading] = useState(false);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { MdAddBusiness } from "react-icons/md";
 import { useNavigate } from "react-router";
-import { PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import "./Leaves.css";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
@@ -14,6 +14,7 @@ import Loader from "../Helper/Loader";
 import moment from "moment";
 
 const Leaves = () => {
+  const { GetCall, PostCall } = useApiServices();
   const [leaveList, setLeaveList] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);

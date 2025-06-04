@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GetCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./LoggedInUser.css";
 import Loader from "../Helper/Loader";
 import CommonTable from "../../SeparateCom/CommonTable";
@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { showToast } from "../../main/ToastManager";
 
 const LoggedInUser = () => {
+  const { GetCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [userLoggedList, setuserLoggedList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
