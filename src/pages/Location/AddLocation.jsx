@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./AddLocation.css";
 import { GetCall, PostCall } from "../../ApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import countryNames from "../../Data/AllCountryList.json";
-import { MenuItem, Select } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
 const AddLocation = () => {
   const navigate = useNavigate();
@@ -13,6 +13,8 @@ const AddLocation = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const { id } = useParams();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [countrysearchTerm, setcountrysearchTerm] = useState("");
   const [formData, setFormData] = useState({
     companyName: "",
     companyId: "",
@@ -30,6 +32,20 @@ const AddLocation = () => {
     latitude: "",
     radius: "",
   });
+
+  const filtercompanyList = useMemo(() => {
+    return companyList.filter((loc) =>
+      loc?.companyDetails?.businessName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, companyList]);
+
+  const filteredCountryList = useMemo(() => {
+    return countryNames.filter((user) =>
+      user.toLowerCase().includes(countrysearchTerm.toLowerCase())
+    );
+  }, [countrysearchTerm, countryNames]);
 
   const validate = () => {
     let newErrors = {};
@@ -213,26 +229,60 @@ const AddLocation = () => {
                   onChange={handleChange}
                   displayEmpty
                   MenuProps={{
+                    disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
                         width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
                         maxHeight: 200,
-                        scrollbarWidth: "thin",
                         overflowX: "auto",
+                        scrollbarWidth: "thin",
+                      },
+                    },
+                    MenuListProps: {
+                      onMouseDown: (e) => {
+                        if (e.target.closest(".search-textfield")) {
+                          e.stopPropagation();
+                        }
                       },
                     },
                   }}
+                  renderValue={(selected) => {
+                    if (!selected) return "Select Location";
+                    const found = companyList.find(
+                      (loc) => loc._id === selected
+                    );
+                    return found?.companyDetails?.businessName || "Not Found";
+                  }}
                 >
-                  <MenuItem value="" disabled>
+                  <ListSubheader>
+                    <TextField
+                      size="small"
+                      placeholder="Search Company"
+                      fullWidth
+                      className="search-textfield"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                  </ListSubheader>
+                  <MenuItem value="" disabled className="menu-item">
                     Select Company
                   </MenuItem>
-                  {companyList?.map((company) => (
-                    <MenuItem key={company?._id} value={company?._id}>
-                      {company?.companyDetails?.businessName}
+                  {filtercompanyList.length > 0 ? (
+                    filtercompanyList?.map((company) => (
+                      <MenuItem
+                        key={company?._id}
+                        value={company?._id}
+                        className="menu-item"
+                      >
+                        {company?.companyDetails?.businessName}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled className="menu-item">
+                      No Company found
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
                 {errors?.companyId && (
                   <p className="error-text">{errors?.companyId}</p>
@@ -330,6 +380,7 @@ const AddLocation = () => {
                   onChange={handleChange}
                   displayEmpty
                   MenuProps={{
+                    disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
                         width: 200,
@@ -338,16 +389,49 @@ const AddLocation = () => {
                         maxHeight: 200,
                       },
                     },
+                    MenuListProps: {
+                      onMouseDown: (e) => {
+                        if (e.target.closest(".search-textfield")) {
+                          e.stopPropagation();
+                        }
+                      },
+                    },
+                  }}
+                  renderValue={(selected) => {
+                    if (!selected) return "Select Country";
+                    const found = countryNames.find((emp) => emp === selected);
+                    return found || "No found";
                   }}
                 >
-                  <MenuItem value="" disabled>
+                  <ListSubheader>
+                    <TextField
+                      size="small"
+                      placeholder="Search Country"
+                      fullWidth
+                      className="search-textfield"
+                      value={countrysearchTerm}
+                      onChange={(e) => setcountrysearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                  </ListSubheader>
+                  <MenuItem value="" disabled className="menu-item">
                     Select country
                   </MenuItem>
-                  {countryNames.map((country, index) => (
-                    <MenuItem key={index} value={country}>
-                      {country}
+                  {filteredCountryList.length > 0 ? (
+                    filteredCountryList.map((country, index) => (
+                      <MenuItem
+                        key={index}
+                        value={country}
+                        className="menu-item"
+                      >
+                        {country}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled className="menu-item">
+                      No countries found
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
                 {errors?.country && (
                   <p className="error-text">{errors?.country}</p>

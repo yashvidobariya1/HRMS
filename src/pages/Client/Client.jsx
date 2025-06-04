@@ -283,7 +283,7 @@ const Client = () => {
       </div>
 
       <TextField
-        label="Search Client"
+        placeholder="Search Client"
         variant="outlined"
         size="small"
         value={searchQuery}

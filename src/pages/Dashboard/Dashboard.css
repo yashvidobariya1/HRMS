@@ -856,6 +856,28 @@ section.docx {
   color: var(--secondary-dark-gray);
 }
 
+.dashboard-input-dropdown {
+  margin-top: 5px;
+  padding: 13px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.dashboard-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.dashboard-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media (max-width: 1500px) {
   .dashboard-overview-container {
     flex-direction: column;
@@ -1052,6 +1074,10 @@ section.docx {
     width: 18px;
     height: 18px;
   }
+
+  .dashboard-input-dropdown {
+    padding: 11px;
+  }
 }
 
 @media (max-width: 575px) {
@@ -1176,6 +1202,14 @@ section.docx {
   }
 
   .dashboard-dropdown {
+    padding: 7px;
+  }
+
+  .dashboard-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .dashboard-input-dropdown {
     padding: 7px;
   }
 }

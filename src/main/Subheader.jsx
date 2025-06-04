@@ -150,18 +150,23 @@ const Subheader = () => {
             value={selectedJob?.jobName || ""}
             onChange={handleJobTitleChange}
             MenuProps={{
+              disableAutoFocusItem: true,
               PaperProps: {
                 style: {
                   width: 80,
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
+                  overflowX: "auto",
+                  scrollbarWidth: "thin",
                   maxHeight: 80,
                 },
               },
             }}
           >
             {jobTitleData.map((title) => (
-              <MenuItem key={title.jobId} value={title.jobName}>
+              <MenuItem
+                key={title.jobId}
+                value={title.jobName}
+                className="menu-item"
+              >
                 {title.jobName}
               </MenuItem>
             ))}

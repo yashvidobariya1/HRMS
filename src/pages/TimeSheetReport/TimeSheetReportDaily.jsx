@@ -310,9 +310,10 @@ const TimeSheetReportDaily = () => {
                 onChange={(e) => handleEmployeeChange(e.target.value)}
                 displayEmpty
                 MenuProps={{
+                  disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
-                      width: 200,
+                      width: 150,
                       maxHeight: 300,
                     },
                   },
@@ -330,7 +331,7 @@ const TimeSheetReportDaily = () => {
                   const found = employeeList.find(
                     (emp) => emp._id === selected
                   );
-                  return found?.userName || "Unknown";
+                  return found?.userName || "No found";
                 }}
               >
                 <ListSubheader>
@@ -346,11 +347,15 @@ const TimeSheetReportDaily = () => {
                 </ListSubheader>
 
                 <MenuItem value="allUsers">All Employees</MenuItem>
-                {filteredEmployeeList.map((emp) => (
-                  <MenuItem key={emp._id} value={emp._id}>
-                    {emp.userName}
-                  </MenuItem>
-                ))}
+                {filteredEmployeeList.length > 0 ? (
+                  filteredEmployeeList.map((emp) => (
+                    <MenuItem key={emp._id} value={emp._id}>
+                      {emp.userName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>Not Found</MenuItem>
+                )}
               </Select>
               {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
@@ -367,6 +372,7 @@ const TimeSheetReportDaily = () => {
                 onChange={(e) => handleClientChange(e.target.value)}
                 displayEmpty
                 MenuProps={{
+                  disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
                       width: 150,
@@ -464,7 +470,7 @@ const TimeSheetReportDaily = () => {
 
       <div className="timesheetreport-searchbar-clockin">
         <TextField
-          label="Search Timesheet"
+          placeholder="Search Timesheet"
           variant="outlined"
           size="small"
           value={searchQuery}

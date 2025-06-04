@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { showToast } from "../../main/ToastManager";
 import { GetCall, PostCall } from "../../ApiServices";
@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router";
 import "./AddCompany.css";
 import Loader from "../Helper/Loader";
 import countryNames from "../../Data/AllCountryList.json";
-import { MenuItem, Select } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
 const AddCompany = () => {
   const { id } = useParams();
@@ -15,6 +15,7 @@ const AddCompany = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
     companyDetails: {
       companyCode: "",
@@ -57,6 +58,12 @@ const AddCompany = () => {
   });
 
   const steps = ["Company Details", "Employee Settings", "Contract Details"];
+
+  const filteredCountryList = useMemo(() => {
+    return countryNames.filter((user) =>
+      user.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, countryNames]);
 
   const nextStep = async () => {
     // console.log("nextStep called");
@@ -523,24 +530,56 @@ const AddCompany = () => {
                   onChange={handleChange}
                   displayEmpty
                   MenuProps={{
+                    disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
                         width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                         maxHeight: 200,
                       },
                     },
+                    MenuListProps: {
+                      onMouseDown: (e) => {
+                        if (e.target.closest(".search-textfield")) {
+                          e.stopPropagation();
+                        }
+                      },
+                    },
+                  }}
+                  renderValue={(selected) => {
+                    if (!selected) return "Select Country";
+                    const found = countryNames.find((emp) => emp === selected);
+                    return found || "No found";
                   }}
                 >
-                  <MenuItem value="" disabled>
+                  <ListSubheader>
+                    <TextField
+                      size="small"
+                      placeholder="Search Country"
+                      fullWidth
+                      className="search-textfield"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                  </ListSubheader>
+                  <MenuItem value="" disabled className="menu-item">
                     Select Country
                   </MenuItem>
-                  {countryNames.map((country, index) => (
-                    <MenuItem key={index} value={country}>
-                      {country}
-                    </MenuItem>
-                  ))}
+                  {filteredCountryList.length > 0 ? (
+                    filteredCountryList.map((country, index) => (
+                      <MenuItem
+                        key={index}
+                        value={country}
+                        className="menu-item"
+                      >
+                        {country}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>No countries found</MenuItem>
+                  )}
                 </Select>
                 {errors.country && (
                   <p className="error-text">{errors.country}</p>
@@ -573,20 +612,28 @@ const AddCompany = () => {
                     PaperProps: {
                       style: {
                         width: 200,
-                        textOverflow: "ellipsis",
                         maxHeight: 200,
-                        whiteSpace: "nowrap",
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                       },
                     },
                   }}
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value="" disabled className="menu-item">
                     Select Timezone
                   </MenuItem>
-                  <MenuItem value="GMT+1">GMT+1</MenuItem>
-                  <MenuItem value="GMT+2">GMT+2</MenuItem>
-                  <MenuItem value="GMT+3">GMT+3</MenuItem>
-                  <MenuItem value="GMT+4">GMT+4</MenuItem>
+                  <MenuItem value="GMT+1" className="menu-item">
+                    GMT+1
+                  </MenuItem>
+                  <MenuItem value="GMT+2" className="menu-item">
+                    GMT+2
+                  </MenuItem>
+                  <MenuItem value="GMT+3" className="menu-item">
+                    GMT+3
+                  </MenuItem>
+                  <MenuItem value="GMT+4" className="menu-item">
+                    GMT+4
+                  </MenuItem>
                 </Select>
                 {errors.timeZone && (
                   <p className="error-text">{errors.timeZone}</p>

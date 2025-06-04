@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { SidebarData } from "./Sidebardata";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,7 @@ import { RxDashboard } from "react-icons/rx";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import { GetCall } from "../ApiServices";
 import { setCompanySelect } from "../store/selectCompanySlice";
-import { Select, MenuItem } from "@mui/material";
+import { Select, MenuItem, ListSubheader, TextField } from "@mui/material";
 import { showToast } from "./ToastManager";
 import { MdOutlineExpandMore, MdChevronRight } from "react-icons/md";
 
@@ -17,6 +17,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const [companyList, setcompanyList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCompanyId, setSelectedCompanyId] = useState(
     useSelector((state) => state.companySelect.companySelect)
   );
@@ -27,6 +28,14 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       [title]: !prev[title],
     }));
   };
+
+  const filteredCompanyList = useMemo(() => {
+    return companyList.filter((user) =>
+      user.companyDetails.businessName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, companyList]);
 
   const filterSidebarData = (data, role) => {
     return data
@@ -165,8 +174,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                     value={selectedCompanyId}
                     onChange={handleChange}
                     className="company-dropdown"
-                    // className="dropdown"
                     MenuProps={{
+                      disableAutoFocusItem: true,
                       PaperProps: {
                         style: {
                           width: 200,
@@ -175,24 +184,55 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                           scrollbarWidth: "thin",
                         },
                       },
+                      MenuListProps: {
+                        onMouseDown: (e) => {
+                          if (e.target.closest(".search-textfield")) {
+                            e.stopPropagation();
+                          }
+                        },
+                      },
+                    }}
+                    renderValue={(selected) => {
+                      if (!selected) return "Select Company";
+                      const found = companyList.find(
+                        (emp) => emp._id === selected
+                      );
+                      return found?.companyDetails.businessName || "All";
                     }}
                   >
                     {currentRole === "Superadmin" && (
-                      <MenuItem value="allCompany">All</MenuItem>
+                      <>
+                        <ListSubheader>
+                          <TextField
+                            size="small"
+                            placeholder="Search Company"
+                            fullWidth
+                            className="search-textfield"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          />
+                        </ListSubheader>
+                      </>
                     )}
-                    {companyList.map((company) => (
-                      <MenuItem
-                        key={company._id}
-                        value={company._id}
-                        style={{
-                          lineHeight: 1.4,
-                          textOverflow: "ellipsis",
-                          whiteSpace: "normal",
-                        }}
-                      >
-                        {company.companyDetails.businessName}
+                    <MenuItem value="allCompany" className="menu-item">
+                      All
+                    </MenuItem>
+                    {filteredCompanyList.length > 0 ? (
+                      filteredCompanyList.map((company) => (
+                        <MenuItem
+                          key={company._id}
+                          value={company._id}
+                          className="menu-item"
+                        >
+                          {company.companyDetails.businessName}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem disabled className="menu-item">
+                        Not Found
                       </MenuItem>
-                    ))}
+                    )}
                   </Select>
                 )}
               </>

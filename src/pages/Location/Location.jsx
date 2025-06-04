@@ -277,7 +277,7 @@ const Location = () => {
         </div>
       </div>
       <TextField
-        label="Search Location"
+        placeholder="Search Location"
         variant="outlined"
         size="small"
         value={searchQuery}

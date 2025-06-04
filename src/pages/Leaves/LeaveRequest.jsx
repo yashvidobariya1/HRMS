@@ -264,7 +264,7 @@ const LeavesRequest = () => {
       </div>
 
       <TextField
-        label="Search Leave Request"
+        placeholder="Search Leave Request"
         variant="outlined"
         size="small"
         value={searchQuery}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { GetCall } from "../../ApiServices";
 import "./ReportList.css";
@@ -9,7 +9,7 @@ import CommonTable from "../../SeparateCom/CommonTable";
 // import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { MenuItem, Select, TextField } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
 const ReportList = () => {
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ const ReportList = () => {
   const [minDate, setMinDate] = useState(
     moment(process.env.REACT_APP_START_DATE).format("YYYY-MM-DD")
   );
+  const [searchTerm, setSearchTerm] = useState("");
   const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
   const startYear = moment(startDate).year();
   const currentYear = moment().year();
@@ -54,6 +55,12 @@ const ReportList = () => {
   const handleAction = (id) => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
+
+  const filteredClientList = useMemo(() => {
+    return clientList.filter((user) =>
+      user.clientName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, clientList]);
 
   const HandleViewStatus = async (id) => {
     // navigate(`/clients/reportlist/viewstatus?reportId=${id}`);
@@ -228,24 +235,55 @@ const ReportList = () => {
           <div className="report-input-container">
             <label className="label">Client</label>
             <Select
-              className="reportlist-dropdown"
+              className="reportlist-dropdown clients-list"
               value={selectedClient}
               onChange={(e) => setSelectedClient(e.target.value)}
               displayEmpty
               MenuProps={{
+                disableAutoFocusItem: true,
                 PaperProps: {
                   style: {
-                    width: 150,
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
+                    width: 100,
+                    overflowX: "auto",
+                    scrollbarWidth: "thin",
                     maxHeight: 200,
                   },
                 },
+                MenuListProps: {
+                  onMouseDown: (e) => {
+                    if (e.target.closest(".search-textfield")) {
+                      e.stopPropagation();
+                    }
+                  },
+                },
+              }}
+              renderValue={(selected) => {
+                if (!selected) return "Select Client";
+                if (selected === "allClients") return "All Clients";
+                const found = clientList.find((emp) => emp._id === selected);
+                return found?.clientName || "No found";
               }}
             >
-              <MenuItem value="allClients">All Clients</MenuItem>
-              {clientList.map((client) => (
-                <MenuItem key={client._id} value={client._id}>
+              <ListSubheader>
+                <TextField
+                  size="small"
+                  placeholder="Search Country"
+                  fullWidth
+                  className="search-textfield"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+              </ListSubheader>
+              <MenuItem value="allClients" className="menu-item">
+                All Clients
+              </MenuItem>
+              {filteredClientList.map((client) => (
+                <MenuItem
+                  key={client._id}
+                  value={client._id}
+                  className="menu-item"
+                >
                   {client.clientName}
                 </MenuItem>
               ))}
@@ -352,7 +390,7 @@ const ReportList = () => {
 
       <div className="report-list-flex">
         <TextField
-          label="Search Report List"
+          placeholder="Search Client"
           variant="outlined"
           size="small"
           value={searchQuery}

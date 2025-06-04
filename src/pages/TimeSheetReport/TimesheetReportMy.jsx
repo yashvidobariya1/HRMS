@@ -243,6 +243,7 @@ const TimesheetReportMy = () => {
                 onChange={(e) => handleClientChange(e.target.value)}
                 displayEmpty
                 MenuProps={{
+                  disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
                       width: 150,
@@ -335,7 +336,7 @@ const TimesheetReportMy = () => {
 
       <div className="timesheetreport-searchbar-clockin">
         <TextField
-          label="Search Timesheet"
+          placeholder="Search Timesheet"
           variant="outlined"
           size="small"
           value={searchQuery}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BiNotepad } from "react-icons/bi";
 import {
   BarChart,
@@ -33,7 +33,7 @@ import htmlDocx from "html-docx-js/dist/html-docx";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { setNotificationCount } from "../../store/notificationCountSlice";
 import { useDispatch } from "react-redux";
-import { Select, MenuItem } from "@mui/material";
+import { Select, MenuItem, ListSubheader, TextField } from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
 
 const Dashboard = () => {
@@ -90,6 +90,13 @@ const Dashboard = () => {
     { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
   );
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredLocationList = useMemo(() => {
+    return locationList.filter((loc) =>
+      loc?.locationName?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, locationList]);
 
   const iconMap = {
     totalEmployees: <FaUsers />,
@@ -785,15 +792,29 @@ const Dashboard = () => {
                 <Select
                   displayEmpty
                   defaultValue=""
-                  className="JobTitle-input"
+                  className="dashboard-input-dropdown"
                   value={template?._id || ""}
                   onChange={handleTempalateChange}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        width: 80,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
+                        maxHeight: 80,
+                      },
+                    },
+                  }}
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value="" disabled className="menu-item">
                     Select a Template
                   </MenuItem>
                   {templateList?.map((template) => (
-                    <MenuItem key={template._id} value={template._id}>
+                    <MenuItem
+                      key={template._id}
+                      value={template._id}
+                      className="menu-item"
+                    >
                       {template.templateName}
                     </MenuItem>
                   ))}
@@ -1176,24 +1197,60 @@ const Dashboard = () => {
                         onChange={handleLocation}
                         displayEmpty
                         MenuProps={{
+                          disableAutoFocusItem: true,
                           PaperProps: {
                             style: {
                               width: 200,
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              maxHeight: 200,
-                              scrollbarWidth: "thin",
                               overflowX: "auto",
+                              scrollbarWidth: "thin",
+                              maxHeight: 200,
+                            },
+                          },
+                          MenuListProps: {
+                            onMouseDown: (e) => {
+                              if (e.target.closest(".search-textfield")) {
+                                e.stopPropagation();
+                              }
                             },
                           },
                         }}
+                        renderValue={(selected) => {
+                          if (!selected) return "Select Location";
+                          const found = locationList.find(
+                            (loc) => loc.locationName === selected
+                          );
+                          return found?.locationName || "Not Found";
+                        }}
                       >
-                        <MenuItem value="">Select Location</MenuItem>
-                        {locationList.map((location, index) => (
-                          <MenuItem key={index} value={location?.locationName}>
-                            {location?.locationName}
+                        <ListSubheader>
+                          <TextField
+                            size="small"
+                            placeholder="Search Locations"
+                            fullWidth
+                            className="search-textfield"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          />
+                        </ListSubheader>
+                        <MenuItem value="" className="menu-item">
+                          Select Location
+                        </MenuItem>
+                        {filteredLocationList.length > 0 ? (
+                          filteredLocationList.map((location, index) => (
+                            <MenuItem
+                              key={index}
+                              value={location?.locationName}
+                              className="menu-item"
+                            >
+                              {location?.locationName}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled className="menu-item">
+                            No countries found
                           </MenuItem>
-                        ))}
+                        )}
                       </Select>
                     )}
 
@@ -1217,20 +1274,18 @@ const Dashboard = () => {
                       displayEmpty
                       MenuProps={{
                         PaperProps: {
-                          style: {
-                            width: 100,
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            maxHeight: 200,
-                          },
+                          width: 100,
+                          maxHeight: 100,
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
                         },
                       }}
                     >
-                      <MenuItem value="" disabled>
+                      <MenuItem value="" disabled className="menu-item">
                         Select year
                       </MenuItem>
                       {allowedYears.map((year, i) => (
-                        <MenuItem key={i} value={year}>
+                        <MenuItem key={i} value={year} className="menu-item">
                           {year}
                         </MenuItem>
                       ))}

@@ -152,6 +152,14 @@
   .report-input-container select {
     width: 100%;
   }
+
+  .clients-list .MuiSelect-select {
+    width: 100px;
+  }
+
+  .report-download-container {
+    gap: 6px;
+  }
 }
 
 @media screen and (max-width: 420px) {

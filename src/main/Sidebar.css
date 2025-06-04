@@ -354,6 +354,10 @@
   .sidebar .logo-details .logo-text {
     padding: 0;
   }
+
+  .logo_name {
+    gap: 8px;
+  }
 }
 
 @media screen and (max-width: 600px) {
@@ -373,6 +377,10 @@
 
   .sidebar .logo-details .logo-text {
     padding: 0;
+  }
+
+  .logo_name {
+    gap: 6px;
   }
 }
 

@@ -137,7 +137,7 @@ const LoggedInUser = () => {
         </div>
       </div>
       <TextField
-        label="Search Logged user"
+        placeholder="Search Login user"
         variant="outlined"
         size="small"
         value={searchQuery}
