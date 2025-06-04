@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./AddJobTitles.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 // import { useSelector } from "react-redux";
 
 const AddjobtitleTitles = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});

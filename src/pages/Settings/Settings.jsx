@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import { SlOptionsVertical } from "react-icons/sl";
 // import { IoMdPersonAdd } from "react-icons/io";
 import { useNavigate } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./Settings.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
@@ -14,6 +14,7 @@ import { TextField } from "@mui/material";
 import { useSelector } from "react-redux";
 
 const Settings = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [companyList, setCompanyList] = useState([]);

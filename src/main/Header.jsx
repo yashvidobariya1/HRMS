@@ -9,7 +9,7 @@ import { persistor } from "../store";
 import { clearThemeColor, setThemeColor } from "../store/themeColorSlice";
 import { clearNotificationCount } from "../store/notificationCountSlice";
 import { clearJobRoleSelect } from "../store/selectJobeRoleSlice";
-import { PostCall } from "../ApiServices";
+import useApiServices from "../useApiServices";
 import { showToast } from "./ToastManager";
 import Loader from "../pages/Helper/Loader";
 import { Select, MenuItem, Menu, ListItemText } from "@mui/material";
@@ -19,6 +19,7 @@ import { clearEmployeeformFilled } from "../store/EmployeeFormSlice";
 const Header = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { PostCall } = useApiServices();
   const [theme, setTheme] = useState("light");
   const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.userInfo.userInfo);

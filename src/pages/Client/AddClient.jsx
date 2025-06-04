@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./AddClient.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import { IoMdAdd } from "react-icons/io";
@@ -12,6 +12,7 @@ import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
 const AddClient = () => {
   const navigate = useNavigate();
+  const { PostCall, GetCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   // const location = useLocation();

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import "../Login/Login.css";
-import { PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { setUserInfo } from "../../store/userInfoSlice";
@@ -10,6 +10,7 @@ import Loader from "../Helper/Loader";
 import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
 
 const Login = () => {
+  const { PostCall } = useApiServices();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);

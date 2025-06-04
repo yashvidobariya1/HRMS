@@ -18,7 +18,7 @@ import { MdAddBusiness, MdOutlineNoteAlt } from "react-icons/md";
 import { RiContractFill } from "react-icons/ri";
 import { FaLocationDot, FaUserClock } from "react-icons/fa6";
 import { HiMiniArrowLeftStartOnRectangle } from "react-icons/hi2";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import { IoIosArrowRoundUp, IoIosArrowRoundDown } from "react-icons/io";
 import moment from "moment";
@@ -37,6 +37,7 @@ import { Select, MenuItem, ListSubheader, TextField } from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
 
 const Dashboard = () => {
+  const { PostCall, GetCall } = useApiServices();
   const pdfRef = useRef(null);
   const containerRef = useRef(null);
   const signatureRef = useRef(null);

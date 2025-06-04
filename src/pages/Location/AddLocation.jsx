@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./AddLocation.css";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import countryNames from "../../Data/AllCountryList.json";
 import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
 const AddLocation = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const [companyList, setCompanyList] = useState([]);
   const [loading, setLoading] = useState(false);

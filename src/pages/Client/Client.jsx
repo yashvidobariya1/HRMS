@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./Client.css";
 import { showToast } from "../../main/ToastManager";
 import { MdAddBusiness } from "react-icons/md";
@@ -16,6 +16,7 @@ import moment from "moment";
 import { FaDownload } from "react-icons/fa6";
 
 const Client = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const qrCodeRef = useRef();
   const [loading, setLoading] = useState(false);

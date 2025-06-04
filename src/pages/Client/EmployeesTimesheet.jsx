@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./EmployeesTimesheet.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
@@ -30,6 +30,7 @@ import ApproveRejectConfirmation from "../../main/ApproveRejectConfirmation";
 
 const EmployeesTimesheet = () => {
   // const navigate = useNavigate();
+  const { GetCall, PostCall } = useApiServices();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [reportDetails, setReportDetails] = useState([]);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./Job.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { TextField } from "@mui/material";
 
 const Job = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [jobList, setJobList] = useState([]);

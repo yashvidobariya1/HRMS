@@ -3,7 +3,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 import "./JobTitle.css";
 import Loader from "../Helper/Loader";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
@@ -11,6 +11,7 @@ import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { TextField } from "@mui/material";
 
 const JobTitles = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [jobTitlesList, setjobTitlesList] = useState([]);

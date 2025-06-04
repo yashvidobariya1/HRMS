@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import "./ViewStatus.css";
 import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
@@ -27,6 +27,7 @@ import moment from "moment";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 
 const ViewStatus = () => {
+  const { GetCall, PostCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [statusList, setStatusList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);

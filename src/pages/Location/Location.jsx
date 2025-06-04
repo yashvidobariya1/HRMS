@@ -3,7 +3,7 @@ import { FaDownload, FaLocationDot } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 import "./Location.css";
 import Loader from "../Helper/Loader";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import CommonTable from "../../SeparateCom/CommonTable";
@@ -14,6 +14,7 @@ import QRCode from "react-qr-code";
 import moment from "moment";
 
 const Location = () => {
+  const { GetCall, PostCall } = useApiServices();
   const navigate = useNavigate();
   const qrCodeRef = useRef();
   const [loading, setLoading] = useState(false);

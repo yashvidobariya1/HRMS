@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ViewReport.css";
 import { useLocation } from "react-router";
-import { PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 import TimesheetTable from "../../SeparateCom/TimesheetTable";
@@ -10,6 +10,7 @@ import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import ApproveRejectConfirmation from "../../main/ApproveRejectConfirmation";
 
 const TimeSheetReport = () => {
+  const { PostCall } = useApiServices();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const jobId = queryParams.get("jobId");

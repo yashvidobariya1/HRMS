@@ -3,7 +3,7 @@ import { AiOutlineUpload } from "react-icons/ai";
 import Loader from "../Helper/Loader";
 import "../Templates/Templates.css";
 import CommonTable from "../../SeparateCom/CommonTable";
-import { GetCall, PostCall } from "../../ApiServices";
+import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 // import Pagination from "../../main/Pagination";
@@ -27,6 +27,7 @@ import {
 import { useSelector } from "react-redux";
 
 const Templates = () => {
+  const { GetCall, PostCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     templateName: "",
