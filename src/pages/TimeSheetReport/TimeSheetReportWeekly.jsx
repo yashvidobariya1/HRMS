@@ -281,10 +281,12 @@ const TimeSheetReportWeekly = () => {
                 onChange={(e) => handleEmployeeChange(e.target.value)}
                 displayEmpty
                 MenuProps={{
+                  disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
-                      width: 200,
-                      maxHeight: 300,
+                      width: 150,
+                      maxHeight: 200,
+                      overflowX: "auto",
                     },
                   },
                   MenuListProps: {
@@ -301,7 +303,7 @@ const TimeSheetReportWeekly = () => {
                   const found = employeeList.find(
                     (emp) => emp._id === selected
                   );
-                  return found?.userName || "Unknown";
+                  return found?.userName || "All Employees";
                 }}
               >
                 <ListSubheader>
@@ -316,12 +318,24 @@ const TimeSheetReportWeekly = () => {
                   />
                 </ListSubheader>
 
-                <MenuItem value="allUsers">All Employees</MenuItem>
-                {filteredEmployeeList.map((emp) => (
-                  <MenuItem key={emp._id} value={emp._id}>
-                    {emp.userName}
+                <MenuItem value="allUsers" className="menu-item">
+                  All Employees
+                </MenuItem>
+                {filteredEmployeeList.length > 0 ? (
+                  filteredEmployeeList.map((emp) => (
+                    <MenuItem
+                      key={emp._id}
+                      value={emp._id}
+                      className="menu-item"
+                    >
+                      {emp.userName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled className="menu-item">
+                    Not Found Employee
                   </MenuItem>
-                ))}
+                )}
               </Select>
               {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
@@ -358,7 +372,7 @@ const TimeSheetReportWeekly = () => {
                   if (!selected) return "Select Client";
                   if (selected === "allClients") return "All Clients";
                   const found = clientList.find((c) => c._id === selected);
-                  return found?.clientName || "Unknown";
+                  return found?.clientName || "All Clients";
                 }}
               >
                 <ListSubheader>
@@ -373,12 +387,24 @@ const TimeSheetReportWeekly = () => {
                   />
                 </ListSubheader>
 
-                <MenuItem value="allClients">All Clients</MenuItem>
-                {filteredClientList.map((client) => (
-                  <MenuItem key={client._id} value={client._id}>
-                    {client.clientName}
+                <MenuItem value="allClients" className="menu-item">
+                  All Clients
+                </MenuItem>
+                {filteredClientList.length > 0 ? (
+                  filteredClientList.map((client) => (
+                    <MenuItem
+                      key={client._id}
+                      value={client._id}
+                      className="menu-item"
+                    >
+                      {client.clientName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled className="menu-item">
+                    Not Found Client
                   </MenuItem>
-                ))}
+                )}
               </Select>
               {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>

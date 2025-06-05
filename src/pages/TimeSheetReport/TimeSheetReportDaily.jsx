@@ -321,7 +321,8 @@ const TimeSheetReportDaily = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 300,
+                      maxHeight: 200,
+                      overflowX: "auto",
                     },
                   },
                   MenuListProps: {
@@ -353,10 +354,16 @@ const TimeSheetReportDaily = () => {
                   />
                 </ListSubheader>
 
-                <MenuItem value="allUsers">All Employees</MenuItem>
+                <MenuItem value="allUsers" className="menu-item">
+                  All Employees
+                </MenuItem>
                 {filteredEmployeeList.length > 0 ? (
                   filteredEmployeeList.map((emp) => (
-                    <MenuItem key={emp._id} value={emp._id}>
+                    <MenuItem
+                      key={emp._id}
+                      value={emp._id}
+                      className="menu-item"
+                    >
                       {emp.userName}
                     </MenuItem>
                   ))
@@ -399,7 +406,7 @@ const TimeSheetReportDaily = () => {
                   if (!selected) return "Select Client";
                   if (selected === "allClients") return "All Clients";
                   const found = clientList.find((c) => c._id === selected);
-                  return found?.clientName || "Unknown";
+                  return found?.clientName || "All Clients";
                 }}
               >
                 <ListSubheader>
@@ -414,9 +421,15 @@ const TimeSheetReportDaily = () => {
                   />
                 </ListSubheader>
 
-                <MenuItem value="allClients">All Clients</MenuItem>
+                <MenuItem value="allClients" className="menu-item">
+                  All Clients
+                </MenuItem>
                 {filteredClientList.map((client) => (
-                  <MenuItem key={client._id} value={client._id}>
+                  <MenuItem
+                    key={client._id}
+                    value={client._id}
+                    className="menu-item"
+                  >
                     {client.clientName}
                   </MenuItem>
                 ))}

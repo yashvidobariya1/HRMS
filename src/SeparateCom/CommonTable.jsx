@@ -673,7 +673,7 @@ const CommonTable = ({
                               "roleWisePoints",
                               "reason",
                               "reasonOfLeave",
-                              "qrValue"
+                              "qrValue",
                             ].includes(key)
                         )
                         .map((key, index) => (
@@ -716,7 +716,12 @@ const CommonTable = ({
                                 if (key === "document") {
                                   return Array.isArray(item[key])
                                     ? item[key].map((documentName, index) => (
-                                        <div key={index}>{documentName}</div>
+                                        <div
+                                          key={index}
+                                          className="uploadfile-flex"
+                                        >
+                                          {documentName}
+                                        </div>
                                       ))
                                     : item[key];
                                 }

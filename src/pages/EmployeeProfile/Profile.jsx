@@ -408,19 +408,25 @@ const Profile = () => {
                   PaperProps: {
                     style: {
                       width: 200,
-                      textOverflow: "ellipsis",
                       maxHeight: 200,
-                      whiteSpace: "nowrap",
+                      overflowX: "auto",
+                      scrollbarWidth: "thin",
                     },
                   },
                 }}
               >
-                <MenuItem value="" disabled>
+                <MenuItem value="" disabled className="menu-item">
                   Select Marital Status
                 </MenuItem>
-                <MenuItem value="Male">Male</MenuItem>
-                <MenuItem value="Female">Female</MenuItem>
-                <MenuItem value="Other">Other</MenuItem>
+                <MenuItem value="Male" className="menu-item">
+                  Male
+                </MenuItem>
+                <MenuItem value="Female" className="menu-item">
+                  Female
+                </MenuItem>
+                <MenuItem value="Other" className="menu-item">
+                  Other
+                </MenuItem>
               </Select>
               {errors.gender && (
                 <div className="error-text">{errors.gender}</div>
@@ -454,20 +460,28 @@ const Profile = () => {
                   PaperProps: {
                     style: {
                       width: 200,
-                      textOverflow: "ellipsis",
                       maxHeight: 200,
-                      whiteSpace: "nowrap",
+                      overflowX: "auto",
+                      scrollbarWidth: "thin",
                     },
                   },
                 }}
               >
-                <MenuItem value="" disabled>
+                <MenuItem value="" disabled className="menu-item">
                   Select Marital Status
                 </MenuItem>
-                <MenuItem value="Single">Single</MenuItem>
-                <MenuItem value="Married">Married</MenuItem>
-                <MenuItem value="Divorced">Divorced</MenuItem>
-                <MenuItem value="Widowed">Widowed</MenuItem>
+                <MenuItem value="Single" className="menu-item">
+                  Single
+                </MenuItem>
+                <MenuItem value="Married" className="menu-item">
+                  Married
+                </MenuItem>
+                <MenuItem value="Divorced" className="menu-item">
+                  Divorced
+                </MenuItem>
+                <MenuItem value="Widowed" className="menu-item">
+                  Widowed
+                </MenuItem>
               </Select>
               {errors.maritalStatus && (
                 <div className="error-text">{errors.maritalStatus}</div>
@@ -570,23 +584,29 @@ const Profile = () => {
                     MenuProps={{
                       PaperProps: {
                         style: {
-                          width: 200, // same as Select
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          maxHeight: 192,
-                          scrollbarWidth: "thin",
+                          width: 200,
+                          maxHeight: 200,
                           overflowX: "auto",
+                          scrollbarWidth: "thin",
                         },
                       },
                     }}
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value="" disabled className="menu-item">
                       Select Document Type
                     </MenuItem>
-                    <MenuItem value="ID Proof">ID Proof</MenuItem>
-                    <MenuItem value="Immigration">Immigration</MenuItem>
-                    <MenuItem value="Address Proof">Address Proof</MenuItem>
-                    <MenuItem value="Passport">Passport</MenuItem>
+                    <MenuItem value="ID Proof" className="menu-item">
+                      ID Proof
+                    </MenuItem>
+                    <MenuItem value="Immigration" className="menu-item">
+                      Immigration
+                    </MenuItem>
+                    <MenuItem value="Address Proof" className="menu-item">
+                      Address Proof
+                    </MenuItem>
+                    <MenuItem value="Passport" className="menu-item">
+                      Passport
+                    </MenuItem>
                   </Select>
                   {errors?.documentType && (
                     <p className="error-text">{errors?.documentType}</p>

@@ -788,11 +788,15 @@ const AddClient = () => {
                       },
                     }}
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value="" disabled className="menu-item">
                       Select Week Day
                     </MenuItem>
                     {WeekDayList.map((weekday, index) => (
-                      <MenuItem key={index} value={weekday}>
+                      <MenuItem
+                        key={index}
+                        value={weekday}
+                        className="menu-item"
+                      >
                         {weekday}
                       </MenuItem>
                     ))}

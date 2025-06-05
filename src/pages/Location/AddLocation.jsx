@@ -248,7 +248,7 @@ const AddLocation = () => {
                     },
                   }}
                   renderValue={(selected) => {
-                    if (!selected) return "Select Location";
+                    if (!selected) return "Select Company";
                     const found = companyList.find(
                       (loc) => loc._id === selected
                     );

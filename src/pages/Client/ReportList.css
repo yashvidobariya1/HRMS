@@ -79,6 +79,7 @@
   color: var(--secondary-dark-gray) !important;
   border: none;
   font-size: var(--font-size-small);
+  width: 70px;
   outline: none;
 }
 
@@ -171,7 +172,7 @@
     flex-wrap: wrap;
   }
 
-  .report-download-container button {
+  /* .report-download-container button {
     margin-top: 0px;
-  }
+  } */
 }

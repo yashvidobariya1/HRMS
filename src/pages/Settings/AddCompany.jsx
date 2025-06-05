@@ -750,14 +750,22 @@ const AddCompany = () => {
                     },
                   }}
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value="" disabled className="menu-item">
                     {" "}
                     Select Company Admin
                   </MenuItem>
-                  <MenuItem value="Admin 1">Admin 1</MenuItem>
-                  <MenuItem value="Administrator">Administrator</MenuItem>
-                  <MenuItem value="Admin 2">Admin 2</MenuItem>
-                  <MenuItem value="Admin">Admin</MenuItem>
+                  <MenuItem value="Admin 1" className="menu-item">
+                    Admin 1
+                  </MenuItem>
+                  <MenuItem value="Administrator" className="menu-item">
+                    Administrator
+                  </MenuItem>
+                  <MenuItem value="Admin 2" className="menu-item">
+                    Admin 2
+                  </MenuItem>
+                  <MenuItem value="Admin" className="menu-item">
+                    Admin
+                  </MenuItem>
                 </Select>
               </div>
               <div className="setting-container">
@@ -833,12 +841,18 @@ const AddCompany = () => {
                     },
                   }}
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value="" disabled className="menu-item">
                     Select Payroll Frequency
                   </MenuItem>
-                  <MenuItem value="Weekly">Weekly</MenuItem>
-                  <MenuItem value="Monthly">Monthly</MenuItem>
-                  <MenuItem value="Yearly">Yearly</MenuItem>
+                  <MenuItem value="Weekly" className="menu-item">
+                    Weekly
+                  </MenuItem>
+                  <MenuItem value="Monthly" className="menu-item">
+                    Monthly
+                  </MenuItem>
+                  <MenuItem value="Yearly" className="menu-item">
+                    Yearly
+                  </MenuItem>
                 </Select>
               </div>
               <div className="setting-container">
@@ -939,9 +953,18 @@ const AddCompany = () => {
                     },
                   }}
                 >
-                  <MenuItem value="Jan-Dec">Jan-Dec</MenuItem>
-                  <MenuItem value="Dec-Mar">Dec-Mar</MenuItem>
-                  <MenuItem value="Mar-Jun">Mar-Jun</MenuItem>
+                  <MenuItem value="" className="menu-item" disabled>
+                    Select Holiday Year
+                  </MenuItem>
+                  <MenuItem value="Jan-Dec" className="menu-item">
+                    Jan-Dec
+                  </MenuItem>
+                  <MenuItem value="Dec-Mar" className="menu-item">
+                    Dec-Mar
+                  </MenuItem>
+                  <MenuItem value="Mar-Jun" className="menu-item">
+                    Mar-Jun
+                  </MenuItem>
                 </Select>
               </div>
               <div className="setting-container">

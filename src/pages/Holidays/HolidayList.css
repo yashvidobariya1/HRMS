@@ -13,10 +13,10 @@
   margin: 0 0 10px 0;
 }
 
-.holidaylist-title #year-select {
-  padding: 10px;
+/* .holidaylist-title #year-select {
+  padding: 10px auto !important;
   height: max-content;
-}
+} */
 
 .holidaylist-flex {
   display: flex;
@@ -29,16 +29,42 @@
   gap: 20px;
 }
 
+.holiday-year-select {
+  /* margin-top: 5px; */
+  padding: 13px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  /* width: 100%; */
+  outline: none;
+}
+
+.holiday-year-select .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.holiday-year-select .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
 @media (max-width: 767px) {
-  .holidaylist-title #year-select {
+  /* .holidaylist-title #year-select {
     padding: 5px !important;
+  } */
+
+  .holiday-year-select {
+    padding: 11px;
   }
 }
 
 @media (max-width: 575px) {
-  .holidaylist-title #year-select {
+  /* .holidaylist-title #year-select {
     padding: 5px !important;
-  }
+  } */
 
   .holidaylist-flex {
     flex-direction: column;
@@ -49,5 +75,13 @@
   .holidaylist-action {
     justify-content: space-between;
     width: 100%;
+  }
+
+  .holiday-year-select .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .holiday-year-select {
+    padding: 7px;
   }
 }

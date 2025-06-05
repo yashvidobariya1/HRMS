@@ -12,6 +12,7 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import countryNames from "../../Data/AllCountryList.json";
 import VisaCategory from "../../Data/VisaCategory.json";
 import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
+import { MdCancel } from "react-icons/md";
 import {
   Checkbox,
   ListSubheader,
@@ -51,6 +52,7 @@ const AddEmployee = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const [isSaveForm, setIsSaveForm] = useState(false);
   const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
+  const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [file, setFile] = useState({
     documentType: "",
     files: [],
@@ -66,6 +68,7 @@ const AddEmployee = () => {
   const [countrySearchTerm, setcountrySearchTerm] = useState("");
   const [nationalitysearchTerm, setnationalitysearchTerm] = useState("");
   const [visasearchTerm, setvisasearchTerm] = useState("");
+  const [assignmaangersearchTerm, setassignmaangersearchTerm] = useState("");
   const employeeFormFilled = useSelector(
     (state) => state.employeeformFilled.employeeformFilled
   );
@@ -164,28 +167,34 @@ const AddEmployee = () => {
   }, [locationsearchTerm, locations]);
 
   const filteredassignClientList = useMemo(() => {
-    return clients.filter((user) =>
+    return clients?.filter((user) =>
       user?.name?.toLowerCase().includes(assignclientsearchTerm.toLowerCase())
     );
   }, [assignclientsearchTerm, clients]);
 
   const filteredCountryList = useMemo(() => {
-    return countryNames.filter((user) =>
+    return countryNames?.filter((user) =>
       user.toLowerCase().includes(countrySearchTerm.toLowerCase())
     );
   }, [countrySearchTerm, countryNames]);
 
   const filterednationalityList = useMemo(() => {
-    return countryNames.filter((user) =>
+    return countryNames?.filter((user) =>
       user.toLowerCase().includes(nationalitysearchTerm.toLowerCase())
     );
   }, [nationalitysearchTerm, countryNames]);
 
   const filteredvisaList = useMemo(() => {
-    return VisaCategory.filter((user) =>
+    return VisaCategory?.filter((user) =>
       user.toLowerCase().includes(visasearchTerm.toLowerCase())
     );
   }, [VisaCategory, visasearchTerm]);
+
+  const filteredAssigneesManager = useMemo(() => {
+    return filteredAssignees.filter((user) =>
+      user.name?.toLowerCase().includes(assignmaangersearchTerm.toLowerCase())
+    );
+  }, [filteredAssignees, assignmaangersearchTerm]);
 
   const steps = [
     "Personal Details",
@@ -263,6 +272,75 @@ const AddEmployee = () => {
   //   }
   // };
 
+  const validateTwoStep = (stepName) => {
+    let newErrors = {};
+    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
+
+    switch (stepName) {
+      case "Personal Details":
+        if (!formData?.personalDetails?.firstName?.trim()) {
+          newErrors.firstName = "First Name is required";
+        }
+        if (!formData?.personalDetails?.lastName) {
+          newErrors.lastName = "Last Name is required";
+        }
+        if (!formData.personalDetails?.dateOfBirth) {
+          newErrors.dateOfBirth = "Date of Birth is required";
+        }
+        if (!formData.personalDetails?.gender) {
+          newErrors.gender = "Gender is required";
+        }
+        if (!formData.personalDetails?.maritalStatus) {
+          newErrors.maritalStatus = "Marital Status is required";
+        }
+        if (!formData?.personalDetails?.phone) {
+          newErrors.phone = "Phone number is required";
+        } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
+          newErrors.phone = "Phone number must contain only numbers";
+        } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
+          newErrors.phone = "Phone number must be exactly 11 digits";
+        }
+        const phone = formData.personalDetails?.homeTelephone;
+        if (phone) {
+          if (!/^\d+$/.test(phone)) {
+            newErrors.homeTelephone = "Home telephone must contain only digits";
+          } else if (phone.length !== 11) {
+            newErrors.homeTelephone =
+              "Home telephone must be exactly 11 digits";
+          }
+        }
+        const email = formData?.personalDetails?.email;
+        if (!email) {
+          newErrors.email = "Email is required";
+        } else if (!EMAIL_REGEX.test(email)) {
+          newErrors.email = "Valid Email format is required";
+        }
+        const niNumber = formData?.personalDetails?.niNumber?.trim();
+        if (niNumber && !NI_REGEX.test(niNumber)) {
+          newErrors.niNumber =
+            "Invalid NI Number format. Use format: QQ 88 77 77 A";
+        }
+        break;
+
+      // case "Address Details":
+      //   if (!formData?.jobList || formData.jobList.length === 0) {
+      //     newErrors.jobList = "At least one job must be added";
+      //   }
+      //   break;
+
+      default:
+        break;
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
+      return false;
+    }
+
+    return true;
+  };
+
   const nextStep = async () => {
     const updatedDocumentDetails = await Promise.all(
       documentDetails?.map(async (doc) => {
@@ -278,9 +356,42 @@ const AddEmployee = () => {
     );
     // console.log("Original documentDetails", documentDetails);
     // console.log("Updated documentDetails", updatedDocumentDetails);
+    const isFinalStep = currentStep === steps.length - 1;
+    let isValid = true;
 
-    const isValid = validate();
+    // if (userRole === "Superadmin" && isFinalStep) {
+    //   const step0Valid = validateTwoStep("Personal Details");
+    //   // const step1Valid = validateTwoStep("Address Details");
+
+    //   if (!step0Valid || !step1Valid) {
+    //     showToast("Please Filed the value", "error");
+    //     return;
+    //   }
+    // } else {
+    //   isValid = validate();
+    // }
+
+    if (userRole === "Superadmin" && isFinalStep) {
+      const step0Valid = validateTwoStep("Personal Details");
+      const step1Valid = jobList.length > 0;
+      if (!step0Valid || !step1Valid) {
+        showToast("Please Filed the value", "error");
+        return;
+      }
+    }
+
     if (isValid) {
+      if (
+        userRole === "Superadmin" &&
+        currentStep === steps.length - 1 &&
+        (!completedSteps.includes(0) || !completedSteps.includes(1))
+      ) {
+        showToast(
+          "Please fill out Step 1 and Step 2 before submitting.",
+          "error"
+        );
+        return;
+      }
       const data = {
         ...formData,
         documentDetails: updatedDocumentDetails,
@@ -483,7 +594,14 @@ const AddEmployee = () => {
     const selectedFiles = Array.from(e.target.files);
     setFile((prevData) => ({
       ...prevData,
-      files: selectedFiles,
+      files: [...prevData.files, ...selectedFiles],
+    }));
+  };
+
+  const handleDeleteFile = (indexToDelete) => {
+    setFile((prevData) => ({
+      ...prevData,
+      files: prevData.files.filter((_, index) => index !== indexToDelete),
     }));
   };
 
@@ -1044,7 +1162,7 @@ const AddEmployee = () => {
   };
 
   const handleStepClick = (index) => {
-    const isUpdateMode = !!id;
+    const isUpdateMode = !!id || userRole === "Superadmin";
     if (
       completedSteps.includes(index) ||
       index === currentStep ||
@@ -1903,9 +2021,17 @@ const AddEmployee = () => {
                   </select> */}
                   <Select
                     name="location"
-                    value={jobForm?.location}
+                    multiple
+                    value={jobForm?.location || []}
                     data-testid="location-select"
-                    onChange={handleJobChange}
+                    onChange={(event) =>
+                      handleJobChange({
+                        target: {
+                          name: "location",
+                          value: !isWorkFromOffice ? [] : event.target.value,
+                        },
+                      })
+                    }
                     className="addemployee-input-dropdown"
                     displayEmpty
                     MenuProps={{
@@ -1931,7 +2057,7 @@ const AddEmployee = () => {
                       const found = locations.find(
                         (emp) => emp._id === selected
                       );
-                      return found?.locationName || "Not found";
+                      return found?.locationName || "Select Location";
                     }}
                   >
                     <ListSubheader>
@@ -1951,6 +2077,9 @@ const AddEmployee = () => {
                     {filteredLocationsList.length > 0 ? (
                       filteredLocationsList?.map((location) => (
                         <MenuItem value={location?._id} key={location?._id}>
+                          <Checkbox
+                            checked={jobForm?.location?.includes(location._id)}
+                          />
                           {location?.locationName}
                         </MenuItem>
                       ))
@@ -1997,13 +2126,51 @@ const AddEmployee = () => {
                     data-testid="assignManager-select"
                     disabled={!jobForm?.location}
                     displayEmpty
+                    MenuProps={{
+                      disableAutoFocusItem: true,
+                      PaperProps: {
+                        style: {
+                          width: 200,
+                          maxHeight: 200,
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
+                        },
+                      },
+                      MenuListProps: {
+                        onMouseDown: (e) => {
+                          if (e.target.closest(".search-textfield")) {
+                            e.stopPropagation();
+                          }
+                        },
+                      },
+                    }}
+                    renderValue={(selected) => {
+                      if (!selected) return "Select Assignee Manager";
+                      const found = filteredAssignees.find(
+                        (loc) => loc._id === selected
+                      );
+                      return found?.name || "Not Found";
+                    }}
                   >
+                    <ListSubheader>
+                      <TextField
+                        size="small"
+                        placeholder="Search Company"
+                        fullWidth
+                        className="search-textfield"
+                        value={assignmaangersearchTerm}
+                        onChange={(e) =>
+                          setassignmaangersearchTerm(e.target.value)
+                        }
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                    </ListSubheader>
                     <MenuItem value="" disabled>
                       Select Manager
                     </MenuItem>
 
-                    {filteredAssignees?.length > 0 ? (
-                      filteredAssignees.map((assignee) => (
+                    {filteredAssigneesManager?.length > 0 ? (
+                      filteredAssigneesManager.map((assignee) => (
                         <MenuItem value={assignee._id} key={assignee._id}>
                           {assignee.name}
                         </MenuItem>
@@ -3053,14 +3220,28 @@ const AddEmployee = () => {
                     className="addemployee-input"
                     style={{ display: "none" }}
                   />
-                  {file?.files?.length > 0 && (
+                </div>
+                {file?.files?.length > 0 && (
+                  <div className="addemployee-fileupload-frame">
                     <div className="addemployee-fileupload-name">
-                      {file.files.map((file, index) => (
-                        <p key={index}>{file.name}</p>
+                      {file.files.map((fileItem, index) => (
+                        <div key={index} className="uploadfile-flex">
+                          <p>
+                            {fileItem.name.length > 15
+                              ? `${fileItem.name.slice(0, 15)}...`
+                              : fileItem.name}
+                          </p>
+                          <p>
+                            <MdCancel
+                              onClick={() => handleDeleteFile(index)}
+                              className="File-upload-delete"
+                            />
+                          </p>
+                        </div>
                       ))}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {errors?.document && (
                   <p className="error-text">{errors?.document}</p>

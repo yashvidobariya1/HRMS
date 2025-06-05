@@ -264,7 +264,7 @@ const TimesheetReportMy = () => {
                   if (!selected) return "Select Client";
                   if (selected === "allClients") return "All Clients";
                   const found = clientList.find((c) => c._id === selected);
-                  return found?.clientName || "Unknown";
+                  return found?.clientName || "All Clients";
                 }}
               >
                 <ListSubheader>
@@ -279,9 +279,15 @@ const TimesheetReportMy = () => {
                   />
                 </ListSubheader>
 
-                <MenuItem value="allClients">All Clients</MenuItem>
+                <MenuItem value="allClients" className="menu-item">
+                  All Clients
+                </MenuItem>
                 {filteredClientList.map((client) => (
-                  <MenuItem key={client._id} value={client._id}>
+                  <MenuItem
+                    key={client._id}
+                    value={client._id}
+                    className="menu-item"
+                  >
                     {client.clientName}
                   </MenuItem>
                 ))}

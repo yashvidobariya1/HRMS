@@ -244,7 +244,7 @@ const ReportList = () => {
                 disableAutoFocusItem: true,
                 PaperProps: {
                   style: {
-                    width: 100,
+                    width: 150,
                     overflowX: "auto",
                     scrollbarWidth: "thin",
                     maxHeight: 200,
@@ -268,7 +268,7 @@ const ReportList = () => {
               <ListSubheader>
                 <TextField
                   size="small"
-                  placeholder="Search Country"
+                  placeholder="Search Client"
                   fullWidth
                   className="search-textfield"
                   value={searchTerm}

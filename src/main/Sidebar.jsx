@@ -284,7 +284,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                           {!isCollapsed && (
                             <>
                               <span className="link_name">{item.title}</span>
-                              <span style={{ marginLeft: "auto" }} className="expand-icon">
+                              <span
+                                style={{ marginLeft: "auto" }}
+                                className="expand-icon"
+                              >
                                 {expandedItems[item.title] ? (
                                   <MdOutlineExpandMore />
                                 ) : (
