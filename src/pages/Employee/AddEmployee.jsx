@@ -868,7 +868,7 @@ const AddEmployee = () => {
       modeOfTransfer: "",
       sickLeavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
       leavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
-      location: "",
+      location: [],
       assignManager: "",
       assignClient: [],
       // templateId: "",
@@ -2053,17 +2053,20 @@ const AddEmployee = () => {
                       },
                     }}
                     renderValue={(selected) => {
-                      if (!selected) return "Select Location";
-                      const found = locations.find(
-                        (emp) => emp._id === selected
-                      );
-                      return found?.locationName || "Select Location";
+                      if (selected.length === 0) {
+                        return <>Select Location</>;
+                      }
+                      const selectedNames = locations
+                        ?.filter((location) => selected.includes(location._id))
+                        .map((location) => location.locationName)
+                        .join(", ");
+                      return selectedNames;
                     }}
                   >
                     <ListSubheader>
                       <TextField
                         size="small"
-                        placeholder="Search Country"
+                        placeholder="Search Locations"
                         fullWidth
                         className="search-textfield"
                         value={locationsearchTerm}
@@ -2076,7 +2079,11 @@ const AddEmployee = () => {
                     </MenuItem>
                     {filteredLocationsList.length > 0 ? (
                       filteredLocationsList?.map((location) => (
-                        <MenuItem value={location?._id} key={location?._id}>
+                        <MenuItem
+                          value={location?._id}
+                          key={location?._id}
+                          className="menu-item"
+                        >
                           <Checkbox
                             checked={jobForm?.location?.includes(location._id)}
                           />

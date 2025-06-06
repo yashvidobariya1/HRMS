@@ -34,7 +34,7 @@ const TimeSheetReportWeekly = () => {
   const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [selectedClient, setselectedClient] = useState("allClients");
-  const [isFromofficeWork, setisFromofficeWork] = useState(false);
+  const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,6 +47,9 @@ const TimeSheetReportWeekly = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [clientSearchTerm, setClientSearchTerm] = useState("");
   const [errors, setErrors] = useState({});
+  const [locationList, setlocationList] = useState([]);
+  const [selectedLocation, setselectedLocation] = useState("allLocations");
+  const [locationSearchTerm, setlocationSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = React.useState({
     key: "",
     direction: "asc",
@@ -64,18 +67,28 @@ const TimeSheetReportWeekly = () => {
     );
   }, [clientList, clientSearchTerm]);
 
+  const filteredLocationList = useMemo(() => {
+    return locationList.filter((location) =>
+      location.locationName
+        .toLowerCase()
+        .includes(locationSearchTerm.toLowerCase())
+    );
+  }, [locationList, locationSearchTerm]);
+
   const GetTimesheetReport = async () => {
     try {
       setLoading(true);
       const filters = {
         userId: selectedEmployee,
-        clientId: selectedClient,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
       };
 
       console.log("filter", filters);
       const frequency = "Weekly";
       const response = await PostCall(
-        `/getTimesheetReport?page=${currentPage}&limit=${rowsPerPage}&weekDate=${selectedWeekStart}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isFromofficeWork}`,
+        `/getTimesheetReport?page=${currentPage}&companyId=${companyId}&limit=${rowsPerPage}&weekDate=${selectedWeekStart}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}`,
         filters
       );
 
@@ -101,9 +114,9 @@ const TimeSheetReportWeekly = () => {
       setLoading(true);
       const formdata = {
         userId: selectedEmployee,
-        isWorkFromOffice: isFromofficeWork,
+        isWorkFromOffice: isWorkFromOffice,
       };
-      const response = await PostCall(`/getAllClientsOfUser`, formdata);
+      const response = await GetCall(`/getAllClientsOfUser`, formdata);
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
         setClientList(response.data.clients);
@@ -116,16 +129,17 @@ const TimeSheetReportWeekly = () => {
     }
   };
 
-  const getAllUsersOfClient = async () => {
+  const getAllUsersOfClientOrLocation = async () => {
     try {
       setLoading(true);
-      const formdata = {
-        clientId: selectedClient,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      const response = await PostCall(`/getAllUsersOfClient`, formdata);
+      // const formdata = {
+      //   clientId: selectedClient,
+      //   isWorkFromOffice: isWorkFromOffice,
+      // };
+      const response = await GetCall(
+        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
+      );
       if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "error");
         setEmployeeList(response?.data.users);
       } else {
         showToast(response?.data?.message, "error");
@@ -146,14 +160,37 @@ const TimeSheetReportWeekly = () => {
 
   const handleCheckboxChange = (event) => {
     const checked = event.target.checked;
-    setisFromofficeWork(checked);
+    setisWorkFromOffice(checked);
     setselectedClient("");
     setSelectedEmployee("");
     setSelectedWeekStart("");
+    setSelectedEmployee("allUsers");
+    setselectedLocation("allLocations");
   };
 
   const handleChangePage = (newPage) => {
     setPage(newPage);
+  };
+
+  const handleLocationChange = (value) => {
+    setselectedLocation(value);
+  };
+
+  const getAllLocations = async () => {
+    try {
+      setLoading(true);
+      const response = await GetCall(
+        `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
+      );
+      if (response?.data?.status === 200) {
+        setlocationList(response?.data.locations);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -224,16 +261,22 @@ const TimeSheetReportWeekly = () => {
   }, [filteredData, currentPage, rowsPerPage]);
 
   useEffect(() => {
-    if (selectedEmployee && !isFromofficeWork) {
+    if (selectedEmployee && isWorkFromOffice) {
+      getAllLocations();
+    }
+  }, [isWorkFromOffice, selectedLocation, companyId]);
+
+  useEffect(() => {
+    if (selectedEmployee && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
-  }, [selectedEmployee]);
+  }, [selectedEmployee, companyId]);
 
   useEffect(() => {
     if (selectedClient) {
-      getAllUsersOfClient();
+      getAllUsersOfClientOrLocation();
     }
-  }, [selectedClient]);
+  }, [selectedClient, companyId, isWorkFromOffice]);
 
   useEffect(() => {
     // if (selectedEmployee || selectedClient) {
@@ -244,8 +287,9 @@ const TimeSheetReportWeekly = () => {
     selectedEmployee,
     debouncedSearch,
     selectedWeekStart,
-    isFromofficeWork,
+    isWorkFromOffice,
     rowsPerPage,
+    selectedLocation,
   ]);
 
   useEffect(() => {
@@ -303,7 +347,7 @@ const TimeSheetReportWeekly = () => {
                   const found = employeeList.find(
                     (emp) => emp._id === selected
                   );
-                  return found?.userName || "All Employees";
+                  return found?.userName || "Select Employees";
                 }}
               >
                 <ListSubheader>
@@ -343,7 +387,7 @@ const TimeSheetReportWeekly = () => {
             </div>
           )}
 
-          {userRole !== "Employee" && !isFromofficeWork && (
+          {userRole !== "Employee" && !isWorkFromOffice && (
             <div className="filter-employee-selection">
               <label className="label">Client</label>
               <Select
@@ -412,6 +456,72 @@ const TimeSheetReportWeekly = () => {
             </div>
           )}
 
+          {userRole !== "Employee" && isWorkFromOffice && (
+            <div className="filter-employee-selection">
+              <label className="label">Location</label>
+              <Select
+                className="timesheet-input-dropdown"
+                value={selectedLocation}
+                onChange={(e) => handleLocationChange(e.target.value)}
+                displayEmpty
+                MenuProps={{
+                  disableAutoFocusItem: true,
+                  PaperProps: {
+                    style: {
+                      width: 150,
+                      maxHeight: 200,
+                      overflowX: "auto",
+                    },
+                  },
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
+                    },
+                  },
+                }}
+                renderValue={(selected) => {
+                  if (!selected) return "Select Locations";
+                  if (selected === "allLocations") return "All Locations";
+                  const found = locationList.find((c) => c._id === selected);
+                  return found?.locationName || "Select Locations";
+                }}
+              >
+                <ListSubheader>
+                  <TextField
+                    size="small"
+                    placeholder="Search Locations"
+                    fullWidth
+                    className="search-textfield"
+                    value={locationSearchTerm}
+                    onChange={(e) => setlocationSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
+
+                <MenuItem value="allLocations" className="menu-item">
+                  All Locations
+                </MenuItem>
+                {filteredLocationList.length > 0 ? (
+                  filteredLocationList.map((location) => (
+                    <MenuItem
+                      key={location._id}
+                      value={location._id}
+                      className="menu-item"
+                    >
+                      {location.locationName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="" className="menu-item" disabled>
+                    No found Locations
+                  </MenuItem>
+                )}
+              </Select>
+            </div>
+          )}
+
           <div className="timesheet-report-download-container">
             <div className="timesheet-input-container">
               <label className="label">Week Date</label>
@@ -426,12 +536,12 @@ const TimeSheetReportWeekly = () => {
       </div>
 
       <div className="timesheetreport-officework">
-        <div className="timesheetreport-isfromofficework">
+        <div className="timesheetreport-isWorkFromOffice ">
           <input
             type="checkbox"
             data-testid="send-link"
-            name="isFromofficeWork"
-            checked={isFromofficeWork}
+            name="isWorkFromOffice "
+            checked={isWorkFromOffice}
             onChange={handleCheckboxChange}
           />
         </div>
@@ -483,16 +593,16 @@ const TimeSheetReportWeekly = () => {
                     <TableSortLabel
                       active={
                         sortConfig.key ===
-                        (isFromofficeWork ? "locationName" : "clientName")
+                        (isWorkFromOffice ? "locationName" : "clientName")
                       }
                       direction={sortConfig.direction}
                       onClick={() =>
                         handleSort(
-                          isFromofficeWork ? "locationName" : "clientName"
+                          isWorkFromOffice ? "locationName" : "clientName"
                         )
                       }
                     >
-                      {isFromofficeWork ? "Location Name" : "Client Name"}
+                      {isWorkFromOffice ? "Location Name" : "Client Name"}
                     </TableSortLabel>
                   </TableCell>
                   {weekDays.map((day) => (
@@ -536,7 +646,7 @@ const TimeSheetReportWeekly = () => {
                       <TableCell>{row.userName}</TableCell>
                       <TableCell>{row.jobRole}</TableCell>
                       <TableCell>
-                        {isFromofficeWork ? row.locationName : row.clientName}
+                        {isWorkFromOffice ? row.locationName : row.clientName}
                       </TableCell>
                       {weekDays.map((day) => {
                         const formattedDate = moment(day).format("YYYY-MM-DD");
