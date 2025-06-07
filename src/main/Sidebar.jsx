@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { SidebarData } from "./Sidebardata";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +8,7 @@ import { RxDashboard } from "react-icons/rx";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import useApiServices from "../useApiServices";
 import { setCompanySelect } from "../store/selectCompanySlice";
-import { Select, MenuItem, ListSubheader, TextField } from "@mui/material";
+import { Select, MenuItem } from "@mui/material";
 import { showToast } from "./ToastManager";
 import { MdOutlineExpandMore, MdChevronRight } from "react-icons/md";
 
@@ -18,7 +18,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const [companyList, setcompanyList] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCompanyId, setSelectedCompanyId] = useState(
     useSelector((state) => state.companySelect.companySelect)
   );
@@ -33,19 +32,31 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     }));
   };
 
-  const filteredCompanyList = useMemo(() => {
-    return companyList.filter((user) =>
-      user.companyDetails.businessName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, companyList]);
-
   const filterSidebarData = (data, role) => {
     return data
       .map((section) => ({
         ...section,
-        items: section.items.filter((item) => item.allowedRoles.includes(role)),
+        items: section.items
+          .map((item) => {
+            const filteredSubItems = item.subItems?.filter(
+              (subItem) =>
+                !subItem.allowedRoles || subItem.allowedRoles.includes(role)
+            );
+
+            const isItemAllowed = item.allowedRoles.includes(role);
+            if (
+              !isItemAllowed &&
+              (!filteredSubItems || filteredSubItems.length === 0)
+            ) {
+              return null;
+            }
+
+            return {
+              ...item,
+              subItems: filteredSubItems,
+            };
+          })
+          .filter(Boolean),
       }))
       .filter((section) => section.items.length > 0);
   };
@@ -178,8 +189,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                     value={selectedCompanyId}
                     onChange={handleChange}
                     className="company-dropdown"
+                    // className="dropdown"
                     MenuProps={{
-                      disableAutoFocusItem: true,
                       PaperProps: {
                         style: {
                           width: 200,
@@ -188,55 +199,24 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                           scrollbarWidth: "thin",
                         },
                       },
-                      MenuListProps: {
-                        onMouseDown: (e) => {
-                          if (e.target.closest(".search-textfield")) {
-                            e.stopPropagation();
-                          }
-                        },
-                      },
-                    }}
-                    renderValue={(selected) => {
-                      if (!selected) return "Select Company";
-                      const found = companyList.find(
-                        (emp) => emp._id === selected
-                      );
-                      return found?.companyDetails.businessName || "All";
                     }}
                   >
                     {currentRole === "Superadmin" && (
-                      <>
-                        <ListSubheader>
-                          <TextField
-                            size="small"
-                            placeholder="Search Company"
-                            fullWidth
-                            className="search-textfield"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={(e) => e.stopPropagation()}
-                          />
-                        </ListSubheader>
-                      </>
+                      <MenuItem value="allCompany">All</MenuItem>
                     )}
-                    <MenuItem value="allCompany" className="menu-item">
-                      All
-                    </MenuItem>
-                    {filteredCompanyList.length > 0 ? (
-                      filteredCompanyList.map((company) => (
-                        <MenuItem
-                          key={company._id}
-                          value={company._id}
-                          className="menu-item"
-                        >
-                          {company.companyDetails.businessName}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem disabled className="menu-item">
-                        Not Found
+                    {companyList.map((company) => (
+                      <MenuItem
+                        key={company._id}
+                        value={company._id}
+                        style={{
+                          lineHeight: 1.4,
+                          textOverflow: "ellipsis",
+                          whiteSpace: "normal",
+                        }}
+                      >
+                        {company.companyDetails.businessName}
                       </MenuItem>
-                    )}
+                    ))}
                   </Select>
                 )}
               </>
@@ -260,19 +240,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               {!isCollapsed && <span className="link_name">Dashboard</span>}
             </NavLink>
           </li>
-
           {filteredSidebarData?.map((section, sectionIndex) => (
             <div key={sectionIndex}>
               <li className={`section-title ${isCollapsed ? "collapsed" : ""}`}>
                 {section.section}
               </li>
 
-              {section?.items?.map((item, itemIndex) => {
+              {section.items.map((item, itemIndex) => {
                 const isSubActive = isAnySubItemActive(item.subItems);
 
                 return (
                   <li key={itemIndex}>
-                    {item.subItems ? (
+                    {item.subItems && item.subItems.length > 0 ? (
                       <>
                         <div
                           className={`sidebar-collapsible-header sidebar-collapsible-header-custom ${
@@ -300,38 +279,20 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
                         {expandedItems[item.title] && !isCollapsed && (
                           <ul className="sidebar-submenu">
-                            {item.subItems
-                              .filter((subItem) => {
-                                if (
-                                  subItem.title === "My Report" &&
-                                  currentRole === "Superadmin"
-                                )
-                                  return false;
-                                if (
-                                  [
-                                    "Daily Report",
-                                    "Weekly Report",
-                                    "Monthly Report",
-                                  ].includes(subItem.title) &&
-                                  currentRole === "Employee"
-                                )
-                                  return false;
-                                return true;
-                              })
-                              .map((subItem, subIndex) => (
-                                <li key={subIndex} className="sidebar-subitem">
-                                  <NavLink
-                                    to={subItem.link}
-                                    className={({ isActive }) =>
-                                      isActive ? "sub-active" : ""
-                                    }
-                                  >
-                                    <span className="link_name">
-                                      {subItem.title}
-                                    </span>
-                                  </NavLink>
-                                </li>
-                              ))}
+                            {item.subItems.map((subItem, subIndex) => (
+                              <li key={subIndex} className="sidebar-subitem">
+                                <NavLink
+                                  to={subItem.link}
+                                  className={({ isActive }) =>
+                                    isActive ? "sub-active" : ""
+                                  }
+                                >
+                                  <span className="link_name">
+                                    {subItem.title}
+                                  </span>
+                                </NavLink>
+                              </li>
+                            ))}
                           </ul>
                         )}
                       </>

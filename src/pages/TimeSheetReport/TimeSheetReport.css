@@ -226,7 +226,7 @@
 .filter-timsheetreport-main {
   display: flex;
   gap: 10px;
-  /* align-items: end; */
+  margin: 10px 0;
   flex-wrap: wrap;
 }
 
@@ -237,7 +237,7 @@
   font-size: 14px;
 }
 
-.timesheetreport-officework {
+.absence-officework {
   display: flex;
   gap: 5px;
   align-items: center;
@@ -308,12 +308,12 @@
     gap: 18px;
   }
 
-  /* .timesheet-input-container input, */
-  .timesheet-input-container select {
+  /* .absence-input-container input, */
+  .absence-input-container select {
     width: calc(100% - 20px);
   }
 
-  .timesheet-input-container select {
+  .absence-input-container select {
     width: 100%;
   }
 

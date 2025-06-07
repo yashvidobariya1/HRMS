@@ -60,6 +60,8 @@ const pageNames = {
   weekly: "Weekly Report",
   monthly: "Monthly Report",
   myreport: "My Report",
+  myabsencereport: "My Report",
+  stafabsencereport: "Staff Report",
 };
 
 const Subheader = () => {

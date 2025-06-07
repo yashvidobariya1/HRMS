@@ -100,13 +100,15 @@ const TimesheetReportMy = () => {
       setLoading(true);
       const filters = {
         userId: userId,
-        clientId: selectedClient,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
       };
 
       console.log("filter", filters);
       const frequency = "Daily";
       const response = await PostCall(
-        `/getTimesheetReport?page=${currentPage}&limit=${rowsPerPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}`,
+        `/getTimesheetReport?page=${currentPage}&companyId=${companyId}&limit=${rowsPerPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}`,
         filters
       );
 
