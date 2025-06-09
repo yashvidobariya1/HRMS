@@ -287,7 +287,7 @@ const CommonTable = ({
   const [selectedRow, setSelectedRow] = useState(null);
   const [templateSearchTerms, setTemplateSearchTerms] = useState({});
   // const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  // const [rowsPerPage, setRowsPerPage] = useState(50);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [openRow, setOpenRow] = useState(null);
   const [templateSearchTerm, setTemplateSearchTerm] = useState("");
@@ -453,6 +453,9 @@ const CommonTable = ({
     "Working Time": "workingTime",
     "Job Title Name": "Name",
     "Client name": "clientName",
+    "Location Name": "absencelcaotionandorclientName",
+    "Client Name": "absencelcaotionandorclientName",
+    "Job Title": "jobRole",
   };
 
   const handleSort = (key) => {
@@ -498,8 +501,8 @@ const CommonTable = ({
   }, [isSearchQuery, searchQuery, sortedData]);
 
   const paginatedData = filteredData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+    page * showPerPage,
+    page * showPerPage + showPerPage
   );
 
   const getStatusColor = (status) => {
@@ -1059,7 +1062,7 @@ const CommonTable = ({
                               component="div"
                             >
                               {item.reasonOfLeave && (
-                                <div>
+                                <div className="leaverequest-reason">
                                   <strong> Reason For Leave :</strong>{" "}
                                   {item.reasonOfLeave}
                                 </div>
@@ -1067,7 +1070,7 @@ const CommonTable = ({
 
                               {item.status === "Rejected" &&
                                 item.rejectionReason && (
-                                  <div>
+                                  <div className="leaverequest-rejection-reason">
                                     <strong>Rejection Reason : </strong>{" "}
                                     {item.rejectionReason}
                                   </div>
@@ -1094,7 +1097,7 @@ const CommonTable = ({
 
                               {item.status === "Approved" &&
                                 item.approvalReason && (
-                                  <div>
+                                  <div className="leaverequest-approve-reason">
                                     <strong>Approval Reason : </strong>{" "}
                                     {item.approvalReason}
                                   </div>

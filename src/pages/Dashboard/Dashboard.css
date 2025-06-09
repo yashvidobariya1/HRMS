@@ -582,7 +582,12 @@
 
 .dashboard-calender-selectoption {
   display: flex;
+  margin: 10px 0;
   gap: 5px;
+}
+
+.employeetimesheet-table .MuiTablePagination-root {
+  overflow: hidden !important;
 }
 
 .dashboard-calender .fc .fc-toolbar-title {

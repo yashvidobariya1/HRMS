@@ -41,7 +41,6 @@ const TimeSheetReportWeekly = () => {
   const [clientList, setClientList] = useState([]);
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [selectedWeekStart, setSelectedWeekStart] = useState("");
-  const [weekDateanddayShow, setweekDateanddayShow] = useState([]);
   const [page, setPage] = useState(0);
   const [totalHourCount, settotalHourCount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -94,7 +93,6 @@ const TimeSheetReportWeekly = () => {
 
       if (response?.data?.status === 200) {
         setTimesheetReportList(response?.data?.reports);
-        setweekDateanddayShow(response.data);
         settotalHourCount(response.data.totalHours);
       } else {
         showToast(response?.data?.message, "error");
@@ -290,6 +288,8 @@ const TimeSheetReportWeekly = () => {
     isWorkFromOffice,
     rowsPerPage,
     selectedLocation,
+    currentPage,
+    companyId,
   ]);
 
   useEffect(() => {
@@ -536,6 +536,16 @@ const TimeSheetReportWeekly = () => {
       </div>
 
       <div className="timesheetreport-officework">
+        <div className="timesheetreport-searchbar-clockin">
+          <TextField
+            placeholder="Search Timesheet"
+            variant="outlined"
+            size="small"
+            value={searchQuery}
+            className="common-searchbar"
+            onChange={handleSearchChange}
+          />
+        </div>
         <div className="timesheetreport-isWorkFromOffice ">
           <input
             type="checkbox"
@@ -544,18 +554,8 @@ const TimeSheetReportWeekly = () => {
             checked={isWorkFromOffice}
             onChange={handleCheckboxChange}
           />
+          <label>Office Work?</label>
         </div>
-        <label>Office Work?</label>
-      </div>
-      <div className="timesheetreport-searchbar-clockin">
-        <TextField
-          placeholder="Search Timesheet"
-          variant="outlined"
-          size="small"
-          value={searchQuery}
-          className="common-searchbar"
-          onChange={handleSearchChange}
-        />
       </div>
 
       {loading ? (

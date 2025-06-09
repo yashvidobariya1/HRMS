@@ -117,6 +117,11 @@
   align-items: center;
 }
 
+.sidebar-icon svg {
+  height: 24px;
+  width: 24px;
+}
+
 .sidebar.collapsed .logo-details .logo-text {
   opacity: 0;
 }

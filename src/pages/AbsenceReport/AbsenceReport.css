@@ -275,6 +275,24 @@
   margin-bottom: 15px;
 }
 
+.absence-isWorkFromOffice {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.absence-officework {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.absence-isWorkFromOffice input {
+  margin: 0 !important;
+}
+
 @media (max-width: 767px) {
   .absence-input-dropdown {
     padding: 11px;
@@ -357,7 +375,7 @@
   }
 
   .absence-filter-timsheetreport-main {
-    gap: 18px;
+    gap: 10px;
   }
 
   .absence-download-container button {
@@ -375,5 +393,13 @@
 
   .absence-input-container select {
     width: 100%;
+  }
+
+  .timesheetreport-officework {
+    align-items: center !important;
+  }
+
+  .absence-officework {
+    gap: 5px;
   }
 }

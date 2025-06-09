@@ -32,7 +32,7 @@ h2 {
 h1 {
   font-size: var(--font-size-h1);
   color: var(--sidebar-bg);
-  margin: 5px 0;
+  /* margin: 5px 0; */
 }
 
 h3 {
@@ -190,6 +190,7 @@ tr {
 
 .common-searchbar .MuiOutlinedInput-root {
   border-radius: var(--border-radius);
+  width: 200px;
 }
 
 .common-searchbar .MuiOutlinedInput-input {
@@ -235,6 +236,10 @@ tr {
 
   h1 {
     font-size: 20px;
+  }
+
+  .common-searchbar .MuiOutlinedInput-input {
+    padding: 10px !important;
   }
 }
 
@@ -282,5 +287,13 @@ tr {
   .menu-item {
     font-size: 12px !important;
     line-height: 1 !important;
+  }
+
+  .common-searchbar .MuiOutlinedInput-input {
+    padding: 8px !important;
+  }
+
+  .timesheetreport-officework {
+    gap: 5px;
   }
 }

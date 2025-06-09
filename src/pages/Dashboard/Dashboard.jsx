@@ -33,8 +33,23 @@ import htmlDocx from "html-docx-js/dist/html-docx";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { setNotificationCount } from "../../store/notificationCountSlice";
 import { useDispatch } from "react-redux";
-import { Select, MenuItem, ListSubheader, TextField } from "@mui/material";
+import {
+  Select,
+  MenuItem,
+  ListSubheader,
+  TextField,
+  Paper,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Table,
+  TableCell,
+  TableBody,
+  TablePagination,
+  TableFooter,
+} from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
+import CommonTable from "../../SeparateCom/CommonTable";
 
 const Dashboard = () => {
   const { PostCall, GetCall } = useApiServices();
@@ -49,11 +64,11 @@ const Dashboard = () => {
   const [selectedLocationName, setSelectedLocationName] = useState("");
   const [selectedLocationId, setSelectedLocationId] = useState("");
   const [selectedYear, setSelectedYear] = useState(moment().year());
-  const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
+  // const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYear = moment().year();
-  const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
+  // const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   // const currentYearEnd = "2027-01-01";
-  const [events, setEvents] = useState([]);
+  // const [events, setEvents] = useState([]);
   const [locationList, setLocationList] = useState([]);
   // const [companyList, setcompanyList] = useState([]);
   // const [selectedCompanyId, setSelectedCompanyId] = useState(null);
@@ -83,8 +98,8 @@ const Dashboard = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const dispatch = useDispatch();
-  // const startDate = process.env.REACT_APP_START_DATE || "2025-01-01";
-  const startDate = "2022-01-01";
+  const startDate = process.env.REACT_APP_START_DATE || "2022-01-01";
+  // const startDate = "2022-01-01";
   const startYear = moment(startDate).year();
   const calendarRef = useRef(null);
   const allowedYears = Array.from(
@@ -92,6 +107,10 @@ const Dashboard = () => {
     (_, i) => startYear + i
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [holidayPerPage, setholidayPerPage] = useState(10);
+  // const [totalPages, setTotalPages] = useState(0);
+  const [totalHoliday, setTotalHoliday] = useState(0);
 
   const filteredLocationList = useMemo(() => {
     return locationList.filter((loc) =>
@@ -471,14 +490,18 @@ const Dashboard = () => {
       // console.log("locationId", id);
       if (userRole === "Superadmin" && id) {
         response = await GetCall(
-          `/getAllHolidays?locationId=${id}&year=${selectedYear}&companyId=${companyId}`
+          `/getAllHolidays?page=${currentPage}&limit=${holidayPerPage}&locationId=${id}&year=${selectedYear}&companyId=${companyId}`
         );
       } else {
-        response = await GetCall(`/getAllHolidays?year=${selectedYear}`);
+        response = await GetCall(
+          `/getAllHolidays?year=${selectedYear}&page=${currentPage}&limit=${holidayPerPage}`
+        );
       }
 
       if (response?.data?.status === 200) {
         setAllholidayList(response?.data.holidays);
+        setTotalHoliday(response.data.totalHolidays);
+        // setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -494,18 +517,18 @@ const Dashboard = () => {
     setSelectedYear(newYear);
   };
 
-  const handleTodayClick = () => {
-    const now = moment();
-    const currentYear = now.year();
-    const currentMonth = now.month() + 1;
-    setSelectedYear(currentYear);
-    setSelectedMonth(currentMonth);
+  // const handleTodayClick = () => {
+  //   const now = moment();
+  //   const currentYear = now.year();
+  //   const currentMonth = now.month() + 1;
+  //   setSelectedYear(currentYear);
+  //   setSelectedMonth(currentMonth);
 
-    if (calendarRef.current) {
-      calendarRef.current.getApi().today();
-      setSelectedYear(currentYear);
-    }
-  };
+  //   if (calendarRef.current) {
+  //     calendarRef.current.getApi().today();
+  //     setSelectedYear(currentYear);
+  //   }
+  // };
 
   const previewClose = () => {
     setShowPopup(true);
@@ -577,19 +600,29 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
-    const transformedEvents = AllholidayList.map((holiday) => ({
-      title: holiday.occasion,
-      start: holiday.date,
-      allDay: true,
-      classNames: ["dashboard-holiday-event"],
-      extendedProps: {
-        description: ` ${holiday.occasion}`,
-      },
-    }));
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
-    setEvents(transformedEvents);
-  }, [AllholidayList]);
+  const handlePerPageChange = (e) => {
+    setholidayPerPage(parseInt(e.target.value, 10));
+    // setholidayPerPage(e);
+    setCurrentPage(1);
+  };
+
+  // useEffect(() => {
+  //   const transformedEvents = AllholidayList.map((holiday) => ({
+  //     title: holiday.occasion,
+  //     start: holiday.date,
+  //     allDay: true,
+  //     classNames: ["dashboard-holiday-event"],
+  //     extendedProps: {
+  //       description: ` ${holiday.occasion}`,
+  //     },
+  //   }));
+
+  //   setEvents(transformedEvents);
+  // }, [AllholidayList]);
 
   useEffect(() => {
     if (selectedLocationId && userRole) {
@@ -602,6 +635,8 @@ const Dashboard = () => {
     // selectedLocationId,
     userRole,
     selectedYear,
+    currentPage,
+    holidayPerPage,
   ]);
 
   useEffect(() => {
@@ -1292,7 +1327,7 @@ const Dashboard = () => {
                       ))}
                     </Select>
                   </div>
-                  <FullCalendar
+                  {/* <FullCalendar
                     key={selectedYear}
                     ref={calendarRef}
                     plugins={[dayGridPlugin, interactionPlugin]}
@@ -1327,7 +1362,58 @@ const Dashboard = () => {
                       setSelectedMonth(selectedMonth);
                       setSelectedYear(selectedYear);
                     }}
-                  />
+                  /> */}
+                  <div className="scrollable-table-wrapper">
+                    <TableContainer>
+                      <Table className="employeetimesheet-table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Absence Date</TableCell>
+                            {/* <TableCell>Company Name</TableCell> */}
+                            <TableCell>Occasion</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {AllholidayList.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={3} align="center">
+                                No data available
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            AllholidayList.map((holiday, index) => (
+                              <TableRow key={index}>
+                                <TableCell>
+                                  {moment(holiday.date).format("DD/MM/YYYY")}
+                                </TableCell>
+                                {/* <TableCell>{holiday.companyName}</TableCell> */}
+                                <TableCell>{holiday.occasion}</TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                        <TableFooter>
+                          <TableRow>
+                            <TableCell colSpan={4}>
+                              <TablePagination
+                                component="div"
+                                count={
+                                  Array.isArray(totalHoliday)
+                                    ? totalHoliday.length
+                                    : totalHoliday
+                                }
+                                page={currentPage - 1}
+                                onPageChange={handlePageChange}
+                                rowsPerPage={holidayPerPage}
+                                onRowsPerPageChange={handlePerPageChange}
+                                rowsPerPageOptions={[10, 15, 20]}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        </TableFooter>
+                      </Table>
+                    </TableContainer>
+                  </div>
                 </div>
               )}
             </div>

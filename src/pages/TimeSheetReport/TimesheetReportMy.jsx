@@ -293,6 +293,8 @@ const TimesheetReportMy = () => {
     selectedEndDate,
     isWorkFromOffice,
     rowsPerPage,
+    currentPage,
+    companyId,
   ]);
 
   return (

@@ -1,28 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./AbsenceReport.css";
-import JobTitleForm from "../../SeparateCom/RoleSelect";
-// import { useLocation } from "react-router";
 import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 import moment from "moment";
-import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
-import AssignClient from "../../SeparateCom/AssignClient";
 
 const MyAbsenceReport = () => {
-  // const location = useLocation();
-  // const queryParams = new URLSearchParams(location.search);
-  // const EmployeeId = queryParams.get("EmployeeId");
   const { PostCall, GetCall } = useApiServices();
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [employeeList, setEmployeeList] = useState([]);
   const [clientList, setClientList] = useState([]);
   const [selectedClient, setselectedClient] = useState("allClients");
   const [locationList, setlocationList] = useState([]);
@@ -36,27 +27,13 @@ const MyAbsenceReport = () => {
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [absenceReportList, setAbsenceReportList] = useState([]);
   const [clientSearchTerm, setClientSearchTerm] = useState("");
-  const [selectedJobId, setSelectedJobId] = useState("");
-  const [selectedClientId, setSelectedClientId] = useState("");
   const userId = useSelector((state) => state.userInfo.userInfo._id);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
   const [searchQuery, setSearchQuery] = useState("");
-  const currentYear = moment().year();
-  const currentMonth = moment().month() + 1;
   const [totalAbsencesheet, settotalAbsencesheet] = useState([]);
-  const [searchTerm, setsearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
-  const jobRoleId = useSelector(
-    (state) => state.jobRoleSelect.jobRoleSelect.jobId
-  );
-  const jobRoleisworkFromOffice = useSelector(
-    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
-  );
-  const [appliedFilters, setAppliedFilters] = useState({
-    year: currentYear,
-    month: currentMonth,
-  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,12 +44,6 @@ const MyAbsenceReport = () => {
       setSelectedEndDate(value);
     }
   };
-
-  const filteredEmployeeList = useMemo(() => {
-    return employeeList.filter((user) =>
-      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, employeeList]);
 
   const filteredClientList = useMemo(() => {
     return clientList.filter((client) =>
@@ -106,17 +77,18 @@ const MyAbsenceReport = () => {
       setLoading(true);
       const filters = {
         userId: userId,
-        clientId: selectedClientId,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
       };
-      const { year, month } = appliedFilters;
 
       const response = await PostCall(
-        `/getAbsenceReport?page=${currentPage}&limit=${perPage}&year=${year}&month=${month}`,
+        `/getAbsenceReport?page=${currentPage}&limit=${perPage}&search=${debouncedSearch}&companyId=${companyId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&isWorkFromOffice=${isWorkFromOffice}`,
         filters
       );
 
       if (response?.data?.status === 200) {
-        setAbsenceReportList(response?.data?.report);
+        setAbsenceReportList(response?.data?.reports);
         settotalAbsencesheet(response.data.totalReports);
         setTotalPages(response?.data?.totalPages);
       } else {
@@ -156,11 +128,9 @@ const MyAbsenceReport = () => {
   const getAllClientsOfUser = async () => {
     try {
       setLoading(true);
-      const formdata = {
-        userId: userId,
-        isWorkFromOffice: isWorkFromOffice,
-      };
-      const response = await GetCall(`/getAllClientsOfUser`, formdata);
+      const response = await GetCall(
+        `/getAllClientsOfUser?companyId=${companyId}&userId=${userId}&isWorkFromOffice=${isWorkFromOffice}`
+      );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
         setClientList(response.data.clients);
@@ -174,6 +144,20 @@ const MyAbsenceReport = () => {
   };
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
     if (userId && isWorkFromOffice) {
       getAllLocations();
     }
@@ -183,37 +167,30 @@ const MyAbsenceReport = () => {
     if (userId && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
-  }, [userId]);
+  }, [userId, isWorkFromOffice]);
 
   useEffect(() => {
-    const AbsenceReport =
-      (userId && selectedJobId && selectedClientId && appliedFilters) ||
-      (!userId &&
-        appliedFilters &&
-        ((jobRoleId && jobRoleisworkFromOffice) ||
-          (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
-          (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
-      (selectedJobId && isWorkFromOffice);
-
-    if (AbsenceReport) {
-      // console.log("timesheet api call");
-      GetAbsenceReport();
-    }
+    // if (selectedEmployee || selectedClient) {
+    GetAbsenceReport();
+    // }
   }, [
+    selectedClient,
     userId,
-    selectedJobId,
-    selectedClientId,
-    jobRoleId,
+    debouncedSearch,
+    selectedStartDate,
+    selectedEndDate,
     isWorkFromOffice,
-    jobRoleisworkFromOffice,
-    appliedFilters,
+    perPage,
+    selectedLocation,
+    currentPage,
+    companyId,
   ]);
 
   return (
     <div className="absencesheet-list-container">
       <div className="absencesheet-flex">
         <div className="absencesheet-title">
-          <h1>Staff Absence Report</h1>
+          <h1>Absence Report</h1>
         </div>
       </div>
 
@@ -357,9 +334,6 @@ const MyAbsenceReport = () => {
                 min={minDate}
                 max={maxDate}
               />
-              {errors?.startDate && (
-                <p className="error-text">{errors?.startDate}</p>
-              )}
             </div>
 
             <div className="absence-input-container">

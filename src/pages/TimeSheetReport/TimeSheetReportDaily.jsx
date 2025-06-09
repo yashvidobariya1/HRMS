@@ -339,6 +339,8 @@ const TimeSheetReportDaily = () => {
     isWorkFromOffice,
     rowsPerPage,
     selectedLocation,
+    currentPage,
+    companyId,
   ]);
 
   return (
@@ -585,6 +587,16 @@ const TimeSheetReportDaily = () => {
       </div>
 
       <div className="timesheetreport-officework">
+        <div className="timesheetreport-searchbar-clockin">
+          <TextField
+            placeholder="Search Timesheet"
+            variant="outlined"
+            size="small"
+            value={searchQuery}
+            className="common-searchbar"
+            onChange={handleSearchChange}
+          />
+        </div>
         <div className="timesheetreport-isWorkFromOffice">
           <input
             type="checkbox"
@@ -593,19 +605,8 @@ const TimeSheetReportDaily = () => {
             checked={isWorkFromOffice}
             onChange={handleCheckboxChange}
           />
+          <label>Office Work?</label>
         </div>
-        <label>Office Work?</label>
-      </div>
-
-      <div className="timesheetreport-searchbar-clockin">
-        <TextField
-          placeholder="Search Timesheet"
-          variant="outlined"
-          size="small"
-          value={searchQuery}
-          className="common-searchbar"
-          onChange={handleSearchChange}
-        />
       </div>
 
       {loading ? (
