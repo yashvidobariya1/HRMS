@@ -14,9 +14,6 @@ import {
   TablePagination,
   TableSortLabel,
   TextField,
-} from "@mui/material";
-
-import {
   Table,
   TableBody,
   TableCell,
@@ -150,21 +147,6 @@ const TimesheetReportMy = () => {
     setSearchQuery(event.target.value);
   };
 
-  const fetchEmployeeList = async () => {
-    try {
-      const response = await GetCall(
-        `/getAllUsersAndClients?companyId=${companyId}`
-      );
-      if (response?.data?.status === 200) {
-        setClientList(response?.data.clients);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error fetching employee list:", error);
-    }
-  };
-
   const handleChangePage = (newPage) => {
     setPage(newPage);
   };
@@ -275,11 +257,6 @@ const TimesheetReportMy = () => {
       getAllClientsOfUser();
     }
   }, [userId, companyId]);
-
-  useEffect(() => {
-    userRole !== "Employee" && !isWorkFromOffice && fetchEmployeeList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyId, isWorkFromOffice]);
 
   useEffect(() => {
     if (userId || selectedClient) {

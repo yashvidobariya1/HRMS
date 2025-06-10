@@ -1,89 +1,57 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
 // import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useApiServices from "../../useApiServices";
 import "./ViewTasks.css";
-import tippy from "tippy.js";
 import "tippy.js/dist/tippy.css";
 import moment from "moment";
 import { showToast } from "../../main/ToastManager";
-import DeleteConfirmation from "../../main/DeleteConfirmation";
 // import CommonAddButton from "../../SeparateCom/CommonAddButton";
-import JobTitleForm from "../../SeparateCom/RoleSelect";
 import Loader from "../Helper/Loader";
-import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
-import AssignClient from "../../SeparateCom/AssignClient";
+import CommonTable from "../../SeparateCom/CommonTable";
+import { ListSubheader, Select, TextField, MenuItem } from "@mui/material";
+import { FaEye, FaTrash } from "react-icons/fa6";
+import { FaEdit } from "react-icons/fa";
+import DeleteConfirmation from "../../main/DeleteConfirmation";
+import CommonAddButton from "../../SeparateCom/CommonAddButton";
+import { MdOutlineLocalPostOffice } from "react-icons/md";
+import { useNavigate } from "react-router";
 
 const ViewTasks = () => {
+  const navigate = useNavigate();
   const { PostCall, GetCall } = useApiServices();
-  const calendarRef = useRef(null);
-  // const Navigate = useNavigate();
-  const [events, setEvents] = useState([]);
   const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [selectedYear, setSelectedYear] = useState(moment().year());
-  const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
-  const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
-  // const currentMonthEnd = moment().endOf("month").format("YYYY-MM-DD");
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [taskId, setTaskId] = useState("");
-  const [openJobTitleModal, setOpenJobTitleModal] = useState(false);
-  const [selectedJobId, setSelectedJobId] = useState("");
-  const [JobTitledata, setJobTitledata] = useState([]);
-  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
-  const [selectedClientId, setSelectedClientId] = useState("");
-  const [Clientdata, setClientdata] = useState([]);
-  // const todayDate = new Date().toISOString().split("T")[0];
-  const todayDate = moment().format("YYYY-MM-DD");
-  const jobRoleId = useSelector(
-    (state) => state.jobRoleSelect.jobRoleSelect.jobId
-  );
-  const jobRoleisworkFromOffice = useSelector(
-    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
-  );
-  const [isWorkFromOffice, setIsWorkFromOffice] = useState(false);
-  const AllowstartDate = process.env.REACT_APP_START_DATE || "2025-01-01";
-  const startYear = moment(AllowstartDate).year();
-  const currentYear = moment().year();
+  const [clientList, setClientList] = useState([]);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [employeeList, setEmployeeList] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState("");
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const [searchTerm, setSearchTerm] = useState("");
-  // const location = useLocation();
-  // const searchParams = new URLSearchParams(location.search);
-  // const EmployeeId = searchParams.get("EmployeeId");
-  const [appliedFilters, setAppliedFilters] = useState({
-    year: moment().year(),
-    month: moment().month() + 1,
-  });
+  const [searchTerm, setsearchTerm] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
+  const [selectedClient, setselectedClient] = useState("allClients");
+  const [locationList, setlocationList] = useState([]);
+  const [selectedLocation, setselectedLocation] = useState("allLocations");
+  const [locationSearchTerm, setlocationSearchTerm] = useState("");
+  const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
+  const [selectedStartDate, setSelectedStartDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [clientSearchTerm, setClientSearchTerm] = useState("");
+  const minDate = moment("2024-01-01").format("YYYY-MM-DD");
+  const maxDate = moment().format("YYYY-MM-DD");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const [totalTask, settotalTask] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [perPage, setPerPage] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [ShowConfirm, setShowConfirm] = useState(false);
+  const [taskId, setTaskId] = useState(null);
+  const [taskDate, settaskDate] = useState("");
+  const [taskName, settaskName] = useState("");
 
-  const filterEmployee = useMemo(() => {
-    return employeeList.filter((item) =>
-      item.userName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, employeeList]);
-
-  const applyFilters = () => {
-    setAppliedFilters({
-      year: selectedYear,
-      month: selectedMonth,
-    });
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
-
-  const months = moment.months().map((month, index) => ({
-    name: moment().month(index).format("MMM"),
-    value: index + 1,
-  }));
-  // .filter(
-  //   (month) =>
-  //     selectedYear < currentYear || month.value <= moment().month() + 1
-  // );
 
   const [formData, setFormData] = useState({
     taskDate: "",
@@ -95,259 +63,255 @@ const ViewTasks = () => {
     endDate: "",
   });
 
-  const handleDateClick = (info) => {
-    // console.log("save click");
-    setFormData({
-      taskDate: "",
-      taskName: "",
-      taskDescription: "",
-      startTime: "",
-      endTime: "",
-    });
-    const clickedDate = moment(info.dateStr).format("YYYY-MM-DD");
-    const todayDate = moment().format("YYYY-MM-DD");
+  // const handleDateClick = (info) => {
+  //   // console.log("save click");
+  //   setFormData({
+  //     taskDate: "",
+  //     taskName: "",
+  //     taskDescription: "",
+  //     startTime: "",
+  //     endTime: "",
+  //   });
+  //   const clickedDate = moment(info.dateStr).format("YYYY-MM-DD");
+  //   const todayDate = moment().format("YYYY-MM-DD");
 
-    if (moment(clickedDate).isBefore(todayDate)) {
-      showToast("You can not select past dates", "error");
-      return;
-    }
+  //   if (moment(clickedDate).isBefore(todayDate)) {
+  //     showToast("You can not select past dates", "error");
+  //     return;
+  //   }
 
-    if (clickedDate === todayDate) {
-      showToast("You can not select today's date", "error");
-      return;
-    }
+  //   if (clickedDate === todayDate) {
+  //     showToast("You can not select today's date", "error");
+  //     return;
+  //   }
 
-    const existingEvent = taskList.find(
-      (task) => moment(task.taskDate).format("YYYY-MM-DD") === clickedDate
-    );
+  //   const existingEvent = taskList.find(
+  //     (task) => moment(task.taskDate).format("YYYY-MM-DD") === clickedDate
+  //   );
 
-    if (existingEvent) {
-      setFormData({
-        _id: existingEvent._id,
-        taskDate: existingEvent.taskDate,
-        taskDescription: existingEvent.taskDescription,
-        taskName: existingEvent.taskName,
-        startTime: existingEvent.startTime,
-        endTime: existingEvent.endTime,
-      });
-    } else {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        taskDate: clickedDate,
-      }));
-    }
-    setIsPopupOpen(true);
-  };
+  //   if (existingEvent) {
+  //     setFormData({
+  //       _id: existingEvent._id,
+  //       taskDate: existingEvent.taskDate,
+  //       taskDescription: existingEvent.taskDescription,
+  //       taskName: existingEvent.taskName,
+  //       startTime: existingEvent.startTime,
+  //       endTime: existingEvent.endTime,
+  //     });
+  //   } else {
+  //     setFormData((prevFormData) => ({
+  //       ...prevFormData,
+  //       taskDate: clickedDate,
+  //     }));
+  //   }
+  //   setIsPopupOpen(true);
+  // };
 
-  const handleNextClick = () => {
-    const calendarApi = calendarRef.current.getApi();
-    calendarApi.next();
+  // const handleNextClick = () => {
+  //   const calendarApi = calendarRef.current.getApi();
+  //   calendarApi.next();
 
-    const currentDate = calendarApi.getDate();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
+  //   const currentDate = calendarApi.getDate();
+  //   const year = currentDate.getFullYear();
+  //   const month = currentDate.getMonth() + 1;
 
-    // console.log("Next", currentDate, year, month);
+  //   // console.log("Next", currentDate, year, month);
 
-    setAppliedFilters((prev) => ({
-      ...prev,
-      year,
-      month,
-    }));
-    setSelectedYear(year);
-    setSelectedMonth(month);
-    // console.log("appliaedfilter", appliedFilters);
-  };
+  //   setAppliedFilters((prev) => ({
+  //     ...prev,
+  //     year,
+  //     month,
+  //   }));
+  //   setSelectedYear(year);
+  //   setSelectedMonth(month);
+  //   // console.log("appliaedfilter", appliedFilters);
+  // };
 
-  const handlePrevClick = () => {
-    const calendarApi = calendarRef.current.getApi();
-    calendarApi.prev();
+  // const handlePrevClick = () => {
+  //   const calendarApi = calendarRef.current.getApi();
+  //   calendarApi.prev();
 
-    const currentDate = calendarApi.getDate();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
+  //   const currentDate = calendarApi.getDate();
+  //   const year = currentDate.getFullYear();
+  //   const month = currentDate.getMonth() + 1;
 
-    // console.log("Prev", currentDate, year, month);
+  //   // console.log("Prev", currentDate, year, month);
 
-    setAppliedFilters((prev) => ({
-      ...prev,
-      year,
-      month,
-    }));
-    setSelectedYear(year);
-    setSelectedMonth(month);
-  };
+  //   setAppliedFilters((prev) => ({
+  //     ...prev,
+  //     year,
+  //     month,
+  //   }));
+  //   setSelectedYear(year);
+  //   setSelectedMonth(month);
+  // };
 
-  const handleTodayClick = () => {
-    const calendarApi = calendarRef.current.getApi();
-    calendarApi.today();
+  // const handleTodayClick = () => {
+  //   const calendarApi = calendarRef.current.getApi();
+  //   calendarApi.today();
 
-    const currentDate = calendarApi.getDate();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
+  //   const currentDate = calendarApi.getDate();
+  //   const year = currentDate.getFullYear();
+  //   const month = currentDate.getMonth() + 1;
 
-    setAppliedFilters((prev) => ({
-      ...prev,
-      year,
-      month,
-    }));
-    setSelectedYear(year);
-    setSelectedMonth(month);
-  };
+  //   setAppliedFilters((prev) => ({
+  //     ...prev,
+  //     year,
+  //     month,
+  //   }));
+  //   setSelectedYear(year);
+  //   setSelectedMonth(month);
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const GetClientdata = async () => {
-    const payload = {
-      jobId: selectedEmployee ? selectedJobId : jobRoleId,
-      userId: selectedEmployee,
-    };
-
-    try {
-      const response = await PostCall(`/getUsersAssignClients`, payload);
-
-      if (response?.data?.status === 200) {
-        const jobTitles = response.data.assignClients;
-        // console.log("job title", jobTitles);
-        setClientdata(jobTitles);
-
-        if (jobTitles.length > 1) {
-          setopenClietnSelectModal(false);
-        } else {
-          setSelectedClientId(jobTitles[0]?.clientId);
-          setopenClietnSelectModal(true);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+  const handlePerPageChange = (e) => {
+    setPerPage(e);
+    setCurrentPage(1);
   };
 
-  const handleClientPopupClose = (value) => {
-    console.log("handleClientPopupClose", value);
-    setopenClietnSelectModal(true);
-    if (value) {
-      setSelectedEmployee("");
-      setTaskList([]);
-      setSelectedJobId("");
-      setIsWorkFromOffice(false);
-      setSelectedClientId("");
-    }
-  };
+  // const GetClientdata = async () => {
+  //   const payload = {
+  //     jobId: selectedEmployee ? selectedJobId : jobRoleId,
+  //     userId: selectedEmployee,
+  //   };
 
-  const handleClientSelect = (selectedTitle) => {
-    // console.log("setSelectedClientId", selectedClientId);
-    setSelectedClientId(selectedTitle);
-    setopenClietnSelectModal(true);
-  };
+  //   try {
+  //     const response = await PostCall(`/getUsersAssignClients`, payload);
 
-  const validate = () => {
-    let newErrors = {};
-    if (formData._id && !formData.taskDate) {
-      newErrors.taskDate = "Task Date is required";
-    }
-    // if (!formData.taskName) newErrors.taskName = "Task Name is required";
-    // if (!formData.taskDescription)
-    //   newErrors.taskDescription = "Task Description is required";
-    if (!formData._id) {
-      if (!formData.startDate) newErrors.startDate = "Start Date is required";
-      // if (!formData.endDate) newErrors.endDate = "End Date is required";
-    }
+  //     if (response?.data?.status === 200) {
+  //       const jobTitles = response.data.assignClients;
+  //       // console.log("job title", jobTitles);
+  //       setClientdata(jobTitles);
 
-    // if (formData.startDate && formData.endDate) {
-    //   const start = moment(formData.startDate, "YYYY-MM-DD");
-    //   const end = moment(formData.endDate, "YYYY-MM-DD");
+  //       if (jobTitles.length > 1) {
+  //         setopenClietnSelectModal(false);
+  //       } else {
+  //         setSelectedClientId(jobTitles[0]?.clientId);
+  //         setopenClietnSelectModal(true);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
-    //   if (start.isAfter(end)) {
-    //     newErrors.startDate = "Start Date cannot be after End Date";
-    //     newErrors.endDate = "End Date cannot be before Start Date";
-    //   }
-    // }
-    if (!formData.startTime) newErrors.startTime = "Start Time is required";
-    if (!formData.endTime) newErrors.endTime = "End Time is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  // const handleClientPopupClose = (value) => {
+  //   console.log("handleClientPopupClose", value);
+  //   setopenClietnSelectModal(true);
+  //   if (value) {
+  //     setSelectedEmployee("");
+  //     setTaskList([]);
+  //     setSelectedJobId("");
+  //     setIsWorkFromOffice(false);
+  //     setSelectedClientId("");
+  //   }
+  // };
 
-  const handleAddTask = async (e) => {
-    // console.log("handle add task", e, selectedJobId);
-    e.preventDefault();
-    if (!validate()) return;
+  // const handleClientSelect = (selectedTitle) => {
+  //   // console.log("setSelectedClientId", selectedClientId);
+  //   setSelectedClientId(selectedTitle);
+  //   setopenClietnSelectModal(true);
+  // };
 
-    try {
-      setLoading(true);
-      let response;
-      const data = {
-        ...formData,
-        userId: selectedEmployee ? selectedEmployee : "",
-        jobId: selectedJobId ? selectedJobId : jobRoleId,
-        clientId: selectedClientId,
-      };
-      // console.log("formData", formData);
-      if (formData._id) {
-        response = await PostCall(`/updateTask/${formData._id}`, data);
-      } else {
-        response = await PostCall("/createTask", data);
-      }
-      if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "success");
-        // console.log("formdata", formData);
+  // const validate = () => {
+  //   let newErrors = {};
+  //   if (formData._id && !formData.taskDate) {
+  //     newErrors.taskDate = "Task Date is required";
+  //   }
+  //   // if (!formData.taskName) newErrors.taskName = "Task Name is required";
+  //   // if (!formData.taskDescription)
+  //   //   newErrors.taskDescription = "Task Description is required";
+  //   if (!formData._id) {
+  //     if (!formData.startDate) newErrors.startDate = "Start Date is required";
+  //     // if (!formData.endDate) newErrors.endDate = "End Date is required";
+  //   }
 
-        setTaskList((prev) => {
-          if (formData._id) {
-            return prev.map((task) =>
-              task._id === formData._id ? { ...task, ...formData } : task
-            );
-          } else {
-            return [...prev, { ...formData, _id: response?.data?.taskId }];
-          }
-        });
-        getAllTasks();
-        setIsPopupOpen(false);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      showToast("An error occurred", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   // if (formData.startDate && formData.endDate) {
+  //   //   const start = moment(formData.startDate, "YYYY-MM-DD");
+  //   //   const end = moment(formData.endDate, "YYYY-MM-DD");
+
+  //   //   if (start.isAfter(end)) {
+  //   //     newErrors.startDate = "Start Date cannot be after End Date";
+  //   //     newErrors.endDate = "End Date cannot be before Start Date";
+  //   //   }
+  //   // }
+  //   if (!formData.startTime) newErrors.startTime = "Start Time is required";
+  //   if (!formData.endTime) newErrors.endTime = "End Time is required";
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
+
+  // const handleAddTask = async (e) => {
+  //   // console.log("handle add task", e, selectedJobId);
+  //   e.preventDefault();
+  //   if (!validate()) return;
+
+  //   try {
+  //     setLoading(true);
+  //     let response;
+  //     const data = {
+  //       ...formData,
+  //       userId: selectedEmployee ? selectedEmployee : "",
+  //       jobId: selectedJobId ? selectedJobId : jobRoleId,
+  //       clientId: selectedClientId,
+  //     };
+  //     // console.log("formData", formData);
+  //     if (formData._id) {
+  //       response = await PostCall(`/updateTask/${formData._id}`, data);
+  //     } else {
+  //       response = await PostCall("/createTask", data);
+  //     }
+  //     if (response?.data?.status === 200) {
+  //       showToast(response?.data?.message, "success");
+  //       // console.log("formdata", formData);
+
+  //       setTaskList((prev) => {
+  //         if (formData._id) {
+  //           return prev.map((task) =>
+  //             task._id === formData._id ? { ...task, ...formData } : task
+  //           );
+  //         } else {
+  //           return [...prev, { ...formData, _id: response?.data?.taskId }];
+  //         }
+  //       });
+  //       getAllTasks();
+  //       setIsPopupOpen(false);
+  //     } else {
+  //       showToast(response?.data?.message, "error");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     showToast("An error occurred", "error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const confirmDelete = async (id) => {
-    // console.log("id", id);
     try {
       setLoading(true);
       const response = await PostCall(`/cancelTask/${id}`);
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
-        setIsPopupOpen(false);
         setShowConfirm(false);
-        // navigate(`/location/tasks/tasklist/${locationId}`);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
-      setIsPopupOpen(false);
     } catch (error) {
       console.log("error", error);
     }
-    getAllTasks();
   };
 
-  const handleDeleteTask = async (id) => {
-    // console.log("delete task id", id);
+  const handleDelete = (id, name, startdate) => {
     setTaskId(id);
+    settaskName(name);
+    settaskDate(startdate);
     setShowConfirm(true);
-  };
-
-  const handlePopupClose = () => {
-    setIsPopupOpen(false);
-    setErrors({});
   };
 
   const cancelDelete = () => {
@@ -355,108 +319,40 @@ const ViewTasks = () => {
     // setShowDropdownAction(null);
   };
 
-  const handleJobPopupClose = (value) => {
-    console.log("handleJobPopupClose", value);
-    setOpenJobTitleModal(true);
-    if (value) {
-      setSelectedEmployee("");
-      setTaskList([]);
-      setSelectedJobId("");
-      setIsWorkFromOffice(false);
-      setSelectedClientId("");
-    }
+  const handleCheckboxChange = (event) => {
+    const checked = event.target.checked;
+    setisWorkFromOffice(checked);
+    setselectedClient("");
+    setSelectedEmployee("");
+    setSelectedStartDate("");
+    setSelectedEndDate("");
+    setselectedClient("allClients");
+    setSelectedEmployee("allUsers");
+    setselectedLocation("allLocations");
   };
 
-  const handleJobTitleSelect = (selectedTitle) => {
-    setSelectedJobId(selectedTitle);
-    const selectedJob = JobTitledata.find((job) => job.jobId === selectedTitle);
-    if (selectedJob) {
-      setIsWorkFromOffice(selectedJob.isWorkFromOffice);
-      // console.log("setIsWorkFromOffice", selectedJob.isWorkFromOffice);
-    }
-    setOpenJobTitleModal(true);
-  };
-
-  // const handleViewTasks = () => {
-  //   if (userRole === "Superadmin") {
-  //     Navigate(`/location/tasks/tasklist/${EmployeeId}`);
-  //   } else {
-  //     Navigate(`/tasks/tasklist`);
-  //   }
-  // };
-
-  const fetchEmployeeList = async () => {
-    try {
-      const response = await GetCall(`/getUsers?companyId=${companyId}`);
-      if (response?.data?.status === 200) {
-        setEmployeeList(response?.data?.users);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error fetching employee list:", error);
-    }
-  };
-
-  const GetJobTitleData = async () => {
-    try {
-      let response;
-      // console.log("EmployeeId", EmployeeId);
-      if (selectedEmployee) {
-        response = await GetCall(
-          `/getUserJobTitles?EmployeeId=${selectedEmployee}`
-        );
-      } else {
-        response = await GetCall(`/getUserJobTitles`);
-      }
-
-      if (response?.data?.status === 200) {
-        const { multipleJobTitle, jobTitles } = response?.data;
-        setJobTitledata(jobTitles);
-
-        if (multipleJobTitle) {
-          setOpenJobTitleModal(false);
-        } else {
-          setSelectedJobId(jobTitles[0]?.jobId);
-          setIsWorkFromOffice(jobTitles[0]?.isWorkFromOffice);
-          setOpenJobTitleModal(true);
-        }
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const handleEmployeeChange = (employeeId) => {
-    setSelectedYear(moment().year());
-    setSelectedMonth(moment().month() + 1);
-    setSelectedEmployee(employeeId);
-    setSelectedClientId("");
-    setSelectedJobId("");
-    setAppliedFilters({
-      year: moment().year(),
-      month: moment().month() + 1,
-    });
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
   const getAllTasks = async () => {
     try {
       setLoading(true);
-      const data = {
-        jobId: selectedEmployee ? selectedJobId : jobRoleId,
+      const filters = {
         userId: selectedEmployee,
-        clientId: selectedClientId,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
       };
-      const { year, month } = appliedFilters;
       const response = await PostCall(
-        `/getAllTasks?year=${year}&month=${month}`,
-        data
+        `/getAllTasks?page=${currentPage}&limit=${perPage}&companyId=${companyId}&search=${debouncedSearch}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&isWorkFromOffice=${isWorkFromOffice}`,
+        filters
       );
 
       if (response?.data?.status === 200) {
-        setTaskList(response?.data.tasks);
+        setTaskList(response?.data.reports);
+        settotalTask(response.data.totalReports);
+        setTotalPages(response.data.totalPages);
         // console.log("response:", response?.data.tasks);
       } else {
         showToast(response?.data?.message, "error");
@@ -468,464 +364,474 @@ const ViewTasks = () => {
     }
   };
 
-  useEffect(() => {
-    const GetTimesheet =
-      (selectedEmployee &&
-        selectedJobId &&
-        selectedClientId &&
-        appliedFilters) ||
-      (!selectedEmployee &&
-        appliedFilters &&
-        ((jobRoleId && jobRoleisworkFromOffice) ||
-          (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
-          (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
-      (selectedJobId && isWorkFromOffice);
+  const filteredEmployeeList = useMemo(() => {
+    return employeeList.filter((user) =>
+      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, employeeList]);
 
-    if (GetTimesheet) {
-      getAllTasks();
+  const filteredClientList = useMemo(() => {
+    return clientList.filter((client) =>
+      client.clientName.toLowerCase().includes(clientSearchTerm.toLowerCase())
+    );
+  }, [clientList, clientSearchTerm]);
+
+  const filteredLocationList = useMemo(() => {
+    return locationList.filter((location) =>
+      location.locationName
+        .toLowerCase()
+        .includes(locationSearchTerm.toLowerCase())
+    );
+  }, [locationList, locationSearchTerm]);
+
+  const handleEmployeeChange = (employeeId) => {
+    setSelectedEmployee(employeeId);
+  };
+
+  const handleClientChange = (value) => {
+    setselectedClient(value);
+  };
+
+  const handleLocationChange = (value) => {
+    setselectedLocation(value);
+  };
+
+  const getAllLocations = async () => {
+    try {
+      setLoading(true);
+      const response = await PostCall(
+        `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
+      );
+      if (response?.data?.status === 200) {
+        setlocationList(response?.data.locations);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  };
+
+  const getAllClientsOfUser = async () => {
+    try {
+      setLoading(true);
+      const response = await GetCall(
+        `/getAllClientsOfUser?companyId=${companyId}&userId=${selectedEmployee}&isWorkFromOffice=${isWorkFromOffice}`
+      );
+      if (response?.data?.status === 200) {
+        showToast(response?.data?.message, "error");
+        setClientList(response.data.clients);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleView = () => {
+    alert("df");
+  };
+
+  const handleEdit = () => {
+    alert("df");
+  };
+
+  const getAllUsersOfClientOrLocation = async () => {
+    try {
+      setLoading(true);
+      const response = await GetCall(
+        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
+      );
+      if (response?.data?.status === 200) {
+        setEmployeeList(response?.data.users);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const HandleAddJob = () => {
+    navigate(`/viewtask/addtask`);
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (selectedEmployee && isWorkFromOffice) {
+      getAllLocations();
+    }
+  }, [isWorkFromOffice, selectedLocation, companyId, selectedEmployee]);
+
+  useEffect(() => {
+    if (selectedEmployee && !isWorkFromOffice) {
+      getAllClientsOfUser();
+    }
+  }, [selectedEmployee, companyId]);
+
+  useEffect(() => {
+    if (selectedClient) {
+      getAllUsersOfClientOrLocation();
+    }
+  }, [selectedClient, companyId]);
+
+  useEffect(() => {
+    getAllTasks();
   }, [
+    selectedClient,
     selectedEmployee,
-    selectedJobId,
-    selectedClientId,
-    jobRoleId,
+    debouncedSearch,
+    selectedStartDate,
+    selectedEndDate,
     isWorkFromOffice,
-    jobRoleisworkFromOffice,
-    appliedFilters,
+    currentPage,
+    perPage,
+    selectedLocation,
+    companyId,
   ]);
-
-  useEffect(() => {
-    const GetClientData =
-      (selectedEmployee && selectedJobId && !isWorkFromOffice) ||
-      (!selectedEmployee && jobRoleId && !jobRoleisworkFromOffice);
-
-    if (GetClientData) {
-      GetClientdata();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    selectedEmployee,
-    selectedJobId,
-    jobRoleId,
-    isWorkFromOffice,
-    jobRoleisworkFromOffice,
-  ]);
-
-  useEffect(() => {
-    userRole !== "Employee" && fetchEmployeeList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyId]);
-
-  // useEffect(() => {
-  //   console.log("Year:", selectedYear, "Month:", selectedMonth);
-  // }, [selectedYear, selectedMonth]);
-
-  useEffect(() => {
-    // console.log("tasklist", taskList);
-    const transformedEvents = taskList.map((task) => ({
-      title: task.taskName,
-      start: task.taskDate,
-      allDay: true,
-      classNames: ["task-event"],
-      extendedProps: {
-        description: `${task.taskDescription} ${task.startTime} - ${task.endTime}`,
-      },
-    }));
-
-    setEvents(transformedEvents);
-  }, [taskList]);
-
-  useEffect(() => {
-    if (selectedEmployee) {
-      GetJobTitleData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedEmployee]);
 
   return (
-    <div className="View-task-main">
-      {!openJobTitleModal && JobTitledata.length > 1 && (
-        <JobTitleForm
-          onClose={handleJobPopupClose}
-          jobTitledata={JobTitledata}
-          onJobTitleSelect={handleJobTitleSelect}
+    <div className="task-list-container">
+      <div className="task-flex">
+        <div className="task-title">
+          <h1>Task List</h1>
+        </div>
+        <CommonAddButton
+          label="Add Task"
+          icon={MdOutlineLocalPostOffice}
+          onClick={HandleAddJob}
         />
-      )}
-      {!openClietnSelectModal && Clientdata.length > 1 && (
-        <AssignClient
-          onClose={handleClientPopupClose}
-          Clientdata={Clientdata}
-          onClientSelect={handleClientSelect}
-        />
-      )}
-      <div className="View-task-list">
-        <h1 className="view-task-title">Tasks</h1>
-        {/* <div className="indicate-color-task">
-          <CommonAddButton
-            label={"View Tasks"}
-            //  icon={MdRateReview}
-            onClick={handleViewTasks}
-          />
-        </div> */}
-        <div className="view-task-filter-container">
-          <div className="selection-wrapper">
-            {/* <select
-              value={selectedYear}
-              onChange={(e) => {
-                // console.log("year", e.target.value);
-                setSelectedYear(e.target.value);
-              }}
-            >
-              {[...Array(currentYear - startYear + 1)].map((_, index) => {
-                const year = startYear + index;
-                return (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                );
-              })}
-            </select> */}
+      </div>
 
-            {/* <Select
-              className="viewtask-dropdown"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              displayEmpty
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    width: 120,
-                    textOverflow: "ellipsis",
-                    maxHeight: 200,
-                    whiteSpace: "nowrap",
+      <div className="task-filter-container">
+        <div className="task-filter-alltask-main">
+          {userRole !== "Employee" && (
+            <div className="task-filter-employee-selection">
+              <label className="label">Employee</label>
+              <Select
+                className="task-input-dropdown"
+                value={selectedEmployee}
+                onChange={(e) => handleEmployeeChange(e.target.value)}
+                displayEmpty
+                MenuProps={{
+                  disableAutoFocusItem: true,
+                  PaperProps: {
+                    style: {
+                      width: 150,
+                      maxHeight: 200,
+                      overflowX: "auto",
+                    },
                   },
-                },
-              }}
-            >
-              {[...Array(currentYear - startYear + 1)].map((_, index) => {
-                const year = startYear + index;
-                return (
-                  <MenuItem key={year} value={year}>
-                    {year}
-                  </MenuItem>
-                );
-              })}
-            </Select> */}
-          </div>
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
+                    },
+                  },
+                }}
+                renderValue={(selected) => {
+                  if (!selected) return "Select Employee";
+                  if (selected === "allUsers") return "All Employees";
+                  const found = employeeList.find(
+                    (emp) => emp._id === selected
+                  );
+                  return found?.userName || "Select Employee";
+                }}
+              >
+                <ListSubheader>
+                  <TextField
+                    size="small"
+                    placeholder="Search Employee"
+                    fullWidth
+                    className="search-textfield"
+                    value={searchTerm}
+                    onChange={(e) => setsearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
 
-          <div className="selection-wrapper">
-            {/* <select
-              value={selectedMonth}
-              onChange={(e) => {
-                // console.log("month", e.target.value);
-                setSelectedMonth(e.target.value);
-              }}
-            >
-              {months?.map((month) => (
-                <option key={month.value} value={month.value}>
-                  {month.name}
-                </option>
-              ))}
-            </select> */}
-            {/* <Select
-              value={selectedMonth}
-              className="viewtask-dropdown"
-              onChange={(e) => {
-                const value = parseInt(e.target.value, 10);
-                console.log("month", value);
-                setSelectedMonth(value);
-              }}
-              displayEmpty
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    width: 120,
-                    textOverflow: "ellipsis",
-                    maxHeight: 200,
-                    whiteSpace: "nowrap",
-                  },
-                },
-              }}
-            >
-              {months?.map((month) => (
-                <MenuItem key={month.value} value={month.value}>
-                  {month.name}
+                <MenuItem value="allUsers" className="menu-item">
+                  All Employees
                 </MenuItem>
-              ))}
-            </Select> */}
-          </div>
+                {filteredEmployeeList.length > 0 ? (
+                  filteredEmployeeList.map((emp) => (
+                    <MenuItem
+                      key={emp._id}
+                      value={emp._id}
+                      className="menu-item"
+                    >
+                      {emp.userName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>Not Found</MenuItem>
+                )}
+              </Select>
+            </div>
+          )}
 
-          {/* <CommonAddButton
-            label={"Filter"}
-            // icon={MdRateReview}
-            onClick={applyFilters}
-          /> */}
+          {userRole !== "Employee" && !isWorkFromOffice && (
+            <div className="task-filter-employee-selection">
+              <label className="label">Client</label>
+              <Select
+                className="task-input-dropdown"
+                value={selectedClient}
+                onChange={(e) => handleClientChange(e.target.value)}
+                displayEmpty
+                MenuProps={{
+                  disableAutoFocusItem: true,
+                  PaperProps: {
+                    style: {
+                      width: 150,
+                      maxHeight: 200,
+                      overflowX: "auto",
+                    },
+                  },
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
+                    },
+                  },
+                }}
+                renderValue={(selected) => {
+                  if (!selected) return "Select Client";
+                  if (selected === "allClients") return "All Clients";
+                  const found = clientList.find((c) => c._id === selected);
+                  return found?.clientName || "Select Clients";
+                }}
+              >
+                <ListSubheader>
+                  <TextField
+                    size="small"
+                    placeholder="Search Client"
+                    fullWidth
+                    className="search-textfield"
+                    value={clientSearchTerm}
+                    onChange={(e) => setClientSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
+
+                <MenuItem value="allClients" className="menu-item">
+                  All Clients
+                </MenuItem>
+                {filteredClientList.map((client) => (
+                  <MenuItem
+                    key={client._id}
+                    value={client._id}
+                    className="menu-item"
+                  >
+                    {client.clientName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+          )}
+
+          {userRole !== "Employee" && isWorkFromOffice && (
+            <div className="task-filter-employee-selection">
+              <label className="label">Location</label>
+              <Select
+                className="task-input-dropdown"
+                value={selectedLocation}
+                onChange={(e) => handleLocationChange(e.target.value)}
+                displayEmpty
+                MenuProps={{
+                  disableAutoFocusItem: true,
+                  PaperProps: {
+                    style: {
+                      width: 150,
+                      maxHeight: 200,
+                      overflowX: "auto",
+                    },
+                  },
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
+                    },
+                  },
+                }}
+                renderValue={(selected) => {
+                  if (!selected) return "Select Locations";
+                  if (selected === "allLocations") return "All Locations";
+                  const found = locationList.find((c) => c._id === selected);
+                  return found?.locationName || "All Locations";
+                }}
+              >
+                <ListSubheader>
+                  <TextField
+                    size="small"
+                    placeholder="Search Locations"
+                    fullWidth
+                    className="search-textfield"
+                    value={locationSearchTerm}
+                    onChange={(e) => setlocationSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
+
+                <MenuItem value="allLocations" className="menu-item">
+                  All Locations
+                </MenuItem>
+                {filteredLocationList.length > 0 ? (
+                  filteredLocationList.map((location) => (
+                    <MenuItem
+                      key={location._id}
+                      value={location._id}
+                      className="menu-item"
+                    >
+                      {location.locationName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="" className="menu-item" disabled>
+                    No found Locations
+                  </MenuItem>
+                )}
+              </Select>
+            </div>
+          )}
+
+          <div className="task-download-container">
+            <div className="task-input-container">
+              <label className="label">Start Date</label>
+              <input
+                type="date"
+                name="startDate"
+                className="task-input"
+                value={selectedStartDate}
+                onChange={handleChange}
+                min={minDate}
+                max={maxDate}
+              />
+            </div>
+
+            <div className="task-input-container">
+              <label className="label">End Date</label>
+              <input
+                type="date"
+                name="endDate"
+                className="task-input"
+                value={selectedEndDate}
+                onChange={handleChange}
+                min={minDate}
+                max={maxDate}
+              />
+            </div>
+
+            {/* <button onClick={handleFilter}>Filter</button> */}
+          </div>
         </div>
       </div>
 
-      {userRole !== "Employee" && (
-        <div className="viewtask-employee-list">
-          <Select
-            className="viewtask-input-dropdown"
-            value={selectedEmployee}
-            onChange={(e) => handleEmployeeChange(e.target.value)}
-            displayEmpty
-            MenuProps={{
-              PaperProps: {
-                style: {
-                  width: 120,
-                  maxHeight: 200,
-                  overflowX: "auto",
-                  scrollbarWidth: "thin",
-                },
-              },
-              MenuListProps: {
-                onMouseDown: (e) => {
-                  if (e.target.closest(".search-textfield")) {
-                    e.stopPropagation();
-                  }
-                },
-              },
-            }}
-            renderValue={(selected) => {
-              if (!selected) return "Select Employee";
-              const found = employeeList.find((item) => item._id === selected);
-              return found ? found.userName : "Not Found";
-            }}
-          >
-            <ListSubheader>
-              <TextField
-                size="small"
-                placeholder="Search Employees"
-                fullWidth
-                className="search-textfield"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.stopPropagation()}
-              />
-            </ListSubheader>
-            <MenuItem value="" disabled>
-              Select Employee
-            </MenuItem>
-            {filterEmployee.length > 0 ? (
-              filterEmployee.map((employee) => (
-                <MenuItem
-                  key={employee._id}
-                  value={employee._id}
-                  className="menu-item"
-                >
-                  {employee.userName}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem disabled className="menu-item">
-                No Leave found
-              </MenuItem>
-            )}
-          </Select>
+      <div className="task-officework">
+        <div className="task-searchbar">
+          <TextField
+            placeholder="Search Task"
+            variant="outlined"
+            size="small"
+            value={searchQuery}
+            className="common-searchbar"
+            onChange={handleSearchChange}
+          />
         </div>
-      )}
+
+        <div className="task-isWorkFromOffice">
+          <input
+            type="checkbox"
+            data-testid="send-link"
+            name="isWorkFromOffice"
+            checked={isWorkFromOffice}
+            onChange={handleCheckboxChange}
+          />
+          <label>Office Work?</label>
+        </div>
+      </div>
 
       {loading ? (
         <div className="loader-wrapper">
           <Loader />
         </div>
       ) : (
-        <div>
-          <FullCalendar
-            ref={calendarRef}
-            key={selectedYear}
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            initialDate={moment(`${selectedYear}-${selectedMonth}`).toDate()}
-            dateClick={(info) => {
-              if (
-                (userRole === "Manager" ||
-                  userRole === "Administrator" ||
-                  userRole === "Superadmin") &&
-                selectedEmployee
-              ) {
-                handleDateClick(info);
-              }
-            }}
-            headerToolbar={{
-              right: "next today",
-              center: "title",
-              left: "prev",
-            }}
-            buttonText={{
-              today: "Today",
-            }}
-            customButtons={{
-              next: {
-                text: "Next",
-                click: handleNextClick,
-              },
-              prev: {
-                text: "Prev",
-                click: handlePrevClick,
-              },
-              today: {
-                text: "Today",
-                click: handleTodayClick,
-              },
-            }}
-            validRange={{
-              start: AllowstartDate,
-              end: currentYearEnd,
-            }}
-            events={events}
-            height="75vh"
-            eventDidMount={(info) => {
-              tippy(info.el, {
-                content: info.event.extendedProps.description,
-                placement: "top",
-                theme: "light-border",
-                animation: "fade",
-                delay: [100, 200],
-              });
-            }}
-            datesSet={(info) => {
-              const currentYear = info.view.currentStart.getFullYear();
-              const currentMonth = info.view.currentStart.getMonth() + 1;
-              setSelectedYear(currentYear);
-              setSelectedMonth(currentMonth);
-            }}
+        <>
+          <CommonTable
+            headers={[
+              "Task Date",
+              "Employee Name ",
+              "Job Title ",
+              isWorkFromOffice ? "Location Name " : "Client Name ",
+              "Start Time",
+              "End Time",
+              "Actions",
+            ]}
+            data={taskList?.map((task) => ({
+              taskdate: moment(task.taskDate).format("DD/MM/YYYY"),
+              userName: task.userName,
+              taskloctionandorclientName: isWorkFromOffice
+                ? task.locationName
+                : task.clientName,
+              jobRole: task.jobRole,
+              starttime: task.startTime,
+              endtime: task.endTime,
+              actions: (
+                <div className="viewtask-action">
+                  <span className="task-action-icon view-task-data">
+                    <FaEye onClick={() => handleView(task._id, task.entryId)} />
+                  </span>
+                  <span className="task-action-icon edit-task-data">
+                    <FaEdit
+                      onClick={() => handleEdit(task._id, task.entryId)}
+                    />
+                  </span>
+                  <span className="task-action-icon delete-task-data">
+                    <FaTrash
+                      onClick={() =>
+                        handleDelete(task._id, task.userName, task.startDate)
+                      }
+                    />
+                  </span>
+                </div>
+              ),
+            }))}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            showPerPage={perPage}
+            onPerPageChange={handlePerPageChange}
+            isPagination="true"
+            isSearchQuery={false}
+            totalData={totalTask}
           />
-        </div>
-      )}
-      {isPopupOpen && (
-        <div className="task-popup-overlay">
-          <div className="task-popup-box">
-            <button className="task-close-button" onClick={handlePopupClose}>
-              ×
-            </button>
-
-            <h3>{formData._id ? "Update" : "Add"} Task</h3>
-            {formData._id && (
-              <div className="addtask-input-container">
-                <label className="label">Date*</label>
-                <input
-                  type="date"
-                  name="taskDate"
-                  value={formData.taskDate}
-                  className="addtask-input"
-                  onChange={handleChange}
-                  min={todayDate}
-                />
-                {errors?.taskDate && (
-                  <div className="error-text">{errors?.taskDate}</div>
-                )}
-              </div>
-            )}
-
-            <div className="addtask-input-container">
-              <label className="label">Task Name</label>
-              <input
-                type="text"
-                name="taskName"
-                value={formData.taskName}
-                className="addtask-input"
-                onChange={handleChange}
-              />
-              {/* {errors?.taskName && (
-                <div className="error-text">{errors?.taskName}</div>
-              )} */}
-            </div>
-            <div className="addtask-input-container">
-              <label className="label">Task Description</label>
-              <textarea
-                name="taskDescription"
-                value={formData.taskDescription}
-                className="addtask-input"
-                onChange={handleChange}
-              />
-              {/* {errors?.taskDescription && (
-                <div className="error-text">{errors?.taskDescription}</div>
-              )} */}
-            </div>
-            {!formData._id && (
-              <>
-                <div className="addtask-input-container">
-                  <label className="label">Start Date*</label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={formData.startDate}
-                    className="addtask-input"
-                    onChange={handleChange}
-                    min={todayDate}
-                  />
-                  {errors?.startDate && (
-                    <div className="error-text">{errors?.startDate}</div>
-                  )}
-                </div>
-                <div className="addtask-input-container">
-                  <label className="label">End Date</label>
-                  <input
-                    type="date"
-                    name="endDate"
-                    value={formData.endDate}
-                    className="addtask-input"
-                    onChange={handleChange}
-                    min={todayDate}
-                  />
-                  {/* {errors?.endDate && (
-                    <div className="error-text">{errors?.endDate}</div>
-                  )} */}
-                </div>
-              </>
-            )}
-
-            <div className="addtask-input-container">
-              <label className="label">Start Time*</label>
-              <input
-                type="time"
-                name="startTime"
-                value={formData.startTime}
-                className="addtask-input"
-                onChange={handleChange}
-              />
-              {errors?.startTime && (
-                <div className="error-text">{errors?.startTime}</div>
-              )}
-            </div>
-            <div className="addtask-input-container">
-              <label className="label">End Time*</label>
-              <input
-                type="time"
-                name="endTime"
-                value={formData.endTime}
-                className="addtask-input"
-                onChange={handleChange}
-              />
-              {errors?.endTime && (
-                <div className="error-text">{errors?.endTime}</div>
-              )}
-            </div>
-
-            <button onClick={handleAddTask} className="task-modal-buttons">
-              {formData._id ? "Update" : "Add"}
-            </button>
-
-            {formData._id && (
-              <button
-                onClick={() => handleDeleteTask(formData._id)}
-                className="task-modal-buttons"
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-      {showConfirm && (
-        <DeleteConfirmation
-          confirmation={`Are you sure you want to delete task on date <b>${formData.taskDate}</b>?`}
-          onConfirm={() => confirmDelete(taskId)}
-          onCancel={cancelDelete}
-        />
+          {ShowConfirm && (
+            <DeleteConfirmation
+              confirmation={`Are you sure you want to delete task on <b>${taskName}</b> <b>${taskDate}</b>?`}
+              onConfirm={() => confirmDelete(taskId)}
+              onCancel={cancelDelete}
+            />
+          )}
+        </>
       )}
     </div>
   );

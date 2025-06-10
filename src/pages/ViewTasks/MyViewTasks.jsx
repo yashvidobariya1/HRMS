@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "./AbsenceReport.css";
+// import "./AbsenceReport.css";
 import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
-const MyAbsenceReport = () => {
+const MyViewTasks = () => {
   const { PostCall, GetCall } = useApiServices();
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,15 +25,15 @@ const MyAbsenceReport = () => {
   );
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
-  const [absenceReportList, setAbsenceReportList] = useState([]);
+  const [TaskList, setTaskList] = useState([]);
   const [clientSearchTerm, setClientSearchTerm] = useState("");
   const userId = useSelector((state) => state.userInfo.userInfo._id);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
   const [searchQuery, setSearchQuery] = useState("");
-  const [totalAbsencesheet, settotalAbsencesheet] = useState([]);
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
+  const [totalTask, settotalTask] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +72,7 @@ const MyAbsenceReport = () => {
     setSearchQuery(event.target.value);
   };
 
-  const GetAbsenceReport = async () => {
+  const getAllTasks = async () => {
     try {
       setLoading(true);
       const filters = {
@@ -81,22 +81,23 @@ const MyAbsenceReport = () => {
           ? selectedLocation
           : selectedClient,
       };
-
       const response = await PostCall(
-        `/getAbsenceReport?page=${currentPage}&limit=${perPage}&search=${debouncedSearch}&companyId=${companyId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&isWorkFromOffice=${isWorkFromOffice}`,
+        `/getAllTasks?page=${currentPage}&limit=${perPage}&companyId=${companyId}&search=${debouncedSearch}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&isWorkFromOffice=${isWorkFromOffice}`,
         filters
       );
 
       if (response?.data?.status === 200) {
-        setAbsenceReportList(response?.data?.reports);
-        settotalAbsencesheet(response.data.totalReports);
-        setTotalPages(response?.data?.totalPages);
+        setTaskList(response?.data.tasks);
+        settotalTask(response.data.reports);
+        setTotalPages(response.data.totalPages);
+        // console.log("response:", response?.data.tasks);
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching tasks:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -170,7 +171,9 @@ const MyAbsenceReport = () => {
   }, [userId, isWorkFromOffice]);
 
   useEffect(() => {
-    GetAbsenceReport();
+    // if (selectedEmployee || selectedClient) {
+    getAllTasks();
+    // }
   }, [
     selectedClient,
     userId,
@@ -185,20 +188,20 @@ const MyAbsenceReport = () => {
   ]);
 
   return (
-    <div className="absencesheet-list-container">
-      <div className="absencesheet-flex">
-        <div className="absencesheet-title">
-          <h1>Absence Report</h1>
+    <div className="task-list-container">
+      <div className="task-flex">
+        <div className="task-title">
+          <h1>My Task List</h1>
         </div>
       </div>
 
-      <div className="absence-filter-container">
-        <div className="absence-filter-main">
+      <div className="task-filter-container">
+        <div className="task-filter-alltask-main">
           {!isWorkFromOffice && (
-            <div className="absence-filter-employee-selection">
+            <div className="task-filter-employee-selection">
               <label className="label">Client</label>
               <Select
-                className="absence-input-dropdown"
+                className="task-input-dropdown"
                 value={selectedClient}
                 onChange={(e) => handleClientChange(e.target.value)}
                 displayEmpty
@@ -255,10 +258,10 @@ const MyAbsenceReport = () => {
           )}
 
           {userRole !== "Employee" && isWorkFromOffice && (
-            <div className="absence-filter-employee-selection">
+            <div className="task-filter-employee-selection">
               <label className="label">Location</label>
               <Select
-                className="absence-input-dropdown"
+                className="task-input-dropdown"
                 value={selectedLocation}
                 onChange={(e) => handleLocationChange(e.target.value)}
                 displayEmpty
@@ -320,13 +323,13 @@ const MyAbsenceReport = () => {
             </div>
           )}
 
-          <div className="absence-download-container">
-            <div className="absence-input-container">
+          <div className="task-download-container">
+            <div className="task-input-container">
               <label className="label">Start Date</label>
               <input
                 type="date"
                 name="startDate"
-                className="absence-input"
+                className="task-input"
                 value={selectedStartDate}
                 onChange={handleChange}
                 min={minDate}
@@ -339,20 +342,35 @@ const MyAbsenceReport = () => {
               <input
                 type="date"
                 name="endDate"
-                className="absence-input"
+                className="task-input"
                 value={selectedEndDate}
                 onChange={handleChange}
                 min={minDate}
                 max={maxDate}
               />
             </div>
+
+            {/* <button onClick={handleFilter}>Filter</button> */}
           </div>
         </div>
       </div>
 
-      <div className="absence-searchbar">
+      {/* <div className="timesheetreport-officework">
+        <div className="timesheetreport-isWorkFromOffice">
+          <input
+            type="checkbox"
+            data-testid="send-link"
+            name="isWorkFromOffice"
+            checked={isWorkFromOffice}
+            onChange={handleCheckboxChange}
+          />
+        </div>
+        <label>Office Work?</label>
+      </div> */}
+
+      <div className="task-searchbar">
         <TextField
-          placeholder="Search Absence Report"
+          placeholder="Search Task"
           variant="outlined"
           size="small"
           value={searchQuery}
@@ -369,19 +387,23 @@ const MyAbsenceReport = () => {
         <>
           <CommonTable
             headers={[
-              "Absence Date",
+              "Task Date",
+              // "Employee Name",
+              "Job Title",
               isWorkFromOffice ? "Location Name" : "Client Name",
-              ,
-              // "Job Title",
-              "Status",
+              "Start Time",
+              "End Time",
+              "Actions",
             ]}
-            data={absenceReportList.map((absencesheet) => ({
-              absencesheetdate: moment(absencesheet.date).format("DD/MM/YYYY"),
-              absencelcaotionandorclientName: isWorkFromOffice
-                ? absencesheet.locationName
-                : absencesheet.clientName,
-              // jobRole: absencesheet.jobRole,
-              absencesheetstatus: absencesheet.status,
+            data={TaskList?.map((task) => ({
+              taskdate: moment(task.date).format("DD/MM/YYYY"),
+              // userName: task.userName,
+              taskloctionandorclientName: isWorkFromOffice
+                ? task.locationName
+                : task.clientName,
+              jobRole: task.jobRole,
+              starttime: task.startTime,
+              enddtime: task.endTime,
             }))}
             currentPage={currentPage}
             totalPages={totalPages}
@@ -390,12 +412,22 @@ const MyAbsenceReport = () => {
             onPerPageChange={handlePerPageChange}
             isPagination="true"
             isSearchQuery={false}
-            totalData={totalAbsencesheet}
+            totalData={totalTask}
           />
+
+          {/* <AbsencesheetTable
+            headers={["Date", "Status", "Timing", "Total Hours", "OverTime"]}
+            absenceReportList={absenceReportList}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            showPerPage={perPage}
+            onPerPageChange={handlePerPageChange}
+        /> */}
         </>
       )}
     </div>
   );
 };
 
-export default MyAbsenceReport;
+export default MyViewTasks;

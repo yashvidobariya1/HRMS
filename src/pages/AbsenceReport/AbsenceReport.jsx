@@ -168,10 +168,6 @@ const AbsenceReport = () => {
   const getAllUsersOfClientOrLocation = async () => {
     try {
       setLoading(true);
-      // const formdata = {
-      //   clientId: selectedClient,
-      //   isWorkFromOffice: isWorkFromOffice,
-      // };
       const response = await GetCall(
         `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
       );
@@ -204,36 +200,8 @@ const AbsenceReport = () => {
     }
   }, [selectedClient, companyId]);
 
-  // useEffect(() => {
-  //   const AbsenceReport =
-  //     (selectedEmployee &&
-  //       selectedJobId &&
-  //       selectedClientId &&
-  //       appliedFilters) ||
-  //     (!selectedEmployee &&
-  //       appliedFilters &&
-  //       ((jobRoleId && jobRoleisworkFromOffice) ||
-  //         (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
-  //         (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
-  //     (selectedJobId && isWorkFromOffice);
-
-  //   if (AbsenceReport) {
-  //     GetAbsenceReport();
-  //   }
-  // }, [
-  //   selectedEmployee,
-  //   selectedJobId,
-  //   selectedClientId,
-  //   jobRoleId,
-  //   isWorkFromOffice,
-  //   jobRoleisworkFromOffice,
-  //   appliedFilters,
-  // ]);
-
   useEffect(() => {
-    // if (selectedEmployee || selectedClient) {
     GetAbsenceReport();
-    // }
   }, [
     selectedClient,
     selectedEmployee,
@@ -270,7 +238,7 @@ const AbsenceReport = () => {
       </div>
 
       <div className="absence-filter-container">
-        <div className="absence-filter-timsheetreport-main">
+        <div className="absence-filter-main">
           {userRole !== "Employee" && (
             <div className="absence-filter-employee-selection">
               <label className="label">Employee</label>
@@ -550,16 +518,6 @@ const AbsenceReport = () => {
             isSearchQuery={false}
             totalData={totalAbsencesheet}
           />
-
-          {/* <AbsencesheetTable
-            headers={["Date", "Status", "Timing", "Total Hours", "OverTime"]}
-            absenceReportList={absenceReportList}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            showPerPage={perPage}
-            onPerPageChange={handlePerPageChange}
-        /> */}
         </>
       )}
     </div>

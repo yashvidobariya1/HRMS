@@ -456,6 +456,13 @@ const CommonTable = ({
     "Location Name": "absencelcaotionandorclientName",
     "Client Name": "absencelcaotionandorclientName",
     "Job Title": "jobRole",
+    "Task Date": "taskdate",
+    "Start Time": "starttime",
+    "End Time": "endtime",
+    "Client Name ": "taskloctionandorclientName",
+    "Location Name ": "taskloctionandorclientName",
+    "Job Title ": "jobRole",
+    "Employee Name ": "userName",
   };
 
   const handleSort = (key) => {

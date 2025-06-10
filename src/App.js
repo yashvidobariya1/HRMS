@@ -54,6 +54,8 @@ import TimeSheetReport from "./pages/Client/ViewReport";
 import TimeSheetReportMonthly from "./pages/TimeSheetReport/TimeReportMonthly";
 import TimesheetReportMy from "./pages/TimeSheetReport/TimesheetReportMy";
 import MyAbsenceReport from "./pages/AbsenceReport/MyAbsenceReport";
+import MyViewTasks from "./pages/ViewTasks/MyViewTasks";
+import AddTask from "./pages/ViewTasks/AddTask";
 
 // Layout wrapper
 function MainLayout({ children, path }) {
@@ -331,9 +333,19 @@ const protectedRoutes = [
   //   roles: ["Superadmin", "Administrator", "Manager"],
   // },
   {
-    path: "viewtasks",
+    path: "/viewtasks/stafftask",
     component: <ViewTasks />,
-    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+    roles: ["Superadmin", "Administrator", "Manager"],
+  },
+  {
+    path: "/viewtasks/mytask",
+    component: <MyViewTasks />,
+    roles: ["Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/viewtask/addtask",
+    component: <AddTask />,
+    roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
     path: "/jobtitles",
