@@ -112,7 +112,7 @@ const MyViewTasks = () => {
   const getAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(
+      const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${userId}`
       );
       if (response?.data?.status === 200) {
@@ -162,13 +162,13 @@ const MyViewTasks = () => {
     if (userId && isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, selectedLocation, companyId, userId]);
+  }, [isWorkFromOffice, companyId, userId]);
 
   useEffect(() => {
     if (userId && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
-  }, [userId, isWorkFromOffice]);
+  }, [userId, companyId]);
 
   useEffect(() => {
     // if (selectedEmployee || selectedClient) {

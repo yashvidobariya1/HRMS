@@ -1118,10 +1118,11 @@ const AddEmployee = () => {
     }
   };
 
-  const GetEmployeeDetails = async (id) => {
+  const GetEmployeeDetails = async () => {
     try {
       setLoading(true);
       const User = await GetCall(`/getUser/${id}`);
+      console.log("User", User, User?.data?.user?.jobDetails);
       if (User?.data?.status === 200) {
         // GetAllLocations();
         setDocumentDetails(User?.data?.user?.documentDetails);
@@ -1177,7 +1178,7 @@ const AddEmployee = () => {
       return navigate("/dashboard");
     }
     if (id) {
-      GetEmployeeDetails(id);
+      GetEmployeeDetails();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -2398,6 +2399,7 @@ const AddEmployee = () => {
                 handleAction={handleAction}
                 isSearchQuery={false}
               />
+              {console.log("JOBLIST", jobList)}
               {showConfirm && (
                 <DeleteConfirmation
                   confirmation={`Are you sure you want to delete the job detail titled <b>${jobName}</b>?`}

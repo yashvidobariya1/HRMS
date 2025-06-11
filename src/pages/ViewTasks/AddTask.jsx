@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 // import "./AddJob.css";
 import useApiServices from "../../useApiServices";
 import Loader from "../Helper/Loader";
@@ -10,8 +10,6 @@ import {
   Checkbox,
   Select,
   MenuItem,
-  FormControl,
-  InputLabel,
   ListSubheader,
   ListItemText,
   Chip,
@@ -24,62 +22,54 @@ const AddTask = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [clientList, setClientList] = useState([]);
   const { id } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [Assignuser, setAssignuser] = useState([]);
   const [selectedValues, setSelectedValues] = useState([]);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const taskId = queryParams.get("taskId");
+  console.log("taskid", taskId);
+  const todayDate = moment().format("YYYY-MM-DD");
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const [formData, setFormData] = useState({
-    taskDate: "",
+    startDate: "",
     taskName: "",
     taskDescription: "",
     startTime: "",
     endTime: "",
-    // startDate: "",
+    // assignUsers: [],
     endDate: "",
   });
 
-  const filterTask = useMemo(() => {
-    if (!searchTerm) return Assignuser;
-
-    return Assignuser.map((group) => {
-      const filteredChildren = group.children.filter((child) =>
-        child.jobname.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
-      if (
-        group.jobname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        filteredChildren.length > 0
-      ) {
-        return {
-          ...group,
-          children: filteredChildren,
-        };
-      }
-
-      return null;
-    }).filter(Boolean);
+  const filteredAssignUser = useMemo(() => {
+    return Assignuser.filter((user) =>
+      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   }, [searchTerm, Assignuser]);
 
   const validate = () => {
     let newErrors = {};
 
-    if (!formData.taskDate) {
-      newErrors.taskDate = "Job Date is required";
+    if (!formData.startDate) {
+      newErrors.startDate = "Start Date is required";
+    }
+    if (!formData.endDate) {
+      newErrors.endDate = "End Date is required";
     }
     if (!formData.taskName) {
-      newErrors.taskName = "Job Name is required";
+      newErrors.taskName = "Task Name is required";
     }
     if (!formData.taskDescription) {
-      newErrors.taskDescription = "Job Description is required";
-    }
-    if (!formData.locationId) {
-      newErrors.locationId = "location Id is required";
+      newErrors.taskDescription = "Task Description is required";
     }
     if (!formData.startTime) {
-      newErrors.startTime = "start Time To is required";
+      newErrors.startTime = "Start Time To is required";
     }
+    if (!formData.endTime) {
+      newErrors.endTime = "End Time To is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -93,31 +83,17 @@ const AddTask = () => {
         setLoading(true);
         const data = {
           ...formData,
-          //   userId: selectedEmployee ? selectedEmployee : "",
-          userId: "",
-          //   jobId: selectedJobId ? selectedJobId : jobRoleId,
-          jobId: "",
-          //   clientId: selectedClientId,
-          clientId: "",
+          assignUsers: selectedValues,
         };
         let response;
-        if (formData._id) {
-          response = await PostCall(`/updateTask/${formData._id}`, data);
+        if (id) {
+          response = await PostCall(`/updateTask/${id}`, data);
         } else {
           response = await PostCall("/createTask", data);
         }
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
-          //   setTaskList((prev) => {
-          //     if (formData._id) {
-          //       return prev.map((task) =>
-          //         task._id === formData._id ? { ...task, ...formData } : task
-          //       );
-          //     } else {
-          //       return [...prev, { ...formData, _id: response?.data?.taskId }];
-          //     }
-          //   });
-          //   navigate(`/job`);
+          navigate("/viewtask/stafftask");
         } else {
           showToast(response?.data?.message, "error");
         }
@@ -135,20 +111,11 @@ const AddTask = () => {
       const response = await GetCall(
         `/getAllUsersWithJobRoles?companyId=${companyId}`
       );
-
       if (response?.data?.status === 200) {
-        const transformedData = response?.data?.data.map((user) => ({
-          jobname: user.userName,
-          children: user.jobRoles.map((job) => ({
-            value: job.jobId,
-            jobname: job.jobName,
-          })),
-        }));
-        setAssignuser(transformedData);
+        setAssignuser(response.data.data);
       } else {
         showToast(response?.data?.message, "error");
       }
-
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -158,19 +125,30 @@ const AddTask = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSelectedValues(e.target.value);
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    console.log("formdata", formData);
   };
 
-  const GetJobDetails = async () => {
+  // const handleInputchange = (e) => {
+  //   console.log("e", e);
+  //   setSelectedValues(e.target.value);
+  // };
+
+  const handleInputchange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedValues(typeof value === "string" ? value.split(",") : value);
+  };
+
+  console.log("select value", selectedValues);
+
+  const GetTaskDetails = async () => {
     try {
       setLoading(true);
-      const response = await GetCall(`/getJobPost/${id}`);
+      const response = await GetCall(`/getTask/${id}`);
       if (response?.data?.status === 200) {
-        setFormData(response?.data?.jobPost);
+        setFormData(response?.data?.task);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -178,6 +156,19 @@ const AddTask = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  };
+
+  // const handleChipDelete = (tokenToDelete) => {
+  //   setSelectedValues((prev) =>
+  //     prev.filter((token) => token !== tokenToDelete)
+  //   );
+  // };
+
+  const handleDeleteChip = (tokenToDelete) => {
+    console.log(tokenToDelete);
+    setSelectedValues((prevSelected) =>
+      prevSelected.filter((token) => token !== tokenToDelete)
+    );
   };
 
   useEffect(() => {
@@ -186,37 +177,10 @@ const AddTask = () => {
 
   useEffect(() => {
     if (id) {
-      GetJobDetails(id);
+      GetTaskDetails(id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
-  useEffect(() => {
-    GetLocations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyId]);
-
-  const GetLocations = async () => {
-    try {
-      setLoading(true);
-
-      const response = await GetCall(
-        `/getCompanyLocationsForJobPost?companyId=${companyId}`
-      );
-
-      if (response?.data?.status === 200) {
-        setClientList(response?.data?.clients);
-      } else if (response?.data?.status === 404) {
-        setClientList([]);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-      setLoading(false);
-      // console.log("Company", Company);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   if (loading) {
     return <Loader />;
@@ -228,25 +192,11 @@ const AddTask = () => {
         <div className="AddJob-container">
           <div className="addjob-section">
             <div className="addjob-input-container">
-              <label className="label">Job Date*</label>
-              <input
-                name="jobTitle"
-                className="addjob-input"
-                placeholder="Enter Job Title"
-                value={formData?.taskDate}
-                onChange={handleChange}
-              />
-              {errors?.taskDate && (
-                <p className="error-text">{errors?.taskDate}</p>
-              )}
-            </div>
-
-            <div className="addjob-input-container">
               <label className="label">task Name*</label>
               <input
                 name="taskName"
                 className="addjob-input"
-                placeholder="Enter Job Title"
+                placeholder="Enter Task Name"
                 value={formData?.taskName}
                 onChange={handleChange}
               />
@@ -265,95 +215,18 @@ const AddTask = () => {
                 value={formData?.taskDescription}
                 onChange={handleChange}
               />
-              {errors?.taskDate && (
+              {errors?.taskDescription && (
                 <p className="error-text">{errors?.taskDescription}</p>
               )}
             </div>
-          </div>
 
-          <div className="addjob-section">
-            <div className="addjob-input-container">
-              <label className="label">Assign Task*</label>
-              <FormControl fullWidth>
-                <Select
-                  className="addemployee-input-dropdown"
-                  multiple
-                  MenuProps={{
-                    disableAutoFocusItem: true,
-                    PaperProps: {
-                      style: {
-                        maxWidth: 200,
-                        maxHeight: 400,
-                        overflowX: "auto",
-                        scrollbarWidth: "thin",
-                      },
-                    },
-                  }}
-                  value={selectedValues}
-                  onChange={handleChange}
-                  renderValue={(selected) => {
-                    if (!selected || selected.length === 0) {
-                      return "Select Employee";
-                    }
-
-                    return (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.map((value) => {
-                          const job = Assignuser.flatMap(
-                            (group) => group.children
-                          ).find((child) => child.value === value);
-
-                          return (
-                            <Chip
-                              key={value}
-                              label={job ? job.jobname : value}
-                            />
-                          );
-                        })}
-                      </Box>
-                    );
-                  }}
-                >
-                  <ListSubheader>
-                    <TextField
-                      size="small"
-                      placeholder="Search Assign"
-                      fullWidth
-                      className="search-textfield"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    />
-                  </ListSubheader>
-                  <MenuItem value="" disabled>
-                    Select Assign Employee
-                  </MenuItem>
-                  {filterTask.map((group, groupIndex) => [
-                    <ListSubheader key={`group-${groupIndex}`}>
-                      {group.jobname}
-                    </ListSubheader>,
-                    group.children.map((child) => (
-                      <MenuItem
-                        key={child.value}
-                        value={child.value}
-                        className="menu-item"
-                      >
-                        <Checkbox
-                          checked={selectedValues.includes(child.value)}
-                        />
-                        <ListItemText primary={child.jobname} />
-                      </MenuItem>
-                    )),
-                  ])}
-                </Select>
-              </FormControl>
-            </div>
             <div className="addjob-input-container">
               <label className="label">Start Time*</label>
               <input
+                type="time"
                 name="startTime"
                 className="addjob-input"
-                placeholder="Enter task Description"
+                placeholder="Enter Start Time"
                 value={formData?.startTime}
                 onChange={handleChange}
               />
@@ -361,19 +234,139 @@ const AddTask = () => {
                 <p className="error-text">{errors?.startTime}</p>
               )}
             </div>
+          </div>
 
+          <div className="addjob-section">
             <div className="addjob-input-container">
-              <label className="label">End Time</label>
+              <label className="label">End Time*</label>
               <input
+                type="time"
                 name="endTime"
                 className="addjob-input"
-                placeholder="Enter task Description"
+                placeholder="Enter End Time"
                 value={formData?.endTime}
                 onChange={handleChange}
               />
+              {errors?.endTime && (
+                <p className="error-text">{errors?.endTime}</p>
+              )}
             </div>
+
+            <>
+              <div className="addjob-input-container">
+                <label className="label">Start Date*</label>
+                <input
+                  type="date"
+                  name="startDate"
+                  className="addjob-input"
+                  placeholder="Start Date"
+                  value={formData?.startDate}
+                  disabled={id}
+                  onChange={handleChange}
+                />
+                {errors?.startDate && (
+                  <p className="error-text">{errors?.startDate}</p>
+                )}
+              </div>
+
+              <div className="addjob-input-container">
+                <label className="label">End Date*</label>
+                <input
+                  type="date"
+                  name="endDate"
+                  className="addjob-input"
+                  placeholder="End Date"
+                  value={formData?.endDate}
+                  disabled={id}
+                  onChange={handleChange}
+                />
+                {errors?.endDate && (
+                  <p className="error-text">{errors?.endDate}</p>
+                )}
+              </div>
+            </>
           </div>
 
+          <div className="addjob-section">
+            <div className="addjob-input-container">
+              <label>Assign Employee*</label>
+              <Select
+                multiple
+                displayEmpty
+                value={selectedValues}
+                className="addemployee-input-dropdown"
+                onChange={handleInputchange}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: 400,
+                      overflowX: "auto",
+                      maxWidth: 200,
+                    },
+                  },
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
+                    },
+                  },
+                }}
+                renderValue={(selected) => {
+                  if (selected.length === 0) {
+                    return "Select Employee";
+                  }
+                  return (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                      {selected.map((token) => {
+                        const selectedJob = Assignuser?.flatMap((user) =>
+                          user.jobRoles?.map((role) => ({
+                            token: role.token,
+                            jobName: role.jobName,
+                          }))
+                        ).find((r) => r.token === token);
+
+                        return (
+                          <Chip
+                            key={token}
+                            label={selectedJob?.jobName || token}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onDelete={() => handleDeleteChip(token)}
+                          />
+                        );
+                      })}
+                    </Box>
+                  );
+                }}
+              >
+                <ListSubheader>
+                  <TextField
+                    fullWidth
+                    placeholder="Search Employee"
+                    className="search-textfield"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
+                {filteredAssignUser?.map((user) => [
+                  <ListSubheader key={`header-${user.userId}`}>
+                    {user.userName}
+                  </ListSubheader>,
+                  ...user?.jobRoles?.map((role) => (
+                    <MenuItem
+                      key={role.token}
+                      value={role.token}
+                      className="menu-item"
+                    >
+                      <Checkbox checked={selectedValues.includes(role.token)} />
+                      <ListItemText primary={role.jobName} />
+                    </MenuItem>
+                  )),
+                ])}
+              </Select>
+            </div>
+          </div>
           <button type="submit" className="save-button">
             {id ? "Update" : "Submit"}
           </button>

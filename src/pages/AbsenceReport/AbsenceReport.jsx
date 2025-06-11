@@ -119,6 +119,7 @@ const AbsenceReport = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -133,17 +134,18 @@ const AbsenceReport = () => {
   const getAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(
+      const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
       );
       if (response?.data?.status === 200) {
-        setlocationList(response?.data.locations);
+        setlocationList(response?.data?.locations);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -155,13 +157,14 @@ const AbsenceReport = () => {
       );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
-        setClientList(response.data.clients);
+        setClientList(response?.data?.clients);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -179,6 +182,7 @@ const AbsenceReport = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -186,7 +190,7 @@ const AbsenceReport = () => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, selectedLocation, companyId, selectedEmployee]);
+  }, [isWorkFromOffice, companyId, selectedEmployee]);
 
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
@@ -195,10 +199,8 @@ const AbsenceReport = () => {
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
-    if (selectedClient) {
-      getAllUsersOfClientOrLocation();
-    }
-  }, [selectedClient, companyId]);
+    getAllUsersOfClientOrLocation();
+  }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     GetAbsenceReport();
@@ -495,7 +497,7 @@ const AbsenceReport = () => {
         <>
           <CommonTable
             headers={[
-              "Absence Date",
+              "Absent Date",
               isWorkFromOffice ? "Location Name" : "Client Name",
               ,
               "Job Title",

@@ -207,7 +207,7 @@ const ViewStatus = () => {
           <h1>View Status</h1>
         </div>
         <TextField
-          placeholder="Search User Name"
+          placeholder="Search Employee Name"
           variant="outlined"
           size="small"
           value={searchQuery}
@@ -274,7 +274,7 @@ const ViewStatus = () => {
                         }
                         onClick={() => handleSort("userName")}
                       >
-                        User Name
+                        Employee Name
                       </TableSortLabel>
                     </TableCell>
                     <TableCell
@@ -312,7 +312,7 @@ const ViewStatus = () => {
                         }
                         onClick={() => handleSort("jobRole")}
                       >
-                        Job Role
+                        Job Title
                       </TableSortLabel>
                     </TableCell>
                     <TableCell

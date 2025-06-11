@@ -212,7 +212,7 @@ const TimesheetReportMy = () => {
   const getAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(
+      const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${userId}`
       );
       if (response?.data?.status === 200) {
@@ -250,7 +250,7 @@ const TimesheetReportMy = () => {
     if (isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, selectedLocation, userId]);
+  }, [isWorkFromOffice, userId]);
 
   useEffect(() => {
     if (userId && !isWorkFromOffice) {
@@ -500,7 +500,7 @@ const TimesheetReportMy = () => {
                       direction={sortConfig.direction}
                       onClick={() => handleSort("Name")}
                     >
-                      Name
+                      Employee Name
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
@@ -509,7 +509,7 @@ const TimesheetReportMy = () => {
                       direction={sortConfig.direction}
                       onClick={() => handleSort("JobRole")}
                     >
-                      Job Role
+                      Job Title
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>

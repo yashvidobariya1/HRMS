@@ -399,7 +399,7 @@ const ViewTasks = () => {
   const getAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(
+      const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
       );
       if (response?.data?.status === 200) {
@@ -431,12 +431,13 @@ const ViewTasks = () => {
     }
   };
 
-  const handleView = () => {
-    alert("df");
+  const handleView = (taskId) => {
+    navigate(`/viewtask/showtask/companyId=${taskId}`);
   };
 
-  const handleEdit = () => {
-    alert("df");
+  const handleEdit = (id) => {
+    console.log("id", id);
+    navigate(`/viewtask/edittask/${id}`);
   };
 
   const getAllUsersOfClientOrLocation = async () => {
@@ -478,7 +479,7 @@ const ViewTasks = () => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, selectedLocation, companyId, selectedEmployee]);
+  }, [isWorkFromOffice, companyId, selectedEmployee]);
 
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
@@ -487,10 +488,8 @@ const ViewTasks = () => {
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
-    if (selectedClient) {
-      getAllUsersOfClientOrLocation();
-    }
-  }, [selectedClient, companyId]);
+    getAllUsersOfClientOrLocation();
+  }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     getAllTasks();
@@ -808,7 +807,7 @@ const ViewTasks = () => {
                   <span className="task-action-icon delete-task-data">
                     <FaTrash
                       onClick={() =>
-                        handleDelete(task._id, task.userName, task.startDate)
+                        handleDelete(task._id, task.userName, task.taskDate)
                       }
                     />
                   </span>
@@ -826,7 +825,7 @@ const ViewTasks = () => {
           />
           {ShowConfirm && (
             <DeleteConfirmation
-              confirmation={`Are you sure you want to delete task on <b>${taskName}</b> <b>${taskDate}</b>?`}
+              confirmation={`Are you sure you want to delete the task <b>${taskName}</b> on <b>${taskDate}</b>?`}
               onConfirm={() => confirmDelete(taskId)}
               onCancel={cancelDelete}
             />

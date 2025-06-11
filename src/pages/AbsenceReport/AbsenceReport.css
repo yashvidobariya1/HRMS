@@ -120,7 +120,7 @@
 .absence-officework {
   display: flex;
   gap: 10px;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 15px;
   flex-wrap: wrap;
 }
@@ -189,10 +189,6 @@
 
   .absence-input-container select {
     width: 100%;
-  }
-
-  .absence-officework {
-    align-items: center !important;
   }
 
   .absence-officework {

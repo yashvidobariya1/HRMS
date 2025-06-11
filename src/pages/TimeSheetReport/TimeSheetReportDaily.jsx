@@ -113,14 +113,15 @@ const TimeSheetReportDaily = () => {
         `/getAllClientsOfUser?companyId=${companyId}&userId=${selectedEmployee}&isWorkFromOffice=${isWorkFromOffice}`
       );
       if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "error");
         setClientList(response?.data.clients);
+        showToast(response?.data?.message, "error");
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -150,6 +151,7 @@ const TimeSheetReportDaily = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -167,6 +169,7 @@ const TimeSheetReportDaily = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -198,6 +201,7 @@ const TimeSheetReportDaily = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -232,7 +236,7 @@ const TimeSheetReportDaily = () => {
 
   const keyMap = {
     Date: "date",
-    Name: "userName",
+    EmployeeName: "userName",
     JobRole: "jobRole",
     totalHours: "totalHours",
     overTime: "overTime",
@@ -299,11 +303,6 @@ const TimeSheetReportDaily = () => {
     };
   }, [searchQuery]);
 
-  // useEffect(() => {
-  //   userRole !== "Employee" && fetchEmployeeList();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [companyId, isWorkFromOffice]);
-
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
       getAllClientsOfUser();
@@ -311,25 +310,17 @@ const TimeSheetReportDaily = () => {
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
-    if (selectedClient) {
-      getAllUsersOfClientOrLocation();
-    }
-  }, [selectedClient, companyId, isWorkFromOffice]);
+    getAllUsersOfClientOrLocation();
+  }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, selectedLocation, companyId, selectedEmployee]);
-
-  // useEffect(() => {
-  //   setselectedClient("allClients");
-  // }, [selectedEmployee]);
+  }, [isWorkFromOffice, companyId, selectedEmployee]);
 
   useEffect(() => {
-    // if (selectedEmployee || selectedClient) {
     GetTimesheetReport();
-    // }
   }, [
     selectedClient,
     selectedEmployee,
@@ -381,7 +372,7 @@ const TimeSheetReportDaily = () => {
                 renderValue={(selected) => {
                   if (!selected) return "Select Employee";
                   if (selected === "allUsers") return "All Employees";
-                  const found = employeeList.find(
+                  const found = employeeList?.find(
                     (emp) => emp._id === selected
                   );
                   return found?.userName || "Select Employee";
@@ -403,7 +394,7 @@ const TimeSheetReportDaily = () => {
                   All Employees
                 </MenuItem>
                 {filteredEmployeeList.length > 0 ? (
-                  filteredEmployeeList.map((emp) => (
+                  filteredEmployeeList?.map((emp) => (
                     <MenuItem
                       key={emp._id}
                       value={emp._id}
@@ -450,7 +441,7 @@ const TimeSheetReportDaily = () => {
                 renderValue={(selected) => {
                   if (!selected) return "Select Client";
                   if (selected === "allClients") return "All Clients";
-                  const found = clientList.find((c) => c._id === selected);
+                  const found = clientList?.find((c) => c._id === selected);
                   return found?.clientName || "Select Clients";
                 }}
               >
@@ -469,7 +460,7 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="allClients" className="menu-item">
                   All Clients
                 </MenuItem>
-                {filteredClientList.map((client) => (
+                {filteredClientList?.map((client) => (
                   <MenuItem
                     key={client._id}
                     value={client._id}
@@ -513,7 +504,7 @@ const TimeSheetReportDaily = () => {
                 renderValue={(selected) => {
                   if (!selected) return "Select Locations";
                   if (selected === "allLocations") return "All Locations";
-                  const found = locationList.find((c) => c._id === selected);
+                  const found = locationList?.find((c) => c._id === selected);
                   return found?.locationName || "All Locations";
                 }}
               >
@@ -532,8 +523,8 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="allLocations" className="menu-item">
                   All Locations
                 </MenuItem>
-                {filteredLocationList.length > 0 ? (
-                  filteredLocationList.map((location) => (
+                {filteredLocationList?.length > 0 ? (
+                  filteredLocationList?.map((location) => (
                     <MenuItem
                       key={location._id}
                       value={location._id}
@@ -639,9 +630,9 @@ const TimeSheetReportDaily = () => {
                     <TableSortLabel
                       active={sortConfig.key === "userName"}
                       direction={sortConfig.direction}
-                      onClick={() => handleSort("Name")}
+                      onClick={() => handleSort("EmployeeName")}
                     >
-                      Name
+                      Employee Name
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
@@ -650,7 +641,7 @@ const TimeSheetReportDaily = () => {
                       direction={sortConfig.direction}
                       onClick={() => handleSort("JobRole")}
                     >
-                      Job Role
+                      Job Title
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
@@ -701,7 +692,7 @@ const TimeSheetReportDaily = () => {
               </TableHead>
               <TableBody>
                 {paginatedRows && paginatedRows.length > 0 ? (
-                  paginatedRows.map((row, index) => (
+                  paginatedRows?.map((row, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         {moment(row.date).format("DD/MM/YYYY")}
@@ -713,7 +704,7 @@ const TimeSheetReportDaily = () => {
                       </TableCell>
                       <TableCell>
                         {row.clockinTime && row.clockinTime.length > 0
-                          ? row.clockinTime.map((item, i) => (
+                          ? row.clockinTime?.map((item, i) => (
                               <div key={i} className="timing-container">
                                 <div className="timing-entry">
                                   <span className="clockin">

@@ -110,7 +110,7 @@ export const SidebarData = [
         subItems: [
           {
             title: "Staff Absence Report",
-            link: "/absencereport/stafabsencereport",
+            link: "/absencereport/staffabsencereport",
             allowedRoles: ["Superadmin", "Administrator", "Manager"],
           },
           {
@@ -150,7 +150,7 @@ export const SidebarData = [
           {
             title: "My Task",
             link: "/viewtasks/mytask",
-            allowedRoles: ["Superadmin", "Administrator", "Manager"],
+            allowedRoles: ["Administrator", "Manager", "Employee"],
           },
         ],
       },

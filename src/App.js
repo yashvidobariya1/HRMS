@@ -228,7 +228,7 @@ const protectedRoutes = [
     roles: ["Superadmin", "Administrator"],
   },
   {
-    path: "/absencereport/stafabsencereport",
+    path: "/absencereport/staffabsencereport",
     component: <AbsenceReport />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
@@ -344,6 +344,16 @@ const protectedRoutes = [
   },
   {
     path: "/viewtask/addtask",
+    component: <AddTask />,
+    roles: ["Superadmin", "Administrator", "Manager"],
+  },
+  {
+    path: "/viewtask/edittask/:id",
+    component: <AddTask />,
+    roles: ["Superadmin", "Administrator", "Manager"],
+  },
+  {
+    path: "/viewtask/showtask",
     component: <AddTask />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },

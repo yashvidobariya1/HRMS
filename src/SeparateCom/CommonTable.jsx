@@ -287,7 +287,7 @@ const CommonTable = ({
   const [selectedRow, setSelectedRow] = useState(null);
   const [templateSearchTerms, setTemplateSearchTerms] = useState({});
   // const [page, setPage] = useState(0);
-  // const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useState(showPerPage);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [openRow, setOpenRow] = useState(null);
   const [templateSearchTerm, setTemplateSearchTerm] = useState("");
@@ -423,7 +423,7 @@ const CommonTable = ({
     "Last Access Time": "LastTimeLoggedOut",
     Active: "IsActive",
     Browser: "UsedBrowser",
-    "Absence Date": "absencesheetdate",
+    "Absent Date": "absencesheetdate",
     "Job Title": "Name",
     "Annual Salary": "annualSalary",
     "Joining Date": "joiningDate",
@@ -507,9 +507,20 @@ const CommonTable = ({
     );
   }, [isSearchQuery, searchQuery, sortedData]);
 
+  // const paginatedData = filteredData.slice(
+  //   page * showPerPage || 1,
+  //   page * showPerPage + showPerPage
+  // );
   const paginatedData = filteredData.slice(
-    page * showPerPage,
-    page * showPerPage + showPerPage
+    rowsPerPage === undefined ? undefined : page * rowsPerPage,
+    rowsPerPage === undefined ? undefined : page * rowsPerPage + rowsPerPage
+  );
+
+  console.log(
+    "old method",
+    rowsPerPage,
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
   );
 
   const getStatusColor = (status) => {

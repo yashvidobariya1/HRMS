@@ -116,23 +116,16 @@
 
 .task-officework {
   display: flex;
-  gap: 5px;
+  gap: 10px;
   align-items: center;
   margin-bottom: 15px;
+  flex-wrap: wrap;
 }
 
 .task-isWorkFromOffice {
   display: flex;
   align-items: center;
   gap: 5px;
-}
-
-.task-officework {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
 }
 
 .task-isWorkFromOffice input {
@@ -275,10 +268,6 @@
 
   .task-input-container select {
     width: 100%;
-  }
-
-  .timesheetreport-officework {
-    align-items: center !important;
   }
 
   .task-officework {
