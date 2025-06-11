@@ -245,6 +245,7 @@ const AbsenceReport = () => {
       // console.log("timesheet api call");
       GetAbsenceReport();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
     selectedJobId,
@@ -263,6 +264,7 @@ const AbsenceReport = () => {
     if (GetClientData) {
       GetClientdata();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedEmployee,
     selectedJobId,
@@ -408,7 +410,7 @@ const AbsenceReport = () => {
         </div>
       </div>
 
-      {userRole != "Employee" && (
+      {userRole !== "Employee" && (
         <div className="absence-employee-list">
           <Select
             className="absence-input-dropdown"

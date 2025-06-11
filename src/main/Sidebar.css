@@ -70,6 +70,7 @@
   border-bottom: 1px solid;
   justify-content: center;
   border-bottom: 1px solid var(--sidebar-neutral-light-gray);
+  height: 41px;
 }
 
 .logo-details img {
@@ -228,7 +229,7 @@
   color: var(--alert-yellow);
   left: 238px;
   font-size: 24px;
-  top: 83px;
+  top: 80px;
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
   position: fixed;
   background: var(--primary-text-white);
@@ -336,6 +337,7 @@
 
   .logo-details {
     padding: 30px 10px !important;
+    height: 32px;
   }
 
   .sidebar {

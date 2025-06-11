@@ -7,26 +7,16 @@ import { showToast } from "../../main/ToastManager";
 import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 import CommonTable from "../../SeparateCom/CommonTable";
 import moment from "moment";
-import { FaEye, FaTrash } from "react-icons/fa6";
-import { FaEdit } from "react-icons/fa";
-import CommonAddButton from "../../SeparateCom/CommonAddButton";
-import { useNavigate } from "react-router";
-import DeleteConfirmation from "../../main/DeleteConfirmation";
 
-const Viewhours = () => {
+const MyViewHours = () => {
   const { GetCall, PostCall } = useApiServices();
-  const navigate = useNavigate();
   const [AlltimesheetList, setAlltimesheetList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isWorkFromOffice, setIsWorkFromOffice] = useState(false);
-  const [employeeList, setEmployeeList] = useState([]);
   const [clientList, setClientList] = useState([]);
   const [locationList, setLocationList] = useState([]);
-  // const [errors, setErrors] = useState({});
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
   const [selectedClient, setSelectedClient] = useState("allClients");
   const [selectedLocation, setSelectedLocation] = useState("allLocations");
   const [showDropdownAction, setShowDropdownAction] = useState(null);
@@ -38,13 +28,12 @@ const Viewhours = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [clientSearchTerm, setClientSearchTerm] = useState("");
   const [locationSearchTerm, setLocationSearchTerm] = useState("");
-  const [employeeName, setEmployeeaName] = useState("");
-  const [timesheetId, setTimesheetId] = useState("");
-  const [entryId, setEntryId] = useState("");
-  const [showConfirm, setShowConfirm] = useState(false);
+  const isWorkFromOffice = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
+  );
+  const userId = useSelector((state) => state.userInfo.userInfo._id);
 
   const tableHeaders = isWorkFromOffice
     ? [
@@ -54,7 +43,6 @@ const Viewhours = () => {
         "Clock In",
         "Clock Out",
         "Total Hours",
-        "Actions",
       ]
     : [
         "Employee Name",
@@ -63,14 +51,7 @@ const Viewhours = () => {
         "Clock In",
         "Clock Out",
         "Total Hours",
-        "Actions",
       ];
-
-  const filteredEmployeeList = useMemo(() => {
-    return employeeList.filter((user) =>
-      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, employeeList]);
 
   const filteredClientList = useMemo(() => {
     return clientList.filter((client) =>
@@ -113,56 +94,11 @@ const Viewhours = () => {
     setShowDropdownAction(showDropdownAction === id ? null : id);
   };
 
-  const HandleAttendanceForm = () => {
-    navigate("/staffviewhours/attendanceform");
-  };
-
-  const handleView = (id, entryId) => {
-    navigate(`/viewattendanceform/${id}/${entryId}`);
-  };
-
-  const handleEdit = (id, entryId) => {
-    navigate(`/editattendanceform/${id}/${entryId}`);
-  };
-
-  const handleDelete = (employeeName, timesheetId, entryId) => {
-    setEmployeeaName(employeeName);
-    setTimesheetId(timesheetId);
-    setEntryId(entryId);
-    setShowConfirm(true);
-  };
-
-  const cancelDelete = () => {
-    setShowConfirm(false);
-    setShowDropdownAction(null);
-  };
-
-  const confirmDelete = async (timesheetId, entryId) => {
-    try {
-      setLoading(true);
-      const response = await PostCall(
-        `/deleteTimesheetEntry?timesheetId=${timesheetId}&entryId=${entryId}`
-      );
-      if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "success");
-        setShowConfirm(false);
-        getAlltimesheet();
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error deleting timesheets:", error);
-      setLoading(false);
-    }
-  };
-
   const getAlltimesheet = async () => {
     try {
       setLoading(true);
-      // console.log("setSelectedEmployee", selectedEmployee);
       const filters = {
-        userId: selectedEmployee,
+        userId,
         clientId: selectedClient,
       };
 
@@ -185,24 +121,11 @@ const Viewhours = () => {
     }
   };
 
-  const handleCheckboxChange = (event) => {
-    const checked = event.target.checked;
-    setIsWorkFromOffice(checked);
-    setSelectedClient("allClients");
-    setSelectedEmployee("allUsers");
-    setSelectedStartDate("");
-    setSelectedEndDate("");
-  };
-
-  const handleEmployeeChange = (value) => {
-    setSelectedEmployee(value);
-  };
-
   const getAllClientsOfUser = async () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllClientsOfUser?companyId=${companyId}&userId=${selectedEmployee}`
+        `/getAllClientsOfUser?companyId=${companyId}&userId=${userId}`
       );
       if (response?.data?.status === 200) {
         setClientList(response?.data?.clients);
@@ -219,23 +142,6 @@ const Viewhours = () => {
     setSelectedClient(value);
   };
 
-  const getAllUsersOfClient = async () => {
-    try {
-      setLoading(true);
-      const response = await GetCall(
-        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}&locationId=${selectedLocation}`
-      );
-      if (response?.data?.status === 200) {
-        setEmployeeList(response?.data.users);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   const handleLocationChange = (value) => {
     setSelectedLocation(value);
   };
@@ -244,7 +150,7 @@ const Viewhours = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getUsersJobLocations?userId=${selectedEmployee}&companyId=${companyId}`
+        `/getUsersJobLocations?userId=${userId}&companyId=${companyId}`
       );
       if (response?.data?.status === 200) {
         setLocationList(response?.data.locations);
@@ -262,33 +168,19 @@ const Viewhours = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (selectedEmployee && !isWorkFromOffice) {
+    if (userId && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedEmployee, companyId]);
+  }, [userId, companyId]);
 
   useEffect(() => {
-    if (selectedEmployee && isWorkFromOffice) {
+    if (userId && isWorkFromOffice) {
       console.log("calling getUsersJobLocations");
       getUsersJobLocations();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedEmployee, companyId, isWorkFromOffice]);
-
-  useEffect(() => {
-    if (selectedClient) {
-      getAllUsersOfClient();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedClient, selectedLocation, companyId, isWorkFromOffice]);
-
-  // useEffect(() => {
-  //   setSelectedClient("allClients");
-  //   setSelectedLocation("allLocations");
-  //   setSelectedStartDate("");
-  //   setSelectedEndDate("");
-  // }, [selectedEmployee]);
+  }, [userId, companyId, isWorkFromOffice]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -304,7 +196,7 @@ const Viewhours = () => {
     getAlltimesheet();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    selectedEmployee,
+    userId,
     selectedClient,
     isWorkFromOffice,
     selectedStartDate,
@@ -317,67 +209,10 @@ const Viewhours = () => {
   return (
     <div className="View-hour-main">
       <div className="viewhour-section">
-        <h1>Staff Work Hours</h1>
-        <div className="indicate-color">
-          <CommonAddButton
-            label="Mark Attendance"
-            onClick={HandleAttendanceForm}
-          />
-        </div>
+        <h1>My Work Hours</h1>
       </div>
 
       <div className="filter-timsheetreport-main">
-        <div className="filter-employee-selection">
-          <label className="label">Employee</label>
-          <Select
-            className="timesheet-input-dropdown"
-            value={selectedEmployee}
-            onChange={(e) => handleEmployeeChange(e.target.value)}
-            displayEmpty
-            MenuProps={{
-              disableAutoFocusItem: true,
-              PaperProps: {
-                style: {
-                  width: 150,
-                  maxHeight: 300,
-                },
-              },
-              MenuListProps: {
-                onMouseDown: (e) => {
-                  if (e.target.closest(".search-textfield")) {
-                    e.stopPropagation();
-                  }
-                },
-              },
-            }}
-            renderValue={(selected) => {
-              if (!selected) return "Select Employee";
-              if (selected === "allUsers") return "All Employees";
-              const found = employeeList.find((emp) => emp._id === selected);
-              return found?.userName || "All Employees";
-            }}
-          >
-            <ListSubheader>
-              <TextField
-                size="small"
-                placeholder="Search Employee"
-                fullWidth
-                className="search-textfield"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.stopPropagation()}
-              />
-            </ListSubheader>
-
-            <MenuItem value="allUsers">All Employees</MenuItem>
-            {filteredEmployeeList.map((emp) => (
-              <MenuItem key={emp._id} value={emp._id}>
-                {emp.userName}
-              </MenuItem>
-            ))}
-          </Select>
-        </div>
-
         {!isWorkFromOffice && (
           <div className="filter-employee-selection">
             <label className="label">Client</label>
@@ -522,16 +357,6 @@ const Viewhours = () => {
           className="common-searchbar"
           onChange={handleSearchChange}
         />
-        <div className="viewhours-officework">
-          <input
-            type="checkbox"
-            data-testid="send-link"
-            name="isWorkFromOffice"
-            checked={isWorkFromOffice}
-            onChange={handleCheckboxChange}
-          />
-          <label>Office Work?</label>
-        </div>
       </div>
 
       {loading ? (
@@ -560,39 +385,6 @@ const Viewhours = () => {
                   "DD-MM-YYYY HH:mm:ss"
                 )}`,
                 totalHours: timesheet?.totalTiming,
-                actions: (
-                  <div className="viewhour-action">
-                    <span className="action-icon view-timesheet-data">
-                      <FaEye
-                        onClick={() =>
-                          handleView(timesheet._id, timesheet.entryId)
-                        }
-                      />
-                    </span>
-                    <span className="action-icon edit-timesheet-data">
-                      <FaEdit
-                        onClick={() =>
-                          handleEdit(timesheet._id, timesheet.entryId)
-                        }
-                      />
-                    </span>
-                    <span className="action-icon delete-timesheet-data">
-                      <FaTrash
-                        onClick={() =>
-                          handleDelete(
-                            `${timesheet?.userName}'s ${moment(
-                              timesheet?.clockIn
-                            ).format("DD-MM-YYYY HH:mm:ss")} - ${moment(
-                              timesheet?.clockOut
-                            ).format("DD-MM-YYYY HH:mm:ss")}`,
-                            timesheet._id,
-                            timesheet.entryId
-                          )
-                        }
-                      />
-                    </span>
-                  </div>
-                ),
               };
             })}
             currentPage={currentPage}
@@ -603,20 +395,12 @@ const Viewhours = () => {
             handleAction={handleAction}
             isPagination="true"
             isSearchQuery={true}
-            // searchQuery={searchQuery}
             totalData={totalTimesheets}
           />
-          {showConfirm && (
-            <DeleteConfirmation
-              confirmation={`Are you sure you want to delete the ClockIn entry of <b>${employeeName}</b>?`}
-              onConfirm={() => confirmDelete(timesheetId, entryId)}
-              onCancel={cancelDelete}
-            />
-          )}
         </div>
       )}
     </div>
   );
 };
 
-export default Viewhours;
+export default MyViewHours;

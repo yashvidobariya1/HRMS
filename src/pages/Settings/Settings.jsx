@@ -203,8 +203,8 @@ const Settings = () => {
             onPerPageChange={handleSettingPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={true}
-            searchQuery={searchQuery}
+            // isSearchQuery={true}
+            // searchQuery={searchQuery}
             totalData={totalCompany}
           />
           {showConfirm && (

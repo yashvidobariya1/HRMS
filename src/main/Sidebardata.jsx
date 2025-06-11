@@ -121,10 +121,33 @@ export const SidebarData = [
         allowedRoles: ["Administrator", "Manager", "Employee"],
       },
       {
+        title: "Staff View Hours",
+        icon: <LiaHourglassStartSolid />,
+        link: "/staffviewhours",
+        allowedRoles: ["Superadmin"],
+      },
+      {
         title: "View Hours",
         icon: <LiaHourglassStartSolid />,
-        link: "/viewhours",
-        allowedRoles: ["Administrator", "Manager", "Employee", "Superadmin"],
+        link: "/myviewhours",
+        allowedRoles: ["Employee"],
+      },
+      {
+        title: "View Hours",
+        icon: <LiaHourglassStartSolid />,
+        allowedRoles: ["Administrator", "Manager"],
+        subItems: [
+          {
+            title: "My View Hours",
+            link: "/myviewhours",
+            allowedRoles: ["Administrator", "Manager"],
+          },
+          {
+            title: "Staff View Hours",
+            link: "/staffviewhours",
+            allowedRoles: ["Administrator", "Manager"],
+          },
+        ],
       },
       {
         title: "View Tasks",
@@ -140,18 +163,22 @@ export const SidebarData = [
           {
             title: "Daily Report",
             link: "/timesheetreport/daily",
+            allowedRoles: ["Superadmin", "Administrator", "Manager"],
           },
           {
             title: "Weekly Report",
             link: "/timesheetreport/weekly",
+            allowedRoles: ["Superadmin", "Administrator", "Manager"],
           },
           {
             title: "Monthly Report",
             link: "/timesheetreport/monthly",
+            allowedRoles: ["Superadmin", "Administrator", "Manager"],
           },
           {
             title: "My Report",
             link: "/timesheetreport/myreport",
+            allowedRoles: ["Administrator", "Manager", "Employee"],
           },
         ],
       },

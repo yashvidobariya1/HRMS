@@ -36,7 +36,27 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     return data
       .map((section) => ({
         ...section,
-        items: section.items.filter((item) => item.allowedRoles.includes(role)),
+        items: section.items
+          .map((item) => {
+            const filteredSubItems = item.subItems?.filter(
+              (subItem) =>
+                !subItem.allowedRoles || subItem.allowedRoles.includes(role)
+            );
+
+            const isItemAllowed = item.allowedRoles.includes(role);
+            if (
+              !isItemAllowed &&
+              (!filteredSubItems || filteredSubItems.length === 0)
+            ) {
+              return null;
+            }
+
+            return {
+              ...item,
+              subItems: filteredSubItems,
+            };
+          })
+          .filter(Boolean),
       }))
       .filter((section) => section.items.length > 0);
   };
@@ -220,19 +240,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               {!isCollapsed && <span className="link_name">Dashboard</span>}
             </NavLink>
           </li>
-
           {filteredSidebarData?.map((section, sectionIndex) => (
             <div key={sectionIndex}>
               <li className={`section-title ${isCollapsed ? "collapsed" : ""}`}>
                 {section.section}
               </li>
 
-              {section?.items?.map((item, itemIndex) => {
+              {section.items.map((item, itemIndex) => {
                 const isSubActive = isAnySubItemActive(item.subItems);
 
                 return (
                   <li key={itemIndex}>
-                    {item.subItems ? (
+                    {item.subItems && item.subItems.length > 0 ? (
                       <>
                         <div
                           className={`sidebar-collapsible-header sidebar-collapsible-header-custom ${
@@ -244,7 +263,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                           {!isCollapsed && (
                             <>
                               <span className="link_name">{item.title}</span>
-                              <span style={{ marginLeft: "auto" }} className="expand-icon">
+                              <span
+                                style={{ marginLeft: "auto" }}
+                                className="expand-icon"
+                              >
                                 {expandedItems[item.title] ? (
                                   <MdOutlineExpandMore />
                                 ) : (
@@ -257,38 +279,20 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
                         {expandedItems[item.title] && !isCollapsed && (
                           <ul className="sidebar-submenu">
-                            {item.subItems
-                              .filter((subItem) => {
-                                if (
-                                  subItem.title === "My Report" &&
-                                  currentRole === "Superadmin"
-                                )
-                                  return false;
-                                if (
-                                  [
-                                    "Daily Report",
-                                    "Weekly Report",
-                                    "Monthly Report",
-                                  ].includes(subItem.title) &&
-                                  currentRole === "Employee"
-                                )
-                                  return false;
-                                return true;
-                              })
-                              .map((subItem, subIndex) => (
-                                <li key={subIndex} className="sidebar-subitem">
-                                  <NavLink
-                                    to={subItem.link}
-                                    className={({ isActive }) =>
-                                      isActive ? "sub-active" : ""
-                                    }
-                                  >
-                                    <span className="link_name">
-                                      {subItem.title}
-                                    </span>
-                                  </NavLink>
-                                </li>
-                              ))}
+                            {item.subItems.map((subItem, subIndex) => (
+                              <li key={subIndex} className="sidebar-subitem">
+                                <NavLink
+                                  to={subItem.link}
+                                  className={({ isActive }) =>
+                                    isActive ? "sub-active" : ""
+                                  }
+                                >
+                                  <span className="link_name">
+                                    {subItem.title}
+                                  </span>
+                                </NavLink>
+                              </li>
+                            ))}
                           </ul>
                         )}
                       </>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Navigate } from "react-router";
 import "./App.css";
@@ -19,7 +19,7 @@ import Employee from "./pages/Employee/Employee";
 import AddEmployee from "./pages/Employee/AddEmployee";
 import LoggedInUser from "./pages/LoggedInUser/LoggedInUser";
 import Leaves from "./pages/Leaves/Leaves";
-import Holidays from "./pages/Holidays/Holidays";
+// import Holidays from "./pages/Holidays/Holidays";
 import ClockIn from "./pages/ClockIn/ClockIn";
 import Job from "./pages/Job/Job";
 import Candidate from "./pages/Candidate/Candidate";
@@ -53,6 +53,8 @@ import TimeSheetReportWeekly from "./pages/TimeSheetReport/TimeSheetReportWeekly
 import TimeSheetReport from "./pages/Client/ViewReport";
 import TimeSheetReportMonthly from "./pages/TimeSheetReport/TimeReportMonthly";
 import TimesheetReportMy from "./pages/TimeSheetReport/TimesheetReportMy";
+import AttendanceForm from "./pages/ViewHours/AttendanceForm";
+import MyViewHours from "./pages/ViewHours/MyViewHours";
 
 // Layout wrapper
 function MainLayout({ children, path }) {
@@ -206,14 +208,14 @@ const protectedRoutes = [
   },
   {
     path: "/holidays",
-    component: <Holidays />,
+    component: <HolidayList />,
     roles: ["Superadmin", "Administrator", "Manager", "Employee"],
   },
-  {
-    path: "/holidays/holidaylist",
-    component: <HolidayList />,
-    roles: ["Superadmin", "Administrator", "Manager"],
-  },
+  // {
+  //   path: "/holidays/holidaylist",
+  //   component: <HolidayList />,
+  //   roles: ["Superadmin", "Administrator", "Manager"],
+  // },
   {
     path: "/holidays/addholiday",
     component: <AddHoliday />,
@@ -240,9 +242,29 @@ const protectedRoutes = [
     roles: ["Administrator", "Manager", "Employee"],
   },
   {
-    path: "/viewhours",
+    path: "/staffviewhours",
     component: <Viewhours />,
-    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+    roles: ["Superadmin", "Administrator", "Manager"],
+  },
+  {
+    path: "/myviewhours",
+    component: <MyViewHours />,
+    roles: ["Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/staffviewhours/attendanceform",
+    component: <AttendanceForm />,
+    roles: ["Superadmin", "Administrator", "Manager"],
+  },
+  {
+    path: "/viewattendanceform/:id/:entryId",
+    component: <AttendanceForm />,
+    roles: ["Superadmin", "Administrator", "Manager"],
+  },
+  {
+    path: "/editattendanceform/:id/:entryId",
+    component: <AttendanceForm />,
+    roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
     path: "/employees/viewhours/:name",

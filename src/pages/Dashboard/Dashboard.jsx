@@ -119,11 +119,11 @@ const Dashboard = () => {
     totalLeaveRequests:
       userRole === "Superadmin"
         ? "/leavesrequest"
-        : `/leaves/leavesrequest?jobId=${jobRoleId}`,
+        : `/leaves/leavesrequest`,
     totalPendingLR:
       userRole === "Superadmin"
         ? "/leavesrequest"
-        : `/leaves/leavesrequest?jobId=${jobRoleId}`,
+        : `/leaves/leavesrequest`,
     totalHolidays: "/holidays",
     totalOwnLeaveRequests: "/leaves",
     absentInCurrentMonth: "/timesheetreport",

@@ -1,441 +1,9 @@
-/* .View-hour-main {
-  display: flex;
-  padding: 20px;
-  flex: 1; 
-  flex-direction: column;
-  background-color: var(--primary-text-white);
-}
-
-
-.rbc-toolbar {
-  margin: 10px 0 !important;
-  gap: 10px;
-}
-
-.rbc-day-slot .rbc-event,
-.rbc-day-slot .rbc-background-event {
-  border: none !important;
-}
-
-.rbc-month-view {
-  border: 1px solid var(--neutral-light-gray);
-}
-
-.rbc-btn-group button {
-  padding: 10px 25px !important;
-  margin: 0 10px !important;
-  background-color: var(--primary-button) !important;
-  color: var(--primary-text-white) !important;
-  border: 1px solid transparent !important;
-}
-
-.rbc-button-link {
-  font-size: var(--font-size-body);
-  color: var(--sidebar-bg);
-}
-
-.rbc-toolbar button:active,
-.rbc-toolbar button.rbc-active {
-  background-color: var(--primary-text-white) !important;
-  color: var(--primary-button) !important;
-  border: 1px solid var(--primary-button) !important;
-}
-
-.rbc-ellipsis,
-.rbc-show-more,
-.rbc-row-segment .rbc-event-content {
-  background-color: none !important;
-  border: 1px solid transparent !important;
-  width: 100%;
-}
-
-.rbc-event-label {
-  display: none;
-}
-
-.rbc-events-container .rbc-event {
-  background-color: var(--neutral-dark-blue) !important;
-  height: max-content !important; 
-}
-
-.rbc-event,
-.rbc-day-slot .rbc-background-event {
-  padding: 2px !important;
-  border-radius: 4px !important;
-  width: 94%;
-  justify-content: center !important;
-  background-color: transparent !important;
-  margin: 3px 0;
-}
-
-.rbc-row-segment {
-  display: flex !important;
-  justify-content: center !important;
-}
-
-.rbc-date-cell {
-  padding: 5px;
-  text-align: center !important;
-}
-
-.rbc-event-content span {
-  font-size: var(--font-size-small) !important;
-  color: var(--primary-text-white);
-}
-
-.Overtime-div {
-  background-color: var(--sidebar-bg);
-  padding: 3px;
-  border-radius: 4px !important;
-}
-
-.rbc-today {
-  background-color: var(--calender-today);
-}
-
-.rbc-off-range-bg {
-  background-color: var(--input-placeholder) !important;
-}
-
-.rbc-toolbar .rbc-toolbar-label {
-  font-size: var(--font-size-h3);
-  color: var(--sidebar-bg);
-}
-
-.rbc-btn-group>button:last-child:not(:first-child),
-.rbc-btn-group>button:first-child:not(:last-child) {
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-  border-top-left-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
-  margin: 0 !important;
-}
-
-.rbc-toolbar button:active,
-.rbc-toolbar button.rbc-active {
-  box-shadow: none !important;
-}
-
-.rbc-event {
-  font-size: var(--font-size-small);
-  padding: 4px !important;
-}
-
-.Calender-container .rbc-month-header {
-  background-color: var(--table-heading-neutral-dark-blue);
-  color: var(--neutral-light-gray) !important;
-}
-
-.rbc-event:hover {
-  background-color: var(--secondary-soft-gray);
-  cursor: pointer;
-}
-
-.rbc-day-slot .rbc-events-container {
-  margin-right: 0 !important;
-}
-
-.rbc-time-view .rbc-row {
-  min-height: max-content !important;
-}
-
-.rbc-header {
-  padding: 15px;
-  color: var(--sidebar-title-primary-white);
-}
-
-.rbc-current-time-indicator {
-  background-color: var(--primary-button) !important;
-}
-
-.total-hours,
-.overtime {
-  font-weight: bold;
-  background-color: var(--alert-red);
-}
-
-.overtime-label {
-  font-size: var(--font-size-small);
-  margin-top: 7px;
-  padding: 4px;
-  border-radius: 4px;
-  background-color: var(--secondary-teal);
-}
-
-.overtime-info {
-  margin-top: 10px;
-  font-size: 1.2em;
-  color: var(--neutral-light-gray);
-}
-
-.indicate-color {
-  display: flex;
-  gap: 18px;
-  justify-content: space-between;
-}
-
-.color-box {
-  width: 15px;
-  height: 15px;
-  display: inline-block;
-  margin-right: 8px;
-  border-radius: 2px;
-}
-
-.black-box {
-  background-color: var(--sidebar-bg);
-}
-
-.green-box {
-  background-color: var(--secondary-teal);
-}
-
-.indicate-color p {
-  margin: 0px !important;
-  display: flex;
-  align-items: center;
-  color: var(--sidebar-bg);
-}
-
-.Calender-container {
-  height: 700px;
-}
-
-.rbc-timeslot-group {
-  color: var(--sidebar-bg);
-}
-
-.rbc-month-row+.rbc-month-row,
-.rbc-day-bg+.rbc-day-bg,
-.rbc-time-content>*+*>* {
-  border: 1px solid var(--neutral-light-gray);
-}
-
-.rbc-time-content {
-  border: none;
-}
-
-.rbc-day-slot .rbc-time-slot,
-.rbc-time-content>.rbc-day-slot {
-  border: 0px solid var(--neutral-light-gray);
-}
-
-@media (max-width: 992px) {
-  .rbc-btn-group button {
-    padding: 7px 10px !important;
-  }
-}
-
-@media (max-width: 767px) {
-
-  .week-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .week-header span {
-    font-size: 0.9em;
-  }
-
-  .weekly-overtime {
-    font-size: 0.8em;
-  }
-
-  .overtime-label {
-    font-size: 12px;
-  }
-
-  .overtime-info {
-    font-size: 1em;
-  }
-
-  .rbc-time-view {
-    width: 100%;
-  }
-
-  .rbc-calendar {
-    align-items: center;
-  }
-
-  .rbc-toolbar {
-    display: flex !important;
-    flex-direction: row !important;
-    width: 100%;
-  }
-
-  .Calender-container {
-    height: 600px;
-  }
-}
-
-@media (max-width: 575px) {
-  .rbc-toolbar {
-    flex-direction: column !important;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .rbc-event-content span {
-    font-size: 10px !important;
-  }
-
-  .overtime-label {
-    font-size: 10px;
-  }
-
-  .rbc-label {
-    padding: 2px !important;
-    font-size: 12px;
-  }
-
-  .rbc-header {
-    padding: 3px !important;
-  }
-
-  .rbc-btn-group {
-    margin: 5px !important;
-  }
-
-  .viewhour-section {
-    font-size: var(--font-size-small);
-  }
-
-  .rbc-toolbar .rbc-toolbar-label {
-    font-size: var(--font-size-small);
-  }
-
-  .rbc-btn-group button {
-    padding: 7px 10px !important;
-    font-size: 10px !important;
-  }
-
-  .rbc-event {
-    font-size: 10px !important;
-  }
-
-  .rbc-button-link {
-    font-size: 10px;
-  }
-
-  .color-box {
-    width: 10px;
-    height: 10px;
-  }
-
-  .Calender-container {
-    height: 450px;
-  }
-
-  .indicate-color {
-    gap: 10px;
-  }
-
-  .color-box {
-    margin-right: 4px;
-  }
-} */
-
-/* ========================fullcalender css====================== */
-
 .View-hour-main {
   display: flex;
   padding: 20px;
   /* flex: 1; */
   flex-direction: column;
   background-color: var(--primary-text-white);
-}
-
-.View-hour-main .fc-button-group {
-  gap: 10px;
-}
-
-.View-hour-main .fc .fc-button {
-  border-radius: 0px;
-  padding: 8px 12px;
-}
-
-.View-hour-main .fc .fc-button-primary {
-  background-color: var(--primary-button);
-  border-radius: var(--border-radius);
-  border: 0;
-}
-
-.View-hour-main .fc .fc-button-primary:disabled {
-  background-color: var(--primary-button);
-  opacity: 0.5;
-}
-
-.View-hour-main .fc .fc-button-primary:not(:disabled).fc-button-active,
-.View-hour-main .fc .fc-button-primary:not(:disabled):active {
-  border: none !important;
-}
-
-.View-hour-main .fc .fc-daygrid-day.fc-day-today,
-.View-hour-main .fc .fc-timegrid-col.fc-day-today {
-  background-color: var(--secondary-soft-gray);
-}
-
-.View-hour-main .fc-theme-standard .fc-list-day-cushion {
-  background-color: var(--table-heading-neutral-dark-blue);
-  color: var(--sidebar-title-primary-white);
-}
-
-.View-hour-main .fc-theme-standard .fc-scrollgrid,
-/* .View-hour-main .fc-theme-standard td, */
-.View-hour-main .fc-theme-standard th {
-  border: 1px solid var(--neutral-light-gray);
-  border-radius: var(--border-radius);
-  font-size: var(--font-size-h4);
-  overflow-x: auto;
-}
-
-.View-hour-main .fc .fc-toolbar-title {
-  font-size: var(--font-size-h1);
-  color: var(--sidebar-bg);
-}
-
-.View-hour-main .fc .fc-view-harness {
-  table-layout: auto;
-  border-collapse: collapse;
-}
-
-.View-hour-main .fc .fc-button-primary:focus {
-  box-shadow: none;
-}
-
-.View-hour-main .fc .fc-button-primary:not(:disabled).fc-button-active,
-.View-hour-main .fc .fc-button-primary:not(:disabled):active {
-  background-color: var(--sidebar-bg);
-  color: var(--secondary-soft-gray);
-  border-radius: var(--border-radius);
-  /* padding:  0px 10px; */
-}
-
-.View-hour-main .fc .fc-button-primary:not(:disabled).fc-button-active:focus,
-.View-hour-main .fc .fc-button-primary:not(:disabled):active:focus {
-  box-shadow: none;
-}
-
-.View-hour-main .fc-direction-ltr .fc-daygrid-event.fc-event-end,
-.View-hour-main .fc-direction-rtl .fc-daygrid-event.fc-event-start {
-  margin-right: 8px;
-  margin-left: 8px;
-  border-radius: var(--border-radius);
-}
-
-.View-hour-main .fc .fc-button-primary:hover {
-  background-color: var(--primary-button);
-  color: var(--sidebar-title-primary-white);
-}
-
-.View-hour-main .fc-timegrid-event-harness-inset .fc-timegrid-event,
-.View-hour-main .fc-timegrid-event.fc-event-mirror,
-.View-hour-main .fc-timegrid-more-link {
-  box-shadow: none !important;
-}
-
-.View-hour-main .fc-event-title .fc-sticky {
-  background-color: var(--table-heading-neutral-dark-blue);
 }
 
 .View-hour-main .viewhour-event {
@@ -451,36 +19,6 @@
   margin-top: 2.5px !important;
   margin-bottom: 2.5px !important;
   border: none;
-}
-
-.View-hour-main .fc-col-header-cell-cushion {
-  color: var(--sidebar-title-primary-white);
-}
-
-.View-hour-main .fc-theme-standard .fc-list {
-  border: 1px solid var(--neutral-light-gray);
-}
-
-.View-hour-main .fc .fc-list-event:hover td {
-  color: var(--sidebar-bg);
-  background-color: var(--neutral-light-gray);
-}
-
-.View-hour-main .fc .fc-list-event:hover button {
-  color: var(--sidebar-bg);
-  background-color: var(--neutral-light-gray);
-}
-
-.View-hour-main .fc .fc-daygrid-day-number {
-  margin: 5px;
-  background-color: var(--secondary-soft-gray);
-  border-radius: 100px;
-  width: 27px;
-  height: 27px;
-  font-size: 14px;
-  justify-content: center;
-  display: flex;
-  text-align: center;
 }
 
 .viewhour-section {
@@ -525,34 +63,9 @@
   background-color: var(--secondary-teal);
 }
 
-.View-hour-main .fc-toolbar-chunk {
-  display: flex;
-  gap: 10px;
-}
-
-.View-hour-main .fc .fc-button {
-  margin: 0;
-}
-
 .View-hour-main th[role="presentation"] {
   background-color: var(--table-heading-neutral-dark-blue);
   text-align: center;
-}
-
-.View-hour-main .fc-direction-ltr .fc-list-table .fc-list-event-graphic {
-  padding-right: 14px;
-}
-
-.View-hour-main .fc-daygrid-day-events .fc-daygrid-block-event .fc-event-title {
-  padding: 3px;
-}
-
-.View-hour-main
-  .fc-direction-ltr
-  .fc-button-group
-  > .fc-button:not(:last-child),
-.fc-direction-ltr .fc-button-group > .fc-button:not(:first-child) {
-  border-radius: var(--border-radius);
 }
 
 .viewhour-employee-list {
@@ -583,70 +96,42 @@
   color: var(--secondary-dark-gray);
 }
 
+.viewhour-action {
+  display: flex;
+}
+
+.action-icon {
+  margin: 0 8px;
+}
+
+.edit-timesheet-data {
+  color: var(--primary-button);
+}
+
+.delete-timesheet-data {
+  color: var(--alert-red);
+}
+
+.viewhour-searchbar-main {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.viewhours-officework {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
 @media (max-width: 767px) {
-  .View-hour-main .fc .fc-button {
-    padding: 10px 12px;
-    font-size: 10px;
-  }
-
-  .View-hour-main .fc .fc-toolbar-title {
-    font-size: var(--font-size-h3);
-  }
-
-  .View-hour-main .fc-button-group {
-    gap: 5px;
-  }
-
-  .View-hour-main .fc-col-header-cell-cushion {
-    font-size: 14px;
-  }
-
   .View-hour-input-dropdown {
     padding: 11px;
   }
 }
 
 @media (max-width: 575px) {
-  .View-hour-main .fc .fc-button {
-    padding: 4px;
-    font-size: 10px;
-  }
-
-  .View-hour-main .fc .fc-toolbar-title {
-    font-size: 14px;
-  }
-
-  .View-hour-main .fc-button-group,
-  .View-hour-main .fc-toolbar-chunk {
-    gap: 5px;
-  }
-
-  .View-hour-main .fc .fc-button .fc-icon {
-    font-size: 10px;
-  }
-
-  .View-hour-main .fc-col-header-cell-cushion {
-    font-size: 12px;
-  }
-
-  .View-hour-main .fc-direction-ltr .fc-daygrid-event.fc-event-end,
-  .View-hour-main .fc-direction-rtl .fc-daygrid-event.fc-event-start {
-    margin-right: 5px;
-    margin-left: 5px;
-    border: none !important;
-  }
-
-  .fc-daygrid-block-event .fc-event-time,
-  .fc-daygrid-block-event .fc-event-title {
-    font-size: 10px;
-  }
-
-  .View-hour-main .fc .fc-daygrid-day-number {
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
-  }
-
   .viewhour-section {
     font-size: var(--font-size-small);
   }
@@ -666,12 +151,5 @@
 
   .View-hour-input-dropdown {
     padding: 7px;
-  }
-}
-
-@media (max-width: 350px) {
-  .View-hour-main .fc .fc-toolbar {
-    flex-direction: column;
-    gap: 5px;
   }
 }

@@ -84,11 +84,11 @@ const Leaves = () => {
   // };
 
   const HandleAddLeaveList = () => {
-    navigate(`/leaves/addleaves?jobId=${jobRoleId}`);
+    navigate(`/leaves/addleaves`);
   };
 
   const HandleAddLeaveReq = () => {
-    navigate(`/leaves/leavesrequest/?jobId=${jobRoleId}`);
+    navigate(`/leaves/leavesrequest`);
   };
 
   const handleAction = (id) => {
@@ -96,7 +96,7 @@ const Leaves = () => {
   };
 
   const HandleEditLeave = async (id) => {
-    navigate(`/leaves/editleave/${id}?jobId=${jobRoleId}`);
+    navigate(`/leaves/editleave/${id}`);
     setShowDropdownAction(null);
   };
 

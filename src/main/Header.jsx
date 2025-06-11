@@ -11,7 +11,6 @@ import { clearNotificationCount } from "../store/notificationCountSlice";
 import { clearJobRoleSelect } from "../store/selectJobeRoleSlice";
 import useApiServices from "../useApiServices";
 import { showToast } from "./ToastManager";
-import Loader from "../pages/Helper/Loader";
 import { Select, MenuItem, Menu, ListItemText } from "@mui/material";
 import { clearCompanySelect } from "../store/selectCompanySlice";
 import { clearEmployeeformFilled } from "../store/EmployeeFormSlice";
@@ -21,7 +20,6 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
   const dispatch = useDispatch();
   const { PostCall } = useApiServices();
   const [theme, setTheme] = useState("light");
-  const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.userInfo.userInfo);
   const themeColor = useSelector((state) => state.themeColor.themeColor);
   const Notificationscount = useSelector(
@@ -47,11 +45,11 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
     setTheme(selectedTheme);
     dispatch(setThemeColor(selectedTheme));
     document.documentElement.setAttribute("data-theme", selectedTheme);
+    handleCloseDropdown();
   };
 
   const handleLogout = async () => {
     try {
-      setLoading(true);
       localStorage.clear();
       const response = await PostCall(`/logOut?userId=${user?._id}`);
       if (response?.data?.status === 200) {
@@ -68,9 +66,9 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      showToast("Error while logging out", "error");
     }
   };
 
@@ -85,92 +83,85 @@ const Header = ({ isCollapsed, setIsCollapsed }) => {
 
   return (
     <section className="home-section">
-      {loading ? (
-        <div className="loader-wrapper">
-          <Loader />
-        </div>
-      ) : (
-        <div className="home-content">
-          <IoIosMenu className="Header-Toggle-menu" onClick={toggleSidebar} />
-
-          <span className="text">
-            <div
-              className="header-notification-flex"
-              onClick={HandleShowNotification}
-            >
-              <MdOutlineNotificationsActive className="header-notification" />
-              <div className="header-notification-count">
-                <span>
-                  {Notificationscount > 99 ? "99+" : Notificationscount}
-                </span>
-              </div>
+      <div className="home-content">
+        <IoIosMenu className="Header-Toggle-menu" onClick={toggleSidebar} />
+        <span className="text">
+          <div
+            className="header-notification-flex"
+            onClick={HandleShowNotification}
+          >
+            <MdOutlineNotificationsActive className="header-notification" />
+            <div className="header-notification-count">
+              <span>
+                {Notificationscount > 99 ? "99+" : Notificationscount}
+              </span>
             </div>
-            <div className="profile-name">
-              <p>{user?.personalDetails?.firstName}</p>
-              <h6>{user?.role}</h6>
-            </div>
-            <img
-              src={process.env.PUBLIC_URL + "/image/profile.png"}
-              alt="Profile"
-              onClick={handleOpenDropdown}
-            />
-          </span>
+          </div>
+          <div className="profile-name">
+            <p>{user?.personalDetails?.firstName}</p>
+            <h6>{user?.role}</h6>
+          </div>
+          <img
+            src={process.env.PUBLIC_URL + "/image/profile.png"}
+            alt="Profile"
+            onClick={handleOpenDropdown}
+          />
+        </span>
 
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            className="header-dropdown"
-            onClose={handleCloseDropdown}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          className="header-dropdown"
+          onClose={handleCloseDropdown}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <MenuItem
+            onClick={() => {
+              navigate("/profile");
+              handleCloseDropdown();
             }}
           >
-            <MenuItem
-              onClick={() => {
-                navigate("/profile");
-                handleCloseDropdown();
+            Profile
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              navigate("/changepassword");
+              handleCloseDropdown();
+            }}
+          >
+            Change Password
+          </MenuItem>
+          <MenuItem disableRipple>
+            <ListItemText>Theme</ListItemText>
+            <Select
+              value={theme}
+              onChange={(e) => {
+                handleThemeChange(e);
               }}
+              variant="standard"
+              disableUnderline
             >
-              Profile
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                navigate("/changepassword");
-                handleCloseDropdown();
-              }}
-            >
-              Change Password
-            </MenuItem>
-            <MenuItem disableRipple>
-              <ListItemText>Theme</ListItemText>
-              <Select
-                value={theme}
-                onChange={(e) => {
-                  handleThemeChange(e);
-                }}
-                variant="standard"
-                disableUnderline
-              >
-                <MenuItem value="light">Light</MenuItem>
-                <MenuItem value="dark">Dark</MenuItem>
-              </Select>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleLogout();
-                handleCloseDropdown();
-              }}
-            >
-              Logout
-            </MenuItem>
-          </Menu>
-        </div>
-      )}
+              <MenuItem value="light">Light</MenuItem>
+              <MenuItem value="dark">Dark</MenuItem>
+            </Select>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleLogout();
+              handleCloseDropdown();
+            }}
+          >
+            Logout
+          </MenuItem>
+        </Menu>
+      </div>
     </section>
   );
 };
