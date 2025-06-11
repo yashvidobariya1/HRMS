@@ -22,7 +22,7 @@
 
 .timesheet-report-filter-container {
   /* margin-bottom: 10px; */
-  margin: 6px 0;
+  /* margin: 6px 0; */
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -226,7 +226,7 @@
 .filter-timsheetreport-main {
   display: flex;
   gap: 10px;
-  /* align-items: end; */
+  margin: 10px 0;
   flex-wrap: wrap;
 }
 
@@ -235,13 +235,6 @@
   justify-content: center;
   display: flex;
   font-size: 14px;
-}
-
-.timesheetreport-officework {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-  margin-bottom: 15px;
 }
 
 .timesheetreport-count {
@@ -262,6 +255,24 @@
   color: var(--sidebar-title-primary-white) !important;
 }
 
+.timesheetreport-isWorkFromOffice {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.timesheetreport-officework {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.timesheetreport-isWorkFromOffice input {
+  margin: 0 !important;
+}
+
 @media screen and (max-width: 767px) {
   .timesheet-report-download-container button {
     margin-top: 14px;
@@ -269,6 +280,14 @@
 
   .timesheet-report-filter-container {
     gap: 10px;
+  }
+
+  .timesheet-input-dropdown {
+    padding: 8px;
+  }
+
+  .timesheet-input-dropdown .MuiSelect-select {
+    font-size: 14px;
   }
 }
 
@@ -305,15 +324,15 @@
   }
 
   .filter-timsheetreport-main {
-    gap: 18px;
+    gap: 10px;
   }
 
-  /* .timesheet-input-container input, */
-  .timesheet-input-container select {
+  /* .absence-input-container input, */
+  .absence-input-container select {
     width: calc(100% - 20px);
   }
 
-  .timesheet-input-container select {
+  .absence-input-container select {
     width: 100%;
   }
 
@@ -333,6 +352,15 @@
   .timesheet-report-custom-table .MuiTableCell-root {
     padding: 6px;
     font-size: 12px !important;
+  }
+
+  .timesheet-input-dropdown {
+    padding: 6px;
+  }
+
+  .timesheet-input-dropdown .MuiSelect-select,
+  .timesheet-input-container {
+    font-size: 12px;
   }
 }
 

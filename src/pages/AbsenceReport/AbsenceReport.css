@@ -189,15 +189,121 @@
   border: none;
   font-size: var(--font-size-small);
   outline: none;
+  width: 150px;
 }
 
 .absence-input-dropdown .MuiSelect-icon {
   color: var(--secondary-dark-gray);
 }
 
+.absence-filter-container {
+  /* margin-bottom: 10px; */
+  margin: 6px 0;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.absence-filter-timsheetreport-main {
+  display: flex;
+  gap: 10px;
+  /* align-items: end; */
+  flex-wrap: wrap;
+}
+
+.absence-input-dropdown {
+  /* margin-top: 17px; */
+  padding: 10px;
+  width: 200px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  /* width: 100%; */
+  outline: none;
+  height: max-content;
+}
+
+.absence-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.absence-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
+.absence-download-container button {
+  /* width: 41px; */
+  height: 40px;
+  font-size: var(--font-size-h5);
+  background-color: var(--primary-button);
+  border-radius: var(--border-radius);
+  color: var(--primary-text-white);
+  border: none;
+  margin-top: 18px;
+  padding: 5px 20px;
+  flex-wrap: wrap;
+}
+
+.absence-download-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  /* align-items: end; */
+}
+
+.absence-searchbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.absence-input-container input,
+.absence-input-container select {
+  margin: 0;
+  padding: 10px !important;
+}
+
+.timesheetreport-officework {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.absence-isWorkFromOffice {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.absence-officework {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.absence-isWorkFromOffice input {
+  margin: 0 !important;
+}
+
 @media (max-width: 767px) {
   .absence-input-dropdown {
     padding: 11px;
+  }
+
+  .absence-download-container button {
+    margin-top: 14px;
+  }
+
+  .absence-filter-container {
+    gap: 10px;
   }
 }
 
@@ -219,7 +325,7 @@
   .clockin-out-action button {
     padding: 8px;
   }
-  .absencesheetreport-searchbar-clockin {
+  .absencesheetreport-searchbar {
     justify-content: flex-start;
     gap: 10px;
   }
@@ -257,5 +363,43 @@
 
   .absence-input-dropdown {
     padding: 7px;
+  }
+
+  .absence-filter-container {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .absence-filter-container {
+    gap: 10px;
+  }
+
+  .absence-filter-timsheetreport-main {
+    gap: 10px;
+  }
+
+  .absence-download-container button {
+    margin-top: 18px;
+  }
+
+  .absence-searchbar {
+    /* justify-content: flex-start; */
+    gap: 10px;
+  }
+
+  .absence-input-container select {
+    width: calc(100% - 20px);
+  }
+
+  .absence-input-container select {
+    width: 100%;
+  }
+
+  .timesheetreport-officework {
+    align-items: center !important;
+  }
+
+  .absence-officework {
+    gap: 5px;
   }
 }

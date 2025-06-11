@@ -117,6 +117,11 @@
   align-items: center;
 }
 
+.sidebar-icon svg {
+  height: 24px;
+  width: 24px;
+}
+
 .sidebar.collapsed .logo-details .logo-text {
   opacity: 0;
 }
@@ -380,6 +385,10 @@
   .sidebar .logo-details .logo-text {
     padding: 0;
   }
+
+  .logo_name {
+    gap: 8px;
+  }
 }
 
 @media screen and (max-width: 600px) {
@@ -399,6 +408,10 @@
 
   .sidebar .logo-details .logo-text {
     padding: 0;
+  }
+
+  .logo_name {
+    gap: 6px;
   }
 }
 

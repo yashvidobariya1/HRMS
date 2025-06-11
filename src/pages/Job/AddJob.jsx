@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./AddJob.css";
 import useApiServices from "../../useApiServices";
@@ -6,7 +6,7 @@ import Loader from "../Helper/Loader";
 import { showToast } from "../../main/ToastManager";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { MenuItem, Select } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
 const AddJob = () => {
   const { GetCall, PostCall } = useApiServices();
@@ -15,6 +15,7 @@ const AddJob = () => {
   const [errors, setErrors] = useState({});
   const [clientList, setClientList] = useState([]);
   const { id } = useParams();
+  const [searchTerm, setSearchTerm] = useState("");
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const [formData, setFormData] = useState({
     jobPhoto: "", // mandatory
@@ -26,6 +27,12 @@ const AddJob = () => {
     companyWebSite: "",
     email: "",
   });
+
+  const filterclientList = useMemo(() => {
+    return clientList.filter((loc) =>
+      loc?.clientName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, clientList]);
 
   const validate = () => {
     let newErrors = {};
@@ -236,26 +243,58 @@ const AddJob = () => {
                 onChange={handleChange}
                 displayEmpty
                 MenuProps={{
+                  disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
                       width: 200,
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
                       maxHeight: 200,
-                      scrollbarWidth: "thin",
                       overflowX: "auto",
+                      scrollbarWidth: "thin",
+                    },
+                  },
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
                     },
                   },
                 }}
+                renderValue={(selected) => {
+                  if (!selected) return "Select Client";
+                  const found = clientList.find((loc) => loc._id === selected);
+                  return found?.clientName || "Not Found";
+                }}
               >
-                <MenuItem value="" disabled>
+                <ListSubheader>
+                  <TextField
+                    size="small"
+                    placeholder="Search Clients"
+                    fullWidth
+                    className="search-textfield"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
+                <MenuItem value="" disabled className="menu-item">
                   Select Client
                 </MenuItem>
-                {clientList.map((clients) => (
-                  <MenuItem key={clients._id} value={clients._id}>
-                    {clients.clientName}
+                {filterclientList.length > 0 ? (
+                  filterclientList.map((clients) => (
+                    <MenuItem
+                      key={clients._id}
+                      value={clients._id}
+                      className="menu-item"
+                    >
+                      {clients.clientName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled className="menu-item">
+                    No Client found
                   </MenuItem>
-                ))}
+                )}
               </Select>
               {/* {errors?.clientId && (
                 <p className="error-text">{errors?.clientId}</p>

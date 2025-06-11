@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { IoAddOutline } from "react-icons/io5";
 import "./AddEmployee.css";
@@ -12,7 +12,14 @@ import CommonTable from "../../SeparateCom/CommonTable";
 import countryNames from "../../Data/AllCountryList.json";
 import VisaCategory from "../../Data/VisaCategory.json";
 import { setEmployeeformFilled } from "../../store/EmployeeFormSlice";
-import { Checkbox, MenuItem, Select } from "@mui/material";
+import { MdCancel } from "react-icons/md";
+import {
+  Checkbox,
+  ListSubheader,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import moment from "moment";
 
 const AddEmployee = () => {
@@ -45,6 +52,7 @@ const AddEmployee = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const [isSaveForm, setIsSaveForm] = useState(false);
   const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
+  const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [file, setFile] = useState({
     documentType: "",
     files: [],
@@ -54,6 +62,13 @@ const AddEmployee = () => {
   // const [sickLeaveType, setSickLeaveType] = useState("Day");
   // const [allowLeaveType, setallowLeaveType] = useState("Day");
   const [jobTitlesList, setjobTitlesList] = useState([]);
+  const [jobtitlesearchTerm, setjobtitlesearchTerm] = useState("");
+  const [locationsearchTerm, setlocationsearchTerm] = useState("");
+  const [assignclientsearchTerm, setassignclientsearchTerm] = useState("");
+  const [countrySearchTerm, setcountrySearchTerm] = useState("");
+  const [nationalitysearchTerm, setnationalitysearchTerm] = useState("");
+  const [visasearchTerm, setvisasearchTerm] = useState("");
+  const [assignmaangersearchTerm, setassignmaangersearchTerm] = useState("");
   const employeeFormFilled = useSelector(
     (state) => state.employeeformFilled.employeeformFilled
   );
@@ -137,6 +152,50 @@ const AddEmployee = () => {
     isWorkFromOffice: isWorkFromOffice,
   });
 
+  const filteredJobtitleList = useMemo(() => {
+    return jobTitlesList.filter((user) =>
+      user?.name?.toLowerCase().includes(jobtitlesearchTerm.toLowerCase())
+    );
+  }, [jobtitlesearchTerm, jobTitlesList]);
+
+  const filteredLocationsList = useMemo(() => {
+    return locations.filter((user) =>
+      user?.locationName
+        ?.toLowerCase()
+        .includes(locationsearchTerm.toLowerCase())
+    );
+  }, [locationsearchTerm, locations]);
+
+  const filteredassignClientList = useMemo(() => {
+    return clients?.filter((user) =>
+      user?.name?.toLowerCase().includes(assignclientsearchTerm.toLowerCase())
+    );
+  }, [assignclientsearchTerm, clients]);
+
+  const filteredCountryList = useMemo(() => {
+    return countryNames?.filter((user) =>
+      user.toLowerCase().includes(countrySearchTerm.toLowerCase())
+    );
+  }, [countrySearchTerm, countryNames]);
+
+  const filterednationalityList = useMemo(() => {
+    return countryNames?.filter((user) =>
+      user.toLowerCase().includes(nationalitysearchTerm.toLowerCase())
+    );
+  }, [nationalitysearchTerm, countryNames]);
+
+  const filteredvisaList = useMemo(() => {
+    return VisaCategory?.filter((user) =>
+      user.toLowerCase().includes(visasearchTerm.toLowerCase())
+    );
+  }, [VisaCategory, visasearchTerm]);
+
+  const filteredAssigneesManager = useMemo(() => {
+    return filteredAssignees.filter((user) =>
+      user.name?.toLowerCase().includes(assignmaangersearchTerm.toLowerCase())
+    );
+  }, [filteredAssignees, assignmaangersearchTerm]);
+
   const steps = [
     "Personal Details",
     "Job Details",
@@ -213,6 +272,75 @@ const AddEmployee = () => {
   //   }
   // };
 
+  const validateTwoStep = (stepName) => {
+    let newErrors = {};
+    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
+
+    switch (stepName) {
+      case "Personal Details":
+        if (!formData?.personalDetails?.firstName?.trim()) {
+          newErrors.firstName = "First Name is required";
+        }
+        if (!formData?.personalDetails?.lastName) {
+          newErrors.lastName = "Last Name is required";
+        }
+        if (!formData.personalDetails?.dateOfBirth) {
+          newErrors.dateOfBirth = "Date of Birth is required";
+        }
+        if (!formData.personalDetails?.gender) {
+          newErrors.gender = "Gender is required";
+        }
+        if (!formData.personalDetails?.maritalStatus) {
+          newErrors.maritalStatus = "Marital Status is required";
+        }
+        if (!formData?.personalDetails?.phone) {
+          newErrors.phone = "Phone number is required";
+        } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
+          newErrors.phone = "Phone number must contain only numbers";
+        } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
+          newErrors.phone = "Phone number must be exactly 11 digits";
+        }
+        const phone = formData.personalDetails?.homeTelephone;
+        if (phone) {
+          if (!/^\d+$/.test(phone)) {
+            newErrors.homeTelephone = "Home telephone must contain only digits";
+          } else if (phone.length !== 11) {
+            newErrors.homeTelephone =
+              "Home telephone must be exactly 11 digits";
+          }
+        }
+        const email = formData?.personalDetails?.email;
+        if (!email) {
+          newErrors.email = "Email is required";
+        } else if (!EMAIL_REGEX.test(email)) {
+          newErrors.email = "Valid Email format is required";
+        }
+        const niNumber = formData?.personalDetails?.niNumber?.trim();
+        if (niNumber && !NI_REGEX.test(niNumber)) {
+          newErrors.niNumber =
+            "Invalid NI Number format. Use format: QQ 88 77 77 A";
+        }
+        break;
+
+      // case "Address Details":
+      //   if (!formData?.jobList || formData.jobList.length === 0) {
+      //     newErrors.jobList = "At least one job must be added";
+      //   }
+      //   break;
+
+      default:
+        break;
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
+      return false;
+    }
+
+    return true;
+  };
+
   const nextStep = async () => {
     const updatedDocumentDetails = await Promise.all(
       documentDetails?.map(async (doc) => {
@@ -228,9 +356,42 @@ const AddEmployee = () => {
     );
     // console.log("Original documentDetails", documentDetails);
     // console.log("Updated documentDetails", updatedDocumentDetails);
+    const isFinalStep = currentStep === steps.length - 1;
+    let isValid = true;
 
-    const isValid = validate();
+    // if (userRole === "Superadmin" && isFinalStep) {
+    //   const step0Valid = validateTwoStep("Personal Details");
+    //   // const step1Valid = validateTwoStep("Address Details");
+
+    //   if (!step0Valid || !step1Valid) {
+    //     showToast("Please Filed the value", "error");
+    //     return;
+    //   }
+    // } else {
+    //   isValid = validate();
+    // }
+
+    if (userRole === "Superadmin" && isFinalStep) {
+      const step0Valid = validateTwoStep("Personal Details");
+      const step1Valid = jobList.length > 0;
+      if (!step0Valid || !step1Valid) {
+        showToast("Please Filed the value", "error");
+        return;
+      }
+    }
+
     if (isValid) {
+      if (
+        userRole === "Superadmin" &&
+        currentStep === steps.length - 1 &&
+        (!completedSteps.includes(0) || !completedSteps.includes(1))
+      ) {
+        showToast(
+          "Please fill out Step 1 and Step 2 before submitting.",
+          "error"
+        );
+        return;
+      }
       const data = {
         ...formData,
         documentDetails: updatedDocumentDetails,
@@ -433,7 +594,14 @@ const AddEmployee = () => {
     const selectedFiles = Array.from(e.target.files);
     setFile((prevData) => ({
       ...prevData,
-      files: selectedFiles,
+      files: [...prevData.files, ...selectedFiles],
+    }));
+  };
+
+  const handleDeleteFile = (indexToDelete) => {
+    setFile((prevData) => ({
+      ...prevData,
+      files: prevData.files.filter((_, index) => index !== indexToDelete),
     }));
   };
 
@@ -700,7 +868,7 @@ const AddEmployee = () => {
       modeOfTransfer: "",
       sickLeavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
       leavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
-      location: "",
+      location: [],
       assignManager: "",
       assignClient: [],
       // templateId: "",
@@ -994,7 +1162,7 @@ const AddEmployee = () => {
   };
 
   const handleStepClick = (index) => {
-    const isUpdateMode = !!id;
+    const isUpdateMode = !!id || userRole === "Superadmin";
     if (
       completedSteps.includes(index) ||
       index === currentStep ||
@@ -1423,26 +1591,60 @@ const AddEmployee = () => {
                     className="addemployee-input-dropdown"
                     displayEmpty
                     MenuProps={{
+                      disableAutoFocusItem: true,
                       PaperProps: {
                         style: {
-                          width: 200,
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          maxWidth: 200,
                           maxHeight: 200,
-                          scrollbarWidth: "thin",
                           overflowX: "auto",
+                          scrollbarWidth: "thin",
+                        },
+                      },
+                      MenuListProps: {
+                        onMouseDown: (e) => {
+                          if (e.target.closest(".search-textfield")) {
+                            e.stopPropagation();
+                          }
                         },
                       },
                     }}
+                    renderValue={(selected) => {
+                      if (!selected) return "Select Jobtitle";
+                      const found = jobTitlesList.find(
+                        (emp) => emp.name === selected
+                      );
+                      return found?.name || "Not found";
+                    }}
                   >
-                    <MenuItem value="" disabled>
+                    <ListSubheader>
+                      <TextField
+                        size="small"
+                        placeholder="Search Country"
+                        fullWidth
+                        className="search-textfield"
+                        value={jobtitlesearchTerm}
+                        onChange={(e) => setjobtitlesearchTerm(e.target.value)}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                    </ListSubheader>
+                    <MenuItem value="" disabled className="menu-item">
                       Select job Title
                     </MenuItem>
-                    {jobTitlesList.map((jobtitle, index) => (
-                      <MenuItem key={index} value={jobtitle.name}>
-                        {jobtitle.name}
+                    {filteredJobtitleList.length > 0 ? (
+                      filteredJobtitleList.map((jobtitle, index) => (
+                        <MenuItem
+                          key={index}
+                          value={jobtitle.name}
+                          className="menu-item"
+                        >
+                          {jobtitle.name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem value="" disabled className="menu-item">
+                        No found Job Title
                       </MenuItem>
-                    ))}
+                    )}
                   </Select>
                   {errors?.jobTitle && (
                     <p className="error-text">{errors?.jobTitle}</p>
@@ -1605,13 +1807,19 @@ const AddEmployee = () => {
                       },
                     }}
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value="" disabled className="menu-item">
                       {" "}
                       Select Mode Of Transfe
                     </MenuItem>
-                    <MenuItem value="netbanking">Net Banking</MenuItem>
-                    <MenuItem value="upi">UPI</MenuItem>
-                    <MenuItem value="creditcard">Credit Card</MenuItem>
+                    <MenuItem value="netbanking" className="menu-item">
+                      Net Banking
+                    </MenuItem>
+                    <MenuItem value="upi" className="menu-item">
+                      UPI
+                    </MenuItem>
+                    <MenuItem value="creditcard" className="menu-item">
+                      Credit Card
+                    </MenuItem>
                   </Select>
                 </div>
                 <div className="addemployee-input-container">
@@ -1662,8 +1870,12 @@ const AddEmployee = () => {
                         },
                       }}
                     >
-                      <MenuItem value="Day">Day</MenuItem>
-                      <MenuItem value="Hour">Hour</MenuItem>
+                      <MenuItem value="Day" className="menu-item">
+                        Day
+                      </MenuItem>
+                      <MenuItem value="Hour" className="menu-item">
+                        Hour
+                      </MenuItem>
                     </Select>
                   </div>
                 </div>
@@ -1716,8 +1928,12 @@ const AddEmployee = () => {
                         },
                       }}
                     >
-                      <MenuItem value="Day">Day</MenuItem>
-                      <MenuItem value="Hour">Hour</MenuItem>
+                      <MenuItem value="Day" className="menu-item">
+                        Day
+                      </MenuItem>
+                      <MenuItem value="Hour" className="menu-item">
+                        Hour
+                      </MenuItem>
                     </Select>
                   </div>
                 </div>
@@ -1763,16 +1979,22 @@ const AddEmployee = () => {
                       },
                     }}
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value="" disabled className="menu-item">
                       Select Role
                     </MenuItem>
-                    <MenuItem value="Employee">Employee</MenuItem>
+                    <MenuItem value="Employee" className="menu-item">
+                      Employee
+                    </MenuItem>
                     {(user.role === "Superadmin" ||
                       user.role === "Administrator") && (
-                      <MenuItem value="Manager">Manager</MenuItem>
+                      <MenuItem value="Manager" className="menu-item">
+                        Manager
+                      </MenuItem>
                     )}
                     {user.role === "Superadmin" && (
-                      <MenuItem value="Administrator">Administrator</MenuItem>
+                      <MenuItem value="Administrator" className="menu-item">
+                        Administrator
+                      </MenuItem>
                     )}
                   </Select>
                   {errors?.role && <p className="error-text">{errors?.role}</p>}
@@ -1799,32 +2021,80 @@ const AddEmployee = () => {
                   </select> */}
                   <Select
                     name="location"
-                    value={jobForm?.location}
+                    multiple
+                    value={jobForm?.location || []}
                     data-testid="location-select"
-                    onChange={handleJobChange}
+                    onChange={(event) =>
+                      handleJobChange({
+                        target: {
+                          name: "location",
+                          value: !isWorkFromOffice ? [] : event.target.value,
+                        },
+                      })
+                    }
                     className="addemployee-input-dropdown"
                     displayEmpty
                     MenuProps={{
+                      disableAutoFocusItem: true,
                       PaperProps: {
                         style: {
-                          width: 200,
-                          textOverflow: "ellipsis",
+                          maxWidth: 200,
                           maxHeight: 200,
-                          whiteSpace: "nowrap",
-                          scrollbarWidth: "thin",
                           overflowX: "auto",
+                          scrollbarWidth: "thin",
+                        },
+                      },
+                      MenuListProps: {
+                        onMouseDown: (e) => {
+                          if (e.target.closest(".search-textfield")) {
+                            e.stopPropagation();
+                          }
                         },
                       },
                     }}
+                    renderValue={(selected) => {
+                      if (selected.length === 0) {
+                        return <>Select Location</>;
+                      }
+                      const selectedNames = locations
+                        ?.filter((location) => selected.includes(location._id))
+                        .map((location) => location.locationName)
+                        .join(", ");
+                      return selectedNames;
+                    }}
                   >
+                    <ListSubheader>
+                      <TextField
+                        size="small"
+                        placeholder="Search Locations"
+                        fullWidth
+                        className="search-textfield"
+                        value={locationsearchTerm}
+                        onChange={(e) => setlocationsearchTerm(e.target.value)}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                    </ListSubheader>
                     <MenuItem value="" disabled>
                       Select Location
                     </MenuItem>
-                    {locations?.map((location) => (
-                      <MenuItem value={location?._id} key={location?._id}>
-                        {location?.locationName}
+                    {filteredLocationsList.length > 0 ? (
+                      filteredLocationsList?.map((location) => (
+                        <MenuItem
+                          value={location?._id}
+                          key={location?._id}
+                          className="menu-item"
+                        >
+                          <Checkbox
+                            checked={jobForm?.location?.includes(location._id)}
+                          />
+                          {location?.locationName}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem value="" disabled className="menu-item">
+                        No found Location
                       </MenuItem>
-                    ))}
+                    )}
                   </Select>
                   {errors?.location && (
                     <p className="error-text">{errors?.location}</p>
@@ -1863,13 +2133,51 @@ const AddEmployee = () => {
                     data-testid="assignManager-select"
                     disabled={!jobForm?.location}
                     displayEmpty
+                    MenuProps={{
+                      disableAutoFocusItem: true,
+                      PaperProps: {
+                        style: {
+                          width: 200,
+                          maxHeight: 200,
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
+                        },
+                      },
+                      MenuListProps: {
+                        onMouseDown: (e) => {
+                          if (e.target.closest(".search-textfield")) {
+                            e.stopPropagation();
+                          }
+                        },
+                      },
+                    }}
+                    renderValue={(selected) => {
+                      if (!selected) return "Select Assignee Manager";
+                      const found = filteredAssignees.find(
+                        (loc) => loc._id === selected
+                      );
+                      return found?.name || "Not Found";
+                    }}
                   >
+                    <ListSubheader>
+                      <TextField
+                        size="small"
+                        placeholder="Search Company"
+                        fullWidth
+                        className="search-textfield"
+                        value={assignmaangersearchTerm}
+                        onChange={(e) =>
+                          setassignmaangersearchTerm(e.target.value)
+                        }
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                    </ListSubheader>
                     <MenuItem value="" disabled>
                       Select Manager
                     </MenuItem>
 
-                    {filteredAssignees?.length > 0 ? (
-                      filteredAssignees.map((assignee) => (
+                    {filteredAssigneesManager?.length > 0 ? (
+                      filteredAssigneesManager.map((assignee) => (
                         <MenuItem value={assignee._id} key={assignee._id}>
                           {assignee.name}
                         </MenuItem>
@@ -1956,19 +2264,44 @@ const AddEmployee = () => {
                       return selectedNames;
                     }}
                     MenuProps={{
+                      disableAutoFocusItem: true,
                       PaperProps: {
                         style: {
-                          width: 200,
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          maxWidth: 200,
                           maxHeight: 200,
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
+                        },
+                      },
+                      MenuListProps: {
+                        onMouseDown: (e) => {
+                          if (e.target.closest(".search-textfield")) {
+                            e.stopPropagation();
+                          }
                         },
                       },
                     }}
                   >
-                    {clients?.length > 0 ? (
-                      clients.map((client) => (
-                        <MenuItem value={client._id} key={client._id}>
+                    <ListSubheader>
+                      <TextField
+                        size="small"
+                        placeholder="Search Country"
+                        fullWidth
+                        className="search-textfield"
+                        value={assignclientsearchTerm}
+                        onChange={(e) =>
+                          setassignclientsearchTerm(e.target.value)
+                        }
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                    </ListSubheader>
+                    {filteredassignClientList?.length > 0 ? (
+                      filteredassignClientList.map((client) => (
+                        <MenuItem
+                          value={client._id}
+                          key={client._id}
+                          className="menu-item"
+                        >
                           <Checkbox
                             checked={jobForm?.assignClient?.includes(
                               client._id
@@ -1978,8 +2311,8 @@ const AddEmployee = () => {
                         </MenuItem>
                       ))
                     ) : (
-                      <MenuItem value="" disabled>
-                        No clients available
+                      <MenuItem value="" disabled className="menu-item">
+                        No found clients
                       </MenuItem>
                     )}
                   </Select>
@@ -2187,13 +2520,21 @@ const AddEmployee = () => {
                   }}
                   onChange={handleChange}
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value="" disabled className="menu-item">
                     Select Relationship Type
                   </MenuItem>
-                  <MenuItem value="Spouse">Spouse</MenuItem>
-                  <MenuItem value="Child">Child</MenuItem>
-                  <MenuItem value="Friend">Friend</MenuItem>
-                  <MenuItem value="Siblings">Siblings</MenuItem>
+                  <MenuItem value="Spouse" className="menu-item">
+                    Spouse
+                  </MenuItem>
+                  <MenuItem value="Child" className="menu-item">
+                    Child
+                  </MenuItem>
+                  <MenuItem value="Friend" className="menu-item">
+                    Friend
+                  </MenuItem>
+                  <MenuItem value="Siblings" className="menu-item">
+                    Siblings
+                  </MenuItem>
                 </Select>
               </div>
               <div className="addemployee-input-container">
@@ -2347,20 +2688,26 @@ const AddEmployee = () => {
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
+                        maxWidth: 200,
                         maxHeight: 200,
-                        whiteSpace: "nowrap",
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                       },
                     },
                   }}
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value="" disabled className="menu-item">
                     Select Payroll Frequency
                   </MenuItem>
-                  <MenuItem value="weekly">WEEKLY</MenuItem>
-                  <MenuItem value="monthly">MONTHLY</MenuItem>
-                  <MenuItem value="yearly">YEARLY</MenuItem>
+                  <MenuItem value="weekly" className="menu-item">
+                    WEEKLY
+                  </MenuItem>
+                  <MenuItem value="monthly" className="menu-item">
+                    MONTHLY
+                  </MenuItem>
+                  <MenuItem value="yearly" className="menu-item">
+                    YEARLY
+                  </MenuItem>
                 </Select>
                 {errors?.payrollFrequency && (
                   <p className="error-text">{errors?.payrollFrequency}</p>
@@ -2444,24 +2791,58 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   displayEmpty
                   MenuProps={{
+                    disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        maxWidth: 100,
                         maxHeight: 200,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
+                      },
+                    },
+                    MenuListProps: {
+                      onMouseDown: (e) => {
+                        if (e.target.closest(".search-textfield")) {
+                          e.stopPropagation();
+                        }
                       },
                     },
                   }}
+                  renderValue={(selected) => {
+                    if (!selected) return "Select Country";
+                    const found = countryNames.find((emp) => emp === selected);
+                    return found || "No found";
+                  }}
                 >
+                  <ListSubheader>
+                    <TextField
+                      size="small"
+                      placeholder="Search Country"
+                      fullWidth
+                      className="search-textfield"
+                      value={countrySearchTerm}
+                      onChange={(e) => setcountrySearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                  </ListSubheader>
                   <MenuItem value="" disabled>
                     Select Country
                   </MenuItem>
-                  {countryNames.map((country, index) => (
-                    <MenuItem key={index} value={country}>
-                      {country}
+                  {filteredCountryList.length > 0 ? (
+                    filteredCountryList.map((country, index) => (
+                      <MenuItem
+                        key={index}
+                        value={country}
+                        className="menu-item"
+                      >
+                        {country}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled className="menu-item">
+                      No countries found
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
                 {errors?.countryOfIssue && (
                   <p className="error-text">{errors?.countryOfIssue}</p>
@@ -2510,24 +2891,58 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   displayEmpty
                   MenuProps={{
+                    disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        maxWidth: 100,
                         maxHeight: 200,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
+                      },
+                    },
+                    MenuListProps: {
+                      onMouseDown: (e) => {
+                        if (e.target.closest(".search-textfield")) {
+                          e.stopPropagation();
+                        }
                       },
                     },
                   }}
+                  renderValue={(selected) => {
+                    if (!selected) return "Select Nationality";
+                    const found = countryNames.find((emp) => emp === selected);
+                    return found || "No found";
+                  }}
                 >
-                  <MenuItem value="" disabled>
-                    Select Country Of Issue
+                  <ListSubheader>
+                    <TextField
+                      size="small"
+                      placeholder="Search Nationality"
+                      fullWidth
+                      className="search-textfield"
+                      value={nationalitysearchTerm}
+                      onChange={(e) => setnationalitysearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                  </ListSubheader>
+                  <MenuItem value="" disabled className="menu-item">
+                    Select Nationality
                   </MenuItem>
-                  {countryNames.map((country, index) => (
-                    <MenuItem key={index} value={country}>
-                      {country}
+                  {filterednationalityList.length > 0 ? (
+                    filterednationalityList.map((country, index) => (
+                      <MenuItem
+                        key={index}
+                        value={country}
+                        className="menu-item"
+                      >
+                        {country}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled className="menu-item">
+                      No Nationality found
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
                 {errors?.nationality && (
                   <p className="error-text">{errors?.nationality}</p>
@@ -2559,26 +2974,58 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   displayEmpty
                   MenuProps={{
+                    disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        maxWidth: 100,
                         maxHeight: 200,
-                        scrollbarWidth: "thin",
                         overflowX: "auto",
+                        scrollbarWidth: "thin",
+                      },
+                    },
+                    MenuListProps: {
+                      onMouseDown: (e) => {
+                        if (e.target.closest(".search-textfield")) {
+                          e.stopPropagation();
+                        }
                       },
                     },
                   }}
+                  renderValue={(selected) => {
+                    if (!selected) return "Select Visa Category";
+                    const found = VisaCategory.find((emp) => emp === selected);
+                    return found || "No found";
+                  }}
                 >
+                  <ListSubheader>
+                    <TextField
+                      size="small"
+                      placeholder="Search Visa Category"
+                      fullWidth
+                      className="search-textfield"
+                      value={visasearchTerm}
+                      onChange={(e) => setvisasearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                  </ListSubheader>
                   <MenuItem value="" disabled>
                     Select Visa Category
                   </MenuItem>
-                  {VisaCategory.map((country) => (
-                    <MenuItem key={country} value={country}>
-                      {country}
+                  {filteredvisaList.length > 0 ? (
+                    filteredvisaList.map((country) => (
+                      <MenuItem
+                        key={country}
+                        value={country}
+                        className="menu-item"
+                      >
+                        {country}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled className="menu-item">
+                      No Visa Category found
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
               </div>
               <div className="addemployee-input-container">
@@ -2723,12 +3170,10 @@ const AddEmployee = () => {
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
+                        maxWidth: 100,
                         maxHeight: 200,
-                        whiteSpace: "nowrap",
-                        scrollbarWidth: "thin",
                         overflowX: "auto",
+                        scrollbarWidth: "thin",
                       },
                     },
                   }}
@@ -2736,10 +3181,18 @@ const AddEmployee = () => {
                   <MenuItem value="" disabled>
                     Select Document Type
                   </MenuItem>
-                  <MenuItem value="ID Proof">ID Proof</MenuItem>
-                  <MenuItem value="Immigration">Immigration</MenuItem>
-                  <MenuItem value="Address Proof">Address Proof</MenuItem>
-                  <MenuItem value="Passport">Passport</MenuItem>
+                  <MenuItem value="ID Proof" className="menu-item">
+                    ID Proof
+                  </MenuItem>
+                  <MenuItem value="Immigration" className="menu-item">
+                    Immigration
+                  </MenuItem>
+                  <MenuItem value="Address Proof" className="menu-item">
+                    Address Proof
+                  </MenuItem>
+                  <MenuItem value="Passport" className="menu-item">
+                    Passport
+                  </MenuItem>
                 </Select>
                 {errors?.documentType && (
                   <p className="error-text">{errors?.documentType}</p>
@@ -2774,14 +3227,28 @@ const AddEmployee = () => {
                     className="addemployee-input"
                     style={{ display: "none" }}
                   />
-                  {file?.files?.length > 0 && (
+                </div>
+                {file?.files?.length > 0 && (
+                  <div className="addemployee-fileupload-frame">
                     <div className="addemployee-fileupload-name">
-                      {file.files.map((file, index) => (
-                        <p key={index}>{file.name}</p>
+                      {file.files.map((fileItem, index) => (
+                        <div key={index} className="uploadfile-flex">
+                          <p>
+                            {fileItem.name.length > 15
+                              ? `${fileItem.name.slice(0, 15)}...`
+                              : fileItem.name}
+                          </p>
+                          <p>
+                            <MdCancel
+                              onClick={() => handleDeleteFile(index)}
+                              className="File-upload-delete"
+                            />
+                          </p>
+                        </div>
                       ))}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {errors?.document && (
                   <p className="error-text">{errors?.document}</p>
@@ -2917,12 +3384,18 @@ const AddEmployee = () => {
                   }}
                   onChange={handleChange}
                 >
-                  <MenuItem value="" disabled>
+                  <MenuItem value="" disabled className="menu-item">
                     Select Contract Type
                   </MenuItem>
-                  <MenuItem value="FullTime">Full Time</MenuItem>
-                  <MenuItem value="PartTime">Part Time</MenuItem>
-                  <MenuItem value="FixTerm">Fix Term</MenuItem>
+                  <MenuItem value="FullTime" className="menu-item">
+                    Full Time
+                  </MenuItem>
+                  <MenuItem value="PartTime" className="menu-item">
+                    Part Time
+                  </MenuItem>
+                  <MenuItem value="FixTerm" className="menu-item">
+                    Fix Term
+                  </MenuItem>
                 </Select>
               </div>
 

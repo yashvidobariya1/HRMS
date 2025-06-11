@@ -38,10 +38,10 @@
 }
 
 .setting-step-content {
-  margin: 30px;
+  /* margin: 30px; */
   display: flex;
   flex-direction: column;
-  margin: 30px 0;
+  /* margin: 30px 0; */
 }
 
 .setting-step.active .setting-step-number {

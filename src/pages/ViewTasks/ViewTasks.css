@@ -301,6 +301,7 @@
   border: none;
   font-size: var(--font-size-small);
   outline: none;
+  width: 120px;
 }
 
 .viewtask-input-dropdown .MuiSelect-icon {
