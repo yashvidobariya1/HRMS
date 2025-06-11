@@ -88,7 +88,7 @@ const TimeSheetReportDaily = () => {
   };
 
   const handleEmployeeChange = (value) => {
-    setSelectedEmployee(value);F
+    setSelectedEmployee(value);
   };
 
   const getAllClientsOfUser = async () => {
