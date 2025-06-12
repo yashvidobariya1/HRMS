@@ -133,7 +133,7 @@ const AbsenceReport = () => {
   const getAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(
+      const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
       );
       if (response?.data?.status === 200) {

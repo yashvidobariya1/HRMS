@@ -106,19 +106,31 @@ export const SidebarData = [
       {
         title: "Absence Report",
         icon: <TbReportSearch />,
-        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
+        link: "/staffabsencereport",
+        allowedRoles: ["Superadmin"],
+      },
+      {
+        title: "Absence Report",
+        icon: <TbReportSearch />,
+        allowedRoles: ["Administrator", "Manager"],
         subItems: [
           {
             title: "Staff Absence Report",
-            link: "/absencereport/staffabsencereport",
-            allowedRoles: ["Superadmin", "Administrator", "Manager"],
+            link: "/staffabsencereport",
+            allowedRoles: ["Administrator", "Manager"],
           },
           {
             title: "My Absence Report",
-            link: "/absencereport/myabsencereport",
-            allowedRoles: ["Administrator", "Manager", "Employee"],
+            link: "/myabsencereport",
+            allowedRoles: ["Administrator", "Manager"],
           },
         ],
+      },
+      {
+        title: "Absence Report",
+        icon: <TbReportSearch />,
+        link: "/myabsencereport",
+        allowedRoles: ["Employee"],
       },
     ],
   },
@@ -132,7 +144,7 @@ export const SidebarData = [
         allowedRoles: ["Administrator", "Manager", "Employee"],
       },
       {
-        title: "Staff View Hours",
+        title: "View Hours",
         icon: <LiaHourglassStartSolid />,
         link: "/staffviewhours",
         allowedRoles: ["Superadmin"],
@@ -169,7 +181,7 @@ export const SidebarData = [
       {
         title: "Timesheet Report",
         icon: <BiSolidSpreadsheet />,
-        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
+        allowedRoles: ["Superadmin", "Administrator", "Manager"],
         subItems: [
           {
             title: "Daily Report",
@@ -188,10 +200,16 @@ export const SidebarData = [
           },
           {
             title: "My Report",
-            link: "/timesheetreport/myreport",
-            allowedRoles: ["Administrator", "Manager", "Employee"],
+            link: "/myreport",
+            allowedRoles: ["Administrator", "Manager"],
           },
         ],
+      },
+      {
+        title: "Timesheet Report",
+        icon: <BiSolidSpreadsheet />,
+        link: "/myreport",
+        allowedRoles: ["Employee"],
       },
     ],
   },

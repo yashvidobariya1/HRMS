@@ -228,20 +228,20 @@ const protectedRoutes = [
     roles: ["Superadmin", "Administrator"],
   },
   {
-    path: "/absencereport/staffabsencereport",
+    path: "/staffabsencereport",
     component: <AbsenceReport />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
-    path: "/absencereport/myabsencereport",
+    path: "/myabsencereport",
     component: <MyAbsenceReport />,
     roles: ["Administrator", "Manager", "Employee"],
   },
-  {
-    path: "/employees/absencereport/:name",
-    component: <AbsenceReport />,
-    roles: ["Superadmin", "Administrator", "Manager"],
-  },
+  // {
+  //   path: "/employees/absencereport/:name",
+  //   component: <AbsenceReport />,
+  //   roles: ["Superadmin", "Administrator", "Manager"],
+  // },
   {
     path: "/clockin",
     component: <ClockIn />,
@@ -272,11 +272,11 @@ const protectedRoutes = [
     component: <AttendanceForm />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
-  {
-    path: "/employees/viewhours/:name",
-    component: <Viewhours />,
-    roles: ["Superadmin", "Administrator", "Manager"],
-  },
+  // {
+  //   path: "/employees/viewhours/:name",
+  //   component: <Viewhours />,
+  //   roles: ["Superadmin", "Administrator", "Manager"],
+  // },
   // {
   //   path: "/timesheetreport",
   //   component: <TimeSheetReport />,
@@ -285,28 +285,28 @@ const protectedRoutes = [
   {
     path: "/timesheetreport/daily",
     component: <TimeSheetReportDaily />,
-    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+    roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
     path: "/timesheetreport/weekly",
     component: <TimeSheetReportWeekly />,
-    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
+    roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
     path: "/timesheetreport/monthly",
     component: <TimeSheetReportMonthly />,
-    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
-  },
-  {
-    path: "/timesheetreport/myreport",
-    component: <TimesheetReportMy />,
-    roles: ["Superadmin", "Administrator", "Manager", "Employee"],
-  },
-  {
-    path: "/employees/timesheetreport/:name",
-    component: <TimeSheetReport />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
+  {
+    path: "/myreport",
+    component: <TimesheetReportMy />,
+    roles: ["Administrator", "Manager", "Employee"],
+  },
+  // {
+  //   path: "/employees/timesheetreport/:name",
+  //   component: <TimeSheetReport />,
+  //   roles: ["Superadmin", "Administrator", "Manager"],
+  // },
   {
     path: "/job",
     component: <Job />,

@@ -347,7 +347,7 @@ const TimeSheetReportDaily = () => {
     <div className="timesheet-list-container">
       <div className="timesheet-flex">
         <div className="timesheet-title">
-          <h1>Time Sheet Report</h1>
+          <h1>Daily Time Sheet Report</h1>
         </div>
       </div>
 

@@ -50,6 +50,15 @@ const Employee = () => {
   };
 
   const HandleEditEmployee = async (id) => {
+    if (
+      companyId === "" ||
+      companyId === undefined ||
+      companyId === null ||
+      companyId === "allCompany"
+    ) {
+      showToast("Please select a specific company", "error");
+      return;
+    }
     navigate(`/employees/editemployee/${id}`);
     setShowDropdownAction(null);
   };

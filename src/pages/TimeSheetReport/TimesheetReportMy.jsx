@@ -230,7 +230,7 @@ const TimesheetReportMy = () => {
   const getAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(
+      const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${userId}`
       );
       if (response?.data?.status === 200) {

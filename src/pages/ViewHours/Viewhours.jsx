@@ -270,7 +270,6 @@ const Viewhours = () => {
 
   useEffect(() => {
     if (selectedEmployee && isWorkFromOffice) {
-      console.log("calling getUsersJobLocations");
       getUsersJobLocations();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

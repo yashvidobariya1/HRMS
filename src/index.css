@@ -33,6 +33,7 @@ h1 {
   font-size: var(--font-size-h1);
   color: var(--sidebar-bg);
   /* margin: 5px 0; */
+  margin: 0;
 }
 
 h3 {

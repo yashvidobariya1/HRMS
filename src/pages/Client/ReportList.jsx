@@ -72,7 +72,7 @@ const ReportList = () => {
     "Client name",
     "Start Date",
     "End Date",
-    "Report Generated Date",
+    "Generated on",
     "Action By",
     "Status",
     "View",

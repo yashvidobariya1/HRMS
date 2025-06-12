@@ -418,7 +418,7 @@ const CommonTable = ({
     "Client Name": "Name",
     "Start Date": "startDate",
     "End Date": "endDate",
-    "Report Generated Date": "generatedDate",
+    "Generated on": "generatedDate",
     "Login Time": "LastTimeLoggedIn",
     "Last Access Time": "LastTimeLoggedOut",
     Active: "IsActive",

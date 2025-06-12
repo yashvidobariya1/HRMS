@@ -530,6 +530,7 @@ import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
 import QrScanner from "qr-scanner";
 import AssignClient from "../../SeparateCom/AssignClient";
+import AssignLocation from "../../SeparateCom/AssignLocation";
 
 const CheckIn = () => {
   const { PostCall } = useApiServices();
@@ -548,13 +549,19 @@ const CheckIn = () => {
   const [location, setLocation] = useState({ lat: null, long: null });
   // const [scanResult, setScanResult] = useState("");
   const [isScannerVisible, setIsScannerVisible] = useState(true);
-  const [openClietnSelectModal, setopenClietnSelectModal] = useState(false);
+  const [openClientSelectModal, setOpenClientSelectModal] = useState(false);
+  const [openLocationSelectModal, setOpenLocationSelectModal] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState("");
+  const [selectedLocationId, setSelectedLocationId] = useState("");
   const [Clientdata, setClientdata] = useState([]);
+  const [Locationdata, setLocationdata] = useState([]);
   // const [hasCameraPermission, setHasCameraPermission] = useState(false);
   // const [isScannerVisible, setIsScannerVisible] = useState(false);
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
+  );
+  const isWorkFromOffice = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
   );
   // const scanner = () => {
   //   return new Promise((resolve, reject) => {
@@ -836,6 +843,7 @@ const CheckIn = () => {
       qrValue: scanResult, // Include the scanned QR code result
       isMobile,
       clientId: selectedClientId,
+      locationId: selectedLocationId,
     };
     // console.log("body", body);
 
@@ -843,13 +851,13 @@ const CheckIn = () => {
       setLoading(true);
       const response = await PostCall(`/clockIn`, body);
       if (response?.data?.status === 200) {
-        const { timesheet } = response.data;
+        const { timesheet } = response?.data;
         const now = moment();
         setStartTime(now);
         // setEndTime(null);
         setElapsedTime(0);
         startTimer(now);
-        setTimeSheetData(timesheet.clockinTime);
+        setTimeSheetData(timesheet?.clockinTime);
         showToast(response?.data?.message, "success");
       } else {
         showToast(response?.data?.message, "error");
@@ -893,6 +901,7 @@ const CheckIn = () => {
       qrValue: scanResult,
       isMobile,
       clientId: selectedClientId,
+      locationId: selectedLocationId,
     };
     try {
       setLoading(true);
@@ -982,6 +991,7 @@ const CheckIn = () => {
       const response = await PostCall(`/getOwnTodaysTimesheet`, {
         jobId: jobRoleId,
         clientId: selectedClientId,
+        locationId: selectedLocationId,
       });
 
       if (response?.data?.status === 200) {
@@ -1116,15 +1126,41 @@ const CheckIn = () => {
       });
 
       if (response?.data?.status === 200) {
-        const jobTitles = response.data.assignClients;
-        // console.log("job title", jobTitles);
-        setClientdata(jobTitles);
+        const clients = response.data.assignClients;
+        // console.log("job title", clients);
+        setClientdata(clients);
 
-        if (jobTitles.length > 1) {
-          setopenClietnSelectModal(false);
+        if (clients.length > 1) {
+          setOpenClientSelectModal(false);
         } else {
-          setSelectedClientId(jobTitles[0]?.clientId);
-          setopenClietnSelectModal(true);
+          setSelectedClientId(clients[0]?.clientId);
+          setOpenClientSelectModal(true);
+        }
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const GetLocationdata = async () => {
+    try {
+      const response = await PostCall(`/getUsersAssignLocations`, {
+        jobId: jobRoleId,
+      });
+
+      if (response?.data?.status === 200) {
+        const Locations = response.data.assignLocations;
+        // console.log("job title", Locations);
+        setLocationdata(Locations);
+
+        if (Locations.length > 1) {
+          setOpenLocationSelectModal(false);
+        } else {
+          console.log(Locations);
+          setSelectedLocationId(Locations[0]?.locationId);
+          setOpenLocationSelectModal(true);
         }
       } else {
         showToast(response?.data?.message, "error");
@@ -1135,12 +1171,21 @@ const CheckIn = () => {
   };
 
   const handlePopupClose = () => {
-    setopenClietnSelectModal(true);
+    setOpenClientSelectModal(true);
   };
 
   const handleClientSelect = (selectedTitle) => {
     setSelectedClientId(selectedTitle);
-    setopenClietnSelectModal(true);
+    setOpenClientSelectModal(true);
+  };
+
+  const handlePopupCloseForLocation = () => {
+    setOpenClientSelectModal(true);
+  };
+
+  const handleLocationSelect = (selectedLocation) => {
+    setSelectedClientId(selectedLocation);
+    setOpenClientSelectModal(true);
   };
 
   useEffect(() => {
@@ -1204,15 +1249,19 @@ const CheckIn = () => {
   }, []);
 
   useEffect(() => {
-    // if (openJobTitleModal && selectedJobId) {
-    fetchTimesheet();
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobRoleId, selectedClientId]);
+    if (!isWorkFromOffice) GetClientdata();
+  }, [jobRoleId]);
 
   useEffect(() => {
-    GetClientdata();
+    if (isWorkFromOffice) GetLocationdata();
   }, [jobRoleId]);
+
+  useEffect(() => {
+    if (selectedClientId || selectedLocationId) {
+      fetchTimesheet();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedClientId, selectedLocationId]);
 
   useEffect(() => {
     if (startTime) {
@@ -1263,13 +1312,23 @@ const CheckIn = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      {!openClietnSelectModal && Clientdata.length > 1 && (
+      {!openClientSelectModal && !isWorkFromOffice && Clientdata.length > 1 && (
         <AssignClient
           onClose={handlePopupClose}
           Clientdata={Clientdata}
           onClientSelect={handleClientSelect}
         />
       )}
+
+      {!openLocationSelectModal &&
+        isWorkFromOffice &&
+        Locationdata.length > 1 && (
+          <AssignLocation
+            onClose={handlePopupCloseForLocation}
+            Locationdata={Locationdata}
+            onClientSelect={handleLocationSelect}
+          />
+        )}
 
       <h1 className="clock-in-h1">{moment().format("llll")}</h1>
 

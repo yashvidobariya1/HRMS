@@ -1197,12 +1197,10 @@ const AddEmployee = () => {
   const GetAllLocations = async () => {
     try {
       setLoading(true);
-      let Company;
-      const SetcompanyId =
-        companyId && typeof companyId === "string" && companyId.trim() !== "";
-      if (companyId && SetcompanyId) {
-        Company = await GetCall(`/getCompanyLocations?companyId=${companyId}`);
-      }
+      const Company = await GetCall(
+        `/getCompanyLocations?companyId=${companyId}`
+      );
+      // }
       if (Company?.data?.status === 200) {
         setLocations(Company?.data?.companiesAllLocations);
         setContracts(Company?.data?.contracts);

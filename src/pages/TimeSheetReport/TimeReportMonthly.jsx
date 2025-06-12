@@ -100,7 +100,7 @@ const TimeSheetReportDaily = () => {
   const getAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(
+      const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
       );
       if (response?.data?.status === 200) {
@@ -326,7 +326,7 @@ const TimeSheetReportDaily = () => {
     <div className="timesheet-list-container">
       <div className="timesheet-flex">
         <div className="timesheet-title">
-          <h1>Time Sheet Report</h1>
+          <h1>Monthly Time Sheet Report</h1>
         </div>
       </div>
 
