@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-// import "./AbsenceReport.css";
 import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
@@ -87,10 +86,9 @@ const MyViewTasks = () => {
       );
 
       if (response?.data?.status === 200) {
-        setTaskList(response?.data.tasks);
-        settotalTask(response.data.reports);
-        setTotalPages(response.data.totalPages);
-        // console.log("response:", response?.data.tasks);
+        setTaskList(response?.data?.tasks);
+        settotalTask(response?.data?.reports);
+        setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -116,13 +114,14 @@ const MyViewTasks = () => {
         `/getUsersJobLocations?companyId=${companyId}&userId=${userId}`
       );
       if (response?.data?.status === 200) {
-        setlocationList(response?.data.locations);
+        setlocationList(response?.data?.locations);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 

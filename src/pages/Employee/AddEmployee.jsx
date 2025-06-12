@@ -144,7 +144,7 @@ const AddEmployee = () => {
     modeOfTransfer: "",
     sickLeavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
     leavesAllow: { leaveType: "Day", allowedLeavesCounts: 0 },
-    location: "",
+    location: [],
     assignManager: "",
     assignClient: [],
     // templateId: "",
@@ -396,7 +396,7 @@ const AddEmployee = () => {
         ...formData,
         documentDetails: updatedDocumentDetails,
       };
-      // console.log("data", data);
+      console.log("data", data);
 
       if (currentStep === steps.length - 1) {
         try {
@@ -1195,29 +1195,29 @@ const AddEmployee = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const GetAllLocations = async () => {
-    try {
-      setLoading(true);
-      let Company;
-      const SetcompanyId =
-        companyId && typeof companyId === "string" && companyId.trim() !== "";
-      if (companyId && SetcompanyId) {
-        Company = await GetCall(`/getCompanyLocations?companyId=${companyId}`);
-      }
-      if (Company?.data?.status === 200) {
-        setLocations(Company?.data?.companiesAllLocations);
-        setContracts(Company?.data?.contracts);
-        setClients(Company?.data?.clients);
-        // setTemplates(Company?.data?.templates);
-      } else {
-        showToast(Company?.data?.message, "error");
-      }
-      setLoading(false);
-      // console.log("Company", Company);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  // const GetAllLocations = async () => {
+  //   try {
+  //     setLoading(true);
+  //     let Company;
+  //     const SetcompanyId =
+  //       companyId && typeof companyId === "string" && companyId.trim() !== "";
+  //     if (companyId && SetcompanyId) {
+  //       Company = await GetCall(`/getCompanyLocations?companyId=${companyId}`);
+  //     }
+  //     if (Company?.data?.status === 200) {
+  //       setLocations(Company?.data?.companiesAllLocations);
+  //       setContracts(Company?.data?.contracts);
+  //       setClients(Company?.data?.clients);
+  //       // setTemplates(Company?.data?.templates);
+  //     } else {
+  //       showToast(Company?.data?.message, "error");
+  //     }
+  //     setLoading(false);
+  //     // console.log("Company", Company);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
   // useEffect(() => {
   //   // console.log("called");
@@ -1245,6 +1245,34 @@ const AddEmployee = () => {
 
   //   setFilteredAssignees(filtered);
   // }, [jobForm.role, assignee]);
+
+  const GetAllLocations = async () => {
+    try {
+      setLoading(true);
+      // let Company;
+      // const SetcompanyId =
+      //   companyId && typeof companyId === "string" && companyId.trim() !== "";
+      // if (companyId && id) {
+      const Company = await GetCall(
+        `/getCompanyLocations?companyId=${
+          companyId && id ? formData?.companyId : companyId
+        }`
+      );
+      // }
+      if (Company?.data?.status === 200) {
+        setLocations(Company?.data?.companiesAllLocations);
+        setContracts(Company?.data?.contracts);
+        setClients(Company?.data?.clients);
+        // setTemplates(Company?.data?.templates);
+      } else {
+        showToast(Company?.data?.message, "error");
+      }
+      setLoading(false);
+      // console.log("Company", Company);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
     if (!employeeFormFilled) {

@@ -149,10 +149,6 @@
 }
 
 @media (max-width: 767px) {
-  .viewtask-input-dropdown {
-    padding: 11px;
-  }
-
   .task-input-dropdown {
     padding: 11px;
   }
@@ -171,67 +167,6 @@
     padding: 7px;
   }
 
-  .view-task-filter-container {
-    gap: 5px;
-  }
-
-  .viewtask-input-dropdown .MuiSelect-select {
-    font-size: 12px;
-  }
-
-  .viewtask-input-dropdown {
-    padding: 7px;
-  }
-
-  .task-title {
-    display: block;
-  }
-  .clockin-model {
-    width: 70%;
-  }
-  .clockin-out-action {
-    gap: 5px;
-  }
-  .absencesheet-clock-in-btn,
-  .absencesheet-clock-out-btn {
-    padding: 15px 10px;
-    font-size: 10px;
-  }
-  .clockin-out-action button {
-    padding: 8px;
-  }
-  .absencesheetreport-searchbar {
-    justify-content: flex-start;
-    gap: 10px;
-  }
-  .absencesheet-button-container {
-    gap: 5px;
-  }
-  .absencesheet-report-download-container {
-    flex-direction: column;
-  }
-  .absencesheet-input-container input,
-  .absencesheet-input-container select {
-    width: calc(100% - 20px);
-  }
-  .absencesheet-input-container select {
-    width: 100%;
-  }
-  .absencesheet-report-download-container button {
-    margin-top: 0;
-  }
-  .task-flex {
-    flex-direction: column;
-    align-items: start;
-  }
-  .absence-dropdown .MuiSelect-select {
-    font-size: 12px;
-  }
-
-  .absence-dropdown {
-    padding: 7px;
-  }
-
   .task-input-dropdown .MuiSelect-select {
     font-size: 12px;
   }
@@ -242,10 +177,6 @@
 
   .task-filter-container {
     flex-direction: column;
-    gap: 5px;
-  }
-
-  .task-filter-container {
     gap: 10px;
   }
 
@@ -253,17 +184,9 @@
     gap: 10px;
   }
 
-  .task-download-container button {
-    margin-top: 18px;
-  }
-
   .task-searchbar {
     /* justify-content: flex-start; */
     gap: 10px;
-  }
-
-  .task-input-container select {
-    width: calc(100% - 20px);
   }
 
   .task-input-container select {
@@ -274,10 +197,3 @@
     gap: 5px;
   }
 }
-
-/* @media (max-width: 350px) {
-  .View-task-main .fc .fc-toolbar {
-    flex-direction: column;
-    gap: 5px;
-  }
-} */

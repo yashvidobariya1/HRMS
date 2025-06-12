@@ -353,7 +353,7 @@ const protectedRoutes = [
     roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
-    path: "/viewtask/showtask",
+    path: "/viewtask/taskdetails",
     component: <AddTask />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },

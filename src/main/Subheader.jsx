@@ -63,6 +63,10 @@ const pageNames = {
   myabsencereport: "My Report",
   staffabsencereport: "Staff Report",
   stafftask: "Staff Task",
+  taskdetails: "Task Details",
+  edittask: "Update Task",
+  addtask: "Add Task",
+  viewtask: "View Task",
 };
 
 const Subheader = () => {

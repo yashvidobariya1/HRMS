@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-// import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useApiServices from "../../useApiServices";
 import "./ViewTasks.css";
 import "tippy.js/dist/tippy.css";
 import moment from "moment";
 import { showToast } from "../../main/ToastManager";
-// import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import Loader from "../Helper/Loader";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { ListSubheader, Select, TextField, MenuItem } from "@mui/material";
@@ -40,7 +38,7 @@ const ViewTasks = () => {
   const maxDate = moment().format("YYYY-MM-DD");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
-  const [totalTask, settotalTask] = useState(0);
+  const [totalTask, settotalTask] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [perPage, setPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,243 +51,20 @@ const ViewTasks = () => {
     setCurrentPage(pageNumber);
   };
 
-  const [formData, setFormData] = useState({
-    taskDate: "",
-    taskName: "",
-    taskDescription: "",
-    startTime: "",
-    endTime: "",
-    startDate: "",
-    endDate: "",
-  });
-
-  // const handleDateClick = (info) => {
-  //   // console.log("save click");
-  //   setFormData({
-  //     taskDate: "",
-  //     taskName: "",
-  //     taskDescription: "",
-  //     startTime: "",
-  //     endTime: "",
-  //   });
-  //   const clickedDate = moment(info.dateStr).format("YYYY-MM-DD");
-  //   const todayDate = moment().format("YYYY-MM-DD");
-
-  //   if (moment(clickedDate).isBefore(todayDate)) {
-  //     showToast("You can not select past dates", "error");
-  //     return;
-  //   }
-
-  //   if (clickedDate === todayDate) {
-  //     showToast("You can not select today's date", "error");
-  //     return;
-  //   }
-
-  //   const existingEvent = taskList.find(
-  //     (task) => moment(task.taskDate).format("YYYY-MM-DD") === clickedDate
-  //   );
-
-  //   if (existingEvent) {
-  //     setFormData({
-  //       _id: existingEvent._id,
-  //       taskDate: existingEvent.taskDate,
-  //       taskDescription: existingEvent.taskDescription,
-  //       taskName: existingEvent.taskName,
-  //       startTime: existingEvent.startTime,
-  //       endTime: existingEvent.endTime,
-  //     });
-  //   } else {
-  //     setFormData((prevFormData) => ({
-  //       ...prevFormData,
-  //       taskDate: clickedDate,
-  //     }));
-  //   }
-  //   setIsPopupOpen(true);
-  // };
-
-  // const handleNextClick = () => {
-  //   const calendarApi = calendarRef.current.getApi();
-  //   calendarApi.next();
-
-  //   const currentDate = calendarApi.getDate();
-  //   const year = currentDate.getFullYear();
-  //   const month = currentDate.getMonth() + 1;
-
-  //   // console.log("Next", currentDate, year, month);
-
-  //   setAppliedFilters((prev) => ({
-  //     ...prev,
-  //     year,
-  //     month,
-  //   }));
-  //   setSelectedYear(year);
-  //   setSelectedMonth(month);
-  //   // console.log("appliaedfilter", appliedFilters);
-  // };
-
-  // const handlePrevClick = () => {
-  //   const calendarApi = calendarRef.current.getApi();
-  //   calendarApi.prev();
-
-  //   const currentDate = calendarApi.getDate();
-  //   const year = currentDate.getFullYear();
-  //   const month = currentDate.getMonth() + 1;
-
-  //   // console.log("Prev", currentDate, year, month);
-
-  //   setAppliedFilters((prev) => ({
-  //     ...prev,
-  //     year,
-  //     month,
-  //   }));
-  //   setSelectedYear(year);
-  //   setSelectedMonth(month);
-  // };
-
-  // const handleTodayClick = () => {
-  //   const calendarApi = calendarRef.current.getApi();
-  //   calendarApi.today();
-
-  //   const currentDate = calendarApi.getDate();
-  //   const year = currentDate.getFullYear();
-  //   const month = currentDate.getMonth() + 1;
-
-  //   setAppliedFilters((prev) => ({
-  //     ...prev,
-  //     year,
-  //     month,
-  //   }));
-  //   setSelectedYear(year);
-  //   setSelectedMonth(month);
-  // };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "startDate") {
+      setSelectedStartDate(value);
+    } else if (name === "endDate") {
+      setSelectedEndDate(value);
+    }
   };
 
   const handlePerPageChange = (e) => {
     setPerPage(e);
     setCurrentPage(1);
   };
-
-  // const GetClientdata = async () => {
-  //   const payload = {
-  //     jobId: selectedEmployee ? selectedJobId : jobRoleId,
-  //     userId: selectedEmployee,
-  //   };
-
-  //   try {
-  //     const response = await PostCall(`/getUsersAssignClients`, payload);
-
-  //     if (response?.data?.status === 200) {
-  //       const jobTitles = response.data.assignClients;
-  //       // console.log("job title", jobTitles);
-  //       setClientdata(jobTitles);
-
-  //       if (jobTitles.length > 1) {
-  //         setopenClietnSelectModal(false);
-  //       } else {
-  //         setSelectedClientId(jobTitles[0]?.clientId);
-  //         setopenClietnSelectModal(true);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
-  // const handleClientPopupClose = (value) => {
-  //   console.log("handleClientPopupClose", value);
-  //   setopenClietnSelectModal(true);
-  //   if (value) {
-  //     setSelectedEmployee("");
-  //     setTaskList([]);
-  //     setSelectedJobId("");
-  //     setIsWorkFromOffice(false);
-  //     setSelectedClientId("");
-  //   }
-  // };
-
-  // const handleClientSelect = (selectedTitle) => {
-  //   // console.log("setSelectedClientId", selectedClientId);
-  //   setSelectedClientId(selectedTitle);
-  //   setopenClietnSelectModal(true);
-  // };
-
-  // const validate = () => {
-  //   let newErrors = {};
-  //   if (formData._id && !formData.taskDate) {
-  //     newErrors.taskDate = "Task Date is required";
-  //   }
-  //   // if (!formData.taskName) newErrors.taskName = "Task Name is required";
-  //   // if (!formData.taskDescription)
-  //   //   newErrors.taskDescription = "Task Description is required";
-  //   if (!formData._id) {
-  //     if (!formData.startDate) newErrors.startDate = "Start Date is required";
-  //     // if (!formData.endDate) newErrors.endDate = "End Date is required";
-  //   }
-
-  //   // if (formData.startDate && formData.endDate) {
-  //   //   const start = moment(formData.startDate, "YYYY-MM-DD");
-  //   //   const end = moment(formData.endDate, "YYYY-MM-DD");
-
-  //   //   if (start.isAfter(end)) {
-  //   //     newErrors.startDate = "Start Date cannot be after End Date";
-  //   //     newErrors.endDate = "End Date cannot be before Start Date";
-  //   //   }
-  //   // }
-  //   if (!formData.startTime) newErrors.startTime = "Start Time is required";
-  //   if (!formData.endTime) newErrors.endTime = "End Time is required";
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
-
-  // const handleAddTask = async (e) => {
-  //   // console.log("handle add task", e, selectedJobId);
-  //   e.preventDefault();
-  //   if (!validate()) return;
-
-  //   try {
-  //     setLoading(true);
-  //     let response;
-  //     const data = {
-  //       ...formData,
-  //       userId: selectedEmployee ? selectedEmployee : "",
-  //       jobId: selectedJobId ? selectedJobId : jobRoleId,
-  //       clientId: selectedClientId,
-  //     };
-  //     // console.log("formData", formData);
-  //     if (formData._id) {
-  //       response = await PostCall(`/updateTask/${formData._id}`, data);
-  //     } else {
-  //       response = await PostCall("/createTask", data);
-  //     }
-  //     if (response?.data?.status === 200) {
-  //       showToast(response?.data?.message, "success");
-  //       // console.log("formdata", formData);
-
-  //       setTaskList((prev) => {
-  //         if (formData._id) {
-  //           return prev.map((task) =>
-  //             task._id === formData._id ? { ...task, ...formData } : task
-  //           );
-  //         } else {
-  //           return [...prev, { ...formData, _id: response?.data?.taskId }];
-  //         }
-  //       });
-  //       getAllTasks();
-  //       setIsPopupOpen(false);
-  //     } else {
-  //       showToast(response?.data?.message, "error");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     showToast("An error occurred", "error");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const confirmDelete = async (id) => {
     try {
@@ -316,7 +91,6 @@ const ViewTasks = () => {
 
   const cancelDelete = () => {
     setShowConfirm(false);
-    // setShowDropdownAction(null);
   };
 
   const handleCheckboxChange = (event) => {
@@ -351,9 +125,8 @@ const ViewTasks = () => {
 
       if (response?.data?.status === 200) {
         setTaskList(response?.data.reports);
-        settotalTask(response.data.totalReports);
-        setTotalPages(response.data.totalPages);
-        // console.log("response:", response?.data.tasks);
+        settotalTask(response.data?.reports);
+        setTotalPages(response.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -432,7 +205,7 @@ const ViewTasks = () => {
   };
 
   const handleView = (taskId) => {
-    navigate(`/viewtask/showtask/companyId=${taskId}`);
+    navigate(`/viewtask/taskdetails?taskId=${taskId}`);
   };
 
   const handleEdit = (id) => {
@@ -739,8 +512,6 @@ const ViewTasks = () => {
                 max={maxDate}
               />
             </div>
-
-            {/* <button onClick={handleFilter}>Filter</button> */}
           </div>
         </div>
       </div>
@@ -788,10 +559,10 @@ const ViewTasks = () => {
             data={taskList?.map((task) => ({
               taskdate: moment(task.taskDate).format("DD/MM/YYYY"),
               userName: task.userName,
+              jobRole: task.jobRole,
               taskloctionandorclientName: isWorkFromOffice
                 ? task.locationName
                 : task.clientName,
-              jobRole: task.jobRole,
               starttime: task.startTime,
               endtime: task.endTime,
               actions: (

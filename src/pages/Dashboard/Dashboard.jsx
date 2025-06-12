@@ -93,7 +93,7 @@ const Dashboard = () => {
   const [isSignatureSaved, setIsSignatureSaved] = useState(false);
   // const [selectedMonth, setSelectedMonth] = useState(moment().month());
   const jobRoleId = useSelector(
-    (state) => state.jobRoleSelect.jobRoleSelect.jobId
+    (state) => state.jobRoleSelect?.jobRoleSelect?.jobId
   );
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
@@ -425,12 +425,12 @@ const Dashboard = () => {
     fetchData(selected);
   };
 
-  const DashboarDetails = async (companyId) => {
+  const DashboarDetails = async () => {
     const jobId = jobRoleId;
     try {
       setLoading(true);
       let response;
-      if (userRole === "Superadmin" && companyId) {
+      if (userRole === "Superadmin") {
         response = await PostCall(`/dashboard?companyId=${companyId}`);
       } else {
         response = await PostCall(`/dashboard`, {
@@ -499,8 +499,8 @@ const Dashboard = () => {
       }
 
       if (response?.data?.status === 200) {
-        setAllholidayList(response?.data.holidays);
-        setTotalHoliday(response.data.totalHolidays);
+        setAllholidayList(response?.data?.holidays);
+        setTotalHoliday(response.data?.totalHolidays);
         // setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
@@ -587,7 +587,7 @@ const Dashboard = () => {
       if (response?.data?.status === 200) {
         // setNotifications(response.data.notifications);
         // setTotalPages(response.data.totalPages);/
-        const unreadCount = response.data.unreadNotificationsCount;
+        const unreadCount = response?.data?.unreadNotificationsCount;
         // console.log("unreadCount", response.data.unreadNotificationsCount);
         dispatch(setNotificationCount(unreadCount));
       } else {
@@ -648,18 +648,22 @@ const Dashboard = () => {
   }, [userRole]);
 
   useEffect(() => {
-    const SetcompanyId =
-      companyId && typeof companyId === "string" && companyId.trim() !== "";
-
-    if (jobRoleId && companyId && SetcompanyId) {
-      // console.log("dashboard api call");
-      DashboarDetails(companyId);
+    if (jobRoleId && userRole !== "Superadmin") {
+      DashboarDetails();
     }
-    // else if (userRole !== "Superadmin" && jobRoleId) {
-    //   DashboarDetails();
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobRoleId, companyId]);
+  }, [jobRoleId]);
+
+  useEffect(() => {
+    if (
+      typeof companyId === "string" &&
+      companyId.trim() !== "" &&
+      userRole === "Superadmin"
+    ) {
+      DashboarDetails();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId]);
 
   // useEffect(() => {
   //   const filtered = UserGrowth?.filter(
@@ -1019,7 +1023,7 @@ const Dashboard = () => {
                       </thead>
                       <tbody>
                         {timeSheetData?.length > 0 ? (
-                          timeSheetData.map((entry) =>
+                          timeSheetData?.map((entry) =>
                             entry.clockEntries.map((clock, index) => (
                               <tr key={index}>
                                 <td>
@@ -1083,7 +1087,7 @@ const Dashboard = () => {
                     ))}
                   </select> */}
                 </div>
-                {userGrowth.length > 0 ? (
+                {userGrowth?.length > 0 ? (
                   <ResponsiveContainer width="100%" height={330}>
                     <BarChart data={userGrowth}>
                       <CartesianGrid strokeDasharray="2 2" />
@@ -1111,7 +1115,7 @@ const Dashboard = () => {
             {userRole !== "Superadmin" && (
               <div className="employee-status-container">
                 <h1>Total Wroking Hours</h1>
-                {formattedData.length > 0 ? (
+                {formattedData?.length > 0 ? (
                   <ResponsiveContainer width="100%" height={330}>
                     <BarChart data={formattedData}>
                       <CartesianGrid strokeDasharray="2 2" />
@@ -1146,7 +1150,7 @@ const Dashboard = () => {
                   <h3>Attendance & Leaves</h3>
                 </div>
                 <div className="stats-grid">
-                  {DashboardData.totalLeaveRequests !== undefined && (
+                  {DashboardData?.totalLeaveRequests !== undefined && (
                     <div className="stat">
                       <span className="state-totalelave">
                         {DashboardData.totalLeaveRequests}
@@ -1155,7 +1159,7 @@ const Dashboard = () => {
                     </div>
                   )}
 
-                  {DashboardData.totalPendingLR !== undefined && (
+                  {DashboardData?.totalPendingLR !== undefined && (
                     <div className="stat">
                       <span className="state-totalpeding">
                         {DashboardData.totalPendingLR}
@@ -1272,8 +1276,8 @@ const Dashboard = () => {
                         <MenuItem value="" className="menu-item">
                           Select Location
                         </MenuItem>
-                        {filteredLocationList.length > 0 ? (
-                          filteredLocationList.map((location, index) => (
+                        {filteredLocationList?.length > 0 ? (
+                          filteredLocationList?.map((location, index) => (
                             <MenuItem
                               key={index}
                               value={location?.locationName}
