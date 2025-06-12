@@ -194,4 +194,8 @@
   .slider-label {
     font-size: 10px;
   }
+
+  .checkbox-country .MuiSelect-select {
+    width: 120px;
+  }
 }

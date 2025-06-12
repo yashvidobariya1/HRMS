@@ -19,7 +19,7 @@
   display: flex;
   color: var(--sidebar-hover);
   align-items: center;
-  justify-content: space-between;
+  justify-content: end;
   width: calc(100% - 20px);
   z-index: 0;
   margin-bottom: 13px;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Loader from "../Helper/Loader";
 import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router";
 import "./AddLeaves.css";
 import moment from "moment";
 import { useSelector } from "react-redux";
-import { MenuItem, Select } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 import AssignClient from "../../SeparateCom/AssignClient";
 
 const AddLeaves = () => {
@@ -36,6 +36,13 @@ const AddLeaves = () => {
     (state) => state.jobRoleSelect.jobRoleSelect.jobId
   );
   // console.log("Jobtitle", Jobtitle);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filterLeaveList = useMemo(() => {
+    return leaveTypes.filter((item) =>
+      item.leaveType.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, leaveTypes]);
 
   const [formData, setformData] = useState({
     selectionDuration: "",
@@ -368,26 +375,62 @@ const AddLeaves = () => {
               onChange={handleChange}
               displayEmpty
               MenuProps={{
+                disableAutoFocusItem: true,
                 PaperProps: {
                   style: {
                     width: 200,
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
                     maxHeight: 200,
-                    scrollbarWidth: "thin",
                     overflowX: "auto",
+                    scrollbarWidth: "thin",
+                  },
+                },
+                MenuListProps: {
+                  onMouseDown: (e) => {
+                    if (e.target.closest(".search-textfield")) {
+                      e.stopPropagation();
+                    }
                   },
                 },
               }}
+              renderValue={(selected) => {
+                if (!selected) return "Select Leave Type";
+                const found = leaveTypes.find(
+                  (item) => item.leaveType === selected
+                );
+                return found
+                  ? `${found.leaveType} (${found.count} ${found.type})`
+                  : "Not Found";
+              }}
             >
-              <MenuItem value="" disabled>
+              <ListSubheader>
+                <TextField
+                  size="small"
+                  placeholder="Search Leave"
+                  fullWidth
+                  className="search-textfield"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+              </ListSubheader>
+              <MenuItem value="" disabled className="menu-item">
                 Select Leave
               </MenuItem>
-              {leaveTypes.map((leaveType) => (
-                <MenuItem key={leaveType.leaveType} value={leaveType.leaveType}>
-                  {leaveType.leaveType} ({leaveType.count} {leaveType.type})
+              {filterLeaveList.length > 0 ? (
+                filterLeaveList.map((leaveType) => (
+                  <MenuItem
+                    key={leaveType.leaveType}
+                    value={leaveType.leaveType}
+                    className="menu-item"
+                  >
+                    {leaveType.leaveType} ({leaveType.count} {leaveType.type})
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled className="menu-item">
+                  No Leave found
                 </MenuItem>
-              ))}
+              )}
             </Select>
             {errors.leaveType && (
               <div className="error-text">{errors.leaveType}</div>

@@ -8,31 +8,31 @@ import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
 import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
-const AbsenceReport = () => {
+const MyAbsenceReport = () => {
   const { PostCall, GetCall } = useApiServices();
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(50);
   const [loading, setLoading] = useState(false);
-  const [employeeList, setEmployeeList] = useState([]);
   const [clientList, setClientList] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
   const [selectedClient, setselectedClient] = useState("allClients");
   const [locationList, setlocationList] = useState([]);
   const [selectedLocation, setselectedLocation] = useState("allLocations");
   const [locationSearchTerm, setlocationSearchTerm] = useState("");
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
+  const isWorkFromOffice = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
+  );
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [absenceReportList, setAbsenceReportList] = useState([]);
   const [clientSearchTerm, setClientSearchTerm] = useState("");
+  const userId = useSelector((state) => state.userInfo.userInfo._id);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalAbsencesheet, settotalAbsencesheet] = useState([]);
-  const [searchTerm, setsearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
 
   const handleChange = (e) => {
@@ -44,12 +44,6 @@ const AbsenceReport = () => {
       setSelectedEndDate(value);
     }
   };
-
-  const filteredEmployeeList = useMemo(() => {
-    return employeeList.filter((user) =>
-      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, employeeList]);
 
   const filteredClientList = useMemo(() => {
     return clientList.filter((client) =>
@@ -74,22 +68,6 @@ const AbsenceReport = () => {
     setCurrentPage(1);
   };
 
-  const handleEmployeeChange = (employeeId) => {
-    setSelectedEmployee(employeeId);
-  };
-
-  const handleCheckboxChange = (event) => {
-    const checked = event.target.checked;
-    setisWorkFromOffice(checked);
-    setselectedClient("");
-    setSelectedEmployee("");
-    setSelectedStartDate("");
-    setSelectedEndDate("");
-    setselectedClient("allClients");
-    setSelectedEmployee("allUsers");
-    setselectedLocation("allLocations");
-  };
-
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -98,14 +76,14 @@ const AbsenceReport = () => {
     try {
       setLoading(true);
       const filters = {
-        userId: selectedEmployee,
+        userId: userId,
         [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
           ? selectedLocation
           : selectedClient,
       };
 
       const response = await PostCall(
-        `/getAbsenceReport?page=${currentPage}&limit=${perPage}&companyId=${companyId}&search=${debouncedSearch}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&isWorkFromOffice=${isWorkFromOffice}`,
+        `/getAbsenceReport?page=${currentPage}&limit=${perPage}&search=${debouncedSearch}&companyId=${companyId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&isWorkFromOffice=${isWorkFromOffice}`,
         filters
       );
 
@@ -133,8 +111,8 @@ const AbsenceReport = () => {
   const getAllLocations = async () => {
     try {
       setLoading(true);
-      const response = await PostCall(
-        `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
+      const response = await GetCall(
+        `/getUsersJobLocations?companyId=${companyId}&userId=${userId}`
       );
       if (response?.data?.status === 200) {
         setlocationList(response?.data.locations);
@@ -151,7 +129,7 @@ const AbsenceReport = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllClientsOfUser?companyId=${companyId}&userId=${selectedEmployee}&isWorkFromOffice=${isWorkFromOffice}`
+        `/getAllClientsOfUser?companyId=${companyId}&userId=${userId}&isWorkFromOffice=${isWorkFromOffice}`
       );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
@@ -164,88 +142,6 @@ const AbsenceReport = () => {
       console.error("Error fetching data:", error);
     }
   };
-
-  const getAllUsersOfClientOrLocation = async () => {
-    try {
-      setLoading(true);
-      // const formdata = {
-      //   clientId: selectedClient,
-      //   isWorkFromOffice: isWorkFromOffice,
-      // };
-      const response = await GetCall(
-        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
-      );
-      if (response?.data?.status === 200) {
-        setEmployeeList(response?.data.users);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedEmployee && isWorkFromOffice) {
-      getAllLocations();
-    }
-  }, [isWorkFromOffice, selectedLocation, companyId, selectedEmployee]);
-
-  useEffect(() => {
-    if (selectedEmployee && !isWorkFromOffice) {
-      getAllClientsOfUser();
-    }
-  }, [selectedEmployee, companyId]);
-
-  useEffect(() => {
-    if (selectedClient) {
-      getAllUsersOfClientOrLocation();
-    }
-  }, [selectedClient, companyId]);
-
-  // useEffect(() => {
-  //   const AbsenceReport =
-  //     (selectedEmployee &&
-  //       selectedJobId &&
-  //       selectedClientId &&
-  //       appliedFilters) ||
-  //     (!selectedEmployee &&
-  //       appliedFilters &&
-  //       ((jobRoleId && jobRoleisworkFromOffice) ||
-  //         (jobRoleId && !jobRoleisworkFromOffice && selectedClientId) ||
-  //         (selectedJobId && !jobRoleisworkFromOffice && selectedClientId))) ||
-  //     (selectedJobId && isWorkFromOffice);
-
-  //   if (AbsenceReport) {
-  //     GetAbsenceReport();
-  //   }
-  // }, [
-  //   selectedEmployee,
-  //   selectedJobId,
-  //   selectedClientId,
-  //   jobRoleId,
-  //   isWorkFromOffice,
-  //   jobRoleisworkFromOffice,
-  //   appliedFilters,
-  // ]);
-
-  useEffect(() => {
-    // if (selectedEmployee || selectedClient) {
-    GetAbsenceReport();
-    // }
-  }, [
-    selectedClient,
-    selectedEmployee,
-    debouncedSearch,
-    selectedStartDate,
-    selectedEndDate,
-    isWorkFromOffice,
-    currentPage,
-    perPage,
-    selectedLocation,
-    companyId,
-  ]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -261,84 +157,47 @@ const AbsenceReport = () => {
     };
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (userId && isWorkFromOffice) {
+      getAllLocations();
+    }
+  }, [isWorkFromOffice, selectedLocation, companyId, userId]);
+
+  useEffect(() => {
+    if (userId && !isWorkFromOffice) {
+      getAllClientsOfUser();
+    }
+  }, [userId, isWorkFromOffice]);
+
+  useEffect(() => {
+    // if (selectedEmployee || selectedClient) {
+    GetAbsenceReport();
+    // }
+  }, [
+    selectedClient,
+    userId,
+    debouncedSearch,
+    selectedStartDate,
+    selectedEndDate,
+    isWorkFromOffice,
+    perPage,
+    selectedLocation,
+    currentPage,
+    companyId,
+  ]);
+
   return (
     <div className="absencesheet-list-container">
       <div className="absencesheet-flex">
         <div className="absencesheet-title">
-          <h1>Staff Absence Report</h1>
+          <h1>Absence Report</h1>
         </div>
       </div>
 
       <div className="absence-filter-container">
         <div className="absence-filter-timsheetreport-main">
-          {userRole !== "Employee" && (
+          {!isWorkFromOffice && (
             <div className="absence-filter-employee-selection">
-              <label className="label">Employee</label>
-              <Select
-                className="absence-input-dropdown"
-                value={selectedEmployee}
-                onChange={(e) => handleEmployeeChange(e.target.value)}
-                displayEmpty
-                MenuProps={{
-                  disableAutoFocusItem: true,
-                  PaperProps: {
-                    style: {
-                      width: 150,
-                      maxHeight: 200,
-                      overflowX: "auto",
-                    },
-                  },
-                  MenuListProps: {
-                    onMouseDown: (e) => {
-                      if (e.target.closest(".search-textfield")) {
-                        e.stopPropagation();
-                      }
-                    },
-                  },
-                }}
-                renderValue={(selected) => {
-                  if (!selected) return "Select Employee";
-                  if (selected === "allUsers") return "All Employees";
-                  const found = employeeList.find(
-                    (emp) => emp._id === selected
-                  );
-                  return found?.userName || "Select Employee";
-                }}
-              >
-                <ListSubheader>
-                  <TextField
-                    size="small"
-                    placeholder="Search Employee"
-                    fullWidth
-                    className="search-textfield"
-                    value={searchTerm}
-                    onChange={(e) => setsearchTerm(e.target.value)}
-                    onKeyDown={(e) => e.stopPropagation()}
-                  />
-                </ListSubheader>
-
-                <MenuItem value="allUsers" className="menu-item">
-                  All Employees
-                </MenuItem>
-                {filteredEmployeeList.length > 0 ? (
-                  filteredEmployeeList.map((emp) => (
-                    <MenuItem
-                      key={emp._id}
-                      value={emp._id}
-                      className="menu-item"
-                    >
-                      {emp.userName}
-                    </MenuItem>
-                  ))
-                ) : (
-                  <MenuItem disabled>Not Found</MenuItem>
-                )}
-              </Select>
-            </div>
-          )}
-
-          {userRole !== "Employee" && !isWorkFromOffice && (
-            <div className="filter-employee-selection">
               <label className="label">Client</label>
               <Select
                 className="absence-input-dropdown"
@@ -398,7 +257,7 @@ const AbsenceReport = () => {
           )}
 
           {userRole !== "Employee" && isWorkFromOffice && (
-            <div className="filter-employee-selection">
+            <div className="absence-filter-employee-selection">
               <label className="label">Location</label>
               <Select
                 className="absence-input-dropdown"
@@ -495,19 +354,8 @@ const AbsenceReport = () => {
         </div>
       </div>
 
-      <div className="absence-officework">
-        <div className="absence-searchbar">
-          <TextField
-            placeholder="Search Absence Report"
-            variant="outlined"
-            size="small"
-            value={searchQuery}
-            className="common-searchbar"
-            onChange={handleSearchChange}
-          />
-        </div>
-
-        <div className="absence-isWorkFromOffice">
+      {/* <div className="timesheetreport-officework">
+        <div className="timesheetreport-isWorkFromOffice">
           <input
             type="checkbox"
             data-testid="send-link"
@@ -515,8 +363,19 @@ const AbsenceReport = () => {
             checked={isWorkFromOffice}
             onChange={handleCheckboxChange}
           />
-          <label>Office Work?</label>
         </div>
+        <label>Office Work?</label>
+      </div> */}
+
+      <div className="absence-searchbar">
+        <TextField
+          placeholder="Search Absence Report"
+          variant="outlined"
+          size="small"
+          value={searchQuery}
+          className="common-searchbar"
+          onChange={handleSearchChange}
+        />
       </div>
 
       {loading ? (
@@ -526,19 +385,9 @@ const AbsenceReport = () => {
       ) : (
         <>
           <CommonTable
-            headers={[
-              "Absence Date",
-              isWorkFromOffice ? "Location Name" : "Client Name",
-              ,
-              "Job Title",
-              "Status",
-            ]}
-            data={absenceReportList?.map((absencesheet) => ({
+            headers={["Absence Date", "Status"]}
+            data={absenceReportList.map((absencesheet) => ({
               absencesheetdate: moment(absencesheet.date).format("DD/MM/YYYY"),
-              absencelcaotionandorclientName: isWorkFromOffice
-                ? absencesheet.locationName
-                : absencesheet.clientName,
-              jobRole: absencesheet.jobRole,
               absencesheetstatus: absencesheet.status,
             }))}
             currentPage={currentPage}
@@ -566,4 +415,4 @@ const AbsenceReport = () => {
   );
 };
 
-export default AbsenceReport;
+export default MyAbsenceReport;

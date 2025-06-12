@@ -178,12 +178,13 @@ const HolidayList = () => {
                 className="holiday-year-select"
                 displayEmpty
                 MenuProps={{
+                  disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
-                      width: 100,
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
+                      width: 80,
                       maxHeight: 200,
+                      overflowX: "auto",
+                      scrollbarWidth: "thin",
                     },
                   },
                 }}
@@ -191,7 +192,7 @@ const HolidayList = () => {
                 {[...Array(currentYear - startYear + 1)].map((_, index) => {
                   const year = startYear + index;
                   return (
-                    <MenuItem key={year} value={year}>
+                    <MenuItem key={year} value={year} className="menu-item">
                       {year}
                     </MenuItem>
                   );

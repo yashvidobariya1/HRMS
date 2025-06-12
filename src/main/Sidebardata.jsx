@@ -106,8 +106,19 @@ export const SidebarData = [
       {
         title: "Absence Report",
         icon: <TbReportSearch />,
-        link: "/absencereport",
-        allowedRoles: ["Administrator", "Manager", "Employee", "Superadmin"],
+        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
+        subItems: [
+          {
+            title: "Staff Absence Report",
+            link: "/absencereport/staffabsencereport",
+            allowedRoles: ["Superadmin", "Administrator", "Manager"],
+          },
+          {
+            title: "My Absence Report",
+            link: "/absencereport/myabsencereport",
+            allowedRoles: ["Administrator", "Manager", "Employee"],
+          },
+        ],
       },
     ],
   },
@@ -153,7 +164,7 @@ export const SidebarData = [
         title: "View Tasks",
         icon: <FaTasks />,
         link: "/viewtasks",
-        allowedRoles: ["Employee", "Superadmin", "Administrator", "Manager"],
+        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
       },
       {
         title: "Timesheet Report",

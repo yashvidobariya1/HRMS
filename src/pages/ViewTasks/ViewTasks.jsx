@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -14,7 +14,7 @@ import DeleteConfirmation from "../../main/DeleteConfirmation";
 // import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import JobTitleForm from "../../SeparateCom/RoleSelect";
 import Loader from "../Helper/Loader";
-import { MenuItem, Select } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 import AssignClient from "../../SeparateCom/AssignClient";
 
 const ViewTasks = () => {
@@ -54,6 +54,7 @@ const ViewTasks = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const companyId = useSelector((state) => state.companySelect.companySelect);
+  const [searchTerm, setSearchTerm] = useState("");
   // const location = useLocation();
   // const searchParams = new URLSearchParams(location.search);
   // const EmployeeId = searchParams.get("EmployeeId");
@@ -61,6 +62,12 @@ const ViewTasks = () => {
     year: moment().year(),
     month: moment().month() + 1,
   });
+
+  const filterEmployee = useMemo(() => {
+    return employeeList.filter((item) =>
+      item.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, employeeList]);
 
   const applyFilters = () => {
     setAppliedFilters({
@@ -667,24 +674,55 @@ const ViewTasks = () => {
             MenuProps={{
               PaperProps: {
                 style: {
-                  width: 150,
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
+                  width: 120,
                   maxHeight: 200,
-                  scrollbarWidth: "thin",
                   overflowX: "auto",
+                  scrollbarWidth: "thin",
+                },
+              },
+              MenuListProps: {
+                onMouseDown: (e) => {
+                  if (e.target.closest(".search-textfield")) {
+                    e.stopPropagation();
+                  }
                 },
               },
             }}
+            renderValue={(selected) => {
+              if (!selected) return "Select Employee";
+              const found = employeeList.find((item) => item._id === selected);
+              return found ? found.userName : "Not Found";
+            }}
           >
+            <ListSubheader>
+              <TextField
+                size="small"
+                placeholder="Search Employees"
+                fullWidth
+                className="search-textfield"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+              />
+            </ListSubheader>
             <MenuItem value="" disabled>
               Select Employee
             </MenuItem>
-            {employeeList.map((employee) => (
-              <MenuItem key={employee._id} value={employee._id}>
-                {employee.userName}
+            {filterEmployee.length > 0 ? (
+              filterEmployee.map((employee) => (
+                <MenuItem
+                  key={employee._id}
+                  value={employee._id}
+                  className="menu-item"
+                >
+                  {employee.userName}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled className="menu-item">
+                No Leave found
               </MenuItem>
-            ))}
+            )}
           </Select>
         </div>
       )}

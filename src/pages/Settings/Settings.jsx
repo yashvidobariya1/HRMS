@@ -170,12 +170,12 @@ const Settings = () => {
         </div>
       </div>
       <TextField
-        label="Search Company"
         variant="outlined"
         size="small"
         value={searchQuery}
         className="common-searchbar"
         onChange={handleSearchChange}
+        placeholder="Search Company"
       />
       {loading ? (
         <div className="loader-wrapper">

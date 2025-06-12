@@ -256,6 +256,8 @@ import {
   Typography,
   FormControl,
   Select,
+  ListSubheader,
+  TextField,
 } from "@mui/material";
 import { SlOptionsVertical } from "react-icons/sl";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
@@ -283,10 +285,12 @@ const CommonTable = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [templateSearchTerms, setTemplateSearchTerms] = useState({});
   // const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  // const [rowsPerPage, setRowsPerPage] = useState(50);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [openRow, setOpenRow] = useState(null);
+  const [templateSearchTerm, setTemplateSearchTerm] = useState("");
   const navigate = useNavigate();
   // const location = useLocation();
   const page = 0;
@@ -301,6 +305,13 @@ const CommonTable = ({
   const handleMenuOpen = (event, rowId) => {
     setAnchorEl(event.currentTarget);
     setSelectedRow(rowId);
+  };
+
+  const handleSearchChange = (id, value) => {
+    setTemplateSearchTerms((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
   };
 
   const handleMenuClose = () => {
@@ -442,6 +453,9 @@ const CommonTable = ({
     "Working Time": "workingTime",
     "Job Title Name": "Name",
     "Client name": "clientName",
+    "Location Name": "absencelcaotionandorclientName",
+    "Client Name": "absencelcaotionandorclientName",
+    "Job Title": "jobRole",
   };
 
   const handleSort = (key) => {
@@ -487,8 +501,8 @@ const CommonTable = ({
   }, [isSearchQuery, searchQuery, sortedData]);
 
   const paginatedData = filteredData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+    page * showPerPage,
+    page * showPerPage + showPerPage
   );
 
   const getStatusColor = (status) => {
@@ -673,7 +687,7 @@ const CommonTable = ({
                               "roleWisePoints",
                               "reason",
                               "reasonOfLeave",
-                              "qrValue"
+                              "qrValue",
                             ].includes(key)
                         )
                         .map((key, index) => (
@@ -716,7 +730,12 @@ const CommonTable = ({
                                 if (key === "document") {
                                   return Array.isArray(item[key])
                                     ? item[key].map((documentName, index) => (
-                                        <div key={index}>{documentName}</div>
+                                        <div
+                                          key={index}
+                                          className="uploadfile-flex"
+                                        >
+                                          {documentName}
+                                        </div>
                                       ))
                                     : item[key];
                                 }
@@ -819,61 +838,134 @@ const CommonTable = ({
                                 }
 
                                 if (key === "Template") {
-                                  const templates = item["Template"];
+                                  const templates = item.Template;
+                                  const searchTerm =
+                                    templateSearchTerms[item._id] || "";
 
                                   if (
                                     !Array.isArray(templates) ||
                                     templates.length === 0
-                                  ) {
+                                  )
                                     return null;
-                                  }
+
+                                  const filteredTemplates = templates.filter(
+                                    (template) =>
+                                      template.templateName
+                                        .toLowerCase()
+                                        .includes(searchTerm.toLowerCase())
+                                  );
 
                                   return (
                                     <FormControl
-                                      className="employee-template"
                                       fullWidth
+                                      className="employee-template"
                                     >
                                       <Select
                                         displayEmpty
-                                        defaultValue=""
                                         fullWidth
+                                        defaultValue=""
+                                        MenuProps={{
+                                          disableAutoFocusItem: true,
+                                          PaperProps: {
+                                            style: {
+                                              maxHeight: 200,
+                                              overflowX: "auto",
+                                              scrollbarWidth: "thin",
+                                            },
+                                          },
+                                          MenuListProps: {
+                                            onMouseDown: (e) => {
+                                              if (
+                                                e.target.closest(
+                                                  ".search-textfield"
+                                                )
+                                              ) {
+                                                e.stopPropagation();
+                                              }
+                                            },
+                                          },
+                                        }}
+                                        renderValue={(selected) => {
+                                          if (!selected)
+                                            return "Select a template";
+                                          const found = templates.find(
+                                            (t) => t._id === selected
+                                          );
+                                          return (
+                                            found?.templateName || "Not found"
+                                          );
+                                        }}
                                       >
+                                        <ListSubheader>
+                                          <TextField
+                                            size="small"
+                                            placeholder="Search Template"
+                                            fullWidth
+                                            className="search-textfield"
+                                            value={searchTerm}
+                                            onChange={(e) =>
+                                              handleSearchChange(
+                                                item._id,
+                                                e.target.value
+                                              )
+                                            }
+                                            onKeyDown={(e) =>
+                                              e.stopPropagation()
+                                            }
+                                          />
+                                        </ListSubheader>
+
                                         <MenuItem
                                           value=""
                                           disabled
-                                          className="Employee-template-selection"
+                                          className="menu-item"
                                         >
                                           Select a template
                                         </MenuItem>
-                                        {templates.map((template) => (
-                                          <MenuItem
-                                            key={template._id}
-                                            value={template._id}
-                                            onClick={() => {
-                                              fetch(template.templateUrl)
-                                                .then((res) => res.blob())
-                                                .then((blob) => {
-                                                  const url =
-                                                    window.URL.createObjectURL(
-                                                      blob
+
+                                        {filteredTemplates.length > 0 ? (
+                                          filteredTemplates.map((template) => (
+                                            <MenuItem
+                                              key={template._id}
+                                              value={template._id}
+                                              className="menu-item"
+                                              onClick={() => {
+                                                fetch(template.templateUrl)
+                                                  .then((res) => res.blob())
+                                                  .then((blob) => {
+                                                    const url =
+                                                      window.URL.createObjectURL(
+                                                        blob
+                                                      );
+                                                    const a =
+                                                      document.createElement(
+                                                        "a"
+                                                      );
+                                                    a.href = url;
+                                                    a.download =
+                                                      template.templateName;
+                                                    document.body.appendChild(
+                                                      a
                                                     );
-                                                  const a =
-                                                    document.createElement("a");
-                                                  a.href = url;
-                                                  a.download =
-                                                    template.templateName;
-                                                  document.body.appendChild(a);
-                                                  a.click();
-                                                  a.remove();
-                                                  window.URL.revokeObjectURL(
-                                                    url
-                                                  );
-                                                });
-                                            }}
+                                                    a.click();
+                                                    a.remove();
+                                                    window.URL.revokeObjectURL(
+                                                      url
+                                                    );
+                                                  });
+                                              }}
+                                            >
+                                              {template.templateName}
+                                            </MenuItem>
+                                          ))
+                                        ) : (
+                                          <MenuItem
+                                            disabled
+                                            className="menu-item"
                                           >
-                                            {template.templateName}
+                                            No templates found
                                           </MenuItem>
-                                        ))}
+                                        )}
                                       </Select>
                                     </FormControl>
                                   );
@@ -970,7 +1062,7 @@ const CommonTable = ({
                               component="div"
                             >
                               {item.reasonOfLeave && (
-                                <div>
+                                <div className="leaverequest-reason">
                                   <strong> Reason For Leave :</strong>{" "}
                                   {item.reasonOfLeave}
                                 </div>
@@ -978,7 +1070,7 @@ const CommonTable = ({
 
                               {item.status === "Rejected" &&
                                 item.rejectionReason && (
-                                  <div>
+                                  <div className="leaverequest-rejection-reason">
                                     <strong>Rejection Reason : </strong>{" "}
                                     {item.rejectionReason}
                                   </div>
@@ -1005,7 +1097,7 @@ const CommonTable = ({
 
                               {item.status === "Approved" &&
                                 item.approvalReason && (
-                                  <div>
+                                  <div className="leaverequest-approve-reason">
                                     <strong>Approval Reason : </strong>{" "}
                                     {item.approvalReason}
                                   </div>

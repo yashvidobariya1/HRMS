@@ -432,7 +432,7 @@ const EmploymentContract = () => {
         </h5>
       </div>
       <TextField
-        label="Search Contract"
+        placeholder="Search Contract"
         variant="outlined"
         size="small"
         value={searchQuery}
@@ -468,8 +468,8 @@ const EmploymentContract = () => {
             onPerPageChange={handleContractPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            searchQuery={searchQuery}
-            isSearchQuery={true}
+            // searchQuery={searchQuery}
+            // isSearchQuery={true}
             totalData={totalContracts}
           />
 

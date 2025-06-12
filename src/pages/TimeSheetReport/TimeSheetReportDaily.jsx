@@ -27,20 +27,22 @@ import {
 import { BsHourglassSplit } from "react-icons/bs";
 
 const TimeSheetReportDaily = () => {
-  const { PostCall } = useApiServices();
+  const { PostCall, GetCall } = useApiServices();
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [errors, setErrors] = useState({});
-  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [timesheetReportList, setTimesheetReportList] = useState([]);
-  const [isFromofficeWork, setisFromofficeWork] = useState(false);
+  const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
   const [clientList, setClientList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
   const [selectedClient, setselectedClient] = useState("allClients");
+  const [locationList, setlocationList] = useState([]);
+  const [selectedLocation, setselectedLocation] = useState("allLocations");
+  const [locationSearchTerm, setlocationSearchTerm] = useState("");
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
@@ -63,6 +65,14 @@ const TimeSheetReportDaily = () => {
     );
   }, [clientList, clientSearchTerm]);
 
+  const filteredLocationList = useMemo(() => {
+    return locationList.filter((location) =>
+      location.locationName
+        .toLowerCase()
+        .includes(locationSearchTerm.toLowerCase())
+    );
+  }, [locationList, locationSearchTerm]);
+
   const [sortConfig, setSortConfig] = React.useState({
     key: "",
     direction: "asc",
@@ -80,11 +90,12 @@ const TimeSheetReportDaily = () => {
 
   const handleCheckboxChange = (event) => {
     const checked = event.target.checked;
-    setisFromofficeWork(checked);
+    setisWorkFromOffice(checked);
     setselectedClient("allClients");
     setSelectedEmployee("allUsers");
     setSelectedStartDate("");
     setSelectedEndDate("");
+    setselectedLocation("allLocations");
   };
 
   const handleEmployeeChange = (value) => {
@@ -94,13 +105,12 @@ const TimeSheetReportDaily = () => {
   const getAllClientsOfUser = async () => {
     try {
       setLoading(true);
-      const formdata = {
-        userId: selectedEmployee,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      const response = await PostCall(
-        `/getAllClientsOfUser?companyId=${companyId}`,
-        formdata
+      // const formdata = {
+      //   userId: selectedEmployee,
+      //   isWorkFromOffice: isWorkFromOffice,
+      // };
+      const response = await GetCall(
+        `/getAllClientsOfUser?companyId=${companyId}&userId=${selectedEmployee}&isWorkFromOffice=${isWorkFromOffice}`
       );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
@@ -118,20 +128,39 @@ const TimeSheetReportDaily = () => {
     setselectedClient(value);
   };
 
-  const getAllUsersOfClient = async () => {
+  const handleLocationChange = (value) => {
+    setselectedLocation(value);
+  };
+
+  const getAllUsersOfClientOrLocation = async () => {
     try {
       setLoading(true);
-      const formdata = {
-        clientId: selectedClient,
-        isWorkFromOffice: isFromofficeWork,
-      };
-      const response = await PostCall(
-        `/getAllUsersOfClient?companyId=${companyId}`,
-        formdata
+      // const formdata = {
+      //   clientId: selectedClient,
+      //   isWorkFromOffice: isWorkFromOffice,
+      // };
+      const response = await GetCall(
+        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
       );
       if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "error");
         setEmployeeList(response?.data.users);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const getAllLocations = async () => {
+    try {
+      setLoading(true);
+      const response = await GetCall(
+        `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
+      );
+      if (response?.data?.status === 200) {
+        setlocationList(response?.data.locations);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -146,13 +175,17 @@ const TimeSheetReportDaily = () => {
       setLoading(true);
       const filters = {
         userId: selectedEmployee,
-        clientId: selectedClient,
+        // locationId: selectedLocation,
+        // clientId: selectedClient,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
       };
 
       console.log("filter", filters);
       const frequency = "Daily";
       const response = await PostCall(
-        `/getTimesheetReport?page=${currentPage}&limit=${rowsPerPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isFromofficeWork}`,
+        `/getTimesheetReport?companyId=${companyId}&page=${currentPage}&limit=${rowsPerPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}`,
         filters
       );
 
@@ -188,14 +221,13 @@ const TimeSheetReportDaily = () => {
   //   }
   // };
 
-  const handleChangePage = (newPage) => {
-    setPage(newPage);
+  const handleChangePage = (e) => {
+    setCurrentPage(e);
   };
 
   const handleChangeRowsPerPage = (event) => {
     const value = parseInt(event.target.value, 10);
     setRowsPerPage(value);
-    setPage(1);
   };
 
   const keyMap = {
@@ -270,19 +302,29 @@ const TimeSheetReportDaily = () => {
   // useEffect(() => {
   //   userRole !== "Employee" && fetchEmployeeList();
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [companyId, isFromofficeWork]);
+  // }, [companyId, isWorkFromOffice]);
 
   useEffect(() => {
-    if (selectedEmployee && !isFromofficeWork) {
+    if (selectedEmployee && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
     if (selectedClient) {
-      getAllUsersOfClient();
+      getAllUsersOfClientOrLocation();
     }
-  }, [selectedClient, companyId, isFromofficeWork]);
+  }, [selectedClient, companyId, isWorkFromOffice]);
+
+  useEffect(() => {
+    if (selectedEmployee && isWorkFromOffice) {
+      getAllLocations();
+    }
+  }, [isWorkFromOffice, selectedLocation, companyId, selectedEmployee]);
+
+  // useEffect(() => {
+  //   setselectedClient("allClients");
+  // }, [selectedEmployee]);
 
   useEffect(() => {
     // if (selectedEmployee || selectedClient) {
@@ -294,8 +336,11 @@ const TimeSheetReportDaily = () => {
     debouncedSearch,
     selectedStartDate,
     selectedEndDate,
-    isFromofficeWork,
+    isWorkFromOffice,
     rowsPerPage,
+    selectedLocation,
+    currentPage,
+    companyId,
   ]);
 
   return (
@@ -317,10 +362,12 @@ const TimeSheetReportDaily = () => {
                 onChange={(e) => handleEmployeeChange(e.target.value)}
                 displayEmpty
                 MenuProps={{
+                  disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
-                      width: 200,
-                      maxHeight: 300,
+                      width: 150,
+                      maxHeight: 200,
+                      overflowX: "auto",
                     },
                   },
                   MenuListProps: {
@@ -337,7 +384,7 @@ const TimeSheetReportDaily = () => {
                   const found = employeeList.find(
                     (emp) => emp._id === selected
                   );
-                  return found?.userName || "Unknown";
+                  return found?.userName || "Select Employee";
                 }}
               >
                 <ListSubheader>
@@ -352,12 +399,22 @@ const TimeSheetReportDaily = () => {
                   />
                 </ListSubheader>
 
-                <MenuItem value="allUsers">All Employees</MenuItem>
-                {filteredEmployeeList.map((emp) => (
-                  <MenuItem key={emp._id} value={emp._id}>
-                    {emp.userName}
-                  </MenuItem>
-                ))}
+                <MenuItem value="allUsers" className="menu-item">
+                  All Employees
+                </MenuItem>
+                {filteredEmployeeList.length > 0 ? (
+                  filteredEmployeeList.map((emp) => (
+                    <MenuItem
+                      key={emp._id}
+                      value={emp._id}
+                      className="menu-item"
+                    >
+                      {emp.userName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>Not Found</MenuItem>
+                )}
               </Select>
               {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
@@ -365,7 +422,7 @@ const TimeSheetReportDaily = () => {
             </div>
           )}
 
-          {userRole !== "Employee" && !isFromofficeWork && (
+          {userRole !== "Employee" && !isWorkFromOffice && (
             <div className="filter-employee-selection">
               <label className="label">Client</label>
               <Select
@@ -374,6 +431,7 @@ const TimeSheetReportDaily = () => {
                 onChange={(e) => handleClientChange(e.target.value)}
                 displayEmpty
                 MenuProps={{
+                  disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
                       width: 150,
@@ -393,7 +451,7 @@ const TimeSheetReportDaily = () => {
                   if (!selected) return "Select Client";
                   if (selected === "allClients") return "All Clients";
                   const found = clientList.find((c) => c._id === selected);
-                  return found?.clientName || "Unknown";
+                  return found?.clientName || "Select Clients";
                 }}
               >
                 <ListSubheader>
@@ -408,9 +466,15 @@ const TimeSheetReportDaily = () => {
                   />
                 </ListSubheader>
 
-                <MenuItem value="allClients">All Clients</MenuItem>
+                <MenuItem value="allClients" className="menu-item">
+                  All Clients
+                </MenuItem>
                 {filteredClientList.map((client) => (
-                  <MenuItem key={client._id} value={client._id}>
+                  <MenuItem
+                    key={client._id}
+                    value={client._id}
+                    className="menu-item"
+                  >
                     {client.clientName}
                   </MenuItem>
                 ))}
@@ -418,6 +482,72 @@ const TimeSheetReportDaily = () => {
               {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
               )}
+            </div>
+          )}
+
+          {userRole !== "Employee" && isWorkFromOffice && (
+            <div className="filter-employee-selection">
+              <label className="label">Location</label>
+              <Select
+                className="timesheet-input-dropdown"
+                value={selectedLocation}
+                onChange={(e) => handleLocationChange(e.target.value)}
+                displayEmpty
+                MenuProps={{
+                  disableAutoFocusItem: true,
+                  PaperProps: {
+                    style: {
+                      width: 150,
+                      maxHeight: 200,
+                      overflowX: "auto",
+                    },
+                  },
+                  MenuListProps: {
+                    onMouseDown: (e) => {
+                      if (e.target.closest(".search-textfield")) {
+                        e.stopPropagation();
+                      }
+                    },
+                  },
+                }}
+                renderValue={(selected) => {
+                  if (!selected) return "Select Locations";
+                  if (selected === "allLocations") return "All Locations";
+                  const found = locationList.find((c) => c._id === selected);
+                  return found?.locationName || "All Locations";
+                }}
+              >
+                <ListSubheader>
+                  <TextField
+                    size="small"
+                    placeholder="Search Locations"
+                    fullWidth
+                    className="search-textfield"
+                    value={locationSearchTerm}
+                    onChange={(e) => setlocationSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </ListSubheader>
+
+                <MenuItem value="allLocations" className="menu-item">
+                  All Locations
+                </MenuItem>
+                {filteredLocationList.length > 0 ? (
+                  filteredLocationList.map((location) => (
+                    <MenuItem
+                      key={location._id}
+                      value={location._id}
+                      className="menu-item"
+                    >
+                      {location.locationName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="" className="menu-item" disabled>
+                    No found Locations
+                  </MenuItem>
+                )}
+              </Select>
             </div>
           )}
 
@@ -457,27 +587,26 @@ const TimeSheetReportDaily = () => {
       </div>
 
       <div className="timesheetreport-officework">
-        <div className="timesheetreport-isfromofficework">
+        <div className="timesheetreport-searchbar-clockin">
+          <TextField
+            placeholder="Search Timesheet"
+            variant="outlined"
+            size="small"
+            value={searchQuery}
+            className="common-searchbar"
+            onChange={handleSearchChange}
+          />
+        </div>
+        <div className="timesheetreport-isWorkFromOffice">
           <input
             type="checkbox"
             data-testid="send-link"
-            name="isFromofficeWork"
-            checked={isFromofficeWork}
+            name="isWorkFromOffice"
+            checked={isWorkFromOffice}
             onChange={handleCheckboxChange}
           />
+          <label>Office Work?</label>
         </div>
-        <label>Office Work?</label>
-      </div>
-
-      <div className="timesheetreport-searchbar-clockin">
-        <TextField
-          label="Search Timesheet"
-          variant="outlined"
-          size="small"
-          value={searchQuery}
-          className="common-searchbar"
-          onChange={handleSearchChange}
-        />
       </div>
 
       {loading ? (
@@ -528,16 +657,16 @@ const TimeSheetReportDaily = () => {
                     <TableSortLabel
                       active={
                         sortConfig.key ===
-                        (isFromofficeWork ? "locationName" : "clientName")
+                        (isWorkFromOffice ? "locationName" : "clientName")
                       }
                       direction={sortConfig.direction}
                       onClick={() =>
                         handleSort(
-                          isFromofficeWork ? "locationName" : "clientName"
+                          isWorkFromOffice ? "locationName" : "clientName"
                         )
                       }
                     >
-                      {isFromofficeWork ? "Location Name" : "Client Name"}
+                      {isWorkFromOffice ? "Location Name" : "Client Name"}
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>Check-in/Check-Out</TableCell>
@@ -580,7 +709,7 @@ const TimeSheetReportDaily = () => {
                       <TableCell>{row.userName}</TableCell>
                       <TableCell>{row.jobRole}</TableCell>
                       <TableCell>
-                        {isFromofficeWork ? row.locationName : row.clientName}
+                        {isWorkFromOffice ? row.locationName : row.clientName}
                       </TableCell>
                       <TableCell>
                         {row.clockinTime && row.clockinTime.length > 0
@@ -627,7 +756,7 @@ const TimeSheetReportDaily = () => {
                             ? timesheetReportList.length
                             : timesheetReportList
                         }
-                        page={page}
+                        page={currentPage - 1}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
                         onRowsPerPageChange={handleChangeRowsPerPage}

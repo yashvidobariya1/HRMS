@@ -149,7 +149,7 @@ const Candidate = () => {
       </div>
 
       <TextField
-        label="Search Candidate"
+        placeholder="Search Candidate"
         variant="outlined"
         size="small"
         value={searchQuery}

@@ -486,7 +486,7 @@ const Templates = () => {
         </h5>
       </div>
       <TextField
-        label="Search Templates"
+        placeholder="Search Templates"
         variant="outlined"
         size="small"
         value={searchQuery}

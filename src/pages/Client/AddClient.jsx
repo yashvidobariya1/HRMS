@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./AddClient.css";
 import useApiServices from "../../useApiServices";
@@ -8,7 +8,7 @@ import { IoMdAdd } from "react-icons/io";
 import { MdRemove } from "react-icons/md";
 import countryNames from "../../Data/AllCountryList.json";
 import { useSelector } from "react-redux";
-import { MenuItem, Select } from "@mui/material";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
 const AddClient = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const AddClient = () => {
   // const companyId = searchParams.get("companyId");
   const [isOn, setIsOn] = useState(false);
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  // console.log("companyid", companyId);
+  const [searchTerm, setSearchTerm] = useState("");
   const { id } = useParams();
   const [formData, setFormData] = useState({
     clientName: "",
@@ -151,6 +151,12 @@ const AddClient = () => {
   //   setErrors(newErrors);
   //   return Object.keys(newErrors).length === 0;
   // };
+
+  const filteredCountryList = useMemo(() => {
+    return countryNames.filter((user) =>
+      user.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, countryNames]);
 
   const validate = () => {
     let newErrors = {};
@@ -514,24 +520,58 @@ const AddClient = () => {
                   onChange={handleChange}
                   displayEmpty
                   MenuProps={{
+                    disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        maxHeight: 192,
+                        maxWidth: 100,
+                        maxHeight: 200,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
+                      },
+                    },
+                    MenuListProps: {
+                      onMouseDown: (e) => {
+                        if (e.target.closest(".search-textfield")) {
+                          e.stopPropagation();
+                        }
                       },
                     },
                   }}
+                  renderValue={(selected) => {
+                    if (!selected) return "Select Country";
+                    const found = countryNames.find((emp) => emp === selected);
+                    return found || "No found";
+                  }}
                 >
-                  <MenuItem value="" disabled>
+                  <ListSubheader>
+                    <TextField
+                      size="small"
+                      placeholder="Search Country"
+                      fullWidth
+                      className="search-textfield"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                  </ListSubheader>
+                  <MenuItem value="" disabled className="menu-item">
                     Select Country Of Issue
                   </MenuItem>
-                  {countryNames.map((country, index) => (
-                    <MenuItem key={index} value={country}>
-                      {country}
+                  {filteredCountryList.length > 0 ? (
+                    filteredCountryList.map((country, index) => (
+                      <MenuItem
+                        key={index}
+                        value={country}
+                        className="menu-item"
+                      >
+                        {country}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled className="menu-item">
+                      No countries found
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
                 {errors?.country && (
                   <p className="error-text">{errors?.country}</p>
@@ -676,12 +716,18 @@ const AddClient = () => {
                       },
                     }}
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value="" disabled className="menu-item">
                       Select Frequency
                     </MenuItem>
-                    <MenuItem value="Daily">Daily</MenuItem>
-                    <MenuItem value="Weekly">Weekly</MenuItem>
-                    <MenuItem value="Monthly">Monthly</MenuItem>
+                    <MenuItem value="Daily" className="menu-item">
+                      Daily
+                    </MenuItem>
+                    <MenuItem value="Weekly" className="menu-item">
+                      Weekly
+                    </MenuItem>
+                    <MenuItem value="Monthly" className="menu-item">
+                      Monthly
+                    </MenuItem>
                   </Select>
                   {errors?.reportFrequency && (
                     <p className="error-text">{errors?.reportFrequency}</p>
@@ -701,18 +747,18 @@ const AddClient = () => {
                       PaperProps: {
                         style: {
                           width: 150,
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
                           maxHeight: 192,
                         },
                       },
                     }}
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value="" disabled className="menu-item">
                       Select Time
                     </MenuItem>
                     {HourList.map((hr, index) => (
-                      <MenuItem key={index} value={hr}>
+                      <MenuItem key={index} value={hr} className="menu-item">
                         {hr}
                       </MenuItem>
                     ))}
@@ -742,11 +788,15 @@ const AddClient = () => {
                       },
                     }}
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value="" disabled className="menu-item">
                       Select Week Day
                     </MenuItem>
                     {WeekDayList.map((weekday, index) => (
-                      <MenuItem key={index} value={weekday}>
+                      <MenuItem
+                        key={index}
+                        value={weekday}
+                        className="menu-item"
+                      >
                         {weekday}
                       </MenuItem>
                     ))}
@@ -769,18 +819,22 @@ const AddClient = () => {
                       PaperProps: {
                         style: {
                           width: 150,
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
                           maxHeight: 192,
                         },
                       },
                     }}
                   >
-                    <MenuItem value="" disabled>
+                    <MenuItem value="" disabled className="menu-item">
                       Select Month Date
                     </MenuItem>
                     {MonthDateList.map((monthDate, index) => (
-                      <MenuItem key={index} value={monthDate}>
+                      <MenuItem
+                        key={index}
+                        value={monthDate}
+                        className="menu-item"
+                      >
                         {monthDate}
                       </MenuItem>
                     ))}
