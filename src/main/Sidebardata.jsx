@@ -161,13 +161,13 @@ export const SidebarData = [
         allowedRoles: ["Administrator", "Manager"],
         subItems: [
           {
-            title: "My View Hours",
-            link: "/myviewhours",
+            title: "Staff View Hours",
+            link: "/staffviewhours",
             allowedRoles: ["Administrator", "Manager"],
           },
           {
-            title: "Staff View Hours",
-            link: "/staffviewhours",
+            title: "My View Hours",
+            link: "/myviewhours",
             allowedRoles: ["Administrator", "Manager"],
           },
         ],

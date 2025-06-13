@@ -459,7 +459,14 @@
 @media (max-width: 575px) {
   .custom-table .MuiTableCell-root {
     padding: 8px;
+  }
+
+  .custom-table td {
     font-size: 12px !important;
+  }
+
+  .custom-table th {
+    font-size: 14px;
   }
 
   .employee-template .MuiSelect-select {

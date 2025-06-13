@@ -305,6 +305,7 @@ const Viewhours = () => {
   }, [
     selectedEmployee,
     selectedClient,
+    selectedLocation,
     isWorkFromOffice,
     selectedStartDate,
     selectedEndDate,
@@ -316,7 +317,7 @@ const Viewhours = () => {
   return (
     <div className="View-hour-main">
       <div className="viewhour-section">
-        <h1>Staff Work Hours</h1>
+        <h1>Staff View Hours</h1>
         <div className="indicate-color">
           <CommonAddButton
             label="Mark Attendance"

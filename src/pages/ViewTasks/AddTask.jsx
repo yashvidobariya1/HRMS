@@ -113,7 +113,7 @@ const AddTask = () => {
         }
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
-          navigate("/viewtask/stafftask");
+          navigate("viewtask/stafftask");
         } else {
           showToast(response?.data?.message, "error");
         }

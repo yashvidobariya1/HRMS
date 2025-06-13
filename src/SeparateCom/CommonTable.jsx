@@ -516,13 +516,6 @@ const CommonTable = ({
     rowsPerPage === undefined ? undefined : page * rowsPerPage + rowsPerPage
   );
 
-  console.log(
-    "old method",
-    rowsPerPage,
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
-
   const getStatusColor = (status) => {
     if (status === "Pending") return "Pending";
     if (status === "Rejected") return "Rejected";

@@ -166,7 +166,7 @@ const TimeSheetReportDaily = () => {
       //   isWorkFromOffice: isWorkFromOffice,
       // };
       const response = await GetCall(
-        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
+        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}&locationId=${selectedLocation}`
       );
       if (response?.data?.status === 200) {
         setEmployeeList(response?.data?.users);

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FaCheck } from "react-icons/fa";
+// import { FaCheck } from "react-icons/fa";
 import { showToast } from "../../main/ToastManager";
 import useApiServices from "../../useApiServices";
 import { useNavigate, useParams } from "react-router";
@@ -14,7 +14,7 @@ const AddCompany = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [currentStep, setCurrentStep] = useState(0);
-  const [completedSteps, setCompletedSteps] = useState([]);
+  // const [completedSteps, setCompletedSteps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
@@ -193,10 +193,10 @@ const AddCompany = () => {
       // }
       if (!company.contactPersonFirstname?.trim()) {
         newError.contactPersonFirstname =
-          "Contact Person Firstname is required";
+          "Contact Person First name is required";
       }
       if (!company.contactPersonLastname) {
-        newError.contactPersonLastname = "Contact Person Lastname is required";
+        newError.contactPersonLastname = "Contact Person Last name is required";
       }
       if (!company.contactPersonEmail) {
         newError.contactPersonEmail = "Contact Person Email is required";
@@ -238,30 +238,30 @@ const AddCompany = () => {
     return <Loader />;
   }
 
-  const handleSaveClick = async () => {
-    const isValid = validate();
-    if (isValid) {
-      const data = {
-        ...formData,
-      };
-      setLoading(true);
-      try {
-        const response = await PostCall(`/updateCompany/${id}`, data);
-        if (response?.data?.status === 200) {
-          showToast(response?.data?.message, "success");
-        } else {
-          showToast(response?.data?.message, "error");
-        }
-        navigate("/company");
-      } catch (error) {
-        showToast(error, "error");
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      console.log("Validation failed for current step");
-    }
-  };
+  // const handleSaveClick = async () => {
+  //   const isValid = validate();
+  //   if (isValid) {
+  //     const data = {
+  //       ...formData,
+  //     };
+  //     setLoading(true);
+  //     try {
+  //       const response = await PostCall(`/updateCompany/${id}`, data);
+  //       if (response?.data?.status === 200) {
+  //         showToast(response?.data?.message, "success");
+  //       } else {
+  //         showToast(response?.data?.message, "error");
+  //       }
+  //       navigate("/company");
+  //     } catch (error) {
+  //       showToast(error, "error");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   } else {
+  //     console.log("Validation failed for current step");
+  //   }
+  // };
 
   return (
     <div className="main-setting-container">

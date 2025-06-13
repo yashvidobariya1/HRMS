@@ -141,7 +141,7 @@ const TimeSheetReportDaily = () => {
       //   isWorkFromOffice: isWorkFromOffice,
       // };
       const response = await GetCall(
-        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
+        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}&locationId=${selectedLocation}`
       );
       if (response?.data?.status === 200) {
         setEmployeeList(response?.data.users);
@@ -185,7 +185,7 @@ const TimeSheetReportDaily = () => {
           : selectedClient,
       };
 
-      console.log("filter", filters);
+      // console.log("filter", filters);
       const frequency = "Daily";
       const response = await PostCall(
         `/getTimesheetReport?companyId=${companyId}&page=${currentPage}&limit=${rowsPerPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}`,

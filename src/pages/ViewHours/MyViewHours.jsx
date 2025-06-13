@@ -208,7 +208,7 @@ const MyViewHours = () => {
   return (
     <div className="View-hour-main">
       <div className="viewhour-section">
-        <h1>My Work Hours</h1>
+        <h1>My View Hours</h1>
       </div>
 
       <div className="filter-timsheetreport-main">
