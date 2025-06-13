@@ -621,15 +621,11 @@ const Dashboard = () => {
   // }, [AllholidayList]);
 
   useEffect(() => {
-    // if (selectedLocationId && userRole) {
-    //   getAllHoliday(selectedLocationId);
-    // } else if (userRole !== "Superadmin") {
-    getAllHoliday();
-    // }
+    if (companyId && typeof companyId === "string") getAllHoliday();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // selectedLocationId,
-    userRole,
+    // userRole,
     selectedYear,
     currentPage,
     holidayPerPage,

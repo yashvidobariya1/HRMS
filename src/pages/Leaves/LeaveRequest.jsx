@@ -240,7 +240,7 @@ const LeavesRequest = () => {
   useEffect(() => {
     GetLeave();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, leavePerPage, searchQuery, companyId]);
+  }, [currentPage, leavePerPage, debouncedSearch, companyId]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -307,8 +307,8 @@ const LeavesRequest = () => {
             showPerPage={leavePerPage}
             onPerPageChange={handleLeavePerPageChange}
             handleAction={handleAction}
-            isPagination="true"
-            searchQuery={searchQuery}
+            // isPagination="true"
+            // searchQuery={searchQuery}
             totalData={totalLeaves}
           />
         </>

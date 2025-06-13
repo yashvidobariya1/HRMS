@@ -373,6 +373,7 @@ const MyAbsenceReport = () => {
           <CommonTable
             headers={[
               "Absent Date",
+              "Employee Name",
               isWorkFromOffice ? "Location Name" : "Client Name",
               ,
               "Job Title",
@@ -380,7 +381,8 @@ const MyAbsenceReport = () => {
             ]}
             data={absenceReportList.map((absencesheet) => ({
               absencesheetdate: moment(absencesheet.date).format("DD/MM/YYYY"),
-              absencelcaotionandorclientName: isWorkFromOffice
+              Name: absencesheet.userName,
+              absenceloctionandorclientName: isWorkFromOffice
                 ? absencesheet.locationName
                 : absencesheet.clientName,
               jobRole: absencesheet.jobRole,

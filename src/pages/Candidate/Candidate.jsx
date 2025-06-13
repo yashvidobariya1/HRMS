@@ -128,7 +128,7 @@ const Candidate = () => {
   useEffect(() => {
     GetCandidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, candidatePerPage, debouncedSearch]);
+  }, [currentPage, candidatePerPage, debouncedSearch, companyId]);
 
   useEffect(() => {
     const handler = setTimeout(() => {

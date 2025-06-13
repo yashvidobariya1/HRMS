@@ -190,11 +190,11 @@ const AddEmployee = () => {
     );
   }, [VisaCategory, visasearchTerm]);
 
-  // const filteredAssigneesManager = useMemo(() => {
-  //   return assignee.filter((user) =>
-  //     user.name?.toLowerCase().includes(assignmaangersearchTerm.toLowerCase())
-  //   );
-  // }, [filteredAssignees, assignmaangersearchTerm]);
+  const filteredAssigneesManager = useMemo(() => {
+    return filteredAssignees.filter((user) =>
+      user.name?.toLowerCase().includes(assignmaangersearchTerm.toLowerCase())
+    );
+  }, [filteredAssignees, assignmaangersearchTerm]);
 
   const steps = [
     "Personal Details",
@@ -357,7 +357,6 @@ const AddEmployee = () => {
     // console.log("Original documentDetails", documentDetails);
     // console.log("Updated documentDetails", updatedDocumentDetails);
     const isFinalStep = currentStep === steps.length - 1;
-    console.log("filestep", currentStep, steps.length, isFinalStep);
     let isValid = true;
 
     // if (userRole === "Superadmin" && isFinalStep) {
@@ -410,9 +409,7 @@ const AddEmployee = () => {
               dispatch(
                 setEmployeeformFilled(response?.data?.updatedUser?.isFormFilled)
               );
-              userRole === "Employee"
-                ? navigate("dashboard")
-                : navigate("/employees");
+              id === user._id ? navigate("dashboard") : navigate("/employees");
             } else {
               showToast(response?.data?.message, "error");
             }
@@ -432,7 +429,6 @@ const AddEmployee = () => {
         }
       } else {
         setCompletedSteps((prev) => {
-          console.log("prev", prev);
           if (!prev.includes(currentStep)) {
             return [...prev, currentStep];
           }
@@ -1199,24 +1195,6 @@ const AddEmployee = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!isWorkFromOffice) {
-      setJobForm((prev) => ({
-        ...prev,
-        location: [],
-      }));
-    }
-  }, [isWorkFromOffice]);
-
-  useEffect(() => {
-    if (isWorkFromOffice) {
-      setJobForm((prev) => ({
-        ...prev,
-        assignClient: [],
-      }));
-    }
-  }, [isWorkFromOffice]);
-
   const GetAllLocations = async () => {
     try {
       setLoading(true);
@@ -1228,7 +1206,6 @@ const AddEmployee = () => {
         setLocations(Company?.data?.companiesAllLocations);
         setContracts(Company?.data?.contracts);
         setClients(Company?.data?.clients);
-        setAssignee(Company?.data?.assigneeAdminAndManager);
         // setTemplates(Company?.data?.templates);
       } else {
         showToast(Company?.data?.message, "error");
@@ -1274,68 +1251,55 @@ const AddEmployee = () => {
   }, [employeeFormFilled]);
 
   useEffect(() => {
-    let filtered;
+    if (!jobForm.location || !jobForm.role) return;
+
+    const selectedLocation = locations.find(
+      (location) => location._id === jobForm.location
+    );
+
+    const currentAssignees = selectedLocation?.assignee || [];
+    setAssignee(currentAssignees);
+
+    let filtered = [];
+
     if (jobForm.role === "Employee") {
-      filtered = assignee?.filter(
+      filtered = currentAssignees.filter(
         (a) =>
           a.role === "Superadmin" ||
           a.role === "Administrator" ||
           a.role === "Manager"
       );
     } else if (jobForm.role === "Manager") {
-      filtered = assignee?.filter(
+      filtered = currentAssignees.filter(
         (a) => a.role === "Superadmin" || a.role === "Administrator"
       );
     } else if (jobForm.role === "Administrator") {
-      filtered = assignee?.filter((a) => a.role === "Superadmin");
+      filtered = currentAssignees.filter((a) => a.role === "Superadmin");
     }
+
     setFilteredAssignees(filtered);
-  }, [jobForm.role]);
 
-  // useEffect(() => {
-  //   if (!jobForm.location || !jobForm.role) return;
-
-  //   const selectedLocation = locations.find(
-  //     (location) => location._id === jobForm.location
-  //   );
-
-  //   const currentAssignees = selectedLocation?.assignee || [];
-  //   console.log("CurrentAssignees", currentAssignees);
-  //   setAssignee(currentAssignees);
-
-  //   let filtered = [];
-
-  //   if (jobForm.role === "Employee") {
-  //     filtered = currentAssignees.filter(
-  //       (a) =>
-  //         a.role === "Superadmin" ||
-  //         a.role === "Administrator" ||
-  //         a.role === "Manager"
-  //     );
-  //   } else if (jobForm.role === "Manager") {
-  //     filtered = currentAssignees.filter(
-  //       (a) => a.role === "Superadmin" || a.role === "Administrator"
-  //     );
-  //   } else if (jobForm.role === "Administrator") {
-  //     filtered = currentAssignees.filter((a) => a.role === "Superadmin");
-  //   }
-
-  //   console.log(filtered);
-
-  //   setFilteredAssignees(filtered);
-
-  //   if (filtered.length === 0) {
-  //     showToast(
-  //       "No assignee available for the selected role and location.",
-  //       "error"
-  //     );
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [jobForm.location, jobForm.role, locations]);
+    if (filtered.length === 0) {
+      showToast(
+        "No assignee available for the selected role and location.",
+        "error"
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobForm.location, jobForm.role, locations]);
 
   useEffect(() => {
     GetjobTitles();
   }, []);
+
+  useEffect(() => {
+    if (!isWorkFromOffice) {
+      setJobForm((prev) => ({
+        ...prev,
+        location: [],
+      }));
+    }
+  }, [isWorkFromOffice]);
 
   if (loading) {
     return <Loader />;
@@ -2198,7 +2162,7 @@ const AddEmployee = () => {
                     }}
                     renderValue={(selected) => {
                       if (!selected) return "Select Assignee Manager";
-                      const found = filteredAssignees?.find(
+                      const found = filteredAssignees.find(
                         (loc) => loc._id === selected
                       );
                       return found?.name || "Not Found";
@@ -2207,7 +2171,7 @@ const AddEmployee = () => {
                     <ListSubheader>
                       <TextField
                         size="small"
-                        placeholder="Search Company"
+                        placeholder="Search Manager"
                         fullWidth
                         className="search-textfield"
                         value={assignmaangersearchTerm}
@@ -2221,19 +2185,8 @@ const AddEmployee = () => {
                       Select Manager
                     </MenuItem>
 
-                    {/* {filteredAssigneesManager?.length > 0 ? (
+                    {filteredAssigneesManager?.length > 0 ? (
                       filteredAssigneesManager.map((assignee) => (
-                        <MenuItem value={assignee._id} key={assignee._id}>
-                          {assignee.name}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem value="" disabled>
-                        No assignee available
-                      </MenuItem>
-                    )} */}
-                    {filteredAssignees?.length > 0 ? (
-                      filteredAssignees?.map((assignee) => (
                         <MenuItem
                           value={assignee._id}
                           key={assignee._id}

@@ -515,7 +515,7 @@ const Viewhours = () => {
 
       <div className="viewhour-searchbar-main">
         <TextField
-          label="Search Timesheet"
+          placeholder="Search Timesheet"
           variant="outlined"
           size="small"
           value={searchQuery}
