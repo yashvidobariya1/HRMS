@@ -1314,10 +1314,12 @@ const Dashboard = () => {
                       displayEmpty
                       MenuProps={{
                         PaperProps: {
-                          width: 100,
-                          maxHeight: 100,
-                          overflowX: "auto",
-                          scrollbarWidth: "thin",
+                          style: {
+                            width: 100,
+                            maxHeight: 100,
+                            overflowX: "auto",
+                            scrollbarWidth: "thin",
+                          },
                         },
                       }}
                     >

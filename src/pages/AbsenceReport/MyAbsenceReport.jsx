@@ -375,7 +375,7 @@ const MyAbsenceReport = () => {
               "Absent Date",
               isWorkFromOffice ? "Location Name" : "Client Name",
               ,
-              // "Job Title",
+              "Job Title",
               "Status",
             ]}
             data={absenceReportList.map((absencesheet) => ({
@@ -383,7 +383,7 @@ const MyAbsenceReport = () => {
               absencelcaotionandorclientName: isWorkFromOffice
                 ? absencesheet.locationName
                 : absencesheet.clientName,
-              // jobRole: absencesheet.jobRole,
+              jobRole: absencesheet.jobRole,
               absencesheetstatus: absencesheet.status,
             }))}
             currentPage={currentPage}

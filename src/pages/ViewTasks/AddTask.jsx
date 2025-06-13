@@ -113,7 +113,7 @@ const AddTask = () => {
         }
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
-          navigate("/viewtask/stafftask");
+          navigate("/viewtasks/stafftask");
         } else {
           showToast(response?.data?.message, "error");
         }
@@ -272,7 +272,7 @@ const AddTask = () => {
                     value={formData?.startDate}
                     onChange={handleChange}
                     disabled={taskId}
-                    min={todayDate}
+                    // min={todayDate}
                   />
                   {errors?.startDate && (
                     <p className="error-text">{errors?.startDate}</p>
@@ -289,7 +289,7 @@ const AddTask = () => {
                     value={formData?.endDate}
                     onChange={handleChange}
                     disabled={taskId}
-                    min={todayDate}
+                    // min={todayDate}
                   />
                   {errors?.endDate && (
                     <p className="error-text">{errors?.endDate}</p>

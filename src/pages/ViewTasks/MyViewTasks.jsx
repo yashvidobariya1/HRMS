@@ -392,7 +392,6 @@ const MyViewTasks = () => {
               isWorkFromOffice ? "Location Name" : "Client Name",
               "Start Time",
               "End Time",
-              "Actions",
             ]}
             data={TaskList?.map((task) => ({
               taskdate: moment(task.date).format("DD/MM/YYYY"),

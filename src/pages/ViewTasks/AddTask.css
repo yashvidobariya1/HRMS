@@ -83,7 +83,7 @@
 }
 
 .reset-addtask:hover {
-  background-color: var(--secondary-dark-gray);
+  background-color: var(--neutral-light-gray);
 }
 
 /* .task-details {

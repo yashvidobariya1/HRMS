@@ -125,7 +125,7 @@ const ViewTasks = () => {
 
       if (response?.data?.status === 200) {
         setTaskList(response?.data.reports);
-        settotalTask(response.data?.reports);
+        settotalTask(response.data?.totalReports);
         setTotalPages(response.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
@@ -217,7 +217,7 @@ const ViewTasks = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
+        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}&locationId=${selectedLocation}`
       );
       if (response?.data?.status === 200) {
         setEmployeeList(response?.data.users);
@@ -495,8 +495,8 @@ const ViewTasks = () => {
                 className="task-input"
                 value={selectedStartDate}
                 onChange={handleChange}
-                min={minDate}
-                max={maxDate}
+                // min={minDate}
+                // max={maxDate}
               />
             </div>
 
@@ -508,8 +508,8 @@ const ViewTasks = () => {
                 className="task-input"
                 value={selectedEndDate}
                 onChange={handleChange}
-                min={minDate}
-                max={maxDate}
+                // min={minDate}
+                // max={maxDate}
               />
             </div>
           </div>

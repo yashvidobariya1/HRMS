@@ -67,6 +67,7 @@ const pageNames = {
   edittask: "Update Task",
   addtask: "Add Task",
   viewtask: "View Task",
+  mytask: "My Task",
 };
 
 const Subheader = () => {
