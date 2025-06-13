@@ -106,7 +106,7 @@ const HolidayList = () => {
     getAllHoliday();
   };
 
-  const headers = ["Date", "Occasion", "Day"];
+  const headers = ["Company Name", "Date", "Occasion", "Day"];
   if (userRole === "Superadmin" || userRole === "Administrator") {
     headers.push("Action");
   }
@@ -202,7 +202,7 @@ const HolidayList = () => {
           )}
         </div>
         <div className="holidaylist-action">
-          <CommonAddButton label="View calendar" onClick={HandleBack} />
+          {/* <CommonAddButton label="View calendar" onClick={HandleBack} /> */}
           {(userRole === "Superadmin" || userRole === "Administrator") && (
             <CommonAddButton
               label="Add Holiday"
@@ -223,6 +223,7 @@ const HolidayList = () => {
             headers={headers}
             data={AllholidayList?.map((holidaylist) => ({
               _id: holidaylist._id,
+              comapnyName: holidaylist.companyName,
               name: holidaylist.date,
               Name: holidaylist.occasion,
               day: moment(holidaylist.date).format("dddd"),

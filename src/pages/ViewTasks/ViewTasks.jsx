@@ -124,9 +124,9 @@ const ViewTasks = () => {
       );
 
       if (response?.data?.status === 200) {
-        setTaskList(response?.data.reports);
-        settotalTask(response.data?.totalReports);
-        setTotalPages(response.data?.totalPages);
+        setTaskList(response?.data?.reports);
+        settotalTask(response?.data?.totalReports);
+        setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
       }

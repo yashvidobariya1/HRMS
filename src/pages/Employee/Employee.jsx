@@ -50,6 +50,15 @@ const Employee = () => {
   };
 
   const HandleEditEmployee = async (id) => {
+    if (
+      companyId === "" ||
+      companyId === undefined ||
+      companyId === null ||
+      companyId === "allCompany"
+    ) {
+      showToast("Please select a specific company", "error");
+      return;
+    }
     navigate(`/employees/editemployee/${id}`);
     setShowDropdownAction(null);
   };
@@ -130,8 +139,10 @@ const Employee = () => {
     "",
     "Id",
     "Employee Name",
+    "Job Title",
     "Position",
     "Email Id",
+    "Phone",
     "Status",
     "Template",
     "Action",
@@ -270,16 +281,18 @@ const Employee = () => {
           <CommonTable
             headers={headers}
             data={employeesList.map((employee) => ({
-              _id: employee._id,
-              unique_ID: employee.Id,
-              Name: employee.userName,
-              Position: employee.position,
-              Email: employee.email,
-              Activeuser: employee.status,
-              Template: employee.templates,
-              isActive: employee.status,
-              ...(employee.roleWisePoints && {
-                roleWisePoints: employee.roleWisePoints,
+              _id: employee?._id,
+              unique_ID: employee?.Id,
+              Name: employee?.userName,
+              JobTitle: employee?.jobTitle,
+              Position: employee?.position,
+              Email: employee?.email,
+              Phone: employee?.phone,
+              Activeuser: employee?.status,
+              Template: employee?.templates,
+              isActive: employee?.status,
+              ...(employee?.roleWisePoints && {
+                roleWisePoints: employee?.roleWisePoints,
               }),
             }))}
             actions={{

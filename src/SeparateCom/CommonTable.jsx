@@ -418,7 +418,7 @@ const CommonTable = ({
     "Client Name": "Name",
     "Start Date": "startDate",
     "End Date": "endDate",
-    "Report Generated Date": "generatedDate",
+    "Generated on": "generatedDate",
     "Login Time": "LastTimeLoggedIn",
     "Last Access Time": "LastTimeLoggedOut",
     Active: "IsActive",
@@ -514,13 +514,6 @@ const CommonTable = ({
   const paginatedData = filteredData.slice(
     rowsPerPage === undefined ? undefined : page * rowsPerPage,
     rowsPerPage === undefined ? undefined : page * rowsPerPage + rowsPerPage
-  );
-
-  console.log(
-    "old method",
-    rowsPerPage,
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
   );
 
   const getStatusColor = (status) => {

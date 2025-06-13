@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import { BsDot } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import useApiServices from "../useApiServices";
@@ -31,7 +31,9 @@ const pageNames = {
   holidays: "Holidays",
   absencereport: "Absence Report",
   clockin: "Clock In",
-  viewhours: "View Hours",
+  // viewhours: "View Hours",
+  staffviewhours: "Staff View Hours",
+  myviewhours: "My View Hours",
   timesheetreport: "Timesheet Report",
   job: "Job",
   candidate: "Candidate",
@@ -60,6 +62,9 @@ const pageNames = {
   weekly: "Weekly Report",
   monthly: "Monthly Report",
   myreport: "My Report",
+  attendanceform: "Attendance",
+  viewattendanceform: "View Attendance",
+  editattendanceform: "Update Attendance",
   myabsencereport: "My Report",
   staffabsencereport: "Staff Report",
   stafftask: "Staff Task",
@@ -74,7 +79,7 @@ const Subheader = () => {
   const { GetCall } = useApiServices();
   const [jobTitleData, setJobTitleData] = useState([]);
   const dispatch = useDispatch();
-  const location = useLocation();
+  // const location = useLocation();
 
   const selectedJob = useSelector((state) => state.jobRoleSelect.jobRoleSelect);
   // const jobRoleId = useSelector(
@@ -138,7 +143,7 @@ const Subheader = () => {
   return (
     <section className="subheader-section">
       <div className="home-subheader-content">
-        <p className="page-title">{formatPageName(location.pathname)}</p>
+        {/* <p className="page-title">{formatPageName(location.pathname)}</p> */}
         {jobTitleData.length > 1 && (
           // <select
           //   className="JobTitle-input"

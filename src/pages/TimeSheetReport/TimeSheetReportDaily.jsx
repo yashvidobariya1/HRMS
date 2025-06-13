@@ -185,7 +185,7 @@ const TimeSheetReportDaily = () => {
           : selectedClient,
       };
 
-      console.log("filter", filters);
+      // console.log("filter", filters);
       const frequency = "Daily";
       const response = await PostCall(
         `/getTimesheetReport?companyId=${companyId}&page=${currentPage}&limit=${rowsPerPage}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}`,
@@ -338,7 +338,7 @@ const TimeSheetReportDaily = () => {
     <div className="timesheet-list-container">
       <div className="timesheet-flex">
         <div className="timesheet-title">
-          <h1>TimeSheet Report</h1>
+          <h1>Daily Time Sheet Report</h1>
         </div>
       </div>
 
