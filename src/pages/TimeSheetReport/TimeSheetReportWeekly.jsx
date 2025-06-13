@@ -137,7 +137,7 @@ const TimeSheetReportWeekly = () => {
       //   isWorkFromOffice: isWorkFromOffice,
       // };
       const response = await GetCall(
-        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
+        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}&locationId=${selectedLocation}`
       );
       if (response?.data?.status === 200) {
         setEmployeeList(response?.data.users);
@@ -311,7 +311,7 @@ const TimeSheetReportWeekly = () => {
     <div className="timesheet-list-container">
       <div className="timesheet-flex">
         <div className="timesheet-title">
-          <h1>Time Sheet Report</h1>
+          <h1>Weekly Time Sheet Report</h1>
         </div>
       </div>
 

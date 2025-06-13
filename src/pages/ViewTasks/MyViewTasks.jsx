@@ -387,16 +387,15 @@ const MyViewTasks = () => {
           <CommonTable
             headers={[
               "Task Date",
-              // "Employee Name",
+              "Employee Name",
               "Job Title",
               isWorkFromOffice ? "Location Name" : "Client Name",
               "Start Time",
               "End Time",
-              "Actions",
             ]}
             data={TaskList?.map((task) => ({
               taskdate: moment(task.date).format("DD/MM/YYYY"),
-              // userName: task.userName,
+              userName: task.userName,
               taskloctionandorclientName: isWorkFromOffice
                 ? task.locationName
                 : task.clientName,

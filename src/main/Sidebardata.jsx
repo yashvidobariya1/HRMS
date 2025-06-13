@@ -106,19 +106,31 @@ export const SidebarData = [
       {
         title: "Absence Report",
         icon: <TbReportSearch />,
-        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
+        link: "/staffabsencereport",
+        allowedRoles: ["Superadmin"],
+      },
+      {
+        title: "Absence Report",
+        icon: <TbReportSearch />,
+        allowedRoles: ["Administrator", "Manager"],
         subItems: [
           {
             title: "Staff Absence Report",
-            link: "/absencereport/staffabsencereport",
-            allowedRoles: ["Superadmin", "Administrator", "Manager"],
+            link: "/staffabsencereport",
+            allowedRoles: ["Administrator", "Manager"],
           },
           {
             title: "My Absence Report",
-            link: "/absencereport/myabsencereport",
-            allowedRoles: ["Administrator", "Manager", "Employee"],
+            link: "/myabsencereport",
+            allowedRoles: ["Administrator", "Manager"],
           },
         ],
+      },
+      {
+        title: "Absence Report",
+        icon: <TbReportSearch />,
+        link: "/myabsencereport",
+        allowedRoles: ["Employee"],
       },
     ],
   },
@@ -134,8 +146,31 @@ export const SidebarData = [
       {
         title: "View Hours",
         icon: <LiaHourglassStartSolid />,
-        link: "/viewhours",
-        allowedRoles: ["Administrator", "Manager", "Employee", "Superadmin"],
+        link: "/staffviewhours",
+        allowedRoles: ["Superadmin"],
+      },
+      {
+        title: "View Hours",
+        icon: <LiaHourglassStartSolid />,
+        link: "/myviewhours",
+        allowedRoles: ["Employee"],
+      },
+      {
+        title: "View Hours",
+        icon: <LiaHourglassStartSolid />,
+        allowedRoles: ["Administrator", "Manager"],
+        subItems: [
+          {
+            title: "Staff View Hours",
+            link: "/staffviewhours",
+            allowedRoles: ["Administrator", "Manager"],
+          },
+          {
+            title: "My View Hours",
+            link: "/myviewhours",
+            allowedRoles: ["Administrator", "Manager"],
+          },
+        ],
       },
       {
         title: "View Tasks",
@@ -157,7 +192,7 @@ export const SidebarData = [
       {
         title: "Timesheet Report",
         icon: <BiSolidSpreadsheet />,
-        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
+        allowedRoles: ["Superadmin", "Administrator", "Manager"],
         subItems: [
           {
             title: "Daily Report",
@@ -176,10 +211,16 @@ export const SidebarData = [
           },
           {
             title: "My Report",
-            link: "/timesheetreport/myreport",
-            allowedRoles: ["Administrator", "Manager", "Employee"],
+            link: "/myreport",
+            allowedRoles: ["Administrator", "Manager"],
           },
         ],
+      },
+      {
+        title: "Timesheet Report",
+        icon: <BiSolidSpreadsheet />,
+        link: "/myreport",
+        allowedRoles: ["Employee"],
       },
     ],
   },

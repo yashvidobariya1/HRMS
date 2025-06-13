@@ -69,7 +69,7 @@ const Dashboard = () => {
   // const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
   // const currentYearEnd = "2027-01-01";
   // const [events, setEvents] = useState([]);
-  const [locationList, setLocationList] = useState([]);
+  // const [locationList, setLocationList] = useState([]);
   // const [companyList, setcompanyList] = useState([]);
   // const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   // const selectedCompanyId = useSelector(
@@ -112,11 +112,11 @@ const Dashboard = () => {
   // const [totalPages, setTotalPages] = useState(0);
   const [totalHoliday, setTotalHoliday] = useState(0);
 
-  const filteredLocationList = useMemo(() => {
-    return locationList.filter((loc) =>
-      loc?.locationName?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, locationList]);
+  // const filteredLocationList = useMemo(() => {
+  //   return locationList.filter((loc) =>
+  //     loc?.locationName?.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+  // }, [searchTerm, locationList]);
 
   const iconMap = {
     totalEmployees: <FaUsers />,
@@ -143,13 +143,9 @@ const Dashboard = () => {
     totalTemplates: "/templates",
     totalActiveUsers: "/employees",
     totalLeaveRequests:
-      userRole === "Superadmin"
-        ? "/leavesrequest"
-        : `/leaves/leavesrequest?jobId=${jobRoleId}`,
+      userRole === "Superadmin" ? "/leavesrequest" : `/leaves/leavesrequest`,
     totalPendingLR:
-      userRole === "Superadmin"
-        ? "/leavesrequest"
-        : `/leaves/leavesrequest?jobId=${jobRoleId}`,
+      userRole === "Superadmin" ? "/leavesrequest" : `/leaves/leavesrequest`,
     totalHolidays: "/holidays",
     totalOwnLeaveRequests: "/leaves",
     absentInCurrentMonth: "/timesheetreport",
@@ -488,15 +484,15 @@ const Dashboard = () => {
       // setLoading(true);
       let response;
       // console.log("locationId", id);
-      if (userRole === "Superadmin" && id) {
-        response = await GetCall(
-          `/getAllHolidays?page=${currentPage}&limit=${holidayPerPage}&locationId=${id}&year=${selectedYear}&companyId=${companyId}`
-        );
-      } else {
-        response = await GetCall(
-          `/getAllHolidays?year=${selectedYear}&page=${currentPage}&limit=${holidayPerPage}`
-        );
-      }
+      // if (userRole === "Superadmin" && id) {
+      //   response = await GetCall(
+      //     `/getAllHolidays?page=${currentPage}&limit=${holidayPerPage}&locationId=${id}&year=${selectedYear}&companyId=${companyId}`
+      //   );
+      // } else {
+      response = await GetCall(
+        `/getAllHolidays?year=${selectedYear}&page=${currentPage}&limit=${holidayPerPage}&companyId=${companyId}`
+      );
+      // }
 
       if (response?.data?.status === 200) {
         setAllholidayList(response?.data?.holidays);
@@ -536,43 +532,43 @@ const Dashboard = () => {
     setChecked(false);
   };
 
-  const handleLocation = (event) => {
-    const selectedLocationName = event.target.value;
-    setSelectedLocationName(selectedLocationName);
-    // console.log("Selected Location Name:", selectedLocationName);
+  // const handleLocation = (event) => {
+  //   const selectedLocationName = event.target.value;
+  //   setSelectedLocationName(selectedLocationName);
+  //   // console.log("Selected Location Name:", selectedLocationName);
 
-    const matchedLocation = locationList.find(
-      (location) => location.locationName === selectedLocationName
-    );
+  //   const matchedLocation = locationList.find(
+  //     (location) => location.locationName === selectedLocationName
+  //   );
 
-    if (matchedLocation) {
-      const FindlocationId = matchedLocation._id;
-      setSelectedLocationId(FindlocationId);
-      // console.log("locationid", FindlocationId);
-      if (userRole === "Superadmin") {
-        getAllHoliday(FindlocationId);
-      }
-    } else {
-      console.log("Location not found in locationList");
-    }
-  };
+  //   if (matchedLocation) {
+  //     const FindlocationId = matchedLocation._id;
+  //     setSelectedLocationId(FindlocationId);
+  //     // console.log("locationid", FindlocationId);
+  //     if (userRole === "Superadmin") {
+  //       getAllHoliday(FindlocationId);
+  //     }
+  //   } else {
+  //     console.log("Location not found in locationList");
+  //   }
+  // };
 
-  const GetLocations = async () => {
-    try {
-      setLoading(true);
-      const response = await GetCall(`/getAllLocation`);
+  // const GetLocations = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const response = await GetCall(`/getAllLocation?companyId=${companyId}`);
 
-      if (response?.data?.status === 200) {
-        setLocationList(response?.data?.locations);
-        // console.log("locationList", locationList);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  //     if (response?.data?.status === 200) {
+  //       setLocationList(response?.data?.locations);
+  //       // console.log("locationList", locationList);
+  //     } else {
+  //       showToast(response?.data?.message, "error");
+  //     }
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
   const formattedData = GraphData?.map((item) => ({
     ...item,
@@ -625,11 +621,11 @@ const Dashboard = () => {
   // }, [AllholidayList]);
 
   useEffect(() => {
-    if (selectedLocationId && userRole) {
-      getAllHoliday(selectedLocationId);
-    } else if (userRole !== "Superadmin") {
-      getAllHoliday();
-    }
+    // if (selectedLocationId && userRole) {
+    //   getAllHoliday(selectedLocationId);
+    // } else if (userRole !== "Superadmin") {
+    getAllHoliday();
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // selectedLocationId,
@@ -637,15 +633,16 @@ const Dashboard = () => {
     selectedYear,
     currentPage,
     holidayPerPage,
+    companyId,
   ]);
 
-  useEffect(() => {
-    if (userRole === "Superadmin") {
-      GetLocations();
-      // GetCompany();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userRole]);
+  // useEffect(() => {
+  //   if (userRole === "Superadmin") {
+  //     GetLocations();
+  //     // GetCompany();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [userRole, companyId]);
 
   useEffect(() => {
     if (jobRoleId && userRole !== "Superadmin") {
@@ -1219,7 +1216,8 @@ const Dashboard = () => {
               ) : (
                 <div className="dashboard-calender">
                   <div className="dashboard-calender-selectoption">
-                    {userRole === "Superadmin" && (
+                    <h1>Holidays</h1>
+                    {/* {userRole === "Superadmin" && (
                       // <select
                       //   value={selectedLocationName}
                       //   onChange={handleLocation}
@@ -1292,7 +1290,7 @@ const Dashboard = () => {
                           </MenuItem>
                         )}
                       </Select>
-                    )}
+                    )} */}
 
                     {/* <select
                       id="dashboard-year-select"
@@ -1314,16 +1312,18 @@ const Dashboard = () => {
                       displayEmpty
                       MenuProps={{
                         PaperProps: {
-                          width: 100,
-                          maxHeight: 100,
-                          overflowX: "auto",
-                          scrollbarWidth: "thin",
+                          style: {
+                            width: 100,
+                            maxHeight: 100,
+                            overflowX: "auto",
+                            scrollbarWidth: "thin",
+                          },
                         },
                       }}
                     >
-                      <MenuItem value="" disabled className="menu-item">
+                      {/* <MenuItem value="" disabled className="menu-item">
                         Select year
-                      </MenuItem>
+                      </MenuItem> */}
                       {allowedYears.map((year, i) => (
                         <MenuItem key={i} value={year} className="menu-item">
                           {year}
@@ -1372,7 +1372,7 @@ const Dashboard = () => {
                       <Table className="employeetimesheet-table">
                         <TableHead>
                           <TableRow>
-                            <TableCell>Absence Date</TableCell>
+                            <TableCell>Holiday Date</TableCell>
                             {/* <TableCell>Company Name</TableCell> */}
                             <TableCell>Occasion</TableCell>
                           </TableRow>

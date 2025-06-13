@@ -273,6 +273,10 @@
   margin: 0 !important;
 }
 
+.timing-container {
+  width: 160px;
+}
+
 @media screen and (max-width: 767px) {
   .timesheet-report-download-container button {
     margin-top: 14px;

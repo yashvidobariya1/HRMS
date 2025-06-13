@@ -584,6 +584,8 @@
   display: flex;
   margin: 10px 0;
   gap: 5px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .employeetimesheet-table .MuiTablePagination-root {
