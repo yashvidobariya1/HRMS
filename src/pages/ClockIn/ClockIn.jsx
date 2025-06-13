@@ -520,6 +520,7 @@ import React, { useState, useEffect } from "react";
 import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import moment from "moment";
+import momentTimezone from "moment-timezone";
 import "./ClockIn.css";
 import { BsHourglassSplit } from "react-icons/bs";
 import Loader from "../Helper/Loader";
@@ -852,7 +853,7 @@ const CheckIn = () => {
       const response = await PostCall(`/clockIn`, body);
       if (response?.data?.status === 200) {
         const { timesheet } = response?.data;
-        const now = moment();
+        const now = momentTimezone.tz("Europe/London");
         setStartTime(now);
         // setEndTime(null);
         setElapsedTime(0);
@@ -1021,7 +1022,7 @@ const CheckIn = () => {
           Number(localStorage.getItem("totalWorkingTime")) || 0;
 
         if (savedStartTime) {
-          const savedTime = moment(savedStartTime);
+          const savedTime = momentTimezone.tz(savedStartTime, "Europe/London");
           const currentElapsed = savedTime.isValid()
             ? moment().diff(savedTime, "seconds") + savedElapsedTime
             : savedElapsedTime;

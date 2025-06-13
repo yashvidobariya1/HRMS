@@ -28,7 +28,7 @@ const JobTitleForm = ({ onClose, jobTitledata, onJobTitleSelect }) => {
         <button className="roleselect-close-btn" onClick={previewClose}>
           ×
         </button>
-        <h1>Select Job Role</h1>
+        <h1>Select Job Title</h1>
         <div className="jobtitleselect">
           {/* <select
             className="Roleselcet-input"

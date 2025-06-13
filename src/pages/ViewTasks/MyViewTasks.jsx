@@ -1,55 +1,38 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useMemo, useState } from "react";
 import useApiServices from "../../useApiServices";
-import "./ViewTasks.css";
-import "tippy.js/dist/tippy.css";
-import moment from "moment";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
+import moment from "moment";
+import { useSelector } from "react-redux";
 import CommonTable from "../../SeparateCom/CommonTable";
-import { ListSubheader, Select, TextField, MenuItem } from "@mui/material";
-import { FaEye, FaTrash } from "react-icons/fa6";
-import { FaEdit } from "react-icons/fa";
-import DeleteConfirmation from "../../main/DeleteConfirmation";
-import CommonAddButton from "../../SeparateCom/CommonAddButton";
-import { MdOutlineLocalPostOffice } from "react-icons/md";
-import { useNavigate } from "react-router";
+import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
-const ViewTasks = () => {
-  const navigate = useNavigate();
+const MyViewTasks = () => {
   const { PostCall, GetCall } = useApiServices();
-  const [taskList, setTaskList] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(50);
   const [loading, setLoading] = useState(false);
   const [clientList, setClientList] = useState([]);
-  const userRole = useSelector((state) => state.userInfo.userInfo.role);
-  const [employeeList, setEmployeeList] = useState([]);
-  const companyId = useSelector((state) => state.companySelect.companySelect);
-  const [searchTerm, setsearchTerm] = useState("");
-  const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
   const [selectedClient, setselectedClient] = useState("allClients");
   const [locationList, setlocationList] = useState([]);
   const [selectedLocation, setselectedLocation] = useState("allLocations");
   const [locationSearchTerm, setlocationSearchTerm] = useState("");
-  const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
+  const companyId = useSelector((state) => state.companySelect.companySelect);
+  const isWorkFromOffice = useSelector(
+    (state) => state.jobRoleSelect.jobRoleSelect.isWorkFromOffice
+  );
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [TaskList, setTaskList] = useState([]);
   const [clientSearchTerm, setClientSearchTerm] = useState("");
+  const userId = useSelector((state) => state.userInfo.userInfo._id);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [totalTask, settotalTask] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [perPage, setPerPage] = useState(50);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [ShowConfirm, setShowConfirm] = useState(false);
-  const [taskId, setTaskId] = useState(null);
-  const [taskDate, settaskDate] = useState("");
-  const [taskName, settaskName] = useState("");
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,88 +43,6 @@ const ViewTasks = () => {
       setSelectedEndDate(value);
     }
   };
-
-  const handlePerPageChange = (e) => {
-    setPerPage(e);
-    setCurrentPage(1);
-  };
-
-  const confirmDelete = async (id) => {
-    try {
-      setLoading(true);
-      const response = await PostCall(`/cancelTask/${id}`);
-      if (response?.data?.status === 200) {
-        showToast(response?.data?.message, "success");
-        setShowConfirm(false);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
-
-  const handleDelete = (id, name, startdate) => {
-    setTaskId(id);
-    settaskName(name);
-    settaskDate(startdate);
-    setShowConfirm(true);
-  };
-
-  const cancelDelete = () => {
-    setShowConfirm(false);
-  };
-
-  const handleCheckboxChange = (event) => {
-    const checked = event.target.checked;
-    setisWorkFromOffice(checked);
-    setselectedClient("");
-    setSelectedEmployee("");
-    setSelectedStartDate("");
-    setSelectedEndDate("");
-    setselectedClient("allClients");
-    setSelectedEmployee("allUsers");
-    setselectedLocation("allLocations");
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const getAllTasks = async () => {
-    try {
-      setLoading(true);
-      const filters = {
-        userId: selectedEmployee,
-        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
-          ? selectedLocation
-          : selectedClient,
-      };
-      const response = await PostCall(
-        `/getAllTasks?page=${currentPage}&limit=${perPage}&companyId=${companyId}&search=${debouncedSearch}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&isWorkFromOffice=${isWorkFromOffice}`,
-        filters
-      );
-
-      if (response?.data?.status === 200) {
-        setTaskList(response?.data.reports);
-        settotalTask(response.data?.reports);
-        setTotalPages(response.data?.totalPages);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredEmployeeList = useMemo(() => {
-    return employeeList.filter((user) =>
-      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, employeeList]);
 
   const filteredClientList = useMemo(() => {
     return clientList.filter((client) =>
@@ -157,8 +58,45 @@ const ViewTasks = () => {
     );
   }, [locationList, locationSearchTerm]);
 
-  const handleEmployeeChange = (employeeId) => {
-    setSelectedEmployee(employeeId);
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePerPageChange = (e) => {
+    setPerPage(e);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const getAllTasks = async () => {
+    try {
+      setLoading(true);
+      const filters = {
+        userId: userId,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
+      };
+      const response = await PostCall(
+        `/getAllTasks?page=${currentPage}&limit=${perPage}&companyId=${companyId}&search=${debouncedSearch}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&isWorkFromOffice=${isWorkFromOffice}`,
+        filters
+      );
+
+      if (response?.data?.status === 200) {
+        setTaskList(response?.data?.tasks);
+        settotalTask(response?.data?.reports);
+        setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClientChange = (value) => {
@@ -173,16 +111,17 @@ const ViewTasks = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
+        `/getUsersJobLocations?companyId=${companyId}&userId=${userId}`
       );
       if (response?.data?.status === 200) {
-        setlocationList(response?.data.locations);
+        setlocationList(response?.data?.locations);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -190,7 +129,7 @@ const ViewTasks = () => {
     try {
       setLoading(true);
       const response = await GetCall(
-        `/getAllClientsOfUser?companyId=${companyId}&userId=${selectedEmployee}&isWorkFromOffice=${isWorkFromOffice}`
+        `/getAllClientsOfUser?companyId=${companyId}&userId=${userId}&isWorkFromOffice=${isWorkFromOffice}`
       );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
@@ -202,36 +141,6 @@ const ViewTasks = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  };
-
-  const handleView = (taskId) => {
-    navigate(`/viewtask/taskdetails?taskId=${taskId}`);
-  };
-
-  const handleEdit = (id) => {
-    console.log("id", id);
-    navigate(`/viewtask/edittask/${id}`);
-  };
-
-  const getAllUsersOfClientOrLocation = async () => {
-    try {
-      setLoading(true);
-      const response = await GetCall(
-        `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
-      );
-      if (response?.data?.status === 200) {
-        setEmployeeList(response?.data.users);
-      } else {
-        showToast(response?.data?.message, "error");
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const HandleAddJob = () => {
-    navigate(`/viewtask/addtask`);
   };
 
   useEffect(() => {
@@ -249,33 +158,31 @@ const ViewTasks = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (selectedEmployee && isWorkFromOffice) {
+    if (userId && isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, companyId, selectedEmployee]);
+  }, [isWorkFromOffice, companyId, userId]);
 
   useEffect(() => {
-    if (selectedEmployee && !isWorkFromOffice) {
+    if (userId && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
-  }, [selectedEmployee, companyId]);
+  }, [userId, companyId]);
 
   useEffect(() => {
-    getAllUsersOfClientOrLocation();
-  }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
-
-  useEffect(() => {
+    // if (selectedEmployee || selectedClient) {
     getAllTasks();
+    // }
   }, [
     selectedClient,
-    selectedEmployee,
+    userId,
     debouncedSearch,
     selectedStartDate,
     selectedEndDate,
     isWorkFromOffice,
-    currentPage,
     perPage,
     selectedLocation,
+    currentPage,
     companyId,
   ]);
 
@@ -283,84 +190,13 @@ const ViewTasks = () => {
     <div className="task-list-container">
       <div className="task-flex">
         <div className="task-title">
-          <h1>Task List</h1>
+          <h1>My Task List</h1>
         </div>
-        <CommonAddButton
-          label="Add Task"
-          icon={MdOutlineLocalPostOffice}
-          onClick={HandleAddJob}
-        />
       </div>
 
       <div className="task-filter-container">
         <div className="task-filter-alltask-main">
-          {userRole !== "Employee" && (
-            <div className="task-filter-employee-selection">
-              <label className="label">Employee</label>
-              <Select
-                className="task-input-dropdown"
-                value={selectedEmployee}
-                onChange={(e) => handleEmployeeChange(e.target.value)}
-                displayEmpty
-                MenuProps={{
-                  disableAutoFocusItem: true,
-                  PaperProps: {
-                    style: {
-                      width: 150,
-                      maxHeight: 200,
-                      overflowX: "auto",
-                    },
-                  },
-                  MenuListProps: {
-                    onMouseDown: (e) => {
-                      if (e.target.closest(".search-textfield")) {
-                        e.stopPropagation();
-                      }
-                    },
-                  },
-                }}
-                renderValue={(selected) => {
-                  if (!selected) return "Select Employee";
-                  if (selected === "allUsers") return "All Employees";
-                  const found = employeeList.find(
-                    (emp) => emp._id === selected
-                  );
-                  return found?.userName || "Select Employee";
-                }}
-              >
-                <ListSubheader>
-                  <TextField
-                    size="small"
-                    placeholder="Search Employee"
-                    fullWidth
-                    className="search-textfield"
-                    value={searchTerm}
-                    onChange={(e) => setsearchTerm(e.target.value)}
-                    onKeyDown={(e) => e.stopPropagation()}
-                  />
-                </ListSubheader>
-
-                <MenuItem value="allUsers" className="menu-item">
-                  All Employees
-                </MenuItem>
-                {filteredEmployeeList.length > 0 ? (
-                  filteredEmployeeList.map((emp) => (
-                    <MenuItem
-                      key={emp._id}
-                      value={emp._id}
-                      className="menu-item"
-                    >
-                      {emp.userName}
-                    </MenuItem>
-                  ))
-                ) : (
-                  <MenuItem disabled>Not Found</MenuItem>
-                )}
-              </Select>
-            </div>
-          )}
-
-          {userRole !== "Employee" && !isWorkFromOffice && (
+          {!isWorkFromOffice && (
             <div className="task-filter-employee-selection">
               <label className="label">Client</label>
               <Select
@@ -500,7 +336,7 @@ const ViewTasks = () => {
               />
             </div>
 
-            <div className="task-input-container">
+            <div className="absence-input-container">
               <label className="label">End Date</label>
               <input
                 type="date"
@@ -512,23 +348,14 @@ const ViewTasks = () => {
                 max={maxDate}
               />
             </div>
+
+            {/* <button onClick={handleFilter}>Filter</button> */}
           </div>
         </div>
       </div>
 
-      <div className="task-officework">
-        <div className="task-searchbar">
-          <TextField
-            placeholder="Search Task"
-            variant="outlined"
-            size="small"
-            value={searchQuery}
-            className="common-searchbar"
-            onChange={handleSearchChange}
-          />
-        </div>
-
-        <div className="task-isWorkFromOffice">
+      {/* <div className="timesheetreport-officework">
+        <div className="timesheetreport-isWorkFromOffice">
           <input
             type="checkbox"
             data-testid="send-link"
@@ -536,8 +363,19 @@ const ViewTasks = () => {
             checked={isWorkFromOffice}
             onChange={handleCheckboxChange}
           />
-          <label>Office Work?</label>
         </div>
+        <label>Office Work?</label>
+      </div> */}
+
+      <div className="task-searchbar">
+        <TextField
+          placeholder="Search Task"
+          variant="outlined"
+          size="small"
+          value={searchQuery}
+          className="common-searchbar"
+          onChange={handleSearchChange}
+        />
       </div>
 
       {loading ? (
@@ -549,41 +387,22 @@ const ViewTasks = () => {
           <CommonTable
             headers={[
               "Task Date",
-              "Employee Name ",
-              "Job Title ",
-              isWorkFromOffice ? "Location Name " : "Client Name ",
+              // "Employee Name",
+              "Job Title",
+              isWorkFromOffice ? "Location Name" : "Client Name",
               "Start Time",
               "End Time",
               "Actions",
             ]}
-            data={taskList?.map((task) => ({
-              taskdate: moment(task.taskDate).format("DD/MM/YYYY"),
-              userName: task.userName,
-              jobRole: task.jobRole,
+            data={TaskList?.map((task) => ({
+              taskdate: moment(task.date).format("DD/MM/YYYY"),
+              // userName: task.userName,
               taskloctionandorclientName: isWorkFromOffice
                 ? task.locationName
                 : task.clientName,
+              jobRole: task.jobRole,
               starttime: task.startTime,
-              endtime: task.endTime,
-              actions: (
-                <div className="viewtask-action">
-                  <span className="task-action-icon view-task-data">
-                    <FaEye onClick={() => handleView(task._id, task.entryId)} />
-                  </span>
-                  <span className="task-action-icon edit-task-data">
-                    <FaEdit
-                      onClick={() => handleEdit(task._id, task.entryId)}
-                    />
-                  </span>
-                  <span className="task-action-icon delete-task-data">
-                    <FaTrash
-                      onClick={() =>
-                        handleDelete(task._id, task.userName, task.taskDate)
-                      }
-                    />
-                  </span>
-                </div>
-              ),
+              enddtime: task.endTime,
             }))}
             currentPage={currentPage}
             totalPages={totalPages}
@@ -594,17 +413,20 @@ const ViewTasks = () => {
             isSearchQuery={false}
             totalData={totalTask}
           />
-          {ShowConfirm && (
-            <DeleteConfirmation
-              confirmation={`Are you sure you want to delete the task <b>${taskName}</b> on <b>${taskDate}</b>?`}
-              onConfirm={() => confirmDelete(taskId)}
-              onCancel={cancelDelete}
-            />
-          )}
+
+          {/* <AbsencesheetTable
+            headers={["Date", "Status", "Timing", "Total Hours", "OverTime"]}
+            absenceReportList={absenceReportList}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            showPerPage={perPage}
+            onPerPageChange={handlePerPageChange}
+        /> */}
         </>
       )}
     </div>
   );
 };
 
-export default ViewTasks;
+export default MyViewTasks;

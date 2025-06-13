@@ -89,7 +89,7 @@ const MyAbsenceReport = () => {
 
       if (response?.data?.status === 200) {
         setAbsenceReportList(response?.data?.reports);
-        settotalAbsencesheet(response.data.totalReports);
+        settotalAbsencesheet(response?.data?.totalReports);
         setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
@@ -97,6 +97,7 @@ const MyAbsenceReport = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -115,13 +116,14 @@ const MyAbsenceReport = () => {
         `/getUsersJobLocations?companyId=${companyId}&userId=${userId}`
       );
       if (response?.data?.status === 200) {
-        setlocationList(response?.data.locations);
+        setlocationList(response?.data?.locations);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -133,13 +135,14 @@ const MyAbsenceReport = () => {
       );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
-        setClientList(response.data.clients);
+        setClientList(response?.data?.clients);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -161,18 +164,16 @@ const MyAbsenceReport = () => {
     if (userId && isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, selectedLocation, companyId, userId]);
+  }, [isWorkFromOffice, companyId, userId]);
 
   useEffect(() => {
     if (userId && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
-  }, [userId, isWorkFromOffice]);
+  }, [userId, companyId]);
 
   useEffect(() => {
-    // if (selectedEmployee || selectedClient) {
     GetAbsenceReport();
-    // }
   }, [
     selectedClient,
     userId,
@@ -195,7 +196,7 @@ const MyAbsenceReport = () => {
       </div>
 
       <div className="absence-filter-container">
-        <div className="absence-filter-timsheetreport-main">
+        <div className="absence-filter-main">
           {!isWorkFromOffice && (
             <div className="absence-filter-employee-selection">
               <label className="label">Client</label>
@@ -348,24 +349,9 @@ const MyAbsenceReport = () => {
                 max={maxDate}
               />
             </div>
-
-            {/* <button onClick={handleFilter}>Filter</button> */}
           </div>
         </div>
       </div>
-
-      {/* <div className="timesheetreport-officework">
-        <div className="timesheetreport-isWorkFromOffice">
-          <input
-            type="checkbox"
-            data-testid="send-link"
-            name="isWorkFromOffice"
-            checked={isWorkFromOffice}
-            onChange={handleCheckboxChange}
-          />
-        </div>
-        <label>Office Work?</label>
-      </div> */}
 
       <div className="absence-searchbar">
         <TextField
@@ -385,9 +371,19 @@ const MyAbsenceReport = () => {
       ) : (
         <>
           <CommonTable
-            headers={["Absence Date", "Status"]}
+            headers={[
+              "Absent Date",
+              isWorkFromOffice ? "Location Name" : "Client Name",
+              ,
+              // "Job Title",
+              "Status",
+            ]}
             data={absenceReportList.map((absencesheet) => ({
               absencesheetdate: moment(absencesheet.date).format("DD/MM/YYYY"),
+              absencelcaotionandorclientName: isWorkFromOffice
+                ? absencesheet.locationName
+                : absencesheet.clientName,
+              // jobRole: absencesheet.jobRole,
               absencesheetstatus: absencesheet.status,
             }))}
             currentPage={currentPage}
@@ -399,16 +395,6 @@ const MyAbsenceReport = () => {
             isSearchQuery={false}
             totalData={totalAbsencesheet}
           />
-
-          {/* <AbsencesheetTable
-            headers={["Date", "Status", "Timing", "Total Hours", "OverTime"]}
-            absenceReportList={absenceReportList}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            showPerPage={perPage}
-            onPerPageChange={handlePerPageChange}
-        /> */}
         </>
       )}
     </div>

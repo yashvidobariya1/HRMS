@@ -93,13 +93,14 @@ const TimeSheetReportWeekly = () => {
 
       if (response?.data?.status === 200) {
         setTimesheetReportList(response?.data?.reports);
-        settotalHourCount(response.data.totalHours);
+        settotalHourCount(response?.data?.totalHours);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -117,13 +118,14 @@ const TimeSheetReportWeekly = () => {
       const response = await GetCall(`/getAllClientsOfUser`, formdata);
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
-        setClientList(response.data.clients);
+        setClientList(response?.data.clients);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -145,6 +147,7 @@ const TimeSheetReportWeekly = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -262,7 +265,7 @@ const TimeSheetReportWeekly = () => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, selectedLocation, companyId]);
+  }, [isWorkFromOffice, selectedEmployee, companyId]);
 
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
@@ -271,10 +274,8 @@ const TimeSheetReportWeekly = () => {
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
-    if (selectedClient) {
-      getAllUsersOfClientOrLocation();
-    }
-  }, [selectedClient, companyId, isWorkFromOffice]);
+    getAllUsersOfClientOrLocation();
+  }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     // if (selectedEmployee || selectedClient) {
@@ -366,7 +367,7 @@ const TimeSheetReportWeekly = () => {
                   All Employees
                 </MenuItem>
                 {filteredEmployeeList.length > 0 ? (
-                  filteredEmployeeList.map((emp) => (
+                  filteredEmployeeList?.map((emp) => (
                     <MenuItem
                       key={emp._id}
                       value={emp._id}
@@ -504,7 +505,7 @@ const TimeSheetReportWeekly = () => {
                   All Locations
                 </MenuItem>
                 {filteredLocationList.length > 0 ? (
-                  filteredLocationList.map((location) => (
+                  filteredLocationList?.map((location) => (
                     <MenuItem
                       key={location._id}
                       value={location._id}
@@ -577,7 +578,7 @@ const TimeSheetReportWeekly = () => {
                       direction={sortConfig.direction}
                       onClick={() => handleSort("Name")}
                     >
-                      Name
+                      Employee Name
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
@@ -586,7 +587,7 @@ const TimeSheetReportWeekly = () => {
                       direction={sortConfig.direction}
                       onClick={() => handleSort("JobRole")}
                     >
-                      Job Role
+                      Job Title
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
@@ -605,7 +606,7 @@ const TimeSheetReportWeekly = () => {
                       {isWorkFromOffice ? "Location Name" : "Client Name"}
                     </TableSortLabel>
                   </TableCell>
-                  {weekDays.map((day) => (
+                  {weekDays?.map((day) => (
                     <TableCell key={day}>
                       {moment(day).format("DD/MM/YYYY (ddd)")}
                     </TableCell>

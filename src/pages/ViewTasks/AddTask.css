@@ -1,0 +1,134 @@
+.Addtask-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: var(--primary-text-white);
+}
+
+.addtask-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--neutral-light-gray);
+  padding-right: 40px;
+}
+
+.addtask-section {
+  display: flex;
+  width: 100%;
+  margin-bottom: 25px;
+  gap: 15px;
+}
+
+.addtask-input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+}
+
+.addtask-input-dropdown {
+  margin-top: 5px;
+  padding: 13px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.addtask-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.addtask-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
+.viewtask-back-button {
+  justify-content: end;
+  margin: 10px 0;
+  display: flex;
+}
+
+.viewtask-back-button button {
+  padding: 15px 20px;
+  border-radius: var(--border-radius);
+  background-color: var(--primary-button);
+  border: none;
+  cursor: pointer;
+  color: var(--sidebar-title-primary-white);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.Disable-addtask {
+  background-color: var(--neutral-light-gray);
+  cursor: not-allowed;
+}
+
+.addtask-reset-button {
+  display: flex;
+  gap: 10px;
+}
+
+.reset-addtask {
+  background-color: var(--neutral-light-gray);
+}
+
+.reset-addtask:hover {
+  background-color: var(--secondary-dark-gray);
+}
+
+/* .task-details {
+  padding: 5px 0;
+  border-bottom: 2px solid var(--neutral-light-gray);
+  width: max-content;
+} */
+
+@media (max-width: 1400px) {
+  .job-logo-flex {
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .addtask-input-dropdown {
+    padding: 11px;
+  }
+  .viewtask-back-button {
+    padding: 9px 12px;
+  }
+}
+
+@media (max-width: 575px) {
+  .addtask-section {
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+  .addtask-input-container {
+    margin-top: 10px;
+    gap: 0;
+  }
+  .addtask-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+  .addtask-input-dropdown {
+    padding: 7px;
+  }
+  .viewtask-back-button {
+    padding: 6px 10px !important;
+  }
+  .addtask-input-container .MuiChip-label {
+    font-size: 12px;
+  }
+}

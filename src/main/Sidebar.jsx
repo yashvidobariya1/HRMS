@@ -87,7 +87,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               Object.keys(selectedCompanyId).length === 0)) &&
           companies.length > 0
         ) {
-          const defaultCompanyId = companies[0]._id;
+          const defaultCompanyId =
+            currentRole === "Superadmin" ? "allCompany" : companies[0]._id;
           dispatch(setCompanySelect(defaultCompanyId));
           setSelectedCompanyId(defaultCompanyId);
         }

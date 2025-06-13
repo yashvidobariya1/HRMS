@@ -143,13 +143,14 @@ const TimeSheetReportDaily = () => {
       );
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "error");
-        setClientList(response.data.clients);
+        setClientList(response?.data?.clients);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -168,13 +169,14 @@ const TimeSheetReportDaily = () => {
         `/getAllUsersOfClientOrLocation?companyId=${companyId}&clientId=${selectedClient}&isWorkFromOffice=${isWorkFromOffice}`
       );
       if (response?.data?.status === 200) {
-        setEmployeeList(response?.data.users);
+        setEmployeeList(response?.data?.users);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -198,13 +200,14 @@ const TimeSheetReportDaily = () => {
 
       if (response?.data?.status === 200) {
         setTimesheetReportList(response?.data?.reports);
-        settotalHourCount(response.data.totalHours);
+        settotalHourCount(response?.data?.totalHours);
       } else {
         showToast(response?.data?.message, "error");
       }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
@@ -294,7 +297,7 @@ const TimeSheetReportDaily = () => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
-  }, [isWorkFromOffice, selectedLocation, companyId, selectedEmployee]);
+  }, [isWorkFromOffice, companyId, selectedEmployee]);
 
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
@@ -303,10 +306,8 @@ const TimeSheetReportDaily = () => {
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
-    if (selectedClient) {
-      getAllUsersOfClientOrLocation();
-    }
-  }, [selectedClient, companyId]);
+    getAllUsersOfClientOrLocation();
+  }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     GetTimesheetReport();
@@ -359,7 +360,7 @@ const TimeSheetReportDaily = () => {
                 renderValue={(selected) => {
                   if (!selected) return "Select Employee";
                   if (selected === "allUsers") return "All Employees";
-                  const found = employeeList.find(
+                  const found = employeeList?.find(
                     (emp) => emp._id === selected
                   );
                   return found?.userName || "All Employees";
@@ -380,7 +381,7 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="allUsers" className="menu-item">
                   All Employees
                 </MenuItem>
-                {filteredEmployeeList.map((emp) => (
+                {filteredEmployeeList?.map((emp) => (
                   <MenuItem key={emp._id} value={emp._id} className="menu-item">
                     {emp.userName}
                   </MenuItem>
@@ -420,7 +421,7 @@ const TimeSheetReportDaily = () => {
                 renderValue={(selected) => {
                   if (!selected) return "Select Client";
                   if (selected === "allClients") return "All Clients";
-                  const found = clientList.find((c) => c._id === selected);
+                  const found = clientList?.find((c) => c._id === selected);
                   return found?.clientName || "All Clients";
                 }}
               >
@@ -439,7 +440,7 @@ const TimeSheetReportDaily = () => {
                 <MenuItem value="allClients" className="menu-item">
                   All Clients
                 </MenuItem>
-                {filteredClientList.map((client) => (
+                {filteredClientList?.map((client) => (
                   <MenuItem
                     key={client._id}
                     value={client._id}
@@ -483,7 +484,7 @@ const TimeSheetReportDaily = () => {
                 renderValue={(selected) => {
                   if (!selected) return "Select Locations";
                   if (selected === "allLocations") return "All Locations";
-                  const found = locationList.find((c) => c._id === selected);
+                  const found = locationList?.find((c) => c._id === selected);
                   return found?.locationName || "All Locations";
                 }}
               >
@@ -503,7 +504,7 @@ const TimeSheetReportDaily = () => {
                   All Locations
                 </MenuItem>
                 {filteredLocationList.length > 0 ? (
-                  filteredLocationList.map((location) => (
+                  filteredLocationList?.map((location) => (
                     <MenuItem
                       key={location._id}
                       value={location._id}
@@ -614,7 +615,7 @@ const TimeSheetReportDaily = () => {
                       direction={sortConfig.direction}
                       onClick={() => handleSort("Name")}
                     >
-                      Name
+                      Employee Name
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
@@ -623,7 +624,7 @@ const TimeSheetReportDaily = () => {
                       direction={sortConfig.direction}
                       onClick={() => handleSort("JobRole")}
                     >
-                      Job Role
+                      Job Title
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
@@ -674,7 +675,7 @@ const TimeSheetReportDaily = () => {
               </TableHead>
               <TableBody>
                 {paginatedRows && paginatedRows.length > 0 ? (
-                  paginatedRows.map((row, index) => (
+                  paginatedRows?.map((row, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         {moment(row.date).format("DD/MM/YYYY")}
@@ -685,8 +686,8 @@ const TimeSheetReportDaily = () => {
                         {isWorkFromOffice ? row.locationName : row.clientName}
                       </TableCell>
                       <TableCell>
-                        {row.clockinTime && row.clockinTime.length > 0
-                          ? row.clockinTime.map((item, i) => (
+                        {row?.clockinTime && row.clockinTime.length > 0
+                          ? row?.clockinTime.map((item, i) => (
                               <div key={i} className="timing-container">
                                 <div className="timing-entry">
                                   <span className="clockin">

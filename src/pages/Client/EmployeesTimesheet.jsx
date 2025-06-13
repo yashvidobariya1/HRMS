@@ -360,7 +360,7 @@ const EmployeesTimesheet = () => {
                         }
                         onClick={() => handleSort("userName")}
                       >
-                        User Name
+                        Employee Name
                       </TableSortLabel>
                     </TableCell>
                     <TableCell
