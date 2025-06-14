@@ -272,75 +272,6 @@ const AddEmployee = () => {
   //   }
   // };
 
-  const validateTwoStep = (stepName) => {
-    let newErrors = {};
-    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-    const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
-
-    switch (stepName) {
-      case "Personal Details":
-        if (!formData?.personalDetails?.firstName?.trim()) {
-          newErrors.firstName = "First Name is required";
-        }
-        if (!formData?.personalDetails?.lastName) {
-          newErrors.lastName = "Last Name is required";
-        }
-        if (!formData.personalDetails?.dateOfBirth) {
-          newErrors.dateOfBirth = "Date of Birth is required";
-        }
-        if (!formData.personalDetails?.gender) {
-          newErrors.gender = "Gender is required";
-        }
-        if (!formData.personalDetails?.maritalStatus) {
-          newErrors.maritalStatus = "Marital Status is required";
-        }
-        if (!formData?.personalDetails?.phone) {
-          newErrors.phone = "Phone number is required";
-        } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
-          newErrors.phone = "Phone number must contain only numbers";
-        } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
-          newErrors.phone = "Phone number must be exactly 11 digits";
-        }
-        const phone = formData.personalDetails?.homeTelephone;
-        if (phone) {
-          if (!/^\d+$/.test(phone)) {
-            newErrors.homeTelephone = "Home telephone must contain only digits";
-          } else if (phone.length !== 11) {
-            newErrors.homeTelephone =
-              "Home telephone must be exactly 11 digits";
-          }
-        }
-        const email = formData?.personalDetails?.email;
-        if (!email) {
-          newErrors.email = "Email is required";
-        } else if (!EMAIL_REGEX.test(email)) {
-          newErrors.email = "Valid Email format is required";
-        }
-        const niNumber = formData?.personalDetails?.niNumber?.trim();
-        if (niNumber && !NI_REGEX.test(niNumber)) {
-          newErrors.niNumber =
-            "Invalid NI Number format. Use format: QQ 88 77 77 A";
-        }
-        break;
-
-      // case "Address Details":
-      //   if (!formData?.jobList || formData.jobList.length === 0) {
-      //     newErrors.jobList = "At least one job must be added";
-      //   }
-      //   break;
-
-      default:
-        break;
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
-      return false;
-    }
-
-    return true;
-  };
-
   const nextStep = async () => {
     const updatedDocumentDetails = await Promise.all(
       documentDetails?.map(async (doc) => {
@@ -354,50 +285,13 @@ const AddEmployee = () => {
         return doc;
       })
     );
-    // console.log("Original documentDetails", documentDetails);
-    // console.log("Updated documentDetails", updatedDocumentDetails);
-    const isFinalStep = currentStep === steps.length - 1;
-    console.log("filestep", currentStep, steps.length, isFinalStep);
-    let isValid = true;
-
-    // if (userRole === "Superadmin" && isFinalStep) {
-    //   const step0Valid = validateTwoStep("Personal Details");
-    //   // const step1Valid = validateTwoStep("Address Details");
-
-    //   if (!step0Valid || !step1Valid) {
-    //     showToast("Please Filed the value", "error");
-    //     return;
-    //   }
-    // } else {
-    //   isValid = validate();
-    // }
-
-    if (userRole === "Superadmin" && isFinalStep) {
-      const step0Valid = validateTwoStep("Personal Details");
-      const step1Valid = jobList.length > 0;
-      if (!step0Valid || !step1Valid) {
-        showToast("Please Filed the value", "error");
-        return;
-      }
-    }
-
+    const isValid = validate();
     if (isValid) {
-      if (
-        userRole === "Superadmin" &&
-        currentStep === steps.length - 1 &&
-        (!completedSteps.includes(0) || !completedSteps.includes(1))
-      ) {
-        showToast(
-          "Please fill out Step 1 and Step 2 before submitting.",
-          "error"
-        );
-        return;
-      }
       const data = {
         ...formData,
         documentDetails: updatedDocumentDetails,
       };
-      console.log("data", data);
+      // console.log("data", data);
 
       if (currentStep === steps.length - 1) {
         try {
@@ -407,12 +301,16 @@ const AddEmployee = () => {
             response = await PostCall(`/updateUser/${id}`, data);
             if (response?.data?.status === 200) {
               showToast(response?.data?.message, "success");
-              dispatch(
-                setEmployeeformFilled(response?.data?.updatedUser?.isFormFilled)
-              );
-              userRole === "Employee"
-                ? navigate("dashboard")
-                : navigate("/employees");
+              if (id === user._id) {
+                dispatch(
+                  setEmployeeformFilled(
+                    response?.data?.updatedUser?.isFormFilled
+                  )
+                );
+                navigate("/dashboard");
+              } else {
+                navigate("/employees");
+              }
             } else {
               showToast(response?.data?.message, "error");
             }
@@ -1167,7 +1065,7 @@ const AddEmployee = () => {
   };
 
   const handleStepClick = (index) => {
-    const isUpdateMode = !!id || userRole === "Superadmin";
+    const isUpdateMode = !!id;
     if (
       completedSteps.includes(index) ||
       index === currentStep ||
@@ -1188,7 +1086,7 @@ const AddEmployee = () => {
   }, [id]);
 
   useEffect(() => {
-    if (companyId) {
+    if (companyId && typeof companyId === "string") {
       GetAllLocations(companyId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
