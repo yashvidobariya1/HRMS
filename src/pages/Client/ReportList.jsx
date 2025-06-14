@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { ListSubheader, MenuItem, Select, TextField } from "@mui/material";
 
 const ReportList = () => {
-  const { GetCall, PostCall } = useApiServices();
+  const { GetCall } = useApiServices();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [reportList, setReportList] = useState([]);
@@ -34,16 +34,16 @@ const ReportList = () => {
   const currentMonth = moment().month() + 1;
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [maxDate, setMaxDate] = useState(moment().format("YYYY-MM-DD"));
-  const [formData, setFormData] = useState({
-    startDate: "",
-    endDate: "",
-  });
+  // const [formData, setFormData] = useState({
+  //   startDate: "",
+  //   endDate: "",
+  // });
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [appliedFilters, setAppliedFilters] = useState({
     year: currentYear,
     month: currentMonth,
   });
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
   // const location = useLocation();
   // const searchParams = new URLSearchParams(location.search);
   // const clientId = searchParams.get("clientId");
@@ -85,29 +85,29 @@ const ReportList = () => {
     setCurrentPage(1);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value,
+  //   }));
+  // };
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const validate = () => {
-    let newErrors = {};
-    if (!formData.startDate) {
-      newErrors.startDate = "Start date is required";
-    }
-    if (!formData.endDate) {
-      newErrors.endDate = "End date is required";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  // const validate = () => {
+  //   let newErrors = {};
+  //   if (!formData.startDate) {
+  //     newErrors.startDate = "Start date is required";
+  //   }
+  //   if (!formData.endDate) {
+  //     newErrors.endDate = "End date is required";
+  //   }
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
   const months = moment
     .months()
@@ -391,7 +391,7 @@ const ReportList = () => {
 
       <div className="report-list-flex">
         <TextField
-          placeholder="Search Client"
+          placeholder="Search"
           variant="outlined"
           size="small"
           value={searchQuery}

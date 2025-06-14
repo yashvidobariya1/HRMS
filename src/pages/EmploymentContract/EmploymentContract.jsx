@@ -432,7 +432,7 @@ const EmploymentContract = () => {
         </h5>
       </div>
       <TextField
-        placeholder="Search Contract"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}

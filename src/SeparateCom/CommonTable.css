@@ -321,7 +321,7 @@
 } */
 
 .timing-entry {
-  padding: 5px 10px;
+  /* padding: 5px 10px; */
   background-color: var(--neutral-light-gray);
   margin-bottom: 5px;
   border: 1px solid var(--neutral-light-gray);

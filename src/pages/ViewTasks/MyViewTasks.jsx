@@ -161,18 +161,21 @@ const MyViewTasks = () => {
     if (userId && isWorkFromOffice) {
       getAllLocations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWorkFromOffice, companyId, userId]);
 
   useEffect(() => {
     if (userId && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, companyId]);
 
   useEffect(() => {
     // if (selectedEmployee || selectedClient) {
     getAllTasks();
     // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedClient,
     userId,
@@ -190,7 +193,7 @@ const MyViewTasks = () => {
     <div className="task-list-container">
       <div className="task-flex">
         <div className="task-title">
-          <h1>My Task List</h1>
+          <h1>My Rota Schedule</h1>
         </div>
       </div>
 
@@ -369,7 +372,7 @@ const MyViewTasks = () => {
 
       <div className="task-searchbar">
         <TextField
-          placeholder="Search Task"
+          placeholder="Search"
           variant="outlined"
           size="small"
           value={searchQuery}

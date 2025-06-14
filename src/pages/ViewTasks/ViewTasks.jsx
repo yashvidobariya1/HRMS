@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import useApiServices from "../../useApiServices";
 import "./ViewTasks.css";
-import "tippy.js/dist/tippy.css";
 import moment from "moment";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
@@ -34,8 +33,8 @@ const ViewTasks = () => {
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [clientSearchTerm, setClientSearchTerm] = useState("");
-  const minDate = moment("2024-01-01").format("YYYY-MM-DD");
-  const maxDate = moment().format("YYYY-MM-DD");
+  // const minDate = moment("2024-01-01").format("YYYY-MM-DD");
+  // const maxDate = moment().format("YYYY-MM-DD");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalTask, settotalTask] = useState([]);
@@ -252,20 +251,24 @@ const ViewTasks = () => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWorkFromOffice, companyId, selectedEmployee]);
 
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
     getAllUsersOfClientOrLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     getAllTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedClient,
     selectedEmployee,
@@ -283,7 +286,7 @@ const ViewTasks = () => {
     <div className="task-list-container">
       <div className="task-flex">
         <div className="task-title">
-          <h1>Task List</h1>
+          <h1>Staff Rota Schedule</h1>
         </div>
         <CommonAddButton
           label="Add Task"
@@ -519,7 +522,7 @@ const ViewTasks = () => {
       <div className="task-officework">
         <div className="task-searchbar">
           <TextField
-            placeholder="Search Task"
+            placeholder="Search"
             variant="outlined"
             size="small"
             value={searchQuery}

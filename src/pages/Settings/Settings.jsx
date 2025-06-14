@@ -175,7 +175,7 @@ const Settings = () => {
         value={searchQuery}
         className="common-searchbar"
         onChange={handleSearchChange}
-        placeholder="Search Company"
+        placeholder="Search"
       />
       {loading ? (
         <div className="loader-wrapper">

@@ -113,7 +113,7 @@ const AddTask = () => {
         }
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
-          navigate("viewtask/stafftask");
+          navigate("/stafftask");
         } else {
           showToast(response?.data?.message, "error");
         }
@@ -189,11 +189,12 @@ const AddTask = () => {
   };
 
   const handleBack = () => {
-    navigate("/viewtasks/stafftask");
+    navigate("/stafftask");
   };
 
   useEffect(() => {
     GetAssignuser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -201,6 +202,7 @@ const AddTask = () => {
     if (Taskid) {
       GetTaskDetails(Taskid);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, taskId]);
 
   if (loading) {
@@ -365,7 +367,7 @@ const AddTask = () => {
                       return "Select Employee";
                     }
                     return (
-                      <Box>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {selected.map((token) => {
                           const selectedJob = Assignuser?.flatMap((user) =>
                             user.jobRoles?.map((role) => ({
@@ -387,7 +389,15 @@ const AddTask = () => {
                     );
                   }}
                 >
-                  <ListSubheader>
+                  <ListSubheader
+                    sx={{
+                      position: "sticky",
+                      top: 0,
+                      zIndex: 2,
+                      backgroundColor: "#fff",
+                      borderBottom: "1px solid #eee",
+                    }}
+                  >
                     <TextField
                       fullWidth
                       placeholder="Search Employee"
@@ -426,6 +436,12 @@ const AddTask = () => {
                           checked={allSelected}
                           onChange={handleUserAllSelect}
                           onClick={(e) => e.stopPropagation()}
+                          sx={{
+                            p: { xs: 0.5, sm: 1 },
+                            "& .MuiSvgIcon-root": {
+                              fontSize: { xs: 18, sm: 22 },
+                            },
+                          }}
                         />
                         <span>{user.userName}</span>
                       </ListSubheader>,
@@ -437,8 +453,22 @@ const AddTask = () => {
                         >
                           <Checkbox
                             checked={selectedValues.includes(role.token)}
+                            sx={{
+                              p: { xs: 0.5, sm: 1 },
+                              "& .MuiSvgIcon-root": {
+                                fontSize: { xs: 18, sm: 22 },
+                              },
+                            }}
                           />
-                          <ListItemText primary={role.jobName} />
+                          <ListItemText
+                            primary={role.jobName}
+                            primaryTypographyProps={{
+                              sx: {
+                                fontSize: { xs: "12px", sm: "14px" },
+                                ml: { xs: 0.5, sm: 1 },
+                              },
+                            }}
+                          />
                         </MenuItem>
                       )),
                     ];

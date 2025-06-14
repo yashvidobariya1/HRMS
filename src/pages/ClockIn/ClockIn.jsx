@@ -1251,10 +1251,12 @@ const CheckIn = () => {
 
   useEffect(() => {
     if (!isWorkFromOffice) GetClientdata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobRoleId]);
 
   useEffect(() => {
     if (isWorkFromOffice) GetLocationdata();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobRoleId]);
 
   useEffect(() => {

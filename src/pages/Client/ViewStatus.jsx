@@ -207,7 +207,7 @@ const ViewStatus = () => {
           <h1>View Status</h1>
         </div>
         <TextField
-          placeholder="Search Employee Name"
+          placeholder="Search"
           variant="outlined"
           size="small"
           value={searchQuery}

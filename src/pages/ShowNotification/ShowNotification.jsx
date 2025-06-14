@@ -135,7 +135,7 @@ const ShowNotification = () => {
         </div>
       </div>
       <TextField
-        placeholder="Search Notification"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}

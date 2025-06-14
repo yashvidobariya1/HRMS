@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BiNotepad } from "react-icons/bi";
 import {
   BarChart,
@@ -10,9 +10,9 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
+// import FullCalendar from "@fullcalendar/react";
+// import dayGridPlugin from "@fullcalendar/daygrid";
+// import interactionPlugin from "@fullcalendar/interaction";
 import { FaUsers, FaUserTie, FaUmbrellaBeach } from "react-icons/fa";
 import { MdAddBusiness, MdOutlineNoteAlt } from "react-icons/md";
 import { RiContractFill } from "react-icons/ri";
@@ -36,9 +36,9 @@ import { useDispatch } from "react-redux";
 import {
   Select,
   MenuItem,
-  ListSubheader,
-  TextField,
-  Paper,
+  // ListSubheader,
+  // TextField,
+  // Paper,
   TableContainer,
   TableHead,
   TableRow,
@@ -49,7 +49,7 @@ import {
   TableFooter,
 } from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
-import CommonTable from "../../SeparateCom/CommonTable";
+// import CommonTable from "../../SeparateCom/CommonTable";
 
 const Dashboard = () => {
   const { PostCall, GetCall } = useApiServices();
@@ -61,8 +61,8 @@ const Dashboard = () => {
   const [AllholidayList, setAllholidayList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [calenderloading, setcalenderloading] = useState(false);
-  const [selectedLocationName, setSelectedLocationName] = useState("");
-  const [selectedLocationId, setSelectedLocationId] = useState("");
+  // const [selectedLocationName, setSelectedLocationName] = useState("");
+  // const [selectedLocationId, setSelectedLocationId] = useState("");
   const [selectedYear, setSelectedYear] = useState(moment().year());
   // const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYear = moment().year();
@@ -101,14 +101,14 @@ const Dashboard = () => {
   const startDate = process.env.REACT_APP_START_DATE || "2022-01-01";
   // const startDate = "2022-01-01";
   const startYear = moment(startDate).year();
-  const calendarRef = useRef(null);
+  // const calendarRef = useRef(null);
   const allowedYears = Array.from(
     { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
   );
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [holidayPerPage, setholidayPerPage] = useState(10);
+  const [holidayPerPage, setholidayPerPage] = useState(50);
   // const [totalPages, setTotalPages] = useState(0);
   const [totalHoliday, setTotalHoliday] = useState(0);
 
@@ -621,15 +621,11 @@ const Dashboard = () => {
   // }, [AllholidayList]);
 
   useEffect(() => {
-    // if (selectedLocationId && userRole) {
-    //   getAllHoliday(selectedLocationId);
-    // } else if (userRole !== "Superadmin") {
-    getAllHoliday();
-    // }
+    if (companyId && typeof companyId === "string") getAllHoliday();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // selectedLocationId,
-    userRole,
+    // userRole,
     selectedYear,
     currentPage,
     holidayPerPage,

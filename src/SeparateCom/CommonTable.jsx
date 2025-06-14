@@ -290,7 +290,7 @@ const CommonTable = ({
   const [rowsPerPage, setRowsPerPage] = useState(showPerPage);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [openRow, setOpenRow] = useState(null);
-  const [templateSearchTerm, setTemplateSearchTerm] = useState("");
+  // const [templateSearchTerm, setTemplateSearchTerm] = useState("");
   const navigate = useNavigate();
   // const location = useLocation();
   const page = 0;
@@ -453,8 +453,8 @@ const CommonTable = ({
     "Working Time": "workingTime",
     "Job Title Name": "Name",
     "Client name": "clientName",
-    "Location Name": "absencelcaotionandorclientName",
-    "Client Name": "absencelcaotionandorclientName",
+    "Location Name": "absencelocationandorclientName",
+    "Client Name": "absencelocationandorclientName",
     "Job Title": "jobRole",
     "Task Date": "taskdate",
     "Start Time": "starttime",
