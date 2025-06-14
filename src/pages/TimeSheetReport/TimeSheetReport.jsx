@@ -790,7 +790,7 @@ const TimeSheetReport = () => {
 
       <div className="timesheetreport-searchbar-clockin">
         <TextField
-          placeholder="Search Timesheet"
+          placeholder="Search"
           variant="outlined"
           size="small"
           value={searchQuery}

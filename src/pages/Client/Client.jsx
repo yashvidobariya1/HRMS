@@ -134,9 +134,9 @@ const Client = () => {
     setSearchQuery(event.target.value);
   };
 
-  const HandleGenerateQrCode = (id) => {
-    navigate(`/clients/generateqrcode?clientId=${id}`);
-  };
+  // const HandleGenerateQrCode = (id) => {
+  //   navigate(`/clients/generateqrcode?clientId=${id}`);
+  // };
 
   const HandleGenerateNewQrCode = async (
     id,
@@ -284,7 +284,7 @@ const Client = () => {
       </div>
 
       <TextField
-        placeholder="Search Client"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}
@@ -308,7 +308,7 @@ const Client = () => {
               email: clients?.email,
               City: clients?.city,
               contactNumber: clients?.contactNumber,
-              latestQRCode: clients?.latestQRCode,
+              // latestQRCode: clients?.latestQRCode,
               latestQRCode: clients?.latestQRCode ? (
                 <div
                   className="qr-container"

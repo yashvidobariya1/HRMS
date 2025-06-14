@@ -164,7 +164,7 @@ const Job = () => {
       </div>
 
       <TextField
-        placeholder="Search Job"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}

@@ -50,7 +50,7 @@ import JobTitles from "./pages/JobTitles/JobTitles";
 import AddJobTitles from "./pages/JobTitles/AddJobTitles";
 import TimeSheetReportDaily from "./pages/TimeSheetReport/TimeSheetReportDaily";
 import TimeSheetReportWeekly from "./pages/TimeSheetReport/TimeSheetReportWeekly";
-import TimeSheetReport from "./pages/Client/ViewReport";
+// import TimeSheetReport from "./pages/Client/ViewReport";
 import TimeSheetReportMonthly from "./pages/TimeSheetReport/TimeReportMonthly";
 import TimesheetReportMy from "./pages/TimeSheetReport/TimesheetReportMy";
 import AttendanceForm from "./pages/ViewHours/AttendanceForm";
@@ -355,12 +355,12 @@ const protectedRoutes = [
   //   roles: ["Superadmin", "Administrator", "Manager"],
   // },
   {
-    path: "/viewtasks/stafftask",
+    path: "/stafftask",
     component: <ViewTasks />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
-    path: "/viewtasks/mytask",
+    path: "/mytask",
     component: <MyViewTasks />,
     roles: ["Administrator", "Manager", "Employee"],
   },

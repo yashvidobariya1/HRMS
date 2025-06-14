@@ -92,6 +92,23 @@
   width: max-content;
 } */
 
+.addtask-input-dropdown .MuiListItemText-root span {
+  font-size: 14px !important;
+}
+
+.addtask-input-dropdown .MuiButtonBase-root {
+  padding: 5px 12px !important;
+}
+
+.addtask-input-dropdown .MuiListSubheader-root span {
+  font-size: 16px !important;
+}
+
+.addtask-input-dropdown .MuiListSubheader-root {
+  padding: 5px 5px !important;
+  line-height: 35px !important;
+}
+
 @media (max-width: 1400px) {
   .job-logo-flex {
     flex-direction: column;
@@ -104,6 +121,7 @@
   .addtask-input-dropdown {
     padding: 11px;
   }
+
   .viewtask-back-button {
     padding: 9px 12px;
   }
@@ -115,20 +133,47 @@
     gap: 7px;
     margin-bottom: 7px;
   }
+
   .addtask-input-container {
     margin-top: 10px;
     gap: 0;
   }
+
   .addtask-input-dropdown .MuiSelect-select {
     font-size: 12px;
   }
+
   .addtask-input-dropdown {
     padding: 7px;
   }
+
   .viewtask-back-button {
     padding: 6px 10px !important;
   }
+
   .addtask-input-container .MuiChip-label {
     font-size: 12px;
+  }
+
+  .addtask-input-dropdown .MuiListItemText-root span {
+    font-size: 12px !important;
+  }
+
+  .addtask-input-dropdown .MuiButtonBase-root {
+    padding: 5px 10px !important;
+  }
+
+  .addtask-input-dropdown .MuiListSubheader-root span {
+    font-size: 14px !important;
+  }
+
+  .addtask-input-dropdown .MuiListSubheader-root {
+    padding: 5px 2px !important;
+    line-height: 40px !important;
+  }
+
+  .addtask-input-dropdown .MuiSvgIcon-root {
+    height: 20px !important;
+    width: 20px !important;
   }
 }

@@ -136,13 +136,13 @@ const HolidayList = () => {
     },
   ];
 
-  const HandleBack = () => {
-    // if (userRole === "Superadmin") {
-    //   navigate(`/location/holidays/${locationId}`);
-    // } else {
-    navigate("/holidays");
-    // }
-  };
+  // const HandleBack = () => {
+  //   // if (userRole === "Superadmin") {
+  //   //   navigate(`/location/holidays/${locationId}`);
+  //   // } else {
+  //   navigate("/holidays");
+  //   // }
+  // };
 
   useEffect(() => {
     getAllHoliday();

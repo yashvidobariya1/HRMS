@@ -1,5 +1,5 @@
 import React from "react";
-import { FaUsers } from "react-icons/fa6";
+import { FaRegFileLines, FaUsers } from "react-icons/fa6";
 // import { RxDashboard } from "react-icons/rx";
 // import { IoSettingsOutline } from "react-icons/io5";
 import { FaUserTie } from "react-icons/fa6";
@@ -41,7 +41,7 @@ export const SidebarData = [
       },
       {
         title: "Client Reports",
-        icon: <FaUserTie />,
+        icon: <FaRegFileLines />,
         link: "/reportlist",
         allowedRoles: ["Superadmin", "Administrator"],
       },
@@ -173,21 +173,33 @@ export const SidebarData = [
         ],
       },
       {
-        title: "View Tasks",
+        title: "View Rota Schedule",
         icon: <FaTasks />,
-        allowedRoles: ["Superadmin", "Administrator", "Manager", "Employee"],
+        link: "/stafftask",
+        allowedRoles: ["Superadmin"],
+      },
+      {
+        title: "View Rota Schedule",
+        icon: <FaTasks />,
+        allowedRoles: ["Administrator", "Manager"],
         subItems: [
           {
-            title: "Staff Tasks",
-            link: "/viewtasks/stafftask",
-            allowedRoles: ["Superadmin", "Administrator", "Manager"],
+            title: "Staff Rota Schedule",
+            link: "/stafftask",
+            allowedRoles: ["Administrator", "Manager"],
           },
           {
-            title: "My Task",
-            link: "/viewtasks/mytask",
-            allowedRoles: ["Administrator", "Manager", "Employee"],
+            title: "My Rota Schedule",
+            link: "/mytask",
+            allowedRoles: ["Administrator", "Manager"],
           },
         ],
+      },
+      {
+        title: "View Rota Schedule",
+        icon: <FaTasks />,
+        link: "/mytask",
+        allowedRoles: ["Employee"],
       },
       {
         title: "Timesheet Report",

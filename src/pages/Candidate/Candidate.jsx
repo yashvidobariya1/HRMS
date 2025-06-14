@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 
 const Candidate = () => {
   // const navigate = useNavigate();
-  const { GetCall, PostCall } = useApiServices();
+  const { GetCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [candidateList, setCandidateList] = useState([]);
   const [showDropdownAction, setShowDropdownAction] = useState(null);
@@ -128,7 +128,7 @@ const Candidate = () => {
   useEffect(() => {
     GetCandidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, candidatePerPage, debouncedSearch]);
+  }, [currentPage, candidatePerPage, debouncedSearch, companyId]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -149,7 +149,7 @@ const Candidate = () => {
       </div>
 
       <TextField
-        placeholder="Search Candidate"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}

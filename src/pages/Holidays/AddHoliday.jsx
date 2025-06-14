@@ -44,6 +44,7 @@ const AddHoliday = () => {
         .catch((error) => console.error("Error fetching holiday:", error))
         .finally(() => setLoading(false));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const validate = () => {
@@ -69,7 +70,7 @@ const AddHoliday = () => {
 
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
-        navigate(`/holidays/holidaylist`);
+        navigate(`/holidays`);
       } else {
         showToast(response?.data?.message, "error");
       }
