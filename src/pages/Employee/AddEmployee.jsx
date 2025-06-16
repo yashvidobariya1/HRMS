@@ -52,7 +52,7 @@ const AddEmployee = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const [isSaveForm, setIsSaveForm] = useState(false);
   const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
-  // const userRole = useSelector((state) => state.userInfo.userInfo.role);
+  const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [file, setFile] = useState({
     documentType: "",
     files: [],
@@ -69,6 +69,7 @@ const AddEmployee = () => {
   const [nationalitysearchTerm, setnationalitysearchTerm] = useState("");
   const [visasearchTerm, setvisasearchTerm] = useState("");
   const [assignmaangersearchTerm, setassignmaangersearchTerm] = useState("");
+  const [otherFormsave, setotherFormsave] = useState(false);
   const employeeFormFilled = useSelector(
     (state) => state.employeeformFilled.employeeformFilled
   );
@@ -153,13 +154,13 @@ const AddEmployee = () => {
   });
 
   const filteredJobtitleList = useMemo(() => {
-    return jobTitlesList.filter((user) =>
+    return jobTitlesList?.filter((user) =>
       user?.name?.toLowerCase().includes(jobtitlesearchTerm.toLowerCase())
     );
   }, [jobtitlesearchTerm, jobTitlesList]);
 
   const filteredLocationsList = useMemo(() => {
-    return locations.filter((user) =>
+    return locations?.filter((user) =>
       user?.locationName
         ?.toLowerCase()
         .includes(locationsearchTerm.toLowerCase())
@@ -272,73 +273,73 @@ const AddEmployee = () => {
   //   }
   // };
 
-  const nextStep = async () => {
-    const updatedDocumentDetails = await Promise.all(
-      documentDetails?.map(async (doc) => {
-        if (doc?.document instanceof File) {
-          const base64Document = await convertFileToBase64(doc?.document);
-          return {
-            ...doc,
-            document: base64Document,
-          };
-        }
-        return doc;
-      })
-    );
-    const isValid = validate();
-    if (isValid) {
-      const data = {
-        ...formData,
-        documentDetails: updatedDocumentDetails,
-      };
-      // console.log("data", data);
+  const validateTwoStep = (stepName) => {
+    let newErrors = {};
+    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
 
-      if (currentStep === steps.length - 1) {
-        try {
-          setLoading(true);
-          let response;
-          if (id) {
-            response = await PostCall(`/updateUser/${id}`, data);
-            if (response?.data?.status === 200) {
-              showToast(response?.data?.message, "success");
-              if (id === user._id) {
-                dispatch(
-                  setEmployeeformFilled(
-                    response?.data?.updatedUser?.isFormFilled
-                  )
-                );
-                navigate("/dashboard");
-              } else {
-                navigate("/employees");
-              }
-            } else {
-              showToast(response?.data?.message, "error");
-            }
-          } else {
-            response = await PostCall("/addUser", data);
-            if (response?.data?.status === 200) {
-              showToast(response?.data?.message, "success");
-              navigate("/employees");
-            } else {
-              showToast(response?.data?.message, "error");
-            }
-          }
-          setLoading(false);
-        } catch (error) {
-          showToast(error, "error");
-          setLoading(false);
+    switch (stepName) {
+      case "Personal Details":
+        if (!formData?.personalDetails?.firstName?.trim()) {
+          newErrors.firstName = "First Name is required";
         }
-      } else {
-        setCompletedSteps((prev) => {
-          console.log("prev", prev);
-          if (!prev.includes(currentStep)) {
-            return [...prev, currentStep];
+        if (!formData?.personalDetails?.lastName) {
+          newErrors.lastName = "Last Name is required";
+        }
+        if (!formData.personalDetails?.dateOfBirth) {
+          newErrors.dateOfBirth = "Date of Birth is required";
+        }
+        if (!formData.personalDetails?.gender) {
+          newErrors.gender = "Gender is required";
+        }
+        if (!formData.personalDetails?.maritalStatus) {
+          newErrors.maritalStatus = "Marital Status is required";
+        }
+        if (!formData?.personalDetails?.phone) {
+          newErrors.phone = "Phone number is required";
+        } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
+          newErrors.phone = "Phone number must contain only numbers";
+        } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
+          newErrors.phone = "Phone number must be exactly 11 digits";
+        }
+        const phone = formData.personalDetails?.homeTelephone;
+        if (phone) {
+          if (!/^\d+$/.test(phone)) {
+            newErrors.homeTelephone = "Home telephone must contain only digits";
+          } else if (phone.length !== 11) {
+            newErrors.homeTelephone =
+              "Home telephone must be exactly 11 digits";
           }
-          return prev;
-        });
-        setCurrentStep(currentStep + 1);
-      }
+        }
+        const email = formData?.personalDetails?.email;
+        if (!email) {
+          newErrors.email = "Email is required";
+        } else if (!EMAIL_REGEX.test(email)) {
+          newErrors.email = "Valid Email format is required";
+        }
+        const niNumber = formData?.personalDetails?.niNumber?.trim();
+        if (niNumber && !NI_REGEX.test(niNumber)) {
+          newErrors.niNumber =
+            "Invalid NI Number format. Use format: QQ 88 77 77 A";
+        }
+        break;
+
+      // case "Address Details":
+      //   if (!formData?.jobList || formData.jobList.length === 0) {
+      //     newErrors.jobList = "At least one job must be added";
+      //   }
+      //   break;
+
+      default:
+        break;
     }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
+      return false;
+    }
+
+    return true;
   };
 
   const prevStep = () => {
@@ -347,34 +348,26 @@ const AddEmployee = () => {
     }
   };
 
-  const handleSaveClick = async () => {
-    const isValid = validate();
-    if (isValid) {
-      const data = {
-        ...formData,
-        ...(isSaveForm && { isFormFilled: false }),
-      };
-      setLoading(true);
-      try {
-        const response = id
-          ? await PostCall(`/updateUser/${id}`, data)
-          : await PostCall("/addUser", data);
-
-        if (response?.data?.status === 200) {
-          showToast(response?.data?.message, "success");
-          navigate("/employees");
-        } else {
-          showToast(response?.data?.message, "error");
-        }
-      } catch (error) {
-        showToast(error, "error");
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      console.log("Validation failed for current step");
+  const handleSaveClick = () => {
+    const step0Valid = validateTwoStep("Personal Details");
+    const step1Valid = jobList.length > 0;
+    if (!step0Valid || !step1Valid) {
+      console.log("check step 1 and 2");
+      showToast(
+        "Please fill out Step 1 and Step 2 before submitting.",
+        "error"
+      );
+      return;
+    }
+    console.log("SAVE");
+    if (user.id !== id && otherFormsave) {
+      console.log("other user with isform fill true");
+      const valid = validate();
+      console.log("validate", valid);
     }
   };
+
+  const nextStep = () => {};
 
   // const handleChange = (e) => {
   //   const { name, value, type, checked } = e.target;
@@ -819,171 +812,197 @@ const AddEmployee = () => {
 
   const validate = () => {
     let newErrors = {};
-    const currentStepName = steps[currentStep];
-    // const sortCodeError = /^\d{2}-\d{2}-\d{2}$/;
+    let InvalidStep = null;
+    // const currentStepName = steps[currentStep];
     const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-    //const NI_REGEX = /^[A-Z]{2}\d{6}[A-Z]?$/;
-    // console.log("validate current step", currentStepName);
-
-    switch (currentStepName) {
-      case "Personal Details":
-        if (!formData?.personalDetails?.firstName?.trim()) {
-          newErrors.firstName = "First Name is required";
-        }
-        if (!formData?.personalDetails?.lastName) {
-          newErrors.lastName = "Last Name is required";
-        }
-        if (!formData.personalDetails?.dateOfBirth) {
-          newErrors.dateOfBirth = "Date of Birth is required";
-        }
-        if (!formData.personalDetails?.gender) {
-          newErrors.gender = "Gender is required";
-        }
-        if (!formData.personalDetails?.maritalStatus) {
-          newErrors.maritalStatus = "Marital Status is required";
-        }
-        if (!formData?.personalDetails?.phone) {
-          newErrors.phone = "Phone number is required";
-        } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
-          newErrors.phone = "Phone number must contain only numbers";
-        } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
-          newErrors.phone = "Phone number must be exactly 11 digits";
-        }
-        const phone = formData.personalDetails?.homeTelephone;
-        if (phone) {
-          if (!/^\d+$/.test(phone)) {
-            newErrors.homeTelephone = "Home telephone must contain only digits";
-          } else if (phone.length !== 11) {
-            newErrors.homeTelephone =
-              "Home telephone must be exactly 11 digits";
+    const shouldValidateAll = user.id === id && otherFormsave;
+    const stepsToValidate = shouldValidateAll ? steps : [steps[currentStep]];
+    for (let stepName of stepsToValidate) {
+      const errorsInvalidstep = Object.keys(newErrors).length;
+      console.log(
+        "errors Invalid step",
+        errorsInvalidstep,
+        Object.keys(newErrors).length
+      );
+      switch (stepName) {
+        case "Personal Details":
+          if (!formData?.personalDetails?.firstName?.trim()) {
+            newErrors.firstName = "First Name is required";
           }
-        }
-        const email = formData?.personalDetails?.email;
-        if (!email) {
-          newErrors.email = "Email is required";
-        } else if (!EMAIL_REGEX.test(email)) {
-          newErrors.email = "Valid Email format is required";
-        }
-        const niNumber = formData?.personalDetails?.niNumber?.trim();
-        const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
-        if (niNumber && !NI_REGEX.test(niNumber)) {
-          newErrors.niNumber =
-            "Invalid NI Number format. Use format: QQ 88 77 77 A";
-        }
-        // if (!formData.personalDetails?.sendRegistrationLink) {
-        //   newErrors.sendRegistrationLink =
-        //     "Please check the box to send the registration link.";
-        // }
-        break;
+          if (!formData?.personalDetails?.lastName) {
+            newErrors.lastName = "Last Name is required";
+          }
+          if (!formData.personalDetails?.dateOfBirth) {
+            newErrors.dateOfBirth = "Date of Birth is required";
+          }
+          if (!formData.personalDetails?.gender) {
+            newErrors.gender = "Gender is required";
+          }
+          if (!formData.personalDetails?.maritalStatus) {
+            newErrors.maritalStatus = "Marital Status is required";
+          }
+          if (!formData?.personalDetails?.phone) {
+            newErrors.phone = "Phone number is required";
+          } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
+            newErrors.phone = "Phone number must contain only numbers";
+          } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
+            newErrors.phone = "Phone number must be exactly 11 digits";
+          }
+          const phone = formData.personalDetails?.homeTelephone;
+          if (phone) {
+            if (!/^\d+$/.test(phone)) {
+              newErrors.homeTelephone =
+                "Home telephone must contain only digits";
+            } else if (phone.length !== 11) {
+              newErrors.homeTelephone =
+                "Home telephone must be exactly 11 digits";
+            }
+          }
+          const email = formData?.personalDetails?.email;
+          if (!email) {
+            newErrors.email = "Email is required";
+          } else if (!EMAIL_REGEX.test(email)) {
+            newErrors.email = "Valid Email format is required";
+          }
+          const niNumber = formData?.personalDetails?.niNumber?.trim();
+          const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
+          if (niNumber && !NI_REGEX.test(niNumber)) {
+            newErrors.niNumber =
+              "Invalid NI Number format. Use format: QQ 88 77 77 A";
+          }
+          // if (!formData.personalDetails?.sendRegistrationLink) {
+          //   newErrors.sendRegistrationLink =
+          //     "Please check the box to send the registration link.";
+          // }
+          break;
 
-      case "Address Details":
-        if (!formData?.addressDetails?.address) {
-          newErrors.address = "Address is required";
-        }
-        if (!formData?.addressDetails?.city) {
-          newErrors.city = "City is required";
-        }
-        if (!formData?.addressDetails?.postCode) {
-          newErrors.postCode = "Post Code is required";
-        }
-        break;
+        case "Address Details":
+          if (!formData?.addressDetails?.address) {
+            newErrors.address = "Address is required";
+          }
+          if (!formData?.addressDetails?.city) {
+            newErrors.city = "City is required";
+          }
+          if (!formData?.addressDetails?.postCode) {
+            newErrors.postCode = "Post Code is required";
+          }
+          break;
 
-      case "Kin Details":
-        if (!formData?.kinDetails?.kinName) {
-          newErrors.kinName = "Kin name is required";
-        }
-        if (!formData?.kinDetails?.postCode) {
-          newErrors.kinPostCode = "Post Code is required";
-        }
-        if (!formData?.kinDetails?.address) {
-          newErrors.kinAddress = "Address is required";
-        }
-        if (!formData?.kinDetails?.emergencyContactNumber) {
-          newErrors.emergencyContactNumber =
-            "Emergency Contact Number is required";
-        } else if (
-          !/^\d+$/.test(formData?.kinDetails?.emergencyContactNumber)
-        ) {
-          newErrors.emergencyContactNumber =
-            "Emergency Contact Number must contain only numbers";
-        } else if (
-          !/^\d{11}$/.test(formData?.kinDetails?.emergencyContactNumber)
-        ) {
-          newErrors.emergencyContactNumber =
-            "Emergency Contact Number must be exactly 11 digits";
-        }
-        break;
+        case "Kin Details":
+          if (!formData?.kinDetails?.kinName) {
+            newErrors.kinName = "Kin name is required";
+          }
+          if (!formData?.kinDetails?.postCode) {
+            newErrors.kinPostCode = "Post Code is required";
+          }
+          if (!formData?.kinDetails?.address) {
+            newErrors.kinAddress = "Address is required";
+          }
+          if (!formData?.kinDetails?.emergencyContactNumber) {
+            newErrors.emergencyContactNumber =
+              "Emergency Contact Number is required";
+          } else if (
+            !/^\d+$/.test(formData?.kinDetails?.emergencyContactNumber)
+          ) {
+            newErrors.emergencyContactNumber =
+              "Emergency Contact Number must contain only numbers";
+          } else if (
+            !/^\d{11}$/.test(formData?.kinDetails?.emergencyContactNumber)
+          ) {
+            newErrors.emergencyContactNumber =
+              "Emergency Contact Number must be exactly 11 digits";
+          }
+          break;
 
-      case "Financial Details":
-        if (!formData.financialDetails?.bankName) {
-          newErrors.bankName = "Bank Name is required";
-        }
-        if (!formData.financialDetails?.holderName) {
-          newErrors.holderName = "Holder Name is required";
-        }
+        case "Financial Details":
+          if (!formData.financialDetails?.bankName) {
+            newErrors.bankName = "Bank Name is required";
+          }
+          if (!formData.financialDetails?.holderName) {
+            newErrors.holderName = "Holder Name is required";
+          }
 
-        const sortCode = formData?.financialDetails?.sortCode;
-        const sortCodeError = /^\d{2}-\d{2}-\d{2}$/;
+          const sortCode = formData?.financialDetails?.sortCode;
+          const sortCodeError = /^\d{2}-\d{2}-\d{2}$/;
 
-        if (!sortCode) {
-          newErrors.sortCode = "Sort code is required";
-        } else if (!sortCodeError.test(sortCode)) {
-          newErrors.sortCode = "Valid sort code format is required (xx-xx-xx)";
-        }
+          if (!sortCode) {
+            newErrors.sortCode = "Sort code is required";
+          } else if (!sortCodeError.test(sortCode)) {
+            newErrors.sortCode =
+              "Valid sort code format is required (xx-xx-xx)";
+          }
 
-        // if (!formData.financialDetails?.sortCode) {
-        //   newErrors.sortCode = "Sort Code is required";
-        // }
-        const accountNumber = formData.financialDetails?.accountNumber;
-        if (!accountNumber) {
-          newErrors.accountNumber = "Account Number is required";
-        } else if (!/^\d{8}$/.test(accountNumber)) {
-          newErrors.accountNumber = "Account Number must be exactly 8 digits";
-        }
+          // if (!formData.financialDetails?.sortCode) {
+          //   newErrors.sortCode = "Sort Code is required";
+          // }
+          const accountNumber = formData.financialDetails?.accountNumber;
+          if (!accountNumber) {
+            newErrors.accountNumber = "Account Number is required";
+          } else if (!/^\d{8}$/.test(accountNumber)) {
+            newErrors.accountNumber = "Account Number must be exactly 8 digits";
+          }
 
-        if (!formData.financialDetails?.payrollFrequency) {
-          newErrors.payrollFrequency = "Payroll Frequency is required";
-        }
-        if (!formData.financialDetails?.pension) {
-          newErrors.pension = "Pension option is required";
-        }
-        break;
+          if (!formData.financialDetails?.payrollFrequency) {
+            newErrors.payrollFrequency = "Payroll Frequency is required";
+          }
+          if (!formData.financialDetails?.pension) {
+            newErrors.pension = "Pension option is required";
+          }
+          break;
 
-      case "Job Details":
-        if (jobList.length <= 0) {
-          newErrors.jobList = "Atleast one Job Type is required";
-          showToast("Atleast one Job type is required", "error");
-        }
-        if (editIndex !== null) {
-          newErrors.jobList = "Please update Job Details";
-          showToast("Please update Job Details", "error");
-        }
-        break;
+        case "Job Details":
+          if (jobList?.length <= 0) {
+            newErrors.jobList = "Atleast one Job Type is required";
+            // showToast("Atleast one Job type is required", "error");
+          }
+          if (editIndex !== null) {
+            newErrors.jobList = "Please update Job Details";
+            showToast("Please update Job Details", "error");
+          }
+          break;
 
-      case "Immigration Details":
-        if (!formData.immigrationDetails?.passportNumber) {
-          newErrors.passportNumber = "Passport Number is required";
-        }
-        if (!formData.immigrationDetails?.countryOfIssue) {
-          newErrors.countryOfIssue = "Country Of Issue is required";
-        }
-        if (!formData.immigrationDetails?.passportExpiry) {
-          newErrors.passportExpiry = "Passport Expiry is required";
-        }
-        if (!formData.immigrationDetails?.nationality) {
-          newErrors.nationality = "Nationality is required";
-        }
-        if (!formData.immigrationDetails?.rightToWorkCheckDate) {
-          newErrors.rightToWorkCheckDate =
-            "Right To WorkCheck Date is required";
-        }
-        break;
+        case "Immigration Details":
+          if (!formData.immigrationDetails?.passportNumber) {
+            newErrors.passportNumber = "Passport Number is required";
+          }
+          if (!formData.immigrationDetails?.countryOfIssue) {
+            newErrors.countryOfIssue = "Country Of Issue is required";
+          }
+          if (!formData.immigrationDetails?.passportExpiry) {
+            newErrors.passportExpiry = "Passport Expiry is required";
+          }
+          if (!formData.immigrationDetails?.nationality) {
+            newErrors.nationality = "Nationality is required";
+          }
+          if (!formData.immigrationDetails?.rightToWorkCheckDate) {
+            newErrors.rightToWorkCheckDate =
+              "Right To WorkCheck Date is required";
+          }
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
+      if (
+        Object.keys(newErrors).length > errorsInvalidstep &&
+        InvalidStep === null
+      ) {
+      }
     }
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    console.log("errror message");
+    if (Object.keys(newErrors).length === 0) {
+      console.log("no error");
+    } else {
+      const errorStepName = steps[InvalidStep];
+      console.log("errror message", errorStepName);
+      if (shouldValidateAll) {
+        showToast(
+          `Step "${errorStepName}" is missing required fields.`,
+          "error"
+        );
+      }
+    }
   };
 
   const jobActions = [
@@ -1028,6 +1047,8 @@ const AddEmployee = () => {
       if (User?.data?.status === 200) {
         // GetAllLocations();
         setDocumentDetails(User?.data?.user?.documentDetails);
+        setotherFormsave(User?.data?.user?.isFormFilled);
+        console.log("isFormFilled", User?.data?.user?.isFormFilled);
         setFormData(User?.data?.user);
         setJobList(User?.data?.user?.jobDetails);
         // setCompanyId(User?.data?.user?.companyId);
@@ -1065,7 +1086,7 @@ const AddEmployee = () => {
   };
 
   const handleStepClick = (index) => {
-    const isUpdateMode = !!id;
+    const isUpdateMode = !!id || userRole === "Superadmin";
     if (
       completedSteps.includes(index) ||
       index === currentStep ||
@@ -1572,11 +1593,11 @@ const AddEmployee = () => {
                     <MenuItem value="" disabled className="menu-item">
                       Select job Title
                     </MenuItem>
-                    {filteredJobtitleList.length > 0 ? (
-                      filteredJobtitleList.map((jobtitle, index) => (
+                    {filteredJobtitleList?.length > 0 ? (
+                      filteredJobtitleList?.map((jobtitle, index) => (
                         <MenuItem
                           key={index}
-                          value={jobtitle.name}
+                          value={jobtitle?.name}
                           className="menu-item"
                         >
                           {jobtitle.name}
@@ -2017,9 +2038,9 @@ const AddEmployee = () => {
                         onKeyDown={(e) => e.stopPropagation()}
                       />
                     </ListSubheader>
-                    <MenuItem value="" disabled>
+                    {/* <MenuItem value="" disabled>
                       Select Location
-                    </MenuItem>
+                    </MenuItem> */}
                     {filteredLocationsList.length > 0 ? (
                       filteredLocationsList?.map((location) => (
                         <MenuItem
@@ -2115,9 +2136,9 @@ const AddEmployee = () => {
                         onKeyDown={(e) => e.stopPropagation()}
                       />
                     </ListSubheader>
-                    <MenuItem value="" disabled className="menu-item">
+                    {/* <MenuItem value="" disabled className="menu-item">
                       Select Manager
-                    </MenuItem>
+                    </MenuItem> */}
 
                     {/* {filteredAssigneesManager?.length > 0 ? (
                       filteredAssigneesManager.map((assignee) => (
@@ -2217,8 +2238,8 @@ const AddEmployee = () => {
                         return <>Select Client</>;
                       }
                       const selectedNames = clients
-                        ?.filter((client) => selected.includes(client._id))
-                        .map((client) => client.name)
+                        ?.filter((client) => selected?.includes(client._id))
+                        .map((client) => client?.name)
                         .join(", ");
                       return selectedNames;
                     }}
@@ -2255,7 +2276,7 @@ const AddEmployee = () => {
                       />
                     </ListSubheader>
                     {filteredassignClientList?.length > 0 ? (
-                      filteredassignClientList.map((client) => (
+                      filteredassignClientList?.map((client) => (
                         <MenuItem
                           value={client._id}
                           key={client._id}
@@ -2788,8 +2809,8 @@ const AddEmployee = () => {
                   <MenuItem value="" disabled>
                     Select Country
                   </MenuItem>
-                  {filteredCountryList.length > 0 ? (
-                    filteredCountryList.map((country, index) => (
+                  {filteredCountryList?.length > 0 ? (
+                    filteredCountryList?.map((country, index) => (
                       <MenuItem
                         key={index}
                         value={country}
@@ -3194,7 +3215,7 @@ const AddEmployee = () => {
                       {file.files.map((fileItem, index) => (
                         <div key={index} className="uploadfile-flex">
                           <p>
-                            {fileItem.name.length > 15
+                            {fileItem?.name.length > 15
                               ? `${fileItem.name.slice(0, 15)}...`
                               : fileItem.name}
                           </p>

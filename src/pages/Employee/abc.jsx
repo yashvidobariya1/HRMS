@@ -69,6 +69,7 @@ const AddEmployee = () => {
   const [nationalitysearchTerm, setnationalitysearchTerm] = useState("");
   const [visasearchTerm, setvisasearchTerm] = useState("");
   const [assignmaangersearchTerm, setassignmaangersearchTerm] = useState("");
+  const [otherFormsave, setotherFormsave] = useState(false);
   const employeeFormFilled = useSelector(
     (state) => state.employeeformFilled.employeeformFilled
   );
@@ -153,13 +154,13 @@ const AddEmployee = () => {
   });
 
   const filteredJobtitleList = useMemo(() => {
-    return jobTitlesList.filter((user) =>
+    return jobTitlesList?.filter((user) =>
       user?.name?.toLowerCase().includes(jobtitlesearchTerm.toLowerCase())
     );
   }, [jobtitlesearchTerm, jobTitlesList]);
 
   const filteredLocationsList = useMemo(() => {
-    return locations.filter((user) =>
+    return locations?.filter((user) =>
       user?.locationName
         ?.toLowerCase()
         .includes(locationsearchTerm.toLowerCase())
@@ -354,60 +355,19 @@ const AddEmployee = () => {
         return doc;
       })
     );
-    // console.log("Original documentDetails", documentDetails);
-    // console.log("Updated documentDetails", updatedDocumentDetails);
+
     const isFinalStep = currentStep === steps.length - 1;
-
-    // const result = userRole === "Superadmin" ? { isValid: true } : validate();
-    const result = userRole === "Superadmin" ? validate() : { isValid: true };
-    console.log("result", result);
-    // let result
-    // if(userRole === "Superadmin"){
-    //   isValid(true);
-    // }
-    console.log("is result", result);
+    const result = userRole === "Superadmin" ? { isValid: true } : validate();
     const isValid = typeof result === "object" ? result.isValid : result;
-    console.log("isValid", isValid, typeof result);
-
-    // if (userRole === "Superadmin" && isFinalStep) {
-    //   const step0Valid = validateTwoStep("Personal Details");
-    //   // const step1Valid = validateTwoStep("Address Details");
-
-    //   if (!step0Valid || !step1Valid) {
-    //     showToast("Please Filed the value", "error");
-    //     return;
-    //   }
-    // } else {
-    //   isValid = validate();
-    // }
-
-    // if (userRole === "Superadmin" && isFinalStep) {
-    //   const step0Valid = validateTwoStep("Personal Details");
-    //   const step1Valid = jobList.length > 0;
-    //   if (!step0Valid || !step1Valid) {
-    //     showToast("Please Filed the value", "error");
-    //     return;
-    //   }
-    // }
-
+    console.log("result", result);
+    console.log("isValid", isValid);
+    // const isValid = validate();
     if (isValid) {
-      console.log(currentStep, steps.length, completedSteps, isValid);
-      // if (
-      //   userRole === "Superadmin" &&
-      //   currentStep === steps.length - 1 &&
-      //   (!completedSteps.includes(0) || !completedSteps.includes(1))
-      // ) {
-      //   showToast(
-      //     "Please fill out Step 1 and Step 2 before submitting.",
-      //     "error"
-      //   );
-      //   return;
-      // }
       const data = {
         ...formData,
         documentDetails: updatedDocumentDetails,
       };
-      console.log("data", data);
+      // console.log("data", data);
 
       if (currentStep === steps.length - 1) {
         if (userRole === "Superadmin" && isFinalStep) {
@@ -421,19 +381,14 @@ const AddEmployee = () => {
             return;
           }
         }
-
         try {
           setLoading(true);
           let response;
-          console.log("data", data);
           if (id) {
+            console.log("update");
             response = await PostCall(`/updateUser/${id}`, data);
             if (response?.data?.status === 200) {
               showToast(response?.data?.message, "success");
-              // dispatch(
-              //   setEmployeeformFilled(response?.data?.updatedUser?.isFormFilled)
-              // );
-              // id === user._id ? navigate("dashboard") : navigate("/employees");
               if (id === user._id) {
                 dispatch(
                   setEmployeeformFilled(
@@ -463,6 +418,7 @@ const AddEmployee = () => {
         }
       } else {
         setCompletedSteps((prev) => {
+          console.log("prev", prev);
           if (!prev.includes(currentStep)) {
             return [...prev, currentStep];
           }
@@ -480,13 +436,58 @@ const AddEmployee = () => {
   };
 
   const handleSaveClick = async () => {
-    const allTabvalid = validate();
+    const isValid = validate();
+    // const isFinalStep = currentStep === steps.length - 1;
 
-    if (allTabvalid.isValid) {
+    // const result = userRole === "Superadmin" ? { isValid: true } : validate();
+    // // const result = userRole === "Superadmin" ? validate() : { isValid: true };
+    // const isValid = typeof result === "object" ? result.isValid : result;
+    // console.log("result", result, isValid);
+    if (isValid) {
       const data = {
         ...formData,
         ...(isSaveForm && { isFormFilled: false }),
       };
+
+      // if (userRole !== "Employee" && isFinalStep) {
+      //   console.log("not Employee final step add and edit");
+      //   const step0Valid = validateTwoStep("Personal Details");
+      //   const step1Valid = jobList.length > 0;
+      //   if (!step0Valid || !step1Valid) {
+      //     showToast(
+      //       "Please fill out Step 1 and Step 2 before submitting.",
+      //       "error"
+      //     );
+      //     return;
+      //   }
+      // }
+
+      if (userRole === "Administrator" && id) {
+        console.log("Administrator edit");
+        const step0Valid = validateTwoStep("Personal Details");
+        const step1Valid = jobList.length > 0;
+        if (!step0Valid || !step1Valid) {
+          showToast(
+            "Please fill out Step 1 and Step 2 before submitting.",
+            "error"
+          );
+          return;
+        }
+      }
+
+      if (userRole === "Superadmin" && id) {
+        console.log("superadmin edit");
+        const step0Valid = validateTwoStep("Personal Details");
+        const step1Valid = jobList.length > 0;
+        if (!step0Valid || !step1Valid) {
+          showToast(
+            "Please fill out Step 1 and Step 2 before submitting.",
+            "error"
+          );
+          return;
+        }
+      }
+
       setLoading(true);
       try {
         const response = id
@@ -505,12 +506,7 @@ const AddEmployee = () => {
         setLoading(false);
       }
     } else {
-      showToast(
-        `Tab ${allTabvalid.InvalidStep + 1} (${
-          allTabvalid.stepName
-        }) missing fields`,
-        "error"
-      );
+      console.log("Validation failed for current step");
     }
   };
 
@@ -954,17 +950,25 @@ const AddEmployee = () => {
   //   setEditIndex(index);
   //   SetShowdropwornAction(null);
   // };
-
+  console.log("step", steps);
   const validate = () => {
     let newErrors = {};
     let InvalidStep = null;
-
+    const currentStepName = steps[currentStep];
     const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    const ValidateAll = user._id !== id && otherFormsave;
+    const stepsToValidate = ValidateAll ? steps : [currentStepName];
+    console.log("ValidateAll", ValidateAll);
+
     for (let i = 0; i <= currentStep; i++) {
       const stepName = steps[i];
       console.log("stepname", stepName);
+      if (!stepsToValidate.includes(stepName)) continue;
+
       const errorsInvalidstep = Object.keys(newErrors).length;
       console.log("errorsInvalidstep", errorsInvalidstep);
+      console.log("stepname", stepName);
+
       switch (stepName) {
         case "Personal Details":
           if (!formData?.personalDetails?.firstName?.trim()) {
@@ -1092,9 +1096,9 @@ const AddEmployee = () => {
           break;
 
         case "Job Details":
-          if (jobList.length <= 0) {
+          if (jobList?.length <= 0) {
             newErrors.jobList = "Atleast one Job Type is required";
-            showToast("Atleast one Job type is required", "error");
+            // showToast("Atleast one Job type is required", "error");
           }
           if (editIndex !== null) {
             newErrors.jobList = "Please update Job Details";
@@ -1129,12 +1133,21 @@ const AddEmployee = () => {
         InvalidStep === null
       ) {
         InvalidStep = i;
+        console.log("InvalidStep", InvalidStep, i);
       }
+      if (!ValidateAll) break;
     }
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       return { isValid: true };
     } else {
+      const errorStepName = steps[InvalidStep];
+      if (ValidateAll) {
+        showToast(
+          `Step "${errorStepName}" is missing required fields.`,
+          "error"
+        );
+      }
       return {
         isValid: false,
         InvalidStep,
@@ -1185,6 +1198,8 @@ const AddEmployee = () => {
       if (User?.data?.status === 200) {
         // GetAllLocations();
         setDocumentDetails(User?.data?.user?.documentDetails);
+        setotherFormsave(User?.data?.user?.isFormFilled);
+        console.log("isFormFilled", User?.data?.user?.isFormFilled);
         setFormData(User?.data?.user);
         setJobList(User?.data?.user?.jobDetails);
         // setCompanyId(User?.data?.user?.companyId);
@@ -1243,8 +1258,9 @@ const AddEmployee = () => {
   }, [id]);
 
   useEffect(() => {
-    if (companyId && typeof companyId === "string") GetAllLocations(companyId);
-
+    if (companyId && typeof companyId === "string") {
+      GetAllLocations(companyId);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId]);
 
@@ -1728,11 +1744,11 @@ const AddEmployee = () => {
                     <MenuItem value="" disabled className="menu-item">
                       Select job Title
                     </MenuItem>
-                    {filteredJobtitleList.length > 0 ? (
-                      filteredJobtitleList.map((jobtitle, index) => (
+                    {filteredJobtitleList?.length > 0 ? (
+                      filteredJobtitleList?.map((jobtitle, index) => (
                         <MenuItem
                           key={index}
-                          value={jobtitle.name}
+                          value={jobtitle?.name}
                           className="menu-item"
                         >
                           {jobtitle.name}
@@ -2173,9 +2189,9 @@ const AddEmployee = () => {
                         onKeyDown={(e) => e.stopPropagation()}
                       />
                     </ListSubheader>
-                    <MenuItem value="" disabled>
+                    {/* <MenuItem value="" disabled>
                       Select Location
-                    </MenuItem>
+                    </MenuItem> */}
                     {filteredLocationsList.length > 0 ? (
                       filteredLocationsList?.map((location) => (
                         <MenuItem
@@ -2271,9 +2287,9 @@ const AddEmployee = () => {
                         onKeyDown={(e) => e.stopPropagation()}
                       />
                     </ListSubheader>
-                    <MenuItem value="" disabled className="menu-item">
+                    {/* <MenuItem value="" disabled className="menu-item">
                       Select Manager
-                    </MenuItem>
+                    </MenuItem> */}
 
                     {/* {filteredAssigneesManager?.length > 0 ? (
                       filteredAssigneesManager.map((assignee) => (
@@ -2373,8 +2389,8 @@ const AddEmployee = () => {
                         return <>Select Client</>;
                       }
                       const selectedNames = clients
-                        ?.filter((client) => selected.includes(client._id))
-                        .map((client) => client.name)
+                        ?.filter((client) => selected?.includes(client._id))
+                        .map((client) => client?.name)
                         .join(", ");
                       return selectedNames;
                     }}
@@ -2411,7 +2427,7 @@ const AddEmployee = () => {
                       />
                     </ListSubheader>
                     {filteredassignClientList?.length > 0 ? (
-                      filteredassignClientList.map((client) => (
+                      filteredassignClientList?.map((client) => (
                         <MenuItem
                           value={client._id}
                           key={client._id}
@@ -2944,8 +2960,8 @@ const AddEmployee = () => {
                   <MenuItem value="" disabled>
                     Select Country
                   </MenuItem>
-                  {filteredCountryList.length > 0 ? (
-                    filteredCountryList.map((country, index) => (
+                  {filteredCountryList?.length > 0 ? (
+                    filteredCountryList?.map((country, index) => (
                       <MenuItem
                         key={index}
                         value={country}
@@ -3350,7 +3366,7 @@ const AddEmployee = () => {
                       {file.files.map((fileItem, index) => (
                         <div key={index} className="uploadfile-flex">
                           <p>
-                            {fileItem.name.length > 15
+                            {fileItem?.name.length > 15
                               ? `${fileItem.name.slice(0, 15)}...`
                               : fileItem.name}
                           </p>

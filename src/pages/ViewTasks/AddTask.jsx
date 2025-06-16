@@ -65,6 +65,15 @@ const AddTask = () => {
       newErrors.endTime = "End Time is required";
     }
 
+    if (formData.startTime && formData.endTime) {
+      const start = moment(formData.startTime, "HH:mm");
+      const end = moment(formData.endTime, "HH:mm");
+
+      if (!end.isAfter(start)) {
+        newErrors.endTime = "End Time must be greater than Start Time";
+      }
+    }
+
     if (!(taskId || id)) {
       if (!formData.startDate) {
         newErrors.startDate = "Start Date is required";
