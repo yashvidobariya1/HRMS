@@ -113,7 +113,7 @@ const AddTask = () => {
         }
         if (response?.data?.status === 200) {
           showToast(response?.data?.message, "success");
-          navigate("/viewtasks/stafftask");
+          navigate("/stafftask");
         } else {
           showToast(response?.data?.message, "error");
         }
@@ -189,11 +189,12 @@ const AddTask = () => {
   };
 
   const handleBack = () => {
-    navigate("/viewtasks/stafftask");
+    navigate("/stafftask");
   };
 
   useEffect(() => {
     GetAssignuser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -201,6 +202,7 @@ const AddTask = () => {
     if (Taskid) {
       GetTaskDetails(Taskid);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, taskId]);
 
   if (loading) {

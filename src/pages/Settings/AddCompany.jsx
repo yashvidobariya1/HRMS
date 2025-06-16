@@ -232,6 +232,7 @@ const AddCompany = () => {
     if (id) {
       GetCompanyDetails(id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) {

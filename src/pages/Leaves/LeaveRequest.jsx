@@ -265,7 +265,7 @@ const LeavesRequest = () => {
       </div>
 
       <TextField
-        placeholder="Search Leave Request"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}
@@ -307,7 +307,7 @@ const LeavesRequest = () => {
             showPerPage={leavePerPage}
             onPerPageChange={handleLeavePerPageChange}
             handleAction={handleAction}
-            // isPagination="true"
+            isPagination="true"
             // searchQuery={searchQuery}
             totalData={totalLeaves}
           />

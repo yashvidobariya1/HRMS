@@ -287,6 +287,7 @@ const AddLeaves = () => {
         .catch((error) => console.error("Error fetching holiday:", error))
         .finally(() => setLoading(false));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // short code for handleSubmit (testing pending)

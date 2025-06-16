@@ -125,10 +125,10 @@ const Location = () => {
     setCurrentPage(1);
   };
 
-  const HandleGenerateQrCode = (id) => {
-    // console.log("id", id);
-    navigate(`/location/generateqrcode?locationId=${id}`);
-  };
+  // const HandleGenerateQrCode = (id) => {
+  //   // console.log("id", id);
+  //   navigate(`/location/generateqrcode?locationId=${id}`);
+  // };
 
   const HandleGenerateNewQrCode = async (
     id,
@@ -278,7 +278,7 @@ const Location = () => {
         </div>
       </div>
       <TextField
-        placeholder="Search Location"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}

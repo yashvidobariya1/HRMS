@@ -171,6 +171,7 @@ const AddLocation = () => {
     if (id) {
       GetLocationDetails(id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
@@ -189,6 +190,7 @@ const AddLocation = () => {
       }
     };
     GetAllCompanies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {

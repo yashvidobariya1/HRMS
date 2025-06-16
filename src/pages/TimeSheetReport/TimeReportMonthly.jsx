@@ -1,17 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./TimeSheetReport.css";
-import JobTitleForm from "../../SeparateCom/RoleSelect";
+// import JobTitleForm from "../../SeparateCom/RoleSelect";
 // import { useLocation } from "react-router";
 import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
 // import TimesheetTable from "../../SeparateCom/TimesheetTable";
 import moment from "moment";
-import { GrDocumentDownload } from "react-icons/gr";
+// import { GrDocumentDownload } from "react-icons/gr";
 import { useSelector } from "react-redux";
 // import { CropLandscapeOutlined } from "@mui/icons-material";
 import {
-  Checkbox,
+  // Checkbox,
   ListSubheader,
   MenuItem,
   Select,
@@ -38,7 +38,7 @@ const TimeSheetReportDaily = () => {
   const [loading, setLoading] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [timesheetReportList, setTimesheetReportList] = useState([]);
   const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
@@ -185,7 +185,7 @@ const TimeSheetReportDaily = () => {
           : selectedClient,
       };
 
-      console.log("filter", filters);
+      // console.log("filter", filters);
       const frequency = "Monthly";
       // const { year, month } = appliedFilters;
       const response = await PostCall(
@@ -292,20 +292,24 @@ const TimeSheetReportDaily = () => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWorkFromOffice, companyId, selectedEmployee]);
 
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
     getAllUsersOfClientOrLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     GetTimesheetReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedClient,
     selectedEmployee,
@@ -382,9 +386,9 @@ const TimeSheetReportDaily = () => {
                   </MenuItem>
                 ))}
               </Select>
-              {errors?.selectedEmployee && (
+              {/* {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
-              )}
+              )} */}
             </div>
           )}
 
@@ -445,9 +449,9 @@ const TimeSheetReportDaily = () => {
                   </MenuItem>
                 ))}
               </Select>
-              {errors?.selectedEmployee && (
+              {/* {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
-              )}
+              )} */}
             </div>
           )}
 
@@ -529,9 +533,9 @@ const TimeSheetReportDaily = () => {
                 min={minDate}
                 max={maxDate}
               />
-              {errors?.startDate && (
+              {/* {errors?.startDate && (
                 <p className="error-text">{errors?.startDate}</p>
-              )}
+              )} */}
             </div>
 
             <div className="timesheet-input-container">
@@ -558,7 +562,7 @@ const TimeSheetReportDaily = () => {
       <div className="timesheetreport-officework">
         <div className="timesheetreport-searchbar-clockin">
           <TextField
-            placeholder="Search Timesheet"
+            placeholder="Search"
             variant="outlined"
             size="small"
             value={searchQuery}

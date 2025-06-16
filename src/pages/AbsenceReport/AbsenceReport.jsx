@@ -190,20 +190,24 @@ const AbsenceReport = () => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWorkFromOffice, companyId, selectedEmployee]);
 
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
     getAllUsersOfClientOrLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     GetAbsenceReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedClient,
     selectedEmployee,
@@ -468,7 +472,7 @@ const AbsenceReport = () => {
       <div className="absence-officework">
         <div className="absence-searchbar">
           <TextField
-            placeholder="Search Absence Report"
+            placeholder="Search"
             variant="outlined"
             size="small"
             value={searchQuery}
@@ -500,14 +504,13 @@ const AbsenceReport = () => {
               "Absent Date",
               "Employee Name",
               isWorkFromOffice ? "Location Name" : "Client Name",
-              ,
               "Job Title",
               "Status",
             ]}
             data={absenceReportList?.map((absencesheet) => ({
               absencesheetdate: moment(absencesheet.date).format("DD/MM/YYYY"),
               Name: absencesheet.userName,
-              absenceloctionandorclientName: isWorkFromOffice
+              absencelocationandorclientName: isWorkFromOffice
                 ? absencesheet.locationName
                 : absencesheet.clientName,
               jobRole: absencesheet.jobRole,

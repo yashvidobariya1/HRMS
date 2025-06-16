@@ -3,7 +3,7 @@ import "./TimeSheetReport.css";
 import useApiServices from "../../useApiServices";
 import { showToast } from "../../main/ToastManager";
 import Loader from "../Helper/Loader";
-import moment, { weekdays } from "moment";
+import moment from "moment";
 import { useSelector } from "react-redux";
 import {
   ListSubheader,
@@ -45,7 +45,7 @@ const TimeSheetReportWeekly = () => {
   const [totalHourCount, settotalHourCount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [clientSearchTerm, setClientSearchTerm] = useState("");
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
   const [locationList, setlocationList] = useState([]);
   const [selectedLocation, setselectedLocation] = useState("allLocations");
   const [locationSearchTerm, setlocationSearchTerm] = useState("");
@@ -84,7 +84,7 @@ const TimeSheetReportWeekly = () => {
           : selectedClient,
       };
 
-      console.log("filter", filters);
+      // console.log("filter", filters);
       const frequency = "Weekly";
       const response = await PostCall(
         `/getTimesheetReport?page=${currentPage}&companyId=${companyId}&limit=${rowsPerPage}&weekDate=${selectedWeekStart}&search=${debouncedSearch}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}`,
@@ -265,22 +265,26 @@ const TimeSheetReportWeekly = () => {
     if (selectedEmployee && isWorkFromOffice) {
       getAllLocations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWorkFromOffice, selectedEmployee, companyId]);
 
   useEffect(() => {
     if (selectedEmployee && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEmployee, companyId]);
 
   useEffect(() => {
     getAllUsersOfClientOrLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
     // if (selectedEmployee || selectedClient) {
     GetTimesheetReport();
     // }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedClient,
     selectedEmployee,
@@ -382,9 +386,9 @@ const TimeSheetReportWeekly = () => {
                   </MenuItem>
                 )}
               </Select>
-              {errors?.selectedEmployee && (
+              {/* {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
-              )}
+              )} */}
             </div>
           )}
 
@@ -451,9 +455,9 @@ const TimeSheetReportWeekly = () => {
                   </MenuItem>
                 )}
               </Select>
-              {errors?.selectedEmployee && (
+              {/* {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
-              )}
+              )} */}
             </div>
           )}
 
@@ -539,7 +543,7 @@ const TimeSheetReportWeekly = () => {
       <div className="timesheetreport-officework">
         <div className="timesheetreport-searchbar-clockin">
           <TextField
-            placeholder="Search Timesheet"
+            placeholder="Search"
             variant="outlined"
             size="small"
             value={searchQuery}

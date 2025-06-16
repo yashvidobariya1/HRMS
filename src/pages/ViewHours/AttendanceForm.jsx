@@ -311,7 +311,7 @@ const AttendanceForm = () => {
       ) : (
         <div className="attendanceForm-container">
           <div className="attendanceForm-heading">
-            <h1>Mark Attendance</h1>
+            <h1>{formMode === "viewattendanceform" ? "View Attendance" : formMode === "editattendanceform" ? "Edit Attendance" : "Mark Attendance"}</h1>
             <CommonAddButton
               label="Back"
               onClick={() => navigate("/staffviewhours")}
@@ -432,7 +432,7 @@ const AttendanceForm = () => {
                     onKeyDown={(e) => e.stopPropagation()}
                   />
                 </ListSubheader>
-                {filteredJobTitleList.map((job) => (
+                {filteredJobTitleList.map((job,i) => (
                   <MenuItem key={job.jobId} value={job.jobId}>
                     {job.jobName}
                   </MenuItem>

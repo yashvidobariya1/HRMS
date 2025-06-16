@@ -14,7 +14,7 @@ import Loader from "../Helper/Loader";
 import moment from "moment";
 
 const Leaves = () => {
-  const { GetCall, PostCall } = useApiServices();
+  const { PostCall } = useApiServices();
   const [leaveList, setLeaveList] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -225,7 +225,7 @@ const Leaves = () => {
         </div>
 
         <TextField
-          placeholder="Search Leave"
+          placeholder="Search"
           variant="outlined"
           size="small"
           value={searchQuery}

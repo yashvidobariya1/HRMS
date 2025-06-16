@@ -264,7 +264,7 @@ const Employee = () => {
         </div>
       </div>
       <TextField
-        placeholder="Search Employee"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}

@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 
 const Candidate = () => {
   // const navigate = useNavigate();
-  const { GetCall, PostCall } = useApiServices();
+  const { GetCall } = useApiServices();
   const [loading, setLoading] = useState(false);
   const [candidateList, setCandidateList] = useState([]);
   const [showDropdownAction, setShowDropdownAction] = useState(null);
@@ -149,7 +149,7 @@ const Candidate = () => {
       </div>
 
       <TextField
-        placeholder="Search Candidate"
+        placeholder="Search"
         variant="outlined"
         size="small"
         value={searchQuery}

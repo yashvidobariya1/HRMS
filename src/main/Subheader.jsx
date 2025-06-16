@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { useLocation } from "react-router-dom";
-import { BsDot } from "react-icons/bs";
+// import { BsDot } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import useApiServices from "../useApiServices";
 import { setJobRoleSelect } from "../store/selectJobeRoleSlice";
@@ -9,71 +9,70 @@ import { MenuItem, Select } from "@mui/material";
 // import JobTitles from "../pages/JobTitles/JobTitles";
 import { showToast } from "./ToastManager";
 
-const pageNames = {
-  dashboard: "Dashboard",
-  settings: "Settings",
-  company: "Company",
-  addCompany: "Add Company",
-  editcompany: "Update Company",
-  contact: "Contact",
-  employees: "Employees",
-  addemployee: "Add Employee",
-  addlocation: "Add Location",
-  editemployee: "Update Employee",
-  profile: "Profile",
-  changepassword: "Change Password",
-  employmentcontract: "Employment Contract",
-  location: "Location",
-  editlocation: "Update Location",
-  templates: "Templates",
-  loggedinuser: "Logged In User",
-  leaves: "Leaves",
-  holidays: "Holidays",
-  absencereport: "Absence Report",
-  clockin: "Clock In",
-  // viewhours: "View Hours",
-  staffviewhours: "Staff View Hours",
-  myviewhours: "My View Hours",
-  timesheetreport: "Timesheet Report",
-  job: "Job",
-  candidate: "Candidate",
-  generateqrcode: "Generate QRcode",
-  addleaves: "Add Leaves",
-  leavesrequest: "Leave Request",
-  holidaylist: "Holiday List",
-  addholiday: "Add Holiday",
-  editholiday: "Update Holiday",
-  client: "Client List",
-  addclient: "Add Client",
-  editclient: "Update Client",
-  editleave: "Update Leave",
-  notification: "Notification",
-  reportlist: "Report List",
-  viewstatus: "View Status",
-  viewtasks: "View Tasks",
-  employeeclockin: "Employee Clock In-Out",
-  addjob: "Add Job",
-  editjob: "Update Job",
-  applyjob: "Apply Job",
-  clients: "Clients",
-  jobtitles: "Job Titles",
-  addjobtitles: "Add Job Title",
-  daily: "Daily Report",
-  weekly: "Weekly Report",
-  monthly: "Monthly Report",
-  myreport: "My Report",
-  attendanceform: "Attendance",
-  viewattendanceform: "View Attendance",
-  editattendanceform: "Update Attendance",
-  myabsencereport: "My Report",
-  staffabsencereport: "Staff Report",
-  stafftask: "Staff Task",
-  taskdetails: "Task Details",
-  edittask: "Update Task",
-  addtask: "Add Task",
-  viewtask: "View Task",
-  mytask: "My Task",
-};
+// const pageNames = {
+//   dashboard: "Dashboard",
+//   settings: "Settings",
+//   company: "Company",
+//   addCompany: "Add Company",
+//   editcompany: "Update Company",
+//   contact: "Contact",
+//   employees: "Employees",
+//   addemployee: "Add Employee",
+//   addlocation: "Add Location",
+//   editemployee: "Update Employee",
+//   profile: "Profile",
+//   changepassword: "Change Password",
+//   employmentcontract: "Employment Contract",
+//   location: "Location",
+//   editlocation: "Update Location",
+//   templates: "Templates",
+//   loggedinuser: "Logged In User",
+//   leaves: "Leaves",
+//   holidays: "Holidays",
+//   absencereport: "Absence Report",
+//   clockin: "Clock In",
+//   // viewhours: "View Hours",
+//   staffviewhours: "Staff View Hours",
+//   myviewhours: "My View Hours",
+//   timesheetreport: "Timesheet Report",
+//   job: "Job",
+//   candidate: "Candidate",
+//   generateqrcode: "Generate QRcode",
+//   addleaves: "Add Leaves",
+//   leavesrequest: "Leave Request",
+//   holidaylist: "Holiday List",
+//   addholiday: "Add Holiday",
+//   editholiday: "Update Holiday",
+//   client: "Client List",
+//   addclient: "Add Client",
+//   editclient: "Update Client",
+//   editleave: "Update Leave",
+//   notification: "Notification",
+//   reportlist: "Report List",
+//   viewstatus: "View Status",
+//   viewtasks: "View Tasks",
+//   employeeclockin: "Employee Clock In-Out",
+//   addjob: "Add Job",
+//   editjob: "Update Job",
+//   applyjob: "Apply Job",
+//   clients: "Clients",
+//   jobtitles: "Job Titles",
+//   addjobtitles: "Add Job Title",
+//   daily: "Daily Report",
+//   weekly: "Weekly Report",
+//   monthly: "Monthly Report",
+//   myreport: "My Report",
+//   attendanceform: "Attendance",
+//   viewattendanceform: "View Attendance",
+//   editattendanceform: "Update Attendance",
+//   myabsencereport: "My Report",
+//   staffabsencereport: "Staff Report",
+//   stafftask: "Staff Task",
+//   taskdetails: "Task Details",
+//   edittask: "Update Task",
+//   addtask: "Add Task",
+//   viewtask: "View Task",
+// };
 
 const Subheader = () => {
   const { GetCall } = useApiServices();
@@ -86,22 +85,22 @@ const Subheader = () => {
   //   (state) => state.jobRoleSelect.jobRoleSelect.jobId
   // );
 
-  const formatPageName = (pathname) => {
-    const idPattern = /^[a-fA-F0-9]{24}$/;
-    return pathname
-      .split("?")[0]
-      .split("/")
-      .filter(Boolean)
-      .filter((path) => !idPattern.test(path))
-      .map((path, index, arr) => (
-        <React.Fragment key={index}>
-          <span className="breadcrumb-item">
-            {pageNames[path] || decodeURIComponent(path)}
-          </span>
-          {index < arr.length - 1 && <BsDot className="breadcrumb-icon" />}
-        </React.Fragment>
-      ));
-  };
+  // const formatPageName = (pathname) => {
+  //   const idPattern = /^[a-fA-F0-9]{24}$/;
+  //   return pathname
+  //     .split("?")[0]
+  //     .split("/")
+  //     .filter(Boolean)
+  //     .filter((path) => !idPattern.test(path))
+  //     .map((path, index, arr) => (
+  //       <React.Fragment key={index}>
+  //         <span className="breadcrumb-item">
+  //           {pageNames[path] || decodeURIComponent(path)}
+  //         </span>
+  //         {index < arr.length - 1 && <BsDot className="breadcrumb-icon" />}
+  //       </React.Fragment>
+  //     ));
+  // };
 
   const Getjobtitledata = async () => {
     try {

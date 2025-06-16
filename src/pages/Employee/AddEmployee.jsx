@@ -52,7 +52,7 @@ const AddEmployee = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const [isSaveForm, setIsSaveForm] = useState(false);
   const [isWorkFromOffice, setisWorkFromOffice] = useState(false);
-  const userRole = useSelector((state) => state.userInfo.userInfo.role);
+  // const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [file, setFile] = useState({
     documentType: "",
     files: [],

@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
+// import FullCalendar from "@fullcalendar/react";
+// import dayGridPlugin from "@fullcalendar/daygrid";
+// import interactionPlugin from "@fullcalendar/interaction";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useApiServices from "../../useApiServices";
 import "./Holidays.css";
-import tippy from "tippy.js";
-import "tippy.js/dist/tippy.css";
+// import tippy from "tippy.js";
+// import "tippy.js/dist/tippy.css";
 import moment from "moment";
 import { showToast } from "../../main/ToastManager";
-import DeleteConfirmation from "../../main/DeleteConfirmation";
-import CommonAddButton from "../../SeparateCom/CommonAddButton";
-import Loader from "../Helper/Loader";
-import { MenuItem, Select } from "@mui/material";
+// import DeleteConfirmation from "../../main/DeleteConfirmation";
+// import CommonAddButton from "../../SeparateCom/CommonAddButton";
+// import Loader from "../Helper/Loader";
+// import { MenuItem, Select } from "@mui/material";
 
 const Holidays = () => {
   const { GetCall, PostCall } = useApiServices();
@@ -238,21 +238,9 @@ const Holidays = () => {
 
   return (
     <div className="View-holiday-main">
-      {(userRole === "Superadmin" || userRole === "Administrator") && (
+      {/* {(userRole === "Superadmin" || userRole === "Administrator") && (
         <div className="View-holiday-list">
           <div className="Holiday-select-dopdown">
-            {/* <select
-              id="year-select"
-              value={selectedYear}
-              onChange={handleYearChange}
-              className="holiday-Year-select"
-            >
-              {allowedYears.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select> */}
             <Select
               id="year-select"
               value={selectedYear}
@@ -289,9 +277,9 @@ const Holidays = () => {
             />
           </div>
         </div>
-      )}
+      )} */}
 
-      {loading ? (
+      {/* {loading ? (
         <div className="loader-wrapper">
           <Loader />
         </div>
@@ -406,7 +394,7 @@ const Holidays = () => {
           onConfirm={() => confirmDelete(holidayId)}
           onCancel={cancelDelete}
         />
-      )}
+      )} */}
     </div>
   );
 };

@@ -6,7 +6,7 @@ import Loader from "../Helper/Loader";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import {
-  Checkbox,
+  // Checkbox,
   ListSubheader,
   MenuItem,
   Select,
@@ -42,12 +42,12 @@ const TimesheetReportMy = () => {
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const minDate = moment("2024-01-01").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
-  const userRole = useSelector((state) => state.userInfo.userInfo.role);
+  // const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [clientSearchTerm, setClientSearchTerm] = useState("");
   const [totalHourCount, settotalHourCount] = useState("");
-  const [errors, setErrors] = useState({});
+  // const [errors, setErrors] = useState({});
   const [locationList, setlocationList] = useState([]);
   const [selectedLocation, setselectedLocation] = useState("allLocations");
   const [locationSearchTerm, setlocationSearchTerm] = useState("");
@@ -250,18 +250,21 @@ const TimesheetReportMy = () => {
     if (isWorkFromOffice) {
       getAllLocations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWorkFromOffice, userId]);
 
   useEffect(() => {
     if (userId && !isWorkFromOffice) {
       getAllClientsOfUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, companyId]);
 
   useEffect(() => {
     if (userId || selectedClient) {
       GetTimesheetReport();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     selectedClient,
     userId,
@@ -341,9 +344,9 @@ const TimesheetReportMy = () => {
                   </MenuItem>
                 ))}
               </Select>
-              {errors?.selectedEmployee && (
+              {/* {errors?.selectedEmployee && (
                 <p className="error-text">{errors.selectedEmployee}</p>
-              )}
+              )} */}
             </div>
           )}
 
@@ -459,7 +462,7 @@ const TimesheetReportMy = () => {
 
       <div className="timesheetreport-searchbar-clockin">
         <TextField
-          placeholder="Search Timesheet"
+          placeholder="Search"
           variant="outlined"
           size="small"
           value={searchQuery}
