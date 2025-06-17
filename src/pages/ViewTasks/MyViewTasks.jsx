@@ -212,8 +212,9 @@ const MyViewTasks = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 200,
                       overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {
@@ -272,8 +273,9 @@ const MyViewTasks = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 200,
                       overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {

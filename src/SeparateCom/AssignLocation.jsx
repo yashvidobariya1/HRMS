@@ -43,11 +43,10 @@ const AssignLocation = ({ onClose, Locationdata, onLocationSelect }) => {
               PaperProps: {
                 style: {
                   width: 200,
-                  textOverflow: "ellipsis",
-                  maxHeight: 200,
-                  whiteSpace: "nowrap",
-                  scrollbarWidth: "thin",
+                  width: 150,
                   overflowX: "auto",
+                  scrollbarWidth: "thin",
+                  maxHeight: 200,
                 },
               },
             }}

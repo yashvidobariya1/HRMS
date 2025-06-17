@@ -311,7 +311,13 @@ const AttendanceForm = () => {
       ) : (
         <div className="attendanceForm-container">
           <div className="attendanceForm-heading">
-            <h1>{formMode === "viewattendanceform" ? "View Attendance" : formMode === "editattendanceform" ? "Edit Attendance" : "Mark Attendance"}</h1>
+            <h1>
+              {formMode === "viewattendanceform"
+                ? "View Attendance"
+                : formMode === "editattendanceform"
+                ? "Edit Attendance"
+                : "Mark Attendance"}
+            </h1>
             <CommonAddButton
               label="Back"
               onClick={() => navigate("/staffviewhours")}
@@ -335,6 +341,8 @@ const AttendanceForm = () => {
                   PaperProps: {
                     style: {
                       width: 150,
+                      overflowX: "auto",
+                      scrollbarWidth: "thin",
                       maxHeight: 300,
                     },
                   },
@@ -396,7 +404,9 @@ const AttendanceForm = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 300,
+                      overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {
@@ -432,7 +442,7 @@ const AttendanceForm = () => {
                     onKeyDown={(e) => e.stopPropagation()}
                   />
                 </ListSubheader>
-                {filteredJobTitleList.map((job,i) => (
+                {filteredJobTitleList.map((job, i) => (
                   <MenuItem key={job.jobId} value={job.jobId}>
                     {job.jobName}
                   </MenuItem>

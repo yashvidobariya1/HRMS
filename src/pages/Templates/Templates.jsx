@@ -566,6 +566,12 @@ const Templates = () => {
                     disableAutoFocusItem: true,
                     PaperProps: {
                       className: "custom-select-menu",
+                      style: {
+                        width: 150,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
+                        maxHeight: 200,
+                      },
                     },
                     MenuListProps: {
                       onMouseDown: (e) => {

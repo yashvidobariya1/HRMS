@@ -463,6 +463,12 @@ const CommonTable = ({
     "Location Name ": "taskloctionandorclientName",
     "Job Title ": "jobRole",
     "Employee Name ": "userName",
+    "Employee Name ": "Name",
+    "Job Title": "jobTitle",
+    "Client Name  ": "ClientName",
+    "Location Name  ": "locationName",
+    "Clock In": "in",
+    "Clock Out": "out",
   };
 
   const handleSort = (key) => {
@@ -547,7 +553,13 @@ const CommonTable = ({
         />
       </Box> */}
 
-      <Paper className="custom-table">
+      <Paper
+        className="custom-table"
+        style={{
+          overflowX: "auto",
+          scrollbarWidth: "thin",
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -879,9 +891,10 @@ const CommonTable = ({
                                           disableAutoFocusItem: true,
                                           PaperProps: {
                                             style: {
-                                              maxHeight: 200,
+                                              width: 150,
                                               overflowX: "auto",
                                               scrollbarWidth: "thin",
+                                              maxHeight: 200,
                                             },
                                           },
                                           MenuListProps: {

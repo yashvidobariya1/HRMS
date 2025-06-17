@@ -358,9 +358,10 @@ const AddTask = () => {
                     disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
-                        maxHeight: 400,
+                        width: 400,
                         overflowX: "auto",
-                        maxWidth: 200,
+                        scrollbarWidth: "thin",
+                        maxHeight: 200,
                       },
                     },
                     MenuListProps: {

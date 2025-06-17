@@ -230,7 +230,7 @@ const ViewTasks = () => {
   };
 
   const HandleAddJob = () => {
-    navigate(`/viewtask/addtask`);
+    navigate(`/stafftask/addtask`);
   };
 
   useEffect(() => {
@@ -310,8 +310,9 @@ const ViewTasks = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 200,
                       overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {
@@ -376,8 +377,9 @@ const ViewTasks = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 200,
                       overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {
@@ -436,8 +438,9 @@ const ViewTasks = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 200,
                       overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {

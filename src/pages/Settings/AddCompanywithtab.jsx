@@ -742,9 +742,9 @@ const AddCompany = () => {
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        width: 150,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                         maxHeight: 200,
                       },
                     },
@@ -834,8 +834,8 @@ const AddCompany = () => {
                     PaperProps: {
                       style: {
                         width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                         maxHeight: 200,
                       },
                     },
@@ -946,8 +946,8 @@ const AddCompany = () => {
                     PaperProps: {
                       style: {
                         width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                         maxHeight: 200,
                       },
                     },

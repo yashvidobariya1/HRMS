@@ -386,9 +386,9 @@ const AddLocation = () => {
                     disableAutoFocusItem: true,
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
+                        width: 150,
+                        overflowX: "auto",
+                        scrollbarWidth: "thin",
                         maxHeight: 200,
                       },
                     },

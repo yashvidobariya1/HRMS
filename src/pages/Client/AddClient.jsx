@@ -710,8 +710,8 @@ const AddClient = () => {
                       PaperProps: {
                         style: {
                           width: 150,
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
                           maxHeight: 192,
                         },
                       },
@@ -782,9 +782,9 @@ const AddClient = () => {
                       PaperProps: {
                         style: {
                           width: 150,
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          maxHeight: 192,
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
+                          maxHeight: 292,
                         },
                       },
                     }}

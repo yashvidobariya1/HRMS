@@ -73,6 +73,7 @@ const AddEmployee = () => {
   const employeeFormFilled = useSelector(
     (state) => state.employeeformFilled.employeeformFilled
   );
+  const AllowDate = moment().add(1, "day").format("YYYY-MM-DD");
   const [formData, setFormData] = useState({
     personalDetails: {
       firstName: "",
@@ -348,7 +349,7 @@ const AddEmployee = () => {
     }
   };
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     const step0Valid = validateTwoStep("Personal Details");
     const step1Valid = jobList.length > 0;
     if (!step0Valid || !step1Valid) {
@@ -359,15 +360,154 @@ const AddEmployee = () => {
       );
       return;
     }
-    console.log("SAVE");
+    const updatedDocumentDetails = await Promise.all(
+      documentDetails?.map(async (doc) => {
+        if (doc?.document instanceof File) {
+          const base64Document = await convertFileToBase64(doc?.document);
+          return {
+            ...doc,
+            document: base64Document,
+          };
+        }
+        return doc;
+      })
+    );
     if (user.id !== id && otherFormsave) {
       console.log("other user with isform fill true");
       const valid = validate();
-      console.log("validate", valid);
+      if (valid) {
+        const data = {
+          ...formData,
+          documentDetails: updatedDocumentDetails,
+          ...(isSaveForm && { isFormFilled: false }),
+        };
+        setLoading(true);
+        try {
+          const response = id
+            ? await PostCall(`/updateUser/${id}`, data)
+            : await PostCall("/addUser", data);
+
+          if (response?.data?.status === 200) {
+            showToast(response?.data?.message, "success");
+            navigate("/employees");
+          } else {
+            showToast(response?.data?.message, "error");
+          }
+        } catch (error) {
+          showToast(error, "error");
+        } finally {
+          setLoading(false);
+        }
+      }
+    } else {
+      const data = {
+        ...formData,
+        documentDetails: updatedDocumentDetails,
+        ...(isSaveForm && { isFormFilled: false }),
+      };
+      setLoading(true);
+      try {
+        const response = id
+          ? await PostCall(`/updateUser/${id}`, data)
+          : await PostCall("/addUser", data);
+
+        if (response?.data?.status === 200) {
+          showToast(response?.data?.message, "success");
+          navigate("/employees");
+        } else {
+          showToast(response?.data?.message, "error");
+        }
+      } catch (error) {
+        showToast(error, "error");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const nextStep = () => {};
+  const nextStep = async () => {
+    const updatedDocumentDetails = await Promise.all(
+      documentDetails?.map(async (doc) => {
+        if (doc?.document instanceof File) {
+          const base64Document = await convertFileToBase64(doc?.document);
+          return {
+            ...doc,
+            document: base64Document,
+          };
+        }
+        return doc;
+      })
+    );
+
+    const isValid = validate();
+    console.log("isvalid", isValid);
+
+    if (isValid) {
+      const data = {
+        ...formData,
+        documentDetails: updatedDocumentDetails,
+      };
+
+      if (currentStep === steps.length - 1) {
+        if (userRole !== "Employee") {
+          const step0Valid = validateTwoStep("Personal Details");
+          const step1Valid = jobList.length > 0;
+          if (!step0Valid || !step1Valid) {
+            console.log("check step 1 and 2");
+            showToast(
+              "Please fill out Step 1 and Step 2 before submitting.",
+              "error"
+            );
+            return;
+          }
+        }
+        try {
+          setLoading(true);
+          let response;
+          if (id) {
+            console.log("update");
+            response = await PostCall(`/updateUser/${id}`, data);
+            if (response?.data?.status === 200) {
+              showToast(response?.data?.message, "success");
+              if (id === user._id) {
+                dispatch(
+                  setEmployeeformFilled(
+                    response?.data?.updatedUser?.isFormFilled
+                  )
+                );
+                navigate("/dashboard");
+              } else {
+                navigate("/employees");
+              }
+            } else {
+              showToast(response?.data?.message, "error");
+            }
+          } else {
+            response = await PostCall("/addUser", data);
+            if (response?.data?.status === 200) {
+              showToast(response?.data?.message, "success");
+              navigate("/employees");
+            } else {
+              showToast(response?.data?.message, "error");
+            }
+          }
+          setLoading(false);
+        } catch (error) {
+          showToast(error, "error");
+          setLoading(false);
+        }
+      } else {
+        setCompletedSteps((prev) => {
+          console.log("prev", prev);
+          if (!prev.includes(currentStep)) {
+            return [...prev, currentStep];
+          }
+          return prev;
+        });
+        setCurrentStep(currentStep + 1);
+      }
+    }
+  };
 
   // const handleChange = (e) => {
   //   const { name, value, type, checked } = e.target;
@@ -812,63 +952,73 @@ const AddEmployee = () => {
 
   const validate = () => {
     let newErrors = {};
-    let InvalidStep = null;
-    // const currentStepName = steps[currentStep];
-    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-    const shouldValidateAll = user.id === id && otherFormsave;
+    let invalidSteps = [];
+
+    const shouldValidateAll = user.id !== id && otherFormsave;
     const stepsToValidate = shouldValidateAll ? steps : [steps[currentStep]];
+    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    console.log("shouldValidateAll", shouldValidateAll);
     for (let stepName of stepsToValidate) {
-      const errorsInvalidstep = Object.keys(newErrors).length;
-      console.log(
-        "errors Invalid step",
-        errorsInvalidstep,
-        Object.keys(newErrors).length
-      );
+      let stepHasError = false;
+
       switch (stepName) {
         case "Personal Details":
           if (!formData?.personalDetails?.firstName?.trim()) {
             newErrors.firstName = "First Name is required";
+            stepHasError = true;
           }
           if (!formData?.personalDetails?.lastName) {
             newErrors.lastName = "Last Name is required";
+            stepHasError = true;
           }
           if (!formData.personalDetails?.dateOfBirth) {
             newErrors.dateOfBirth = "Date of Birth is required";
+            stepHasError = true;
           }
           if (!formData.personalDetails?.gender) {
             newErrors.gender = "Gender is required";
+            stepHasError = true;
           }
           if (!formData.personalDetails?.maritalStatus) {
             newErrors.maritalStatus = "Marital Status is required";
+            stepHasError = true;
           }
           if (!formData?.personalDetails?.phone) {
             newErrors.phone = "Phone number is required";
+            stepHasError = true;
           } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
             newErrors.phone = "Phone number must contain only numbers";
+            stepHasError = true;
           } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
             newErrors.phone = "Phone number must be exactly 11 digits";
+            stepHasError = true;
           }
           const phone = formData.personalDetails?.homeTelephone;
           if (phone) {
             if (!/^\d+$/.test(phone)) {
               newErrors.homeTelephone =
                 "Home telephone must contain only digits";
+              stepHasError = true;
             } else if (phone.length !== 11) {
               newErrors.homeTelephone =
                 "Home telephone must be exactly 11 digits";
+              stepHasError = true;
             }
           }
           const email = formData?.personalDetails?.email;
           if (!email) {
             newErrors.email = "Email is required";
+            stepHasError = true;
           } else if (!EMAIL_REGEX.test(email)) {
             newErrors.email = "Valid Email format is required";
+            stepHasError = true;
           }
           const niNumber = formData?.personalDetails?.niNumber?.trim();
           const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
           if (niNumber && !NI_REGEX.test(niNumber)) {
             newErrors.niNumber =
               "Invalid NI Number format. Use format: QQ 88 77 77 A";
+            stepHasError = true;
           }
           // if (!formData.personalDetails?.sendRegistrationLink) {
           //   newErrors.sendRegistrationLink =
@@ -879,47 +1029,58 @@ const AddEmployee = () => {
         case "Address Details":
           if (!formData?.addressDetails?.address) {
             newErrors.address = "Address is required";
+            stepHasError = true;
           }
           if (!formData?.addressDetails?.city) {
             newErrors.city = "City is required";
+            stepHasError = true;
           }
           if (!formData?.addressDetails?.postCode) {
             newErrors.postCode = "Post Code is required";
+            stepHasError = true;
           }
           break;
 
         case "Kin Details":
           if (!formData?.kinDetails?.kinName) {
             newErrors.kinName = "Kin name is required";
+            stepHasError = true;
           }
           if (!formData?.kinDetails?.postCode) {
             newErrors.kinPostCode = "Post Code is required";
+            stepHasError = true;
           }
           if (!formData?.kinDetails?.address) {
             newErrors.kinAddress = "Address is required";
+            stepHasError = true;
           }
           if (!formData?.kinDetails?.emergencyContactNumber) {
             newErrors.emergencyContactNumber =
               "Emergency Contact Number is required";
+            stepHasError = true;
           } else if (
             !/^\d+$/.test(formData?.kinDetails?.emergencyContactNumber)
           ) {
             newErrors.emergencyContactNumber =
               "Emergency Contact Number must contain only numbers";
+            stepHasError = true;
           } else if (
             !/^\d{11}$/.test(formData?.kinDetails?.emergencyContactNumber)
           ) {
             newErrors.emergencyContactNumber =
               "Emergency Contact Number must be exactly 11 digits";
+            stepHasError = true;
           }
           break;
 
         case "Financial Details":
           if (!formData.financialDetails?.bankName) {
             newErrors.bankName = "Bank Name is required";
+            stepHasError = true;
           }
           if (!formData.financialDetails?.holderName) {
             newErrors.holderName = "Holder Name is required";
+            stepHasError = true;
           }
 
           const sortCode = formData?.financialDetails?.sortCode;
@@ -927,9 +1088,11 @@ const AddEmployee = () => {
 
           if (!sortCode) {
             newErrors.sortCode = "Sort code is required";
+            stepHasError = true;
           } else if (!sortCodeError.test(sortCode)) {
             newErrors.sortCode =
               "Valid sort code format is required (xx-xx-xx)";
+            stepHasError = true;
           }
 
           // if (!formData.financialDetails?.sortCode) {
@@ -938,25 +1101,31 @@ const AddEmployee = () => {
           const accountNumber = formData.financialDetails?.accountNumber;
           if (!accountNumber) {
             newErrors.accountNumber = "Account Number is required";
+            stepHasError = true;
           } else if (!/^\d{8}$/.test(accountNumber)) {
             newErrors.accountNumber = "Account Number must be exactly 8 digits";
+            stepHasError = true;
           }
 
           if (!formData.financialDetails?.payrollFrequency) {
             newErrors.payrollFrequency = "Payroll Frequency is required";
+            stepHasError = true;
           }
           if (!formData.financialDetails?.pension) {
             newErrors.pension = "Pension option is required";
+            stepHasError = true;
           }
           break;
 
         case "Job Details":
           if (jobList?.length <= 0) {
             newErrors.jobList = "Atleast one Job Type is required";
+            stepHasError = true;
             // showToast("Atleast one Job type is required", "error");
           }
           if (editIndex !== null) {
             newErrors.jobList = "Please update Job Details";
+            stepHasError = true;
             showToast("Please update Job Details", "error");
           }
           break;
@@ -964,45 +1133,53 @@ const AddEmployee = () => {
         case "Immigration Details":
           if (!formData.immigrationDetails?.passportNumber) {
             newErrors.passportNumber = "Passport Number is required";
+            stepHasError = true;
           }
           if (!formData.immigrationDetails?.countryOfIssue) {
             newErrors.countryOfIssue = "Country Of Issue is required";
+            stepHasError = true;
           }
           if (!formData.immigrationDetails?.passportExpiry) {
             newErrors.passportExpiry = "Passport Expiry is required";
+            stepHasError = true;
+          } else if (
+            moment(formData.immigrationDetails?.passportExpiry).isBefore(
+              AllowDate,
+              "day"
+            )
+          ) {
+            newErrors.passportExpiry = "Cannot enter a past date";
+            stepHasError = true;
           }
           if (!formData.immigrationDetails?.nationality) {
             newErrors.nationality = "Nationality is required";
+            stepHasError = true;
           }
           if (!formData.immigrationDetails?.rightToWorkCheckDate) {
             newErrors.rightToWorkCheckDate =
               "Right To WorkCheck Date is required";
+            stepHasError = true;
           }
           break;
 
         default:
           break;
       }
-      if (
-        Object.keys(newErrors).length > errorsInvalidstep &&
-        InvalidStep === null
-      ) {
+      if (stepHasError) {
+        setErrors(newErrors);
+        if (!shouldValidateAll) {
+          return false;
+        }
+        invalidSteps.push(stepName);
       }
     }
-    setErrors(newErrors);
-    console.log("errror message");
-    if (Object.keys(newErrors).length === 0) {
-      console.log("no error");
-    } else {
-      const errorStepName = steps[InvalidStep];
-      console.log("errror message", errorStepName);
-      if (shouldValidateAll) {
-        showToast(
-          `Step "${errorStepName}" is missing required fields.`,
-          "error"
-        );
-      }
+    if (Object.keys(newErrors).length > 0 && shouldValidateAll) {
+      showToast(
+        `Something is missing in following tab - ${invalidSteps.join(", ")}`,
+        "error"
+      );
     }
+    return Object.keys(newErrors).length === 0;
   };
 
   const jobActions = [
@@ -1383,11 +1560,9 @@ const AddEmployee = () => {
                       style: {
                         width: 200,
                         className: "custom-dropdown-menu",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
                         overflowX: "auto",
-                        maxHeight: 200,
                         scrollbarWidth: "thin",
+                        maxHeight: 200,
                       },
                     },
                   }}
@@ -1434,11 +1609,9 @@ const AddEmployee = () => {
                     PaperProps: {
                       style: {
                         width: 200,
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        maxHeight: 200,
                         overflowX: "auto",
                         scrollbarWidth: "thin",
+                        maxHeight: 200,
                       },
                     },
                   }}
@@ -1762,10 +1935,10 @@ const AddEmployee = () => {
                     MenuProps={{
                       PaperProps: {
                         style: {
-                          width: 200,
-                          textOverflow: "ellipsis",
+                          width: 150,
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
                           maxHeight: 200,
-                          whiteSpace: "nowrap",
                         },
                       },
                     }}
@@ -1825,10 +1998,10 @@ const AddEmployee = () => {
                       MenuProps={{
                         PaperProps: {
                           style: {
-                            width: 80,
-                            textOverflow: "ellipsis",
+                            width: 150,
+                            overflowX: "auto",
+                            scrollbarWidth: "thin",
                             maxHeight: 200,
-                            whiteSpace: "nowrap",
                           },
                         },
                       }}
@@ -1884,9 +2057,9 @@ const AddEmployee = () => {
                         PaperProps: {
                           style: {
                             width: 80,
-                            textOverflow: "ellipsis",
+                            overflowX: "auto",
+                            scrollbarWidth: "thin",
                             maxHeight: 200,
-                            whiteSpace: "nowrap",
                           },
                         },
                       }}
@@ -1935,9 +2108,9 @@ const AddEmployee = () => {
                       PaperProps: {
                         style: {
                           width: 200,
-                          textOverflow: "ellipsis",
+                          overflowX: "auto",
+                          scrollbarWidth: "thin",
                           maxHeight: 200,
-                          whiteSpace: "nowrap",
                         },
                       },
                     }}
@@ -2222,14 +2395,25 @@ const AddEmployee = () => {
                     multiple
                     disabled={jobForm?.isWorkFromOffice}
                     value={jobForm?.assignClient || []}
-                    onChange={(event) =>
-                      handleJobChange({
-                        target: {
-                          name: "assignClient",
-                          value: isWorkFromOffice ? [] : event.target.value,
-                        },
-                      })
-                    }
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      if (value[value.length - 1] === "all") {
+                        const allClientIds = clients.map((c) => c._id);
+                        handleJobChange({
+                          target: {
+                            name: "assignClient",
+                            value:
+                              jobForm?.assignClient?.length === clients.length
+                                ? []
+                                : allClientIds,
+                          },
+                        });
+                        {
+                          console.log("allClientIds", allClientIds);
+                        }
+                        return;
+                      }
+                    }}
                     data-testid="assignClient-select"
                     className="addemployee-input-dropdown"
                     displayEmpty
@@ -2275,6 +2459,20 @@ const AddEmployee = () => {
                         onKeyDown={(e) => e.stopPropagation()}
                       />
                     </ListSubheader>
+                    {filteredassignClientList?.length > 0 && (
+                      <MenuItem value="all">
+                        <Checkbox
+                          indeterminate={
+                            jobForm?.assignClient?.length > 0 &&
+                            jobForm?.assignClient?.length < clients.length
+                          }
+                          checked={
+                            jobForm?.assignClient?.length === clients.length
+                          }
+                        />
+                        Select All
+                      </MenuItem>
+                    )}
                     {filteredassignClientList?.length > 0 ? (
                       filteredassignClientList?.map((client) => (
                         <MenuItem
@@ -2490,12 +2688,10 @@ const AddEmployee = () => {
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
-                        maxHeight: 200,
-                        whiteSpace: "nowrap",
-                        scrollbarWidth: "thin",
+                        width: 150,
                         overflowX: "auto",
+                        scrollbarWidth: "thin",
+                        maxHeight: 200,
                       },
                     },
                   }}
@@ -2839,6 +3035,7 @@ const AddEmployee = () => {
                   value={formData?.immigrationDetails?.passportExpiry}
                   onChange={handleChange}
                   placeholder="DD/MM/YYYY"
+                  min={AllowDate}
                 />
                 {errors?.passportExpiry && (
                   <p className="error-text">{errors?.passportExpiry}</p>
@@ -3355,11 +3552,9 @@ const AddEmployee = () => {
                     PaperProps: {
                       style: {
                         width: 200,
-                        textOverflow: "ellipsis",
-                        maxHeight: 200,
-                        whiteSpace: "nowrap",
-                        scrollbarWidth: "thin",
                         overflowX: "auto",
+                        scrollbarWidth: "thin",
+                        maxHeight: 200,
                       },
                     },
                   }}
@@ -3416,12 +3611,10 @@ const AddEmployee = () => {
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        width: 200,
-                        textOverflow: "ellipsis",
-                        maxHeight: 200,
-                        whiteSpace: "nowrap",
-                        scrollbarWidth: "thin",
+                        width: 150,
                         overflowX: "auto",
+                        scrollbarWidth: "thin",
+                        maxHeight: 200,
                       },
                     },
                   }}
@@ -3466,8 +3659,8 @@ const AddEmployee = () => {
           <button
             onClick={prevStep}
             disabled={
-              (employeeFormFilled && currentStep < 2) ||
-              (!employeeFormFilled && currentStep < 3)
+              (employeeFormFilled && currentStep < 1) ||
+              (user._id === id && !employeeFormFilled && currentStep < 3)
             }
           >
             Previous

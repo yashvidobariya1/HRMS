@@ -43,11 +43,9 @@ const AssignClient = ({ onClose, Clientdata, onClientSelect }) => {
               PaperProps: {
                 style: {
                   width: 200,
-                  textOverflow: "ellipsis",
-                  maxHeight: 200,
-                  whiteSpace: "nowrap",
-                  scrollbarWidth: "thin",
                   overflowX: "auto",
+                  scrollbarWidth: "thin",
+                  maxHeight: 200,
                 },
               },
             }}

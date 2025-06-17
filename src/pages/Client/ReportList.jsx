@@ -300,10 +300,10 @@ const ReportList = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    width: 80,
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    maxHeight: 192,
+                    width: 150,
+                    overflowX: "auto",
+                    scrollbarWidth: "thin",
+                    maxHeight: 200,
                   },
                 },
               }}
@@ -328,10 +328,10 @@ const ReportList = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    width: 80,
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    maxHeight: 192,
+                    width: 150,
+                    overflowX: "auto",
+                    scrollbarWidth: "thin",
+                    maxHeight: 200,
                   },
                 },
               }}

@@ -225,8 +225,9 @@ const MyViewHours = () => {
                 PaperProps: {
                   style: {
                     width: 150,
-                    maxHeight: 200,
                     overflowX: "auto",
+                    scrollbarWidth: "thin",
+                    maxHeight: 200,
                   },
                 },
                 MenuListProps: {
@@ -256,9 +257,15 @@ const MyViewHours = () => {
                 />
               </ListSubheader>
 
-              <MenuItem value="allClients">All Clients</MenuItem>
+              <MenuItem value="allClients" className="menu-item">
+                All Clients
+              </MenuItem>
               {filteredClientList.map((client) => (
-                <MenuItem key={client._id} value={client._id}>
+                <MenuItem
+                  key={client._id}
+                  value={client._id}
+                  className="menu-item"
+                >
                   {client.clientName}
                 </MenuItem>
               ))}
@@ -279,8 +286,9 @@ const MyViewHours = () => {
                 PaperProps: {
                   style: {
                     width: 150,
-                    maxHeight: 200,
                     overflowX: "auto",
+                    scrollbarWidth: "thin",
+                    maxHeight: 200,
                   },
                 },
                 MenuListProps: {
@@ -310,9 +318,15 @@ const MyViewHours = () => {
                 />
               </ListSubheader>
 
-              <MenuItem value="allLocations">All Locations</MenuItem>
+              <MenuItem value="allLocations" className="menu-item">
+                All Locations
+              </MenuItem>
               {filteredLocationList.map((location) => (
-                <MenuItem key={location._id} value={location._id}>
+                <MenuItem
+                  key={location._id}
+                  value={location._id}
+                  className="menu-item"
+                >
                   {location.locationName}
                 </MenuItem>
               ))}

@@ -344,8 +344,10 @@ const TimeSheetReportDaily = () => {
                   disableAutoFocusItem: true,
                   PaperProps: {
                     style: {
-                      width: 200,
-                      maxHeight: 300,
+                      width: 150,
+                      overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {
@@ -405,8 +407,9 @@ const TimeSheetReportDaily = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 200,
                       overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {
@@ -468,8 +471,9 @@ const TimeSheetReportDaily = () => {
                   PaperProps: {
                     style: {
                       width: 150,
-                      maxHeight: 200,
                       overflowX: "auto",
+                      scrollbarWidth: "thin",
+                      maxHeight: 200,
                     },
                   },
                   MenuListProps: {

@@ -627,9 +627,9 @@ const TimeSheetReport = () => {
                   PaperProps: {
                     style: {
                       width: 120,
-                      textOverflow: "ellipsis",
+                      overflowX: "auto",
+                      scrollbarWidth: "thin",
                       maxHeight: 200,
-                      whiteSpace: "nowrap",
                     },
                   },
                 }}
@@ -675,9 +675,9 @@ const TimeSheetReport = () => {
                 PaperProps: {
                   style: {
                     width: 80,
-                    textOverflow: "ellipsis",
+                    overflowX: "auto",
+                    scrollbarWidth: "thin",
                     maxHeight: 200,
-                    whiteSpace: "nowrap",
                   },
                 },
               }}
@@ -767,11 +767,9 @@ const TimeSheetReport = () => {
               PaperProps: {
                 style: {
                   width: 150,
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  maxHeight: 200,
-                  scrollbarWidth: "thin",
                   overflowX: "auto",
+                  scrollbarWidth: "thin",
+                  maxHeight: 200,
                 },
               },
             }}

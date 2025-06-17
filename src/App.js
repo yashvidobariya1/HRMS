@@ -365,7 +365,7 @@ const protectedRoutes = [
     roles: ["Administrator", "Manager", "Employee"],
   },
   {
-    path: "/viewtask/addtask",
+    path: "/stafftask/addtask",
     component: <AddTask />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },

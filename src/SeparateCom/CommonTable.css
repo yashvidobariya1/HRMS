@@ -157,7 +157,7 @@
 .custom-table {
   width: 100%;
   overflow-x: auto;
-  scrollbar-width: thin;
+  /* scrollbar-width: thin; */
   margin: 20px 0;
   background-color: var(--primary-text-white);
   border-radius: var(--border-radius) !important;
