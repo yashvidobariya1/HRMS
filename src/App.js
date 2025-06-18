@@ -265,12 +265,12 @@ const protectedRoutes = [
     roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
-    path: "/viewattendanceform/:id/:entryId",
+    path: "/staffviewhours/viewattendanceform/:id/:entryId",
     component: <AttendanceForm />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
-    path: "/editattendanceform/:id/:entryId",
+    path: "/staffviewhours/editattendanceform/:id/:entryId",
     component: <AttendanceForm />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
@@ -370,12 +370,12 @@ const protectedRoutes = [
     roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
-    path: "/viewtask/edittask/:id",
+    path: "/stafftask/edittask/:id",
     component: <AddTask />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },
   {
-    path: "/viewtask/taskdetails",
+    path: "/stafftask/taskdetails",
     component: <AddTask />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },

@@ -118,11 +118,11 @@ const Viewhours = () => {
   };
 
   const handleView = (id, entryId) => {
-    navigate(`/viewattendanceform/${id}/${entryId}`);
+    navigate(`/staffviewhours/viewattendanceform/${id}/${entryId}`);
   };
 
   const handleEdit = (id, entryId) => {
-    navigate(`/editattendanceform/${id}/${entryId}`);
+    navigate(`/staffviewhours/editattendanceform/${id}/${entryId}`);
   };
 
   const handleDelete = (employeeName, timesheetId, entryId) => {
@@ -374,11 +374,17 @@ const Viewhours = () => {
             <MenuItem value="allUsers" className="menu-item">
               All Employees
             </MenuItem>
-            {filteredEmployeeList.map((emp) => (
-              <MenuItem key={emp._id} value={emp._id} className="menu-item">
-                {emp.userName}
+            {filteredEmployeeList.length > 0 ? (
+              filteredEmployeeList.map((emp) => (
+                <MenuItem key={emp._id} value={emp._id} className="menu-item">
+                  {emp.userName}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem value="" disabled className="menu-item">
+                No found Employee
               </MenuItem>
-            ))}
+            )}
           </Select>
         </div>
 
@@ -430,15 +436,21 @@ const Viewhours = () => {
               <MenuItem value="allClients" className="menu-item">
                 All Clients
               </MenuItem>
-              {filteredClientList.map((client) => (
-                <MenuItem
-                  key={client._id}
-                  value={client._id}
-                  className="menu-item"
-                >
-                  {client.clientName}
+              {filteredClientList.length > 0 ? (
+                filteredClientList.map((client) => (
+                  <MenuItem
+                    key={client._id}
+                    value={client._id}
+                    className="menu-item"
+                  >
+                    {client.clientName}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem value="" disabled className="menu-item">
+                  No found Client
                 </MenuItem>
-              ))}
+              )}
             </Select>
           </div>
         )}
@@ -491,15 +503,19 @@ const Viewhours = () => {
               <MenuItem value="allLocations" className="menu-item">
                 All Locations
               </MenuItem>
-              {filteredLocationList.map((location) => (
-                <MenuItem
-                  key={location._id}
-                  value={location._id}
-                  className="menu-item"
-                >
-                  {location.locationName}
-                </MenuItem>
-              ))}
+              {filteredLocationList.length > 0 ? (
+                filteredLocationList.map((location) => (
+                  <MenuItem
+                    key={location._id}
+                    value={location._id}
+                    className="menu-item"
+                  >
+                    {location.locationName}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem className="menu-item">Not found Locations</MenuItem>
+              )}
             </Select>
           </div>
         )}

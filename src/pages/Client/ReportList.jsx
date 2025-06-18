@@ -244,7 +244,7 @@ const ReportList = () => {
                 disableAutoFocusItem: true,
                 PaperProps: {
                   style: {
-                    width: 150,
+                    width: 100,
                     overflowX: "auto",
                     scrollbarWidth: "thin",
                     maxHeight: 200,
@@ -300,7 +300,7 @@ const ReportList = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    width: 150,
+                    width: 80,
                     overflowX: "auto",
                     scrollbarWidth: "thin",
                     maxHeight: 200,
@@ -328,7 +328,7 @@ const ReportList = () => {
               MenuProps={{
                 PaperProps: {
                   style: {
-                    width: 150,
+                    width: 80,
                     overflowX: "auto",
                     scrollbarWidth: "thin",
                     maxHeight: 200,

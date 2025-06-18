@@ -75,6 +75,7 @@ const Dashboard = () => {
   // const selectedCompanyId = useSelector(
   //   (state) => state.companySelect.companySelect
   // );
+  const [AbsenceData, setAbsenceData] = useState([]);
   const [timeSheetData, setTimeSheetData] = useState([]);
   const [userGrowth, setUserGrowth] = useState([]);
   const [GraphData, setGraphData] = useState([]);
@@ -108,10 +109,13 @@ const Dashboard = () => {
   );
   // const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [holidayPerPage, setholidayPerPage] = useState(50);
-  // const [totalPages, setTotalPages] = useState(0);
+  const [holidayPerPage, setholidayPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(0);
   const [totalHoliday, setTotalHoliday] = useState(0);
-
+  const [Totalabsencereport, setTotalabsencereport] = useState(0);
+  const [absenceTotalPages, setabsenceTotalPages] = useState([]);
+  const [absencecurrentPage, setabsencecurrentPage] = useState(1);
+  const [absencePerPage, setabsencePerPage] = useState(5);
   // const filteredLocationList = useMemo(() => {
   //   return locationList.filter((loc) =>
   //     loc?.locationName?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -479,7 +483,7 @@ const Dashboard = () => {
     setLoading(false);
   };
 
-  const getAllHoliday = async (id) => {
+  const getAllHoliday = async () => {
     try {
       // setLoading(true);
       let response;
@@ -497,7 +501,28 @@ const Dashboard = () => {
       if (response?.data?.status === 200) {
         setAllholidayList(response?.data?.holidays);
         setTotalHoliday(response.data?.totalHolidays);
-        // setTotalPages(response?.data?.totalPages);
+        setTotalPages(response?.data?.totalPages);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching holidays:", error);
+    } finally {
+      setcalenderloading(false);
+    }
+  };
+
+  const getTodayAbsenceReport = async () => {
+    try {
+      let response;
+      response = await GetCall(
+        `/getTodaysAbsentUsers?page=${absencecurrentPage}&limit=${absencePerPage}&companyId=${companyId}`
+      );
+
+      if (response?.data?.status === 200) {
+        setAbsenceData(response?.data?.absentUser);
+        setTotalabsencereport(response.data?.totalAbsentUsers);
+        setabsenceTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -596,14 +621,20 @@ const Dashboard = () => {
     }
   };
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  const handlePerPageChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    setCurrentPage(1);
+    setholidayPerPage(value);
   };
 
-  const handlePerPageChange = (e) => {
-    setholidayPerPage(parseInt(e.target.value, 10));
-    // setholidayPerPage(e);
-    setCurrentPage(1);
+  const handleabsencePerPageChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    setabsencecurrentPage(1);
+    setabsencePerPage(value);
+  };
+
+  const handleAbsencePageChange = (_, newPage) => {
+    setabsencecurrentPage(newPage + 1);
   };
 
   // useEffect(() => {
@@ -631,6 +662,10 @@ const Dashboard = () => {
     holidayPerPage,
     companyId,
   ]);
+
+  useEffect(() => {
+    if (companyId && typeof companyId === "string") getTodayAbsenceReport();
+  }, [absencecurrentPage, absencePerPage, companyId]);
 
   // useEffect(() => {
   //   if (userRole === "Superadmin") {
@@ -804,7 +839,7 @@ const Dashboard = () => {
           </div>
 
           {/* ===========Pending Templates========================== */}
-          {userRole !== "Superadmin" && templateList.length > 0 && (
+          {userRole !== "Superadmin" && templateList?.length > 0 && (
             <div className="dashboard-profile-container">
               <h3>Pending Verifing Documents</h3>
               <div className="dashboard-viewprofile">
@@ -906,33 +941,70 @@ const Dashboard = () => {
                       <h1>Absence Today</h1>
                     </div>
                   </div>
-                  <div className="dashboard-absence-table">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Role</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {timeSheetData?.todaysClocking?.clockEntries?.length >
-                        0 ? (
-                          DashboardData?.absentUsers?.map((user) => (
-                            <tr key={user._id}>
-                              <td>{user?.name}</td>
-                              <td>{user?.role}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="2" className="norecord">
-                              No Records Found
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+
+                  {loading ? (
+                    <div className="loader-wrapper">
+                      <Loader />
+                    </div>
+                  ) : (
+                    <div className="scrollable-table-wrapper">
+                      <TableContainer>
+                        <Table className="employeetimesheet-table">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Absent Date</TableCell>
+                              <TableCell>Employee Name</TableCell>
+                              <TableCell>Client Name</TableCell>
+                              <TableCell>Location Name</TableCell>
+                              <TableCell>Job Title</TableCell>
+                              <TableCell>Status</TableCell>
+                            </TableRow>
+                          </TableHead>
+
+                          <TableBody>
+                            {AbsenceData?.length === 0 ? (
+                              <TableRow>
+                                <TableCell colSpan={5} align="center">
+                                  No data available
+                                </TableCell>
+                              </TableRow>
+                            ) : (
+                              AbsenceData.map((absence, index) => (
+                                <TableRow key={index}>
+                                  <TableCell>
+                                    {moment(absence.date).format("DD/MM/YYYY")}
+                                  </TableCell>
+                                  <TableCell>{absence?.userName}</TableCell>
+                                  <TableCell>{absence?.clientName}</TableCell>
+                                  <TableCell>{absence?.locationName}</TableCell>
+                                  <TableCell>{absence?.jobTitle}</TableCell>
+                                  <TableCell>{absence?.status}</TableCell>
+                                </TableRow>
+                              ))
+                            )}
+                          </TableBody>
+
+                          <TableFooter>
+                            <TableRow>
+                              <TableCell colSpan={6}>
+                                <TablePagination
+                                  component="div"
+                                  count={Totalabsencereport}
+                                  page={absencecurrentPage - 1}
+                                  onPageChange={handleAbsencePageChange}
+                                  rowsPerPage={absencePerPage}
+                                  onRowsPerPageChange={
+                                    handleabsencePerPageChange
+                                  }
+                                  rowsPerPageOptions={[5, 10, 15]}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          </TableFooter>
+                        </Table>
+                      </TableContainer>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1368,9 +1440,10 @@ const Dashboard = () => {
                       <Table className="employeetimesheet-table">
                         <TableHead>
                           <TableRow>
-                            <TableCell>Holiday Date</TableCell>
-                            {/* <TableCell>Company Name</TableCell> */}
+                            <TableCell>Company Name</TableCell>
+                            <TableCell>Date</TableCell>
                             <TableCell>Occasion</TableCell>
+                            <TableCell>Day</TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
@@ -1383,11 +1456,15 @@ const Dashboard = () => {
                           ) : (
                             AllholidayList.map((holiday, index) => (
                               <TableRow key={index}>
+                                <TableCell>{holiday.companyName}</TableCell>
                                 <TableCell>
                                   {moment(holiday.date).format("DD/MM/YYYY")}
                                 </TableCell>
-                                {/* <TableCell>{holiday.companyName}</TableCell> */}
+
                                 <TableCell>{holiday.occasion}</TableCell>
+                                <TableCell>
+                                  {moment(holiday.date).format("dddd")}
+                                </TableCell>
                               </TableRow>
                             ))
                           )}
@@ -1397,16 +1474,14 @@ const Dashboard = () => {
                             <TableCell colSpan={4}>
                               <TablePagination
                                 component="div"
-                                count={
-                                  Array.isArray(totalHoliday)
-                                    ? totalHoliday.length
-                                    : totalHoliday
-                                }
+                                count={totalHoliday}
                                 page={currentPage - 1}
-                                onPageChange={handlePageChange}
+                                onPageChange={(_, newPage) =>
+                                  setCurrentPage(newPage + 1)
+                                }
                                 rowsPerPage={holidayPerPage}
                                 onRowsPerPageChange={handlePerPageChange}
-                                rowsPerPageOptions={[10, 15, 20]}
+                                rowsPerPageOptions={[5, 10, 15, 20]}
                               />
                             </TableCell>
                           </TableRow>

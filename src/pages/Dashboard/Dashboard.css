@@ -259,6 +259,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  max-height: 710px;
 }
 
 .dashbaord-second-section,
@@ -883,6 +884,10 @@ section.docx {
 
 .dashboard-input-dropdown .MuiSelect-icon {
   color: var(--secondary-dark-gray);
+}
+
+.dashbaord-absence-heading h1 {
+  margin: 10px 0;
 }
 
 @media (max-width: 1500px) {

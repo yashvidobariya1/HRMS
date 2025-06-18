@@ -1,17 +1,52 @@
-.attendanceForm-container {
-  overflow-x: hidden;
-  overflow-y: hidden;
+.attendanceform-container {
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   margin: 0 auto;
-  font-family: Arial, sans-serif;
+  background-color: var(--primary-text-white);
 }
 
-.attendance-form-row {
+.attendanceform-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 40px;
+  border: 1px solid var(--neutral-light-gray);
+}
+
+.attendanceform-section {
   display: flex;
-  /* align-items: center; */
-  gap: 10px;
-  margin: 20px 0;
-  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 25px;
+  gap: 15px;
+}
+
+.attendanceform-input-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+}
+
+.attendanceform-input-dropdown {
+  margin-top: 5px;
+  padding: 13px;
+  font-weight: 800;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  width: 100%;
+  outline: none;
+}
+
+.attendanceform-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.attendanceform-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
 }
 
 .attendanceForm-heading {
@@ -19,8 +54,40 @@
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
+  padding-bottom: 20px;
 }
 
 .attendanceForm-heading h1 {
   margin: 0;
+}
+
+@media (max-width: 767px) {
+  .attendanceform-input-dropdown {
+    padding: 11px;
+  }
+}
+
+@media (max-width: 575px) {
+  .attendanceform-section {
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .attendanceform-input-container {
+    margin-top: 10px;
+    gap: 0;
+  }
+
+  .attendanceform-input-dropdown .MuiSelect-select {
+    font-size: 12px;
+  }
+
+  .attendanceform-input-dropdown {
+    padding: 7px;
+  }
+
+  .attendanceForm-heading {
+    padding-bottom: 10px;
+  }
 }

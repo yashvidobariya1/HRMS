@@ -13,7 +13,7 @@ const AttendanceForm = () => {
   const { id, entryId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const formMode = location.pathname.split("/")[1];
+  const formMode = location.pathname.split("/")[2];
   const companyId = useSelector((state) => state.companySelect.companySelect);
   const [loading, setLoading] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
@@ -309,7 +309,7 @@ const AttendanceForm = () => {
           <Loader />
         </div>
       ) : (
-        <div className="attendanceForm-container">
+        <div className="attendanceform-container">
           <div className="attendanceForm-heading">
             <h1>
               {formMode === "viewattendanceform"
@@ -323,12 +323,16 @@ const AttendanceForm = () => {
               onClick={() => navigate("/staffviewhours")}
             />
           </div>
-
-          <div className="attendance-form-row">
-            <div>
+          <div className="attendanceform-section">
+            <div className="attendanceform-input-container">
               <label>Select Employee*</label>
               <Select
-                className="timesheet-input-dropdown"
+                className={`attendanceform-input-dropdown ${
+                  formMode === "viewattendanceform" ||
+                  formMode === "editattendanceform"
+                    ? "Disable-addtask"
+                    : ""
+                }`}
                 disabled={
                   formMode === "viewattendanceform" ||
                   formMode === "editattendanceform"
@@ -379,19 +383,34 @@ const AttendanceForm = () => {
                     onKeyDown={(e) => e.stopPropagation()}
                   />
                 </ListSubheader>
-                {filteredEmployeeList.map((emp) => (
-                  <MenuItem key={emp._id} value={emp._id}>
-                    {emp.userName}
+                {filteredEmployeeList.length > 0 ? (
+                  filteredEmployeeList.map((emp) => (
+                    <MenuItem
+                      key={emp._id}
+                      value={emp._id}
+                      className="menu-item"
+                    >
+                      {emp.userName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="" disabled className="menu-item">
+                    No found Employee
                   </MenuItem>
-                ))}
+                )}
               </Select>
               {errors.userId && <p className="error-text">{errors.userId}</p>}
             </div>
 
-            <div>
+            <div className="attendanceform-input-container">
               <label>Select Job Title*</label>
               <Select
-                className="timesheet-input-dropdown"
+                className={`attendanceform-input-dropdown ${
+                  formMode === "viewattendanceform" ||
+                  formMode === "editattendanceform"
+                    ? "Disable-addtask"
+                    : ""
+                }`}
                 disabled={
                   formMode === "viewattendanceform" ||
                   formMode === "editattendanceform"
@@ -442,20 +461,35 @@ const AttendanceForm = () => {
                     onKeyDown={(e) => e.stopPropagation()}
                   />
                 </ListSubheader>
-                {filteredJobTitleList.map((job, i) => (
-                  <MenuItem key={job.jobId} value={job.jobId}>
-                    {job.jobName}
+                {filteredJobTitleList.length > 0 ? (
+                  filteredJobTitleList.map((job, i) => (
+                    <MenuItem
+                      key={job.jobId}
+                      value={job.jobId}
+                      className="menu-item"
+                    >
+                      {job.jobName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="" disabled className="menu-item">
+                    No found Job Title
                   </MenuItem>
-                ))}
+                )}
               </Select>
               {errors.jobId && <p className="error-text">{errors.jobId}</p>}
             </div>
 
             {!isWorkFromOffice && (
-              <div>
+              <div className="attendanceform-input-container">
                 <label>Select Client*</label>
                 <Select
-                  className="timesheet-input-dropdown"
+                  className={`attendanceform-input-dropdown ${
+                    formMode === "viewattendanceform" ||
+                    formMode === "editattendanceform"
+                      ? "Disable-addtask"
+                      : ""
+                  }`}
                   disabled={
                     formMode === "viewattendanceform" ||
                     formMode === "editattendanceform"
@@ -499,11 +533,21 @@ const AttendanceForm = () => {
                     />
                   </ListSubheader>
 
-                  {filteredClientList.map((client) => (
-                    <MenuItem key={client._id} value={client._id}>
-                      {client.clientName}
+                  {filteredClientList.length > 0 ? (
+                    filteredClientList.map((client) => (
+                      <MenuItem
+                        key={client._id}
+                        value={client._id}
+                        className="menu-item"
+                      >
+                        {client.clientName}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="" disabled className="menu-item">
+                      No found Client
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
                 {errors.clientId && (
                   <p className="error-text">{errors.clientId}</p>
@@ -512,10 +556,15 @@ const AttendanceForm = () => {
             )}
 
             {isWorkFromOffice && (
-              <div>
+              <div className="attendanceform-input-container">
                 <label>Select Location*</label>
                 <Select
-                  className="timesheet-input-dropdown"
+                  className={`attendanceform-input-dropdown ${
+                    formMode === "viewattendanceform" ||
+                    formMode === "editattendanceform"
+                      ? "Disable-addtask"
+                      : ""
+                  }`}
                   disabled={formMode === "viewattendanceform"}
                   value={formData?.locationId || ""}
                   onChange={(e) => handleChange("locationId", e.target.value)}
@@ -555,11 +604,21 @@ const AttendanceForm = () => {
                       onKeyDown={(e) => e.stopPropagation()}
                     />
                   </ListSubheader>
-                  {filteredLocationList.map((location) => (
-                    <MenuItem key={location._id} value={location._id}>
-                      {location.locationName}
+                  {filteredLocationList.length > 0 ? (
+                    filteredLocationList.map((location) => (
+                      <MenuItem
+                        key={location._id}
+                        value={location._id}
+                        className="menu-item"
+                      >
+                        {location.locationName}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="" disabled className="menu-item">
+                      No found Location
                     </MenuItem>
-                  ))}
+                  )}
                 </Select>
                 {errors.locationId && (
                   <p className="error-text">{errors.locationId}</p>
@@ -567,13 +626,13 @@ const AttendanceForm = () => {
               </div>
             )}
           </div>
-          <div className="attendance-form-row">
-            <div>
+          <div className="attendanceform-section">
+            <div className="attendanceform-input-container">
               <label>ClockIn-Time*</label>
               <input
                 type="datetime-local"
                 name="clockInTime"
-                className="timesheet-input"
+                className="attendanceform-input"
                 value={formData?.clockIn}
                 onChange={(e) => handleChange("clockIn", e.target.value)}
                 min="1900-01-01T00:00"
@@ -583,12 +642,12 @@ const AttendanceForm = () => {
               {errors.clockIn && <p className="error-text">{errors.clockIn}</p>}
             </div>
 
-            <div>
+            <div className="attendanceform-input-container">
               <label>ClockOut-Time*</label>
               <input
                 type="datetime-local"
                 name="clockOutTime"
-                className="timesheet-input"
+                className="attendanceform-input"
                 value={formData?.clockOut}
                 onChange={(e) => handleChange("clockOut", e.target.value)}
                 min="1900-01-01T00:00"
@@ -599,15 +658,13 @@ const AttendanceForm = () => {
                 <p className="error-text">{errors.clockOut}</p>
               )}
             </div>
-          </div>
 
-          <div className="attendance-form-row">
-            <div>
+            <div className="attendanceform-input-container">
               <label className="label">Comment</label>
               <textarea
                 name="comment"
                 value={formData?.comment}
-                className="timesheet-input"
+                className="attendanceform-input"
                 onChange={(e) => handleChange("comment", e.target.value)}
               />
             </div>
@@ -615,16 +672,13 @@ const AttendanceForm = () => {
 
           {formMode !== "viewattendanceform" && (
             <div className="timesheet-button-container">
-              <button
-                onClick={handleAttendanceSubmit}
-                className="timesheet-clock-in-btn"
-              >
+              <button onClick={handleAttendanceSubmit} className="save-button">
                 {formMode !== "editattendanceform" ? "Submit" : "Update"}
               </button>
               {formMode !== "editattendanceform" && (
                 <button
                   onClick={handleReset}
-                  className="timesheet-clock-out-btn"
+                  className="save-button reset-addtask"
                 >
                   Reset
                 </button>

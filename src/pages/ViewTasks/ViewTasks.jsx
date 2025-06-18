@@ -204,12 +204,12 @@ const ViewTasks = () => {
   };
 
   const handleView = (taskId) => {
-    navigate(`/viewtask/taskdetails?taskId=${taskId}`);
+    navigate(`/stafftask/taskdetails?taskId=${taskId}`);
   };
 
   const handleEdit = (id) => {
     console.log("id", id);
-    navigate(`/viewtask/edittask/${id}`);
+    navigate(`/stafftask/edittask/${id}`);
   };
 
   const getAllUsersOfClientOrLocation = async () => {

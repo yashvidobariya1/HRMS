@@ -623,6 +623,64 @@ const AddEmployee = () => {
         [name]: updatedValue,
       },
     }));
+
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+
+      const validateField = () => {
+        switch (name) {
+          case "firstName":
+          case "lastName":
+          case "dateOfBirth":
+          case "gender":
+          case "maritalStatus":
+          case "bankName":
+          case "holderName":
+          case "payrollFrequency":
+          case "pension":
+          case "passportNumber":
+          case "countryOfIssue":
+          case "passportExpiry":
+          case "nationality":
+          case "rightToWorkCheckDate":
+          case "address":
+          case "city":
+          case "postCode":
+          case "kinName":
+          case "kinAddress":
+          case "kinPostCode":
+            return !!updatedValue?.toString().trim();
+
+          case "email":
+            return /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(
+              updatedValue
+            );
+
+          case "phone":
+          case "homeTelephone":
+          case "emergencyContactNumber":
+            return /^\d{11}$/.test(updatedValue);
+
+          case "accountNumber":
+            return /^\d{8}$/.test(updatedValue);
+
+          case "sortCode":
+            return /^\d{2}-\d{2}-\d{2}$/.test(updatedValue);
+
+          case "niNumber":
+            return /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/.test(updatedValue);
+
+          default:
+            return true;
+        }
+      };
+
+      if (updatedErrors[name] && validateField()) {
+        delete updatedErrors[name];
+      }
+
+      return updatedErrors;
+    });
   };
 
   const handleFileChange = (e) => {
@@ -2161,14 +2219,30 @@ const AddEmployee = () => {
                     disabled={!jobForm?.isWorkFromOffice}
                     value={jobForm?.location || []}
                     data-testid="location-select"
-                    onChange={(event) =>
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      const allLocationIds = locations.map((c) => c._id);
+
+                      if (value[value.length - 1] === "all") {
+                        handleJobChange({
+                          target: {
+                            name: "location",
+                            value:
+                              jobForm?.location?.length === locations.length
+                                ? []
+                                : allLocationIds,
+                          },
+                        });
+                        return;
+                      }
+
                       handleJobChange({
                         target: {
                           name: "location",
-                          value: !isWorkFromOffice ? [] : event.target.value,
+                          value,
                         },
-                      })
-                    }
+                      });
+                    }}
                     className="addemployee-input-dropdown"
                     displayEmpty
                     MenuProps={{
@@ -2214,6 +2288,20 @@ const AddEmployee = () => {
                     {/* <MenuItem value="" disabled>
                       Select Location
                     </MenuItem> */}
+                    {filteredLocationsList?.length > 0 && (
+                      <MenuItem value="all">
+                        <Checkbox
+                          indeterminate={
+                            jobForm?.location?.length > 0 &&
+                            jobForm?.location?.length < locations.length
+                          }
+                          checked={
+                            jobForm?.location?.length === locations.length
+                          }
+                        />
+                        All Locations
+                      </MenuItem>
+                    )}
                     {filteredLocationsList.length > 0 ? (
                       filteredLocationsList?.map((location) => (
                         <MenuItem
@@ -2413,6 +2501,12 @@ const AddEmployee = () => {
                         }
                         return;
                       }
+                      handleJobChange({
+                        target: {
+                          name: "assignClient",
+                          value,
+                        },
+                      });
                     }}
                     data-testid="assignClient-select"
                     className="addemployee-input-dropdown"
@@ -2470,7 +2564,7 @@ const AddEmployee = () => {
                             jobForm?.assignClient?.length === clients.length
                           }
                         />
-                        Select All
+                        All Clients
                       </MenuItem>
                     )}
                     {filteredassignClientList?.length > 0 ? (
