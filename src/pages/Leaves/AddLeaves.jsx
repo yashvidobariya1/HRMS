@@ -526,7 +526,7 @@ const AddLeaves = () => {
           </div>
 
           <div className="addleave-input-container">
-            <label className="label">Leave Of Absence*</label>
+            <label className="label">Leave Of Absence</label>
             <textarea
               type="text"
               rows="4"

@@ -353,9 +353,10 @@ const CommonTable = ({
       "reasonOfLeave",
     ];
 
-    return reasonItemList.some(
-      (key) => item[key] !== undefined && item[key] !== null && item[key] !== ""
-    );
+    // return reasonItemList.some(
+    //   (key) => item[key] !== undefined && item[key] !== null && item[key] !== ""
+    // );
+    return reasonItemList.some((key) => key in item);
   };
 
   // const checkforReson = (item) => {
@@ -672,15 +673,23 @@ const CommonTable = ({
                         item.status === "Reject" ||
                         item.roleWisePoints) ? (
                         <TableCell>
-                          <IconButton
-                            onClick={() => setOpenRow(openRow === i ? null : i)}
-                          >
-                            {openRow === i ? (
-                              <KeyboardArrowUp />
-                            ) : (
-                              <KeyboardArrowDown />
-                            )}
-                          </IconButton>
+                          {checkforReson(item) ? (
+                            <IconButton
+                              onClick={() =>
+                                setOpenRow(openRow === i ? null : i)
+                              }
+                            >
+                              {openRow === i ? (
+                                <KeyboardArrowUp />
+                              ) : (
+                                <KeyboardArrowDown />
+                              )}
+                            </IconButton>
+                          ) : (
+                            <span style={{ color: "#888" }}>
+                              No reason provided
+                            </span>
+                          )}
                         </TableCell>
                       ) : item.status === "Approved" ||
                         item.status === "rejected" ? (

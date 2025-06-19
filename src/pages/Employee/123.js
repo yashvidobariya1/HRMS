@@ -554,6 +554,7 @@ const AddEmployee = () => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const isCheckbox = type === "checkbox";
+
     const sectionKeys = {
       0: "personalDetails",
       1: "jobDetails",
@@ -564,36 +565,45 @@ const AddEmployee = () => {
       6: "documentDetails",
       7: "contractDetails",
     };
-    const sectionKey = sectionKeys[currentStep];
-    let updatedValue = isCheckbox ? checked : value;
 
+    const sectionKey = sectionKeys[currentStep];
     if (!sectionKey) {
       console.error(`Invalid section key for step: ${currentStep}`);
       return;
     }
 
-    // Special formatting logic
+    let updatedValue = isCheckbox ? checked : value;
+
+    // Format NI Number
     if (name === "niNumber") {
       const previousValue = formData?.[sectionKey]?.niNumber || "";
       const inputIsDeleting = value.length < previousValue.length;
+
       if (!inputIsDeleting) {
         let formattedValue = value
           .replace(/[^a-zA-Z0-9]/g, "")
           .toUpperCase()
           .slice(0, 9);
+
         if (formattedValue.length > 0) {
           formattedValue = formattedValue.replace(
             /(.{2})(.{0,2})(.{0,2})(.{0,2})(.*)/,
-            (match, p1, p2, p3, p4, p5) =>
-              [p1, p2, p3, p4, p5].filter(Boolean).join(" ")
+            (match, p1, p2, p3, p4, p5) => {
+              return [p1, p2, p3, p4, p5].filter(Boolean).join(" ");
+            }
           );
         }
+
         updatedValue = formattedValue;
+      } else {
+        updatedValue = value;
       }
     }
 
+    // Format Sort Code
     if (name === "sortCode") {
       const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+
       if (digitsOnly.length <= 2) {
         updatedValue = digitsOnly;
       } else if (digitsOnly.length <= 4) {
@@ -605,124 +615,106 @@ const AddEmployee = () => {
         )}-${digitsOnly.slice(4)}`;
       }
     }
-
-    // Update form data
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [sectionKey]: {
-        ...prev[sectionKey],
+        ...prevFormData[sectionKey],
         [name]: updatedValue,
       },
     }));
 
-    // Field-level validation
-    let fieldError = "";
+    const getErrorMessage = (name, value) => {
+      const requiredFields = {
+        firstName: "First Name",
+        lastName: "Last Name",
+        dateOfBirth: "Date of Birth",
+        gender: "Gender",
+        maritalStatus: "Marital Status",
+        bankName: "Bank Name",
+        holderName: "Holder Name",
+        payrollFrequency: "Payroll Frequency",
+        pension: "Pension",
+        passportNumber: "Passport Number",
+        countryOfIssue: "Country of Issue",
+        passportExpiry: "Passport Expiry",
+        nationality: "Nationality",
+        rightToWorkCheckDate: "Right To Work Check Date",
+        address: "Address",
+        city: "City",
+        postCode: "Post Code",
+        kinName: "Kin Name",
+        kinAddress: "Kin Address",
+        kinPostCode: "Kin Post Code",
+      };
 
-    const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-    const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
+      if (requiredFields[name] && !value?.toString().trim()) {
+        return `${requiredFields[name]} is required.`;
+      }
 
-    switch (name) {
-      case "firstName":
-      case "lastName":
-      case "gender":
-      case "address":
-      case "city":
-      case "postCode":
-      case "kinName":
-      case "maritalStatus":
-      case "nationality":
-      case "countryOfIssue":
-      case "passportNumber":
-      case "rightToWorkCheckDate":
-      case "bankName":
-      case "holderName":
-      case "payrollFrequency":
-      case "dateOfBirth":
-        // if (!updatedValue.trim())
-        //   fieldError = `${
-        //     name.charAt(0).toUpperCase() + name.slice(1)
-        //   } is required`;
-        if (!updatedValue.trim()) {
-          fieldError = `${name
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase())} is required`;
-        }
-        break;
+      switch (name) {
+        case "email":
+          if (!value) return "Email is required";
+          if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(value))
+            return "Valid Email format is required";
+          break;
 
-      case "phone":
-        if (!updatedValue) {
-          fieldError = "Phone number is required";
-        } else if (!/^\d+$/.test(updatedValue)) {
-          fieldError = "Phone number must contain only numbers";
-        } else if (!/^\d{11}$/.test(updatedValue)) {
-          fieldError = "Phone number must be exactly 11 digits";
-        }
-        break;
+        case "phone":
+          if (!value) return "Phone number is required";
+          if (!/^\d{11}$/.test(value))
+            return "Phone number must be exactly 11 digits";
+          break;
 
-      case "homeTelephone":
-        if (updatedValue && !/^\d+$/.test(updatedValue)) {
-          fieldError = `${name} must contain only digits`;
-        } else if (updatedValue && updatedValue.length !== 11) {
-          fieldError = `${name} must be exactly 11 digits`;
-        }
-        break;
+        case "homeTelephone":
+          if (value?.trim()) {
+            if (!/^\d+$/.test(value))
+              return "Home telephone must contain only digits";
+            if (value.length !== 11)
+              return "Home telephone must be exactly 11 digits";
+          }
+          break;
 
-      case "emergencyContactNumber":
-        if (!updatedValue) {
-          fieldError = "emergency Contact Number is required";
-        } else if (updatedValue && !/^\d+$/.test(updatedValue)) {
-          fieldError = `${name} must contain only digits`;
-        } else if (updatedValue && updatedValue.length !== 11) {
-          fieldError = `${name} must be exactly 11 digits`;
-        }
-        break;
+        case "emergencyContactNumber":
+          if (!/^\d+$/.test(value))
+            return "Emergency Contact Number must contain only numbers";
+          break;
 
-      case "email":
-        if (!updatedValue) {
-          fieldError = "Email is required";
-        } else if (!EMAIL_REGEX.test(updatedValue)) {
-          fieldError = "Valid Email format is required";
-        }
-        break;
+        case "accountNumber":
+          if (!value) return "Account Number is required";
+          if (!/^\d{8}$/.test(value))
+            return "Account Number must be exactly 8 digits";
+          break;
 
-      case "niNumber":
-        if (updatedValue && !NI_REGEX.test(updatedValue)) {
-          fieldError = "Invalid NI Number format. Use format: QQ 88 77 77 A";
-        }
-        break;
+        case "sortCode":
+          if (!value) return "Sort code is required";
+          if (!/^\d{2}-\d{2}-\d{2}$/.test(value))
+            return "Valid sort code format is required (xx-xx-xx)";
+          break;
 
-      case "sortCode":
-        if (!updatedValue) {
-          fieldError = "Sort code is required";
-        } else if (!/^\d{2}-\d{2}-\d{2}$/.test(updatedValue)) {
-          fieldError = "Valid sort code format is required (xx-xx-xx)";
-        }
-        break;
+        case "niNumber":
+          if (value?.trim()) {
+            if (!/^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/.test(value))
+              return "NI Number must follow format: AB 12 34 56 C.";
+            break;
+          }
 
-      case "accountNumber":
-        if (!updatedValue) {
-          fieldError = "Account Number is required";
-        } else if (!/^\d{8}$/.test(updatedValue)) {
-          fieldError = "Account Number must be exactly 8 digits";
-        }
-        break;
+        default:
+          break;
+      }
+      return "";
+    };
 
-      case "passportExpiry":
-        if (!updatedValue) {
-          fieldError = "Passport Expiry is required";
-        } else if (moment(updatedValue).isBefore(AllowDate, "day")) {
-          fieldError = "Cannot enter a past date";
-        }
-        break;
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+      const errorMessage = getErrorMessage(name, updatedValue);
 
-      default:
-        break;
-    }
+      if (errorMessage) {
+        updatedErrors[name] = errorMessage;
+      } else {
+        delete updatedErrors[name];
+      }
 
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: fieldError,
-    }));
+      return updatedErrors;
+    });
   };
 
   const handleFileChange = (e) => {
@@ -731,17 +723,6 @@ const AddEmployee = () => {
       ...prevData,
       files: [...prevData.files, ...selectedFiles],
     }));
-    setErrors((prevErrors) => {
-      const newErrors = { ...prevErrors };
-
-      if (selectedFiles.length > 0) {
-        delete newErrors.document;
-      } else {
-        newErrors.document = "Please select at least one document.";
-      }
-
-      return newErrors;
-    });
   };
 
   const handleDeleteFile = (indexToDelete) => {
@@ -752,21 +733,7 @@ const AddEmployee = () => {
   };
 
   const handleInputChange = (field, value) => {
-    setFile((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    setErrors((prevErrors) => {
-      const newErrors = { ...prevErrors };
-      if (value && newErrors[field]) {
-        delete newErrors[field];
-      }
-      if (!value && field === "documentType") {
-        newErrors[field] = "Please select a document type.";
-      }
-      return newErrors;
-    });
+    setFile({ ...file, [field]: value });
   };
 
   // const handleJobChange = (e) => {
@@ -847,85 +814,32 @@ const AddEmployee = () => {
     const { name, value, type } = e.target;
 
     setJobForm((prev) => {
-      let updatedForm = { ...prev };
-      let newErrors = { ...errors };
-
+      // Handle nested fields like 'sickLeavesAllow.leaveType'
       if (name.includes(".")) {
         const [parent, child] = name.split(".");
-        updatedForm[parent] = {
-          ...prev[parent],
-          [child]:
-            type === "number" || child.includes("Counts")
-              ? Number(value)
-              : value,
+        return {
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]:
+              type === "number" || child.includes("Counts")
+                ? Number(value)
+                : value,
+          },
         };
       } else {
         if (name === "role") {
-          updatedForm[name] = value;
-          updatedForm.assignManager = ""; // Reset assignManager
-        } else {
-          updatedForm[name] = value;
+          return {
+            ...prev,
+            [name]: value,
+            assignManager: "", // Reset assignManager
+          };
         }
+        return {
+          ...prev,
+          [name]: value,
+        };
       }
-      let fieldError = "";
-
-      switch (name) {
-        case "jobTitle":
-        case "joiningDate":
-        case "role":
-          if (!updatedForm[name]?.trim()) {
-            fieldError = `${name
-              .replace(/([A-Z])/g, " $1")
-              .replace(/^./, (str) => str.toUpperCase())} is required`;
-          }
-          break;
-
-        case "annualSalary":
-          if (value === "" || value === null) {
-            fieldError = "Annual Salary is required";
-          } else if (Number(value) < 1) {
-            fieldError = "Annual salary must be greater than zero.";
-          }
-          break;
-
-        case "weeklyWorkingHours":
-          if (value === "" || value === null) {
-            fieldError = "Weekly Working Hours are required";
-          } else if (Number(value) < 1) {
-            fieldError = "Weekly working hours must be greater than zero.";
-          }
-          break;
-
-        case "location":
-          if (
-            !updatedForm?.isWorkFromOffice &&
-            (!value || value.length === 0)
-          ) {
-            fieldError = "Location is required when working from office";
-          }
-          break;
-
-        case "assignClient":
-          if (
-            !updatedForm?.isWorkFromOffice &&
-            (!value || value.length === 0)
-          ) {
-            fieldError = "Assign Client is required";
-          }
-          break;
-
-        default:
-          break;
-      }
-
-      if (fieldError) {
-        newErrors[name] = fieldError;
-      } else {
-        delete newErrors[name];
-      }
-
-      setErrors(newErrors);
-      return updatedForm;
     });
   };
 
@@ -1032,7 +946,7 @@ const AddEmployee = () => {
     if (jobForm?.role === "") {
       newErrors.role = "Role is required";
     }
-    if (isWorkFromOffice && jobForm?.location.length === 0) {
+    if (isWorkFromOffice && !jobForm?.location) {
       newErrors.location = "Location is required when working from office";
     }
     // if (jobForm?.assignManager === "") {
@@ -1419,32 +1333,11 @@ const AddEmployee = () => {
   const handleSalaryChange = (e) => {
     const { name, value } = e.target;
     const ValueRemove = value.replace(/[^0-9.]/g, "");
-
-    setJobForm((prev) => {
-      const updatedForm = {
-        ...prev,
-        [name]: ValueRemove,
-      };
-
-      let fieldError = "";
-      if (!ValueRemove) {
-        fieldError = "Annual Salary is required";
-      } else if (Number(ValueRemove) < 1) {
-        fieldError = "Annual salary must be greater than zero.";
-      }
-
-      setErrors((prevErrors) => {
-        const newErrors = { ...prevErrors };
-        if (fieldError) {
-          newErrors[name] = fieldError;
-        } else {
-          delete newErrors[name];
-        }
-        return newErrors;
-      });
-
-      return updatedForm;
-    });
+    // console.log("ValueRemove", ValueRemove);
+    setJobForm((prev) => ({
+      ...prev,
+      [name]: ValueRemove,
+    }));
   };
 
   const formatSalary = () => {
@@ -1498,12 +1391,6 @@ const AddEmployee = () => {
         ...prev,
         location: [],
       }));
-
-      setErrors((prevErrors) => {
-        const newErrors = { ...prevErrors };
-        delete newErrors.location;
-        return newErrors;
-      });
     }
   }, [isWorkFromOffice]);
 
@@ -1513,12 +1400,6 @@ const AddEmployee = () => {
         ...prev,
         assignClient: [],
       }));
-
-      setErrors((prevErrors) => {
-        const newErrors = { ...prevErrors };
-        delete newErrors.assignClient;
-        return newErrors;
-      });
     }
   }, [isWorkFromOffice]);
 
@@ -2475,7 +2356,6 @@ const AddEmployee = () => {
                   {errors?.location && (
                     <p className="error-text">{errors?.location}</p>
                   )}
-                  {console.log("location", errors?.location)}
                 </div>
                 <div className="addemployee-input-container">
                   <label className="label">Assign Manager</label>
@@ -3281,6 +3161,7 @@ const AddEmployee = () => {
                   value={formData?.immigrationDetails?.passportExpiry}
                   onChange={handleChange}
                   placeholder="DD/MM/YYYY"
+                  min={AllowDate}
                 />
                 {errors?.passportExpiry && (
                   <p className="error-text">{errors?.passportExpiry}</p>
