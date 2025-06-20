@@ -281,6 +281,7 @@ const CommonTable = ({
   searchQuery,
   isSearchQuery,
   totalData,
+  tableName,
   // setSearchQuery,
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -352,7 +353,6 @@ const CommonTable = ({
       "roleWisePoints",
       "reasonOfLeave",
     ];
-
     // return reasonItemList.some(
     //   (key) => item[key] !== undefined && item[key] !== null && item[key] !== ""
     // );
@@ -472,9 +472,26 @@ const CommonTable = ({
     "Clock Out": "out",
   };
 
-  const handleSort = (key) => {
-    const mappedKey = keyMap[key] || key;
-    // console.log("Sorting by:", mappedKey);
+  const keymap = {
+    company: {
+      "Business Name": "company.Name",
+      "Company Code": "company.CompanyCode",
+      City: "company.city",
+    },
+  };
+
+  const getNestedValue = (obj, path) => {
+    try {
+      return path.split(".").reduce((acc, part) => acc?.[part], obj) ?? "";
+    } catch {
+      return "";
+    }
+  };
+
+  const handleSort = (columnName, tableName) => {
+    const mappedKey = keymap[tableName]?.[columnName] || columnName;
+
+    console.log("Sorting by:", mappedKey);
 
     setSortConfig((prevSort) => {
       let direction = "asc";
@@ -486,23 +503,21 @@ const CommonTable = ({
   };
 
   const sortedData = React.useMemo(() => {
-    if (!data) return [];
-    if (!sortConfig.key) return [...data];
+    if (!data || !sortConfig.key) return [...data];
+
     return [...data].sort((a, b) => {
-      const valueA = a[sortConfig.key];
-      const valueB = b[sortConfig.key];
-      // console.log(data);
-      if (typeof valueA === "string") {
-        return sortConfig.direction === "asc"
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
-      } else {
-        return sortConfig.direction === "asc"
-          ? valueA - valueB
-          : valueB - valueA;
-      }
+      const valueA = getNestedValue(a, sortConfig.key);
+      const valueB = getNestedValue(b, sortConfig.key);
+
+      console.log("Comparing", valueA, valueB);
+
+      if (valueA < valueB) return sortConfig.direction === "asc" ? -1 : 1;
+      if (valueA > valueB) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
     });
   }, [data, sortConfig]);
+
+  console.log("getNestedValue", getNestedValue.obj, getNestedValue.path);
 
   const filteredData = React.useMemo(() => {
     if (!isSearchQuery || !searchQuery?.trim()) return sortedData;
@@ -518,6 +533,7 @@ const CommonTable = ({
   //   page * showPerPage || 1,
   //   page * showPerPage + showPerPage
   // );
+
   const paginatedData = filteredData.slice(
     rowsPerPage === undefined ? undefined : page * rowsPerPage,
     rowsPerPage === undefined ? undefined : page * rowsPerPage + rowsPerPage
@@ -540,6 +556,8 @@ const CommonTable = ({
   // const handleSearchChange = (event) => {
   //   setSearchQuery(event.target.value);
   // };
+  const mappedKey = keymap[tableName]?.[headers] || headers;
+  console.log("map key", mappedKey);
 
   return (
     <Box>
@@ -579,11 +597,13 @@ const CommonTable = ({
                     header
                   ) : (
                     <TableSortLabel
-                      active={sortConfig.key === header}
+                      active={sortConfig.key === mappedKey}
                       direction={
-                        sortConfig.key === header ? sortConfig.direction : "asc"
+                        sortConfig.key === mappedKey
+                          ? sortConfig.direction
+                          : "asc"
                       }
-                      onClick={() => handleSort(header)}
+                      onClick={() => handleSort(header, tableName)}
                     >
                       {header}
                     </TableSortLabel>
@@ -673,7 +693,7 @@ const CommonTable = ({
                         item.status === "Reject" ||
                         item.roleWisePoints) ? (
                         <TableCell>
-                          {checkforReson(item) ? (
+                          {item.reasonOfLeave !== "" ? (
                             <IconButton
                               onClick={() =>
                                 setOpenRow(openRow === i ? null : i)
@@ -686,9 +706,7 @@ const CommonTable = ({
                               )}
                             </IconButton>
                           ) : (
-                            <span style={{ color: "#888" }}>
-                              No reason provided
-                            </span>
+                            <></>
                           )}
                         </TableCell>
                       ) : item.status === "Approved" ||

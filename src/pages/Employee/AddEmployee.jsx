@@ -281,46 +281,51 @@ const AddEmployee = () => {
 
     switch (stepName) {
       case "Personal Details":
+        newErrors.personalDetails = {};
         if (!formData?.personalDetails?.firstName?.trim()) {
-          newErrors.firstName = "First Name is required";
+          newErrors.personalDetails.firstName = "First Name is required";
         }
         if (!formData?.personalDetails?.lastName) {
-          newErrors.lastName = "Last Name is required";
+          newErrors.personalDetails.lastName = "Last Name is required";
         }
         if (!formData.personalDetails?.dateOfBirth) {
-          newErrors.dateOfBirth = "Date of Birth is required";
+          newErrors.personalDetails.dateOfBirth = "Date of Birth is required";
         }
         if (!formData.personalDetails?.gender) {
-          newErrors.gender = "Gender is required";
+          newErrors.personalDetails.gender = "Gender is required";
         }
         if (!formData.personalDetails?.maritalStatus) {
-          newErrors.maritalStatus = "Marital Status is required";
+          newErrors.personalDetails.maritalStatus =
+            "Marital Status is required";
         }
         if (!formData?.personalDetails?.phone) {
-          newErrors.phone = "Phone number is required";
-        } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
-          newErrors.phone = "Phone number must contain only numbers";
-        } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
-          newErrors.phone = "Phone number must be exactly 11 digits";
+          newErrors.personalDetails.phone = "Phone number is required";
+        } else if (!/^\d+$/.test(formData?.personalDetails.phone)) {
+          newErrors.personalDetails.phone =
+            "Phone number must contain only numbers";
+        } else if (!/^\d{11}$/.test(formData?.personalDetails.phone)) {
+          newErrors.personalDetails.phone =
+            "Phone number must be exactly 11 digits";
         }
-        const phone = formData.personalDetails?.homeTelephone;
+        const phone = formData?.personalDetails?.homeTelephone;
         if (phone) {
           if (!/^\d+$/.test(phone)) {
-            newErrors.homeTelephone = "Home telephone must contain only digits";
+            newErrors.personalDetails.homeTelephone =
+              "Home telephone must contain only digits";
           } else if (phone.length !== 11) {
-            newErrors.homeTelephone =
+            newErrors.personalDetails.homeTelephone =
               "Home telephone must be exactly 11 digits";
           }
         }
         const email = formData?.personalDetails?.email;
         if (!email) {
-          newErrors.email = "Email is required";
+          newErrors.personalDetails.email = "Email is required";
         } else if (!EMAIL_REGEX.test(email)) {
-          newErrors.email = "Valid Email format is required";
+          newErrors.personalDetails.email = "Valid Email format is required";
         }
         const niNumber = formData?.personalDetails?.niNumber?.trim();
         if (niNumber && !NI_REGEX.test(niNumber)) {
-          newErrors.niNumber =
+          newErrors.personalDetails.niNumber =
             "Invalid NI Number format. Use format: QQ 88 77 77 A";
         }
         break;
@@ -334,12 +339,15 @@ const AddEmployee = () => {
       default:
         break;
     }
-
+    for (const section in newErrors) {
+      if (Object.keys(newErrors[section]).length === 0) {
+        delete newErrors[section];
+      }
+    }
     if (Object.keys(newErrors).length > 0) {
       setErrors((prevErrors) => ({ ...prevErrors, ...newErrors }));
       return false;
     }
-
     return true;
   };
 
@@ -353,7 +361,6 @@ const AddEmployee = () => {
     const step0Valid = validateTwoStep("Personal Details");
     const step1Valid = jobList.length > 0;
     if (!step0Valid || !step1Valid) {
-      console.log("check step 1 and 2");
       showToast(
         "Please fill out Step 1 and Step 2 before submitting.",
         "error"
@@ -373,7 +380,6 @@ const AddEmployee = () => {
       })
     );
     if (user.id !== id && otherFormsave) {
-      console.log("other user with isform fill true");
       const valid = validate();
       if (valid) {
         const data = {
@@ -438,10 +444,7 @@ const AddEmployee = () => {
         return doc;
       })
     );
-
     const isValid = validate();
-    console.log("isvalid", isValid);
-
     if (isValid) {
       const data = {
         ...formData,
@@ -453,7 +456,6 @@ const AddEmployee = () => {
           const step0Valid = validateTwoStep("Personal Details");
           const step1Valid = jobList.length > 0;
           if (!step0Valid || !step1Valid) {
-            console.log("check step 1 and 2");
             showToast(
               "Please fill out Step 1 and Step 2 before submitting.",
               "error"
@@ -465,7 +467,6 @@ const AddEmployee = () => {
           setLoading(true);
           let response;
           if (id) {
-            console.log("update");
             response = await PostCall(`/updateUser/${id}`, data);
             if (response?.data?.status === 200) {
               showToast(response?.data?.message, "success");
@@ -498,7 +499,6 @@ const AddEmployee = () => {
         }
       } else {
         setCompletedSteps((prev) => {
-          console.log("prev", prev);
           if (!prev.includes(currentStep)) {
             return [...prev, currentStep];
           }
@@ -566,13 +566,10 @@ const AddEmployee = () => {
     };
     const sectionKey = sectionKeys[currentStep];
     let updatedValue = isCheckbox ? checked : value;
-
     if (!sectionKey) {
       console.error(`Invalid section key for step: ${currentStep}`);
       return;
     }
-
-    // Special formatting logic
     if (name === "niNumber") {
       const previousValue = formData?.[sectionKey]?.niNumber || "";
       const inputIsDeleting = value.length < previousValue.length;
@@ -605,8 +602,6 @@ const AddEmployee = () => {
         )}-${digitsOnly.slice(4)}`;
       }
     }
-
-    // Update form data
     setFormData((prev) => ({
       ...prev,
       [sectionKey]: {
@@ -614,12 +609,12 @@ const AddEmployee = () => {
         [name]: updatedValue,
       },
     }));
-
-    // Field-level validation
     let fieldError = "";
-
     const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
     const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
+    const displayName = name
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
 
     switch (name) {
       case "firstName":
@@ -638,19 +633,27 @@ const AddEmployee = () => {
       case "holderName":
       case "payrollFrequency":
       case "dateOfBirth":
-        // if (!updatedValue.trim())
-        //   fieldError = `${
-        //     name.charAt(0).toUpperCase() + name.slice(1)
-        //   } is required`;
         if (!updatedValue.trim()) {
-          fieldError = `${name
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase())} is required`;
+          fieldError = `${displayName} is required`;
+        }
+        break;
+
+      case "email":
+        if (sectionKey === "kinDetails") {
+          if (updatedValue.trim() && !EMAIL_REGEX.test(updatedValue)) {
+            fieldError = "Valid Email format is required";
+          }
+        } else {
+          if (!updatedValue.trim()) {
+            fieldError = "Email is required";
+          } else if (!EMAIL_REGEX.test(updatedValue)) {
+            fieldError = "Valid Email format is required";
+          }
         }
         break;
 
       case "phone":
-        if (!updatedValue) {
+        if (!updatedValue.trim()) {
           fieldError = "Phone number is required";
         } else if (!/^\d+$/.test(updatedValue)) {
           fieldError = "Phone number must contain only numbers";
@@ -660,28 +663,22 @@ const AddEmployee = () => {
         break;
 
       case "homeTelephone":
-        if (updatedValue && !/^\d+$/.test(updatedValue)) {
-          fieldError = `${name} must contain only digits`;
-        } else if (updatedValue && updatedValue.length !== 11) {
-          fieldError = `${name} must be exactly 11 digits`;
+        if (updatedValue) {
+          if (!/^\d+$/.test(updatedValue)) {
+            fieldError = `${displayName} must contain only digits`;
+          } else if (updatedValue.length !== 11) {
+            fieldError = `${displayName} must be exactly 11 digits`;
+          }
         }
         break;
 
       case "emergencyContactNumber":
-        if (!updatedValue) {
-          fieldError = "emergency Contact Number is required";
-        } else if (updatedValue && !/^\d+$/.test(updatedValue)) {
-          fieldError = `${name} must contain only digits`;
-        } else if (updatedValue && updatedValue.length !== 11) {
-          fieldError = `${name} must be exactly 11 digits`;
-        }
-        break;
-
-      case "email":
-        if (!updatedValue) {
-          fieldError = "Email is required";
-        } else if (!EMAIL_REGEX.test(updatedValue)) {
-          fieldError = "Valid Email format is required";
+        if (!updatedValue.trim()) {
+          fieldError = `${displayName} is required`;
+        } else if (!/^\d+$/.test(updatedValue)) {
+          fieldError = `${displayName} must contain only digits`;
+        } else if (updatedValue.length !== 11) {
+          fieldError = `${displayName} must be exactly 11 digits`;
         }
         break;
 
@@ -692,7 +689,7 @@ const AddEmployee = () => {
         break;
 
       case "sortCode":
-        if (!updatedValue) {
+        if (!updatedValue.trim()) {
           fieldError = "Sort code is required";
         } else if (!/^\d{2}-\d{2}-\d{2}$/.test(updatedValue)) {
           fieldError = "Valid sort code format is required (xx-xx-xx)";
@@ -700,7 +697,7 @@ const AddEmployee = () => {
         break;
 
       case "accountNumber":
-        if (!updatedValue) {
+        if (!updatedValue.trim()) {
           fieldError = "Account Number is required";
         } else if (!/^\d{8}$/.test(updatedValue)) {
           fieldError = "Account Number must be exactly 8 digits";
@@ -708,7 +705,7 @@ const AddEmployee = () => {
         break;
 
       case "passportExpiry":
-        if (!updatedValue) {
+        if (!updatedValue.trim()) {
           fieldError = "Passport Expiry is required";
         } else if (moment(updatedValue).isBefore(AllowDate, "day")) {
           fieldError = "Cannot enter a past date";
@@ -721,7 +718,10 @@ const AddEmployee = () => {
 
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: fieldError,
+      [sectionKey]: {
+        ...prevErrors?.[sectionKey],
+        [name]: fieldError,
+      },
     }));
   };
 
@@ -897,10 +897,7 @@ const AddEmployee = () => {
           break;
 
         case "location":
-          if (
-            !updatedForm?.isWorkFromOffice &&
-            (!value || value.length === 0)
-          ) {
+          if (updatedForm?.isWorkFromOffice && (!value || value.length === 0)) {
             fieldError = "Location is required when working from office";
           }
           break;
@@ -1132,230 +1129,207 @@ const AddEmployee = () => {
 
     const shouldValidateAll = user.id !== id && otherFormsave;
     const stepsToValidate = shouldValidateAll ? steps : [steps[currentStep]];
+
     const EMAIL_REGEX = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-    console.log("shouldValidateAll", shouldValidateAll);
+    const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
+    const SORT_CODE_REGEX = /^\d{2}-\d{2}-\d{2}$/;
+
     for (let stepName of stepsToValidate) {
       let stepHasError = false;
 
       switch (stepName) {
-        case "Personal Details":
-          if (!formData?.personalDetails?.firstName?.trim()) {
-            newErrors.firstName = "First Name is required";
-            stepHasError = true;
+        case "Personal Details": {
+          const pd = formData?.personalDetails || {};
+          const errors = {};
+
+          if (!pd.firstName?.trim())
+            errors.firstName = "First Name is required";
+          if (!pd.lastName?.trim()) errors.lastName = "Last Name is required";
+          if (!pd.dateOfBirth) errors.dateOfBirth = "Date of Birth is required";
+          if (!pd.gender) errors.gender = "Gender is required";
+          if (!pd.maritalStatus)
+            errors.maritalStatus = "Marital Status is required";
+
+          if (!pd.phone) {
+            errors.phone = "Phone number is required";
+          } else if (!/^\d+$/.test(pd.phone)) {
+            errors.phone = "Phone number must contain only numbers";
+          } else if (!/^\d{11}$/.test(pd.phone)) {
+            errors.phone = "Phone number must be exactly 11 digits";
           }
-          if (!formData?.personalDetails?.lastName) {
-            newErrors.lastName = "Last Name is required";
-            stepHasError = true;
-          }
-          if (!formData.personalDetails?.dateOfBirth) {
-            newErrors.dateOfBirth = "Date of Birth is required";
-            stepHasError = true;
-          }
-          if (!formData.personalDetails?.gender) {
-            newErrors.gender = "Gender is required";
-            stepHasError = true;
-          }
-          if (!formData.personalDetails?.maritalStatus) {
-            newErrors.maritalStatus = "Marital Status is required";
-            stepHasError = true;
-          }
-          if (!formData?.personalDetails?.phone) {
-            newErrors.phone = "Phone number is required";
-            stepHasError = true;
-          } else if (!/^\d+$/.test(formData.personalDetails.phone)) {
-            newErrors.phone = "Phone number must contain only numbers";
-            stepHasError = true;
-          } else if (!/^\d{11}$/.test(formData.personalDetails.phone)) {
-            newErrors.phone = "Phone number must be exactly 11 digits";
-            stepHasError = true;
-          }
-          const phone = formData.personalDetails?.homeTelephone;
-          if (phone) {
-            if (!/^\d+$/.test(phone)) {
-              newErrors.homeTelephone =
-                "Home telephone must contain only digits";
-              stepHasError = true;
-            } else if (phone.length !== 11) {
-              newErrors.homeTelephone =
-                "Home telephone must be exactly 11 digits";
-              stepHasError = true;
+
+          if (pd.homeTelephone) {
+            if (!/^\d+$/.test(pd.homeTelephone)) {
+              errors.homeTelephone = "Home telephone must contain only digits";
+            } else if (pd.homeTelephone.length !== 11) {
+              errors.homeTelephone = "Home telephone must be exactly 11 digits";
             }
           }
-          const email = formData?.personalDetails?.email;
-          if (!email) {
-            newErrors.email = "Email is required";
-            stepHasError = true;
-          } else if (!EMAIL_REGEX.test(email)) {
-            newErrors.email = "Valid Email format is required";
-            stepHasError = true;
+
+          if (!pd.email) {
+            errors.email = "Email is required";
+          } else if (!EMAIL_REGEX.test(pd.email)) {
+            errors.email = "Valid Email format is required";
           }
-          const niNumber = formData?.personalDetails?.niNumber?.trim();
-          const NI_REGEX = /^[A-Z]{2} \d{2} \d{2} \d{2} [A-D]$/;
-          if (niNumber && !NI_REGEX.test(niNumber)) {
-            newErrors.niNumber =
+
+          if (pd.niNumber && !NI_REGEX.test(pd.niNumber.trim())) {
+            errors.niNumber =
               "Invalid NI Number format. Use format: QQ 88 77 77 A";
-            stepHasError = true;
           }
-          // if (!formData.personalDetails?.sendRegistrationLink) {
-          //   newErrors.sendRegistrationLink =
-          //     "Please check the box to send the registration link.";
-          // }
-          break;
 
-        case "Address Details":
-          if (!formData?.addressDetails?.address) {
-            newErrors.address = "Address is required";
-            stepHasError = true;
-          }
-          if (!formData?.addressDetails?.city) {
-            newErrors.city = "City is required";
-            stepHasError = true;
-          }
-          if (!formData?.addressDetails?.postCode) {
-            newErrors.postCode = "Post Code is required";
+          if (Object.keys(errors).length) {
+            newErrors.personalDetails = errors;
             stepHasError = true;
           }
           break;
+        }
 
-        case "Kin Details":
-          if (!formData?.kinDetails?.kinName) {
-            newErrors.kinName = "Kin name is required";
+        case "Address Details": {
+          const ad = formData?.addressDetails || {};
+          const errors = {};
+
+          if (!ad.address) errors.address = "Address is required";
+          if (!ad.city) errors.city = "City is required";
+          if (!ad.postCode) errors.postCode = "Post Code is required";
+
+          if (Object.keys(errors).length) {
+            newErrors.addressDetails = errors;
             stepHasError = true;
           }
-          if (!formData?.kinDetails?.postCode) {
-            newErrors.kinPostCode = "Post Code is required";
-            stepHasError = true;
-          }
-          if (!formData?.kinDetails?.address) {
-            newErrors.kinAddress = "Address is required";
-            stepHasError = true;
-          }
-          if (!formData?.kinDetails?.emergencyContactNumber) {
-            newErrors.emergencyContactNumber =
+          break;
+        }
+
+        case "Kin Details": {
+          const kd = formData?.kinDetails || {};
+          const errors = {};
+
+          if (!kd.kinName) errors.kinName = "Kin name is required";
+          if (!kd.postCode) errors.postCode = "Post Code is required";
+          if (!kd.address) errors.address = "Address is required";
+
+          if (!kd.emergencyContactNumber) {
+            errors.emergencyContactNumber =
               "Emergency Contact Number is required";
-            stepHasError = true;
-          } else if (
-            !/^\d+$/.test(formData?.kinDetails?.emergencyContactNumber)
-          ) {
-            newErrors.emergencyContactNumber =
+          } else if (!/^\d+$/.test(kd.emergencyContactNumber)) {
+            errors.emergencyContactNumber =
               "Emergency Contact Number must contain only numbers";
-            stepHasError = true;
-          } else if (
-            !/^\d{11}$/.test(formData?.kinDetails?.emergencyContactNumber)
-          ) {
-            newErrors.emergencyContactNumber =
+          } else if (!/^\d{11}$/.test(kd.emergencyContactNumber)) {
+            errors.emergencyContactNumber =
               "Emergency Contact Number must be exactly 11 digits";
+          }
+
+          if (kd.email && !EMAIL_REGEX.test(kd.email)) {
+            errors.email = "Valid Email format is required";
+          }
+
+          if (Object.keys(errors).length) {
+            newErrors.kinDetails = errors;
             stepHasError = true;
           }
           break;
+        }
 
-        case "Financial Details":
-          if (!formData.financialDetails?.bankName) {
-            newErrors.bankName = "Bank Name is required";
-            stepHasError = true;
-          }
-          if (!formData.financialDetails?.holderName) {
-            newErrors.holderName = "Holder Name is required";
-            stepHasError = true;
-          }
+        case "Financial Details": {
+          const fd = formData?.financialDetails || {};
+          const errors = {};
 
-          const sortCode = formData?.financialDetails?.sortCode;
-          const sortCodeError = /^\d{2}-\d{2}-\d{2}$/;
+          if (!fd.bankName) errors.bankName = "Bank Name is required";
+          if (!fd.holderName) errors.holderName = "Holder Name is required";
 
-          if (!sortCode) {
-            newErrors.sortCode = "Sort code is required";
-            stepHasError = true;
-          } else if (!sortCodeError.test(sortCode)) {
-            newErrors.sortCode =
-              "Valid sort code format is required (xx-xx-xx)";
-            stepHasError = true;
+          if (!fd.sortCode) {
+            errors.sortCode = "Sort code is required";
+          } else if (!SORT_CODE_REGEX.test(fd.sortCode)) {
+            errors.sortCode = "Valid sort code format is required (xx-xx-xx)";
           }
 
-          // if (!formData.financialDetails?.sortCode) {
-          //   newErrors.sortCode = "Sort Code is required";
-          // }
-          const accountNumber = formData.financialDetails?.accountNumber;
-          if (!accountNumber) {
-            newErrors.accountNumber = "Account Number is required";
-            stepHasError = true;
-          } else if (!/^\d{8}$/.test(accountNumber)) {
-            newErrors.accountNumber = "Account Number must be exactly 8 digits";
-            stepHasError = true;
+          if (!fd.accountNumber) {
+            errors.accountNumber = "Account Number is required";
+          } else if (!/^\d{8}$/.test(fd.accountNumber)) {
+            errors.accountNumber = "Account Number must be exactly 8 digits";
           }
 
-          if (!formData.financialDetails?.payrollFrequency) {
-            newErrors.payrollFrequency = "Payroll Frequency is required";
-            stepHasError = true;
-          }
-          if (!formData.financialDetails?.pension) {
-            newErrors.pension = "Pension option is required";
+          if (!fd.payrollFrequency)
+            errors.payrollFrequency = "Payroll Frequency is required";
+          if (!fd.pension) errors.pension = "Pension option is required";
+
+          if (Object.keys(errors).length) {
+            newErrors.financialDetails = errors;
             stepHasError = true;
           }
           break;
+        }
 
-        case "Job Details":
+        case "Job Details": {
+          const errors = {};
           if (jobList?.length <= 0) {
-            newErrors.jobList = "Atleast one Job Type is required";
+            errors.jobList = "At least one Job Type is required";
             stepHasError = true;
-            // showToast("Atleast one Job type is required", "error");
           }
-          if (editIndex !== null) {
-            newErrors.jobList = "Please update Job Details";
-            stepHasError = true;
-            showToast("Please update Job Details", "error");
-          }
-          break;
 
-        case "Immigration Details":
-          if (!formData.immigrationDetails?.passportNumber) {
-            newErrors.passportNumber = "Passport Number is required";
+          if (editIndex !== null) {
+            errors.jobList = "Please update Job Details";
+            showToast("Please update Job Details", "error");
             stepHasError = true;
           }
-          if (!formData.immigrationDetails?.countryOfIssue) {
-            newErrors.countryOfIssue = "Country Of Issue is required";
-            stepHasError = true;
+
+          if (Object.keys(errors).length) {
+            newErrors.jobDetails = errors;
           }
-          if (!formData.immigrationDetails?.passportExpiry) {
-            newErrors.passportExpiry = "Passport Expiry is required";
-            stepHasError = true;
-          } else if (
-            moment(formData.immigrationDetails?.passportExpiry).isBefore(
-              AllowDate,
-              "day"
-            )
-          ) {
-            newErrors.passportExpiry = "Cannot enter a past date";
-            stepHasError = true;
+
+          break;
+        }
+
+        case "Immigration Details": {
+          const im = formData?.immigrationDetails || {};
+          const errors = {};
+
+          if (!im.passportNumber)
+            errors.passportNumber = "Passport Number is required";
+          if (!im.countryOfIssue)
+            errors.countryOfIssue = "Country Of Issue is required";
+
+          if (!im.passportExpiry) {
+            errors.passportExpiry = "Passport Expiry is required";
+          } else if (moment(im.passportExpiry).isBefore(AllowDate, "day")) {
+            errors.passportExpiry = "Cannot enter a past date";
           }
-          if (!formData.immigrationDetails?.nationality) {
-            newErrors.nationality = "Nationality is required";
-            stepHasError = true;
-          }
-          if (!formData.immigrationDetails?.rightToWorkCheckDate) {
-            newErrors.rightToWorkCheckDate =
-              "Right To WorkCheck Date is required";
+
+          if (!im.nationality) errors.nationality = "Nationality is required";
+          if (!im.rightToWorkCheckDate)
+            errors.rightToWorkCheckDate =
+              "Right To Work Check Date is required";
+
+          if (Object.keys(errors).length) {
+            newErrors.immigrationDetails = errors;
             stepHasError = true;
           }
           break;
+        }
 
         default:
           break;
       }
+
       if (stepHasError) {
-        setErrors(newErrors);
         if (!shouldValidateAll) {
+          setErrors(newErrors);
           return false;
         }
         invalidSteps.push(stepName);
       }
     }
-    if (Object.keys(newErrors).length > 0 && shouldValidateAll) {
+
+    if (Object.keys(newErrors).length && shouldValidateAll) {
       showToast(
         `Something is missing in following tab - ${invalidSteps.join(", ")}`,
         "error"
       );
     }
-    return Object.keys(newErrors).length === 0;
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every(
+      (section) => Object.keys(section).length === 0
+    );
   };
 
   const jobActions = [
@@ -1396,12 +1370,10 @@ const AddEmployee = () => {
     try {
       setLoading(true);
       const User = await GetCall(`/getUser/${id}`);
-      console.log("User", User, User?.data?.user?.jobDetails);
       if (User?.data?.status === 200) {
         // GetAllLocations();
         setDocumentDetails(User?.data?.user?.documentDetails);
         setotherFormsave(User?.data?.user?.isFormFilled);
-        console.log("isFormFilled", User?.data?.user?.isFormFilled);
         setFormData(User?.data?.user);
         setJobList(User?.data?.user?.jobDetails);
         // setCompanyId(User?.data?.user?.companyId);
@@ -1694,8 +1666,10 @@ const AddEmployee = () => {
                   className="addemployee-input"
                   placeholder="Enter FirstName"
                 />
-                {errors?.firstName && (
-                  <p className="error-text">{errors?.firstName}</p>
+                {errors?.personalDetails?.firstName && (
+                  <p className="error-text">
+                    {errors?.personalDetails?.firstName}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -1719,8 +1693,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter lastName"
                 />
-                {errors.lastName && (
-                  <p className="error-text">{errors.lastName}</p>
+                {errors?.personalDetails?.lastName && (
+                  <p className="error-text">
+                    {errors?.personalDetails?.lastName}
+                  </p>
                 )}
               </div>
             </div>
@@ -1737,8 +1713,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="DD/MM/YYYY"
                 />
-                {errors?.dateOfBirth && (
-                  <p className="error-text">{errors?.dateOfBirth}</p>
+                {errors?.personalDetails?.dateOfBirth && (
+                  <p className="error-text">
+                    {errors?.personalDetails?.dateOfBirth}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -1783,8 +1761,10 @@ const AddEmployee = () => {
                   <MenuItem value="female">Female</MenuItem>
                   <MenuItem value="other">Other</MenuItem>
                 </Select>
-                {errors?.gender && (
-                  <p className="error-text">{errors?.gender}</p>
+                {errors?.personalDetails?.gender && (
+                  <p className="error-text">
+                    {errors?.personalDetails?.gender}
+                  </p>
                 )}
               </div>
 
@@ -1833,8 +1813,10 @@ const AddEmployee = () => {
                   <MenuItem value="Divorced">Divorced</MenuItem>
                   <MenuItem value="Widowed">Widowed</MenuItem>
                 </Select>
-                {errors?.maritalStatus && (
-                  <p className="error-text">{errors?.maritalStatus}</p>
+                {errors?.personalDetails?.maritalStatus && (
+                  <p className="error-text">
+                    {errors?.personalDetails?.maritalStatus}
+                  </p>
                 )}
               </div>
             </div>
@@ -1850,7 +1832,9 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter phone"
                 />
-                {errors?.phone && <p className="error-text">{errors?.phone}</p>}
+                {errors?.personalDetails?.phone && (
+                  <p className="error-text">{errors?.personalDetails?.phone}</p>
+                )}
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Home Telephone</label>
@@ -1862,8 +1846,10 @@ const AddEmployee = () => {
                   value={formData?.personalDetails?.homeTelephone}
                   onChange={handleChange}
                 />
-                {errors?.homeTelephone && (
-                  <p className="error-text">{errors?.homeTelephone}</p>
+                {errors?.personalDetails?.homeTelephone && (
+                  <p className="error-text">
+                    {errors?.personalDetails?.homeTelephone}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -1876,7 +1862,9 @@ const AddEmployee = () => {
                   value={formData?.personalDetails?.email}
                   onChange={handleChange}
                 />
-                {errors?.email && <p className="error-text">{errors?.email}</p>}
+                {errors?.personalDetails?.email && (
+                  <p className="error-text">{errors?.personalDetails?.email}</p>
+                )}
               </div>
             </div>
             <div className="addemployee-section">
@@ -1890,8 +1878,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter NI Number"
                 />
-                {errors?.niNumber && (
-                  <p className="error-text">{errors?.niNumber}</p>
+                {errors?.personalDetails?.niNumber && (
+                  <p className="error-text">
+                    {errors?.personalDetails?.niNumber}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container"></div>
@@ -1964,7 +1954,7 @@ const AddEmployee = () => {
                     <ListSubheader>
                       <TextField
                         size="small"
-                        placeholder="Search Country"
+                        placeholder="Search Job Title"
                         fullWidth
                         className="search-textfield"
                         value={jobtitlesearchTerm}
@@ -2475,7 +2465,6 @@ const AddEmployee = () => {
                   {errors?.location && (
                     <p className="error-text">{errors?.location}</p>
                   )}
-                  {console.log("location", errors?.location)}
                 </div>
                 <div className="addemployee-input-container">
                   <label className="label">Assign Manager</label>
@@ -2648,9 +2637,6 @@ const AddEmployee = () => {
                                 : allClientIds,
                           },
                         });
-                        {
-                          console.log("allClientIds", allClientIds);
-                        }
                         return;
                       }
                       handleJobChange({
@@ -2695,7 +2681,7 @@ const AddEmployee = () => {
                     <ListSubheader>
                       <TextField
                         size="small"
-                        placeholder="Search Country"
+                        placeholder="Search Client"
                         fullWidth
                         className="search-textfield"
                         value={assignclientsearchTerm}
@@ -2822,7 +2808,6 @@ const AddEmployee = () => {
                 handleAction={handleAction}
                 isSearchQuery={false}
               />
-              {console.log("JOBLIST", jobList)}
               {showConfirm && (
                 <DeleteConfirmation
                   confirmation={`Are you sure you want to delete the job detail titled <b>${jobName}</b>?`}
@@ -2849,8 +2834,10 @@ const AddEmployee = () => {
                   placeholder="Enter Address"
                   rows="4"
                 />
-                {errors?.address && (
-                  <p className="error-text">{errors?.address}</p>
+                {errors?.addressDetails?.address && (
+                  <p className="error-text">
+                    {errors?.addressDetails?.address}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -2877,7 +2864,9 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter City"
                 />
-                {errors?.city && <p className="error-text">{errors?.city}</p>}
+                {errors?.addressDetails?.city && (
+                  <p className="error-text">{errors?.addressDetails?.city}</p>
+                )}
               </div>
               <div className="addemployee-input-container">
                 <label className="label">Post Code*</label>
@@ -2889,8 +2878,10 @@ const AddEmployee = () => {
                   value={formData?.addressDetails?.postCode}
                   onChange={handleChange}
                 />
-                {errors?.postCode && (
-                  <p className="error-text">{errors?.postCode}</p>
+                {errors?.addressDetails?.postCode && (
+                  <p className="error-text">
+                    {errors?.addressDetails?.postCode}
+                  </p>
                 )}
               </div>
             </div>
@@ -2911,8 +2902,8 @@ const AddEmployee = () => {
                   className="addemployee-input"
                   placeholder="Enter Kin Name"
                 />
-                {errors?.kinName && (
-                  <p className="error-text">{errors?.kinName}</p>
+                {errors?.kinDetails?.kinName && (
+                  <p className="error-text">{errors?.kinDetails?.kinName}</p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -2970,8 +2961,8 @@ const AddEmployee = () => {
                   value={formData?.kinDetails?.postCode}
                   onChange={handleChange}
                 />
-                {errors?.kinPostCode && (
-                  <p className="error-text">{errors?.kinPostCode}</p>
+                {errors?.kinDetails?.postCode && (
+                  <p className="error-text">{errors?.kinDetails?.postCode}</p>
                 )}
               </div>
             </div>
@@ -2988,8 +2979,8 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter Address"
                 />
-                {errors?.kinAddress && (
-                  <p className="error-text">{errors?.kinAddress}</p>
+                {errors?.kinDetails?.address && (
+                  <p className="error-text">{errors?.kinDetails?.address}</p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3002,8 +2993,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter Emergency Contact Number"
                 />
-                {errors.emergencyContactNumber && (
-                  <p className="error-text">{errors?.emergencyContactNumber}</p>
+                {errors?.kinDetails?.emergencyContactNumber && (
+                  <p className="error-text">
+                    {errors?.kinDetails?.emergencyContactNumber}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3016,8 +3009,8 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter Email"
                 />
-                {errors?.kinemail && (
-                  <p className="error-text">{errors?.kinemail}</p>
+                {errors?.kinDetails?.email && (
+                  <p className="error-text">{errors?.kinDetails?.email}</p>
                 )}
               </div>
             </div>
@@ -3038,8 +3031,10 @@ const AddEmployee = () => {
                   className="addemployee-input"
                   placeholder="Enter Bank Name"
                 />
-                {errors.bankName && (
-                  <p className="error-text">{errors?.bankName}</p>
+                {errors.financialDetails?.bankName && (
+                  <p className="error-text">
+                    {errors?.financialDetails?.bankName}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3052,8 +3047,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter Name Of Account Holder"
                 />
-                {errors?.holderName && (
-                  <p className="error-text">{errors?.holderName}</p>
+                {errors?.financialDetails?.holderName && (
+                  <p className="error-text">
+                    {errors?.financialDetails?.holderName}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3066,8 +3063,10 @@ const AddEmployee = () => {
                   value={formData?.financialDetails?.sortCode}
                   onChange={handleChange}
                 />
-                {errors?.sortCode && (
-                  <p className="error-text">{errors?.sortCode}</p>
+                {errors?.financialDetails?.sortCode && (
+                  <p className="error-text">
+                    {errors?.financialDetails?.sortCode}
+                  </p>
                 )}
               </div>
             </div>
@@ -3083,8 +3082,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter Account Number"
                 />
-                {errors?.accountNumber && (
-                  <p className="error-text">{errors?.accountNumber}</p>
+                {errors?.financialDetails?.accountNumber && (
+                  <p className="error-text">
+                    {errors?.financialDetails?.accountNumber}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3132,8 +3133,10 @@ const AddEmployee = () => {
                     YEARLY
                   </MenuItem>
                 </Select>
-                {errors?.payrollFrequency && (
-                  <p className="error-text">{errors?.payrollFrequency}</p>
+                {errors?.financialDetails?.payrollFrequency && (
+                  <p className="error-text">
+                    {errors?.financialDetails?.payrollFrequency}
+                  </p>
                 )}
               </div>
 
@@ -3160,8 +3163,10 @@ const AddEmployee = () => {
                       checked={formData?.financialDetails?.pension === "optout"}
                       onChange={handleChange}
                     />
-                    {errors?.pension && (
-                      <p className="error-text">{errors?.pension}</p>
+                    {errors?.financialDetails?.pension && (
+                      <p className="error-text">
+                        {errors?.financialDetails?.pension}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -3184,8 +3189,10 @@ const AddEmployee = () => {
                   className="addemployee-input"
                   placeholder="Enter Passport Number"
                 />
-                {errors?.passportNumber && (
-                  <p className="error-text">{errors?.passportNumber}</p>
+                {errors?.immigrationDetails?.passportNumber && (
+                  <p className="error-text">
+                    {errors?.immigrationDetails?.passportNumber}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3267,8 +3274,10 @@ const AddEmployee = () => {
                     </MenuItem>
                   )}
                 </Select>
-                {errors?.countryOfIssue && (
-                  <p className="error-text">{errors?.countryOfIssue}</p>
+                {errors?.immigrationDetails?.countryOfIssue && (
+                  <p className="error-text">
+                    {errors?.immigrationDetails?.countryOfIssue}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3282,8 +3291,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="DD/MM/YYYY"
                 />
-                {errors?.passportExpiry && (
-                  <p className="error-text">{errors?.passportExpiry}</p>
+                {errors?.immigrationDetails?.passportExpiry && (
+                  <p className="error-text">
+                    {errors?.immigrationDetails?.passportExpiry}
+                  </p>
                 )}
               </div>
             </div>
@@ -3367,8 +3378,10 @@ const AddEmployee = () => {
                     </MenuItem>
                   )}
                 </Select>
-                {errors?.nationality && (
-                  <p className="error-text">{errors?.nationality}</p>
+                {errors?.immigrationDetails?.nationality && (
+                  <p className="error-text">
+                    {errors?.immigrationDetails?.nationality}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3461,8 +3474,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter BRP Number"
                 />
-                {errors?.brpNumber && (
-                  <p className="error-text">{errors?.brpNumber}</p>
+                {errors?.immigrationDetails?.brpNumber && (
+                  <p className="error-text">
+                    {errors?.immigrationDetails?.brpNumber}
+                  </p>
                 )}
               </div>
             </div>
@@ -3477,8 +3492,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter CoS Number"
                 />
-                {errors?.cosNumber && (
-                  <p className="error-text">{errors?.cosNumber}</p>
+                {errors?.immigrationDetails?.cosNumber && (
+                  <p className="error-text">
+                    {errors?.immigrationDetails?.cosNumber}
+                  </p>
                 )}
               </div>
               <div className="addemployee-input-container">
@@ -3537,8 +3554,10 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   placeholder="Enter Right To Work Check Date"
                 />
-                {errors?.rightToWorkCheckDate && (
-                  <p className="error-text">{errors?.rightToWorkCheckDate}</p>
+                {errors?.immigrationDetails?.rightToWorkCheckDate && (
+                  <p className="error-text">
+                    {errors?.immigrationDetails?.rightToWorkCheckDate}
+                  </p>
                 )}
               </div>
             </div>
