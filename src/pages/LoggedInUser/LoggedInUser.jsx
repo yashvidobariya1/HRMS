@@ -40,7 +40,7 @@ const LoggedInUser = () => {
       // console.log("selectedTimePeriod", selectedTimePeriod);
 
       const response = await GetCall(
-        `/getAllLoggedInOutUsers?page=${currentPage}&limit=${loggeduserPerPage}&timePeriod=${selectedTimePeriod}?search=${searchQuery}&companyId=${companyId}`
+        `/getAllLoggedInOutUsers?page=${currentPage}&limit=${loggeduserPerPage}&timePeriod=${selectedTimePeriod}&search=${debouncedSearch}&companyId=${companyId}`
       );
 
       // console.log("response", response);
@@ -59,7 +59,7 @@ const LoggedInUser = () => {
   };
 
   const headers = [
-    "User Name",
+    "Employee Name",
     "Role",
     // "Client IP Address",
     "Login Time",
@@ -156,6 +156,7 @@ const LoggedInUser = () => {
       ) : (
         <CommonTable
           headers={headers}
+          tableName="loggedinuser"
           data={userLoggedList.map((loggeduser) => ({
             _id: loggeduser?._id,
             Name: loggeduser?.userName,
@@ -178,8 +179,6 @@ const LoggedInUser = () => {
           showPerPage={loggeduserPerPage}
           onPerPageChange={handlePerPageChange}
           isPagination="true"
-          searchQuery={searchQuery}
-          isSearchQuery={true}
           totalData={totalLoggedUser}
         />
       )}

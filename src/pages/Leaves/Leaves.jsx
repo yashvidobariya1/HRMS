@@ -239,6 +239,7 @@ const Leaves = () => {
         ) : (
           <>
             <CommonTable
+              tableName="Leaves"
               headers={headers}
               data={leaveList?.map((leave) => ({
                 _id: leave._id,
@@ -263,9 +264,7 @@ const Leaves = () => {
               showPerPage={leavePerPage}
               onPerPageChange={handleLeavePerPageChange}
               handleAction={handleAction}
-              searchQuery={searchQuery}
               isPagination="true"
-              isSearchQuery={true}
               totalData={totalLeaves}
             />
             {showConfirm && (

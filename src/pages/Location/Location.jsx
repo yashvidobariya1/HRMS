@@ -297,6 +297,7 @@ const Location = () => {
           </div>
           <CommonTable
             headers={headers}
+            tableName="Location"
             data={locationList?.map((location) => ({
               _id: location?._id,
               Name: location?.locationName,
@@ -339,8 +340,6 @@ const Location = () => {
             onPerPageChange={handlePerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            searchQuery={searchQuery}
-            isSearchQuery={true}
             totalData={totalLocations}
           />
 

@@ -553,11 +553,12 @@ const ViewTasks = () => {
       ) : (
         <>
           <CommonTable
+            tableName="ViewTask"
             headers={[
               "Task Date",
-              "Employee Name ",
-              "Job Title ",
-              isWorkFromOffice ? "Location Name " : "Client Name ",
+              "Employee Name",
+              "Job Title",
+              isWorkFromOffice ? "Location Name" : "Client Name",
               "Start Time",
               "End Time",
               "Actions",
@@ -597,7 +598,6 @@ const ViewTasks = () => {
             showPerPage={perPage}
             onPerPageChange={handlePerPageChange}
             isPagination="true"
-            isSearchQuery={false}
             totalData={totalTask}
           />
           {ShowConfirm && (

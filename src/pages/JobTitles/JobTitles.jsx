@@ -217,8 +217,6 @@ const JobTitles = () => {
             onPerPageChange={handlePerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            searchQuery={searchQuery}
-            isSearchQuery={true}
             totalData={totaljobTitless}
           />
 

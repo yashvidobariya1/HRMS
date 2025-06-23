@@ -503,6 +503,7 @@ const AbsenceReport = () => {
       ) : (
         <>
           <CommonTable
+            tableName="AbsenceReport"
             headers={[
               "Absent Date",
               "Employee Name",
@@ -525,7 +526,6 @@ const AbsenceReport = () => {
             showPerPage={perPage}
             onPerPageChange={handlePerPageChange}
             isPagination="true"
-            isSearchQuery={false}
             totalData={totalAbsencesheet}
           />
         </>

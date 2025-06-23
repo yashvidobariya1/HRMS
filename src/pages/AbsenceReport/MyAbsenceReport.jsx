@@ -383,6 +383,7 @@ const MyAbsenceReport = () => {
               "Job Title",
               "Status",
             ]}
+            tableName="MyAbsencereport"
             data={absenceReportList.map((absencesheet) => ({
               absencesheetdate: moment(absencesheet.date).format("DD/MM/YYYY"),
               Name: absencesheet.userName,
@@ -398,7 +399,6 @@ const MyAbsenceReport = () => {
             showPerPage={perPage}
             onPerPageChange={handlePerPageChange}
             isPagination="true"
-            isSearchQuery={false}
             totalData={totalAbsencesheet}
           />
         </>

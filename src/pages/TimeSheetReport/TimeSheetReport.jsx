@@ -827,6 +827,7 @@ const TimeSheetReport = () => {
               "Total Hours",
               "OverTime",
             ]}
+            tableName="TimesheetReport"
             data={timesheetReportList.map((timesheet) => {
               const timesheetData = timesheet.data?.timesheetData;
               const holidayData = timesheet.data?.holidayData;
@@ -865,8 +866,6 @@ const TimeSheetReport = () => {
             showPerPage={perPage}
             onPerPageChange={handlePerPageChange}
             isPagination="true"
-            searchQuery={searchQuery}
-            isSearchQuery={true}
             totalData={totalTimesheet}
           />
 

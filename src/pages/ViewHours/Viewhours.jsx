@@ -48,18 +48,18 @@ const Viewhours = () => {
 
   const tableHeaders = isWorkFromOffice
     ? [
-        "Employee Name ",
+        "Employee Name",
         "Job Title",
-        "Location Name  ",
+        "Location Name",
         "Clock In",
         "Clock Out",
         "Total Hours",
         "Actions",
       ]
     : [
-        "Employee Name ",
+        "Employee Name",
         "Job Title",
-        "Client Name  ",
+        "Client Name",
         "Clock In",
         "Clock Out",
         "Total Hours",
@@ -163,7 +163,9 @@ const Viewhours = () => {
       // console.log("setSelectedEmployee", selectedEmployee);
       const filters = {
         userId: selectedEmployee,
-        clientId: selectedClient,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
       };
 
       const response = await PostCall(
@@ -549,7 +551,7 @@ const Viewhours = () => {
 
       <div className="viewhour-searchbar-main">
         <TextField
-          label="Search"
+          placeholder="Search"
           variant="outlined"
           size="small"
           value={searchQuery}
@@ -576,6 +578,7 @@ const Viewhours = () => {
         <div>
           <CommonTable
             headers={tableHeaders}
+            tableName="Viewhours"
             data={AlltimesheetList?.map((timesheet) => {
               const dynamicKey =
                 isWorkFromOffice === false ? "ClientName" : "LocationName";
@@ -636,8 +639,6 @@ const Viewhours = () => {
             onPerPageChange={handleTimesheetEntryPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={true}
-            // searchQuery={searchQuery}
             totalData={totalTimesheets}
           />
           {showConfirm && (

@@ -289,7 +289,10 @@ const CommonTable = ({
   const [templateSearchTerms, setTemplateSearchTerms] = useState({});
   // const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(showPerPage);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [sortConfig, setSortConfig] = React.useState({
+    key: "",
+    direction: "asc",
+  });
   const [openRow, setOpenRow] = useState(null);
   // const [templateSearchTerm, setTemplateSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -378,120 +381,221 @@ const CommonTable = ({
   //   return hasReason || hasSpecialStatus;
   // };
 
-  const keyMap = {
-    "Template Name": "TemplateFileName",
-    "Business Name": "Name",
-    "Company Code": "CompanyCode",
-    "File name": "ContractFileName",
-    "File Name ": "TemplateFileName",
-    Company: "CompanyName",
-    Type: "type",
-    Message: "message",
-    Time: "createdAt",
-    "Leave Date": "StartDate",
-    "Leave Type": "leaveType",
-    "Leave status": "status",
-    "Updated Date": "CreatedAt",
-    "Uploaded By": "UploadBy",
-    "Post Code": "Postcode",
-    "Contract Name": "Name",
-    "Location Name": "Name",
-    "Requested Leave": "TotalLeaveDays",
-    "Approved Leave": "NumberOfApproveLeaves",
-    CreatedAt: "CreatedAt",
-    Employee: "Name",
-    leaveDate: "leaveDate",
-    Duration: "SelectionDuration",
-    // "Leave status": "Status",
-    Name: "ClientName",
-    User: "userName",
-    "Mobile Number": "contactNumber",
-    //  "Name":"locationName",
-    "Company Name": "companyName",
-    "Generated On": "date",
-    Title: "Name",
-    Description: "jobDescription",
-    Location: "jobLocation",
-    Category: "jobCategory",
-    "Apply Date": "jobApplyTo",
-    "Client Email": "email",
-    Email: "useremail",
-    "Client Name": "Name",
-    "Start Date": "startDate",
-    "End Date": "endDate",
-    "Generated on": "generatedDate",
-    "Login Time": "LastTimeLoggedIn",
-    "Last Access Time": "LastTimeLoggedOut",
-    Active: "IsActive",
-    Browser: "UsedBrowser",
-    "Absent Date": "absencesheetdate",
-    "Job Title": "Name",
-    "Annual Salary": "annualSalary",
-    "Joining Date": "joiningDate",
-    "Document Type": "Name",
-    "Document Name": "document",
-    "User Name": "Name",
-    "Employee Name": "Name",
-    Position: "Position",
-    "Email Id": "Name",
-    Occasion: "Name",
-    Day: "day",
-    Id: "_id",
-    Client: "clientName",
-    "First name": "Name",
-    "Last name": "lastname",
-    Contact: "phonenumber",
-    "Candidate Email": "email",
-    "QRCode Value": "Name",
-    Date: "timesheetdate",
-    status: "timesheetstatus",
-    Timing: "totalTiming",
-    "Total Hours": "totalHours",
-    OverTime: "overTime",
-    "Timesheet Status": "timesheetstatus",
-    "ClockIn Time": "clockin",
-    "ClockOut Time": "clockout",
-    "Working Time": "workingTime",
-    "Job Title Name": "Name",
-    "Client name": "clientName",
-    "Location Name": "absencelocationandorclientName",
-    "Client Name": "absencelocationandorclientName",
-    "Job Title": "jobRole",
-    "Task Date": "taskdate",
-    "Start Time": "starttime",
-    "End Time": "endtime",
-    "Client Name ": "taskloctionandorclientName",
-    "Location Name ": "taskloctionandorclientName",
-    "Job Title ": "jobRole",
-    "Employee Name ": "userName",
-    "Employee Name ": "Name",
-    "Job Title": "jobTitle",
-    "Client Name  ": "ClientName",
-    "Location Name  ": "locationName",
-    "Clock In": "in",
-    "Clock Out": "out",
-  };
+  // const keyMap = {
+  //   EmployeeName: "username",
+  //   EmployeeName: "uname",
+  //   EmployeePhone: "userphone",
+  // };
 
-  const keymap = {
+  const keyMap = {
+    employee: {
+      Id: "_id",
+      "Employee Name": "Name",
+      "Job Title": "JobTitle",
+      Phone: "Phone",
+      "Email Id": "Email",
+      Position: "Position",
+    },
+    loggedinuser: {
+      "Employee Name": "Name",
+      Role: "Role",
+      "Login Time": "LastTimeLoggedIn",
+      "Last Access Time": "LastTimeLoggedOut",
+      Active: "IsActive",
+      Browser: "UsedBrowser",
+    },
     company: {
-      "Business Name": "company.Name",
-      "Company Code": "company.CompanyCode",
-      City: "company.city",
+      "Business Name": "Name",
+      "Company Code": "CompanyCode",
+      City: "City",
+    },
+    Client: {
+      "Client Name": "Name",
+      // Email: "email",
+      City: "City",
+      "Mobile Number": "contactNumber",
+    },
+    ReportList: {
+      "Client name": "clientName",
+      "Start Date": "startDate",
+      "End Date": "endDate",
+      "Generated on": "generatedDate",
+      "Action By": "actionBy",
+      Status: "reportstatus",
+    },
+    EmployeeContract: {
+      "Contract Name": "Name",
+      "File name": "ContractFileName",
+      Company: "CompanyName",
+      "Uploaded By": "UploadBy",
+    },
+    Location: {
+      "Location Name": "Name",
+      Address: "Address",
+      City: "City",
+      "Post Code": "Postcode",
+    },
+    Templates: {
+      "Template Name": "Name",
+      "File Name": "TemplateFileName",
+      "Uploaded By": "UploadBy",
+      "Updated Date": "CreatedAt",
+    },
+    AbsenceReport: {
+      "Absent Date": "absencesheetdate",
+      "Employee Name": "Name",
+      "Location Name": "absencelocationandorclientName",
+      "Client Name": "absencelocationandorclientName",
+      "Job Title": "jobRole",
+    },
+    MyAbsencereport: {
+      "Absent Date": "",
+      "Employee Name": "Name",
+      "Location Name": "absencelcaotionandorclientName",
+      "Client Name": "absencelcaotionandorclientName",
+      "Job Title": "jobRole",
+    },
+    Candidate: {
+      "First name": "Name",
+      "Last name": "lastname",
+      "Candidate Email": "email",
+      Contact: "phonenumber",
+    },
+    Clockinout: {
+      "ClockIn Time": "clockin",
+      "ClockOut Time": "clockout",
+      "Working Time": "workingTime",
+    },
+    EmployeeJob: {
+      "Job Title": "Name",
+      "Annual Salary": "annualSalary",
+      "Joining Date": "joiningDate",
+    },
+    EmployeeDocument: {
+      "Document Type": "Name",
+    },
+    Profile: {
+      "Document Type": "name",
+      "Document Name": "document",
+    },
+    ProfileUploadFile: {
+      "Document Type": "name",
+      "Document Name": "document",
+    },
+    GenerateQR: {
+      "QRCode Value": "Name",
+      "Location Name": "LocationName",
+      "Client Name": "ClientName",
+      "Company Name": "companyName",
+      Status: "isactive",
+      "Generated On": "",
+      "QR Code": "",
+    },
+    Generateqrforclient: {
+      "QRCode Value": "",
+      "Client Name": "ClientName",
+      "Company Name": "companyName",
+    },
+    HolidayList: {
+      "Company Name": "comapnyName",
+      Date: "name",
+      Occasion: "Name",
+      Day: "day",
+    },
+    Job: {
+      "Job Title": "Name",
+      Description: "jobDescription",
+      "Client Name": "clientName",
+      Category: "jobCategory",
+      "Apply Date": "jobApplyTo",
+      Email: "useremail",
+      "Apply Link": "jobPostedLink",
+    },
+    JobTitle: {
+      "Job Title Name": "Name",
+      Status: "Status",
+    },
+    LeaveRequest: {
+      Employee: "Name",
+      "Leave Date": "StartDate",
+      Duration: "SelectionDuration",
+      "Requested Leave": "TotalLeaveDays",
+      "Approved Leave": "NumberOfApproveLeaves",
+      "Leave status": "status",
+      "Leave Type": "leaveType",
+    },
+    Leaves: {
+      Employee: "Name",
+      "Leave Date": "startDate",
+      Duration: "selectionDuration",
+      "Leave status": "status",
+      "Leave Type": "leaveType",
+    },
+    ShowNofitciation: {
+      User: "userName",
+      Type: "type",
+      Message: "message",
+      Time: "createdAt",
+    },
+    TimesheetReport: {
+      Date: "timesheetdate",
+      "Timesheet Status": "timesheetstatus",
+      "Total Hours": "totalHours",
+      OverTime: "overTime",
+    },
+    Myviewhour: {
+      "Employee Name": "Name",
+      "Job Title": "jobTitle",
+      "Client Name": "clientName",
+      "Location Name": "locationName",
+      "Clock In": "in",
+      "Clock Out": "out",
+      "Total Hours": "totalHours",
+    },
+    Viewhours: {
+      "Employee Name": "Name",
+      "Job Title": "jobTitle",
+      "Location Name": "locationName",
+      "Client Name": "clientName",
+      "Clock In": "in",
+      "Clock Out": "out",
+      "Total Hours": "totalHours",
+    },
+    MyViewTask: {
+      "Task Date": "taskdate",
+      "Employee Name": "userName",
+      "Job Title": "jobRole",
+      "Location Name": "taskloctionandorclientName",
+      "Client Name": "taskloctionandorclientName",
+      "Start Time": "starttime",
+      "End Time": "endtime",
+    },
+    ViewTask: {
+      "Task Date": "taskdate",
+      "Employee Name": "userName",
+      "Job Title": "jobRole",
+      "Location Name": "taskloctionandorclientName",
+      "Client Name": "taskloctionandorclientName",
+      "Start Time": "starttime",
+      "End Time": "endtime",
     },
   };
 
-  const getNestedValue = (obj, path) => {
-    try {
-      return path.split(".").reduce((acc, part) => acc?.[part], obj) ?? "";
-    } catch {
-      return "";
-    }
-  };
+  // const handleSort = (key) => {
+  //   const mappedKey = keyMap[key] || key;
+  //   // console.log("Sorting by:", mappedKey);
+
+  //   setSortConfig((prevSort) => {
+  //     let direction = "asc";
+  //     if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+  //       direction = "desc";
+  //     }
+  //     return { key: mappedKey, direction };
+  //   });
+  // };
 
   const handleSort = (columnName, tableName) => {
-    const mappedKey = keymap[tableName]?.[columnName] || columnName;
-
-    console.log("Sorting by:", mappedKey);
+    const mappedKey = keyMap[tableName]?.[columnName] || columnName;
 
     setSortConfig((prevSort) => {
       let direction = "asc";
@@ -502,32 +606,200 @@ const CommonTable = ({
     });
   };
 
+  // const sortedData = React.useMemo(() => {
+  //   if (!data) return [];
+  //   if (!sortConfig.key) return [...data];
+  //   return [...data].sort((a, b) => {
+  //     const valueA = a[sortConfig.key];
+  //     const valueB = b[sortConfig.key];
+  //     // console.log(data);
+  //     if (typeof valueA === "string") {
+  //       return sortConfig.direction === "asc"
+  //         ? valueA.localeCompare(valueB)
+  //         : valueB.localeCompare(valueA);
+  //     } else {
+  //       return sortConfig.direction === "asc"
+  //         ? valueA - valueB
+  //         : valueB - valueA;
+  //     }
+  //   });
+  // }, [data, sortConfig]);
+
   const sortedData = React.useMemo(() => {
-    if (!data || !sortConfig.key) return [...data];
+    if (!data) return [];
+
+    const { key, direction } = sortConfig;
+    if (!key) return [...data];
 
     return [...data].sort((a, b) => {
-      const valueA = getNestedValue(a, sortConfig.key);
-      const valueB = getNestedValue(b, sortConfig.key);
+      const valueA = a[key];
+      const valueB = b[key];
 
-      console.log("Comparing", valueA, valueB);
-
-      if (valueA < valueB) return sortConfig.direction === "asc" ? -1 : 1;
-      if (valueA > valueB) return sortConfig.direction === "asc" ? 1 : -1;
-      return 0;
+      if (typeof valueA === "string") {
+        return direction === "asc"
+          ? valueA?.localeCompare(valueB)
+          : valueB?.localeCompare(valueA);
+      } else {
+        return direction === "asc" ? valueA - valueB : valueB - valueA;
+      }
     });
   }, [data, sortConfig]);
 
-  console.log("getNestedValue", getNestedValue.obj, getNestedValue.path);
+  // const keyMap = {
+  //   "Template Name": "TemplateFileName",
+  //   "Business Name": "Name",
+  //   "Company Code": "CompanyCode",
+  //   "File name": "ContractFileName",
+  //   "File Name ": "TemplateFileName",
+  //   Company: "CompanyName",
+  //   Type: "type",
+  //   Message: "message",
+  //   Time: "createdAt",
+  //   "Leave Date": "StartDate",
+  //   "Leave Type": "leaveType",
+  //   "Leave status": "status",
+  //   "Updated Date": "CreatedAt",
+  //   "Uploaded By": "UploadBy",
+  //   "Post Code": "Postcode",
+  //   "Contract Name": "Name",
+  //   "Location Name": "Name",
+  //   "Requested Leave": "TotalLeaveDays",
+  //   "Approved Leave": "NumberOfApproveLeaves",
+  //   CreatedAt: "CreatedAt",
+  //   Employee: "Name",
+  //   leaveDate: "leaveDate",
+  //   Duration: "SelectionDuration",
+  //   // "Leave status": "Status",
+  //   Name: "ClientName",
+  //   User: "userName",
+  //   "Mobile Number": "contactNumber",
+  //   //  "Name":"locationName",
+  //   "Company Name": "companyName",
+  //   "Generated On": "date",
+  //   Title: "Name",
+  //   Description: "jobDescription",
+  //   Location: "jobLocation",
+  //   Category: "jobCategory",
+  //   "Apply Date": "jobApplyTo",
+  //   "Client Email": "email",
+  //   Email: "useremail",
+  //   "Client Name": "Name",
+  //   "Start Date": "startDate",
+  //   "End Date": "endDate",
+  //   "Generated on": "generatedDate",
+  //   "Login Time": "LastTimeLoggedIn",
+  //   "Last Access Time": "LastTimeLoggedOut",
+  //   Active: "IsActive",
+  //   Browser: "UsedBrowser",
+  //   "Absent Date": "absencesheetdate",
+  //   "Job Title": "Name",
+  //   "Annual Salary": "annualSalary",
+  //   "Joining Date": "joiningDate",
+  //   "Document Type": "Name",
+  //   "Document Name": "document",
+  //   "User Name": "Name",
+  //   "Employee Name": "Name",
+  //   Position: "Position",
+  //   "Email Id": "Name",
+  //   Occasion: "Name",
+  //   Day: "day",
+  //   Id: "_id",
+  //   Client: "clientName",
+  //   "First name": "Name",
+  //   "Last name": "lastname",
+  //   Contact: "phonenumber",
+  //   "Candidate Email": "email",
+  //   "QRCode Value": "Name",
+  //   Date: "timesheetdate",
+  //   status: "timesheetstatus",
+  //   Timing: "totalTiming",
+  //   "Total Hours": "totalHours",
+  //   OverTime: "overTime",
+  //   "Timesheet Status": "timesheetstatus",
+  //   "ClockIn Time": "clockin",
+  //   "ClockOut Time": "clockout",
+  //   "Working Time": "workingTime",
+  //   "Job Title Name": "Name",
+  //   "Client name": "clientName",
+  //   "Location Name": "absencelocationandorclientName",
+  //   "Client Name": "absencelocationandorclientName",
+  //   "Job Title": "jobRole",
+  //   "Task Date": "taskdate",
+  //   "Start Time": "starttime",
+  //   "End Time": "endtime",
+  //   "Client Name ": "taskloctionandorclientName",
+  //   "Location Name ": "taskloctionandorclientName",
+  //   "Job Title ": "jobRole",
+  //   "Employee Name ": "userName",
+  //   "Employee Name ": "Name",
+  //   "Job Title": "jobTitle",
+  //   "Client Name  ": "ClientName",
+  //   "Location Name  ": "locationName",
+  //   "Clock In": "in",
+  //   "Clock Out": "out",
+  // };
+
+  // const keymap = {
+  //   company: {
+  //     "Business Name": "company.Name",
+  //     "Company Code": "company.CompanyCode",
+  //     City: "company.city",
+  //   },
+  // };
+
+  // const handleSort = (columnName, tableName) => {
+  //   const mappedKey = keymap[tableName]?.[columnName] || columnName;
+  //   console.log("column ==>", columnName);
+  //   console.log("table name==>", keymap[tableName], tableName);
+
+  //   setSortConfig((prevSort) => {
+  //     let direction = "asc";
+  //     if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+  //       direction = "desc";
+  //     }
+  //     return { key: mappedKey, direction };
+  //   });
+  // };
+
+  // const getNestedValue = (obj, path) => {
+  //   if (!path || !obj) return "";
+  //   console.log("obj, path ==>", obj, path);
+
+  //   return path.split(".").reduce((acc, part) => {
+  //     if (acc === null || acc === undefined) return "";
+  //     return acc[part] ?? "";
+  //   }, obj);
+  // };
+
+  // const sortedData = React.useMemo(() => {
+  //   if (!data || !sortConfig.key) return [...data];
+
+  //   return [...data].sort((a, b) => {
+  //     const valueA = getNestedValue(a, sortConfig.key);
+  //     const valueB = getNestedValue(b, sortConfig.key);
+
+  //     const valA = valueA?.toString().toLowerCase() ?? "";
+  //     const valB = valueB?.toString().toLowerCase() ?? "";
+
+  //     if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+  //     if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+  //     console.log("valueA", valA);
+  //     console.log("valueB", valB);
+  //     return 0;
+  //   });
+  // }, [data, sortConfig]);
+
+  console.log("filter", searchQuery);
 
   const filteredData = React.useMemo(() => {
     if (!isSearchQuery || !searchQuery?.trim()) return sortedData;
 
-    return sortedData.filter((item) =>
-      Object.values(item).some((value) =>
-        value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    return sortedData?.filter((item) =>
+      Object.values(item)?.some((value) =>
+        value?.toString().toLowerCase().includes(data?.toLowerCase())
       )
     );
-  }, [isSearchQuery, searchQuery, sortedData]);
+  }, [isSearchQuery, data, sortedData]);
 
   // const paginatedData = filteredData.slice(
   //   page * showPerPage || 1,
@@ -556,7 +828,7 @@ const CommonTable = ({
   // const handleSearchChange = (event) => {
   //   setSearchQuery(event.target.value);
   // };
-  const mappedKey = keymap[tableName]?.[headers] || headers;
+  const mappedKey = keyMap[tableName]?.[headers] || headers;
   console.log("map key", mappedKey);
 
   return (
@@ -593,13 +865,18 @@ const CommonTable = ({
                   header === "QR Code" ||
                   header === "View" ||
                   header === "Timing" ||
+                  header === "Active QR" ||
                   header === "" ? (
                     header
                   ) : (
                     <TableSortLabel
-                      active={sortConfig.key === mappedKey}
+                      active={
+                        sortConfig.key ===
+                        (keyMap[tableName]?.[header] || header)
+                      }
                       direction={
-                        sortConfig.key === mappedKey
+                        sortConfig.key ===
+                        (keyMap[tableName]?.[header] || header)
                           ? sortConfig.direction
                           : "asc"
                       }
@@ -755,6 +1032,7 @@ const CommonTable = ({
                                     color: "blue",
                                     textDecoration: "underline",
                                     cursor: "pointer",
+                                    margin: "0px",
                                   }}
                                   onClick={() => window.open(item[key])}
                                 >

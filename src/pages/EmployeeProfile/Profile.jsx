@@ -533,6 +533,7 @@ const Profile = () => {
               <div className="profile-document">
                 <h2>Uploaded Document Details</h2>
                 <CommonTable
+                  tableName="Profile"
                   headers={["Document Type", "Document Name"]}
                   data={oldDocument?.map((doc, id) => ({
                     _id: id,
@@ -544,7 +545,6 @@ const Profile = () => {
                   }}
                   isPagination="false"
                   handleAction={handleAction}
-                  isSearchQuery={false}
                 />
               </div>
             )}
@@ -661,6 +661,7 @@ const Profile = () => {
                 <div className="profile-document">
                   <h2>Upload Document Details</h2>
                   <CommonTable
+                    tableName="ProfileUploadFile"
                     headers={["Document Type", "Document Name", "Action"]}
                     data={documentDetails?.map((document, id) => ({
                       _id: id,
@@ -675,7 +676,6 @@ const Profile = () => {
                     }}
                     isPagination="false"
                     handleAction={handleAction}
-                    isSearchQuery={false}
                   />
                 </div>
               )}

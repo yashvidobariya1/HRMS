@@ -14,7 +14,7 @@
 
 .viewstatus-action {
   display: flex;
-  justify-content: right;
+  justify-content: left;
   margin: 10px 0;
 }
 

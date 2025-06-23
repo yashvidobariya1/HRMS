@@ -635,7 +635,7 @@ const TimeSheetReportDaily = () => {
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={sortConfig.key === "userName"}
+                      active={sortConfig.key === "Employee Name"}
                       direction={sortConfig.direction}
                       onClick={() => handleSort("EmployeeName")}
                     >

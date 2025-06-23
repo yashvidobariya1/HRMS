@@ -280,6 +280,7 @@ const LeavesRequest = () => {
         <>
           <CommonTable
             headers={headers}
+            tableName="LeaveRequest"
             data={leaveList?.map((leave) => ({
               _id: leave._id,
               Name: leave.userName,
@@ -308,7 +309,6 @@ const LeavesRequest = () => {
             onPerPageChange={handleLeavePerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            // searchQuery={searchQuery}
             totalData={totalLeaves}
           />
         </>

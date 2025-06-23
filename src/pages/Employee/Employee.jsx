@@ -280,6 +280,7 @@ const Employee = () => {
         <>
           <CommonTable
             headers={headers}
+            tableName="employee"
             data={employeesList.map((employee) => ({
               _id: employee?._id,
               unique_ID: employee?.Id,
@@ -305,10 +306,7 @@ const Employee = () => {
             onPerPageChange={handlePerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            searchQuery={searchQuery}
-            isSearchQuery={true}
             totalData={totalUsers}
-            // setSearchQuery={setSearchQuery}
           />
 
           {showConfirm && (

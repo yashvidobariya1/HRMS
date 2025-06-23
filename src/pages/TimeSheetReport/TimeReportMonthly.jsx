@@ -221,7 +221,7 @@ const TimeSheetReportDaily = () => {
 
   const keyMap = {
     Date: "date",
-    Name: "userName",
+    EmployeeName: "userName",
     JobRole: "jobRole",
     totalHours: "totalHours",
     overTime: "overTime",
@@ -614,9 +614,9 @@ const TimeSheetReportDaily = () => {
                   </TableCell>
                   <TableCell>
                     <TableSortLabel
-                      active={sortConfig.key === "userName"}
+                      active={sortConfig.key === "Employee Name"}
                       direction={sortConfig.direction}
-                      onClick={() => handleSort("Name")}
+                      onClick={() => handleSort("EmployeeName")}
                     >
                       Employee Name
                     </TableSortLabel>

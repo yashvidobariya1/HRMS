@@ -209,6 +209,7 @@ const GenerateQRcodeForClient = () => {
             <QRCode className="client-generated-code" value={uniqueQRName} />
           </div>
           <CommonTable
+            tableName="Generateqrforclient"
             headers={tableHeaders}
             data={QRcodeList?.map((qr) => ({
               _id: qr?._id,
@@ -248,7 +249,6 @@ const GenerateQRcodeForClient = () => {
             onPerPageChange={handlePerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={true}
             totalData={totalQRCodes}
           />
           {showConfirm && (

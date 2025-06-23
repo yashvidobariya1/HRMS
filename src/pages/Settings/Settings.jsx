@@ -184,6 +184,7 @@ const Settings = () => {
       ) : (
         <>
           <CommonTable
+            tableName="company"
             headers={tableHeaders}
             data={companyList.map((company) => ({
               _id: company._id,
@@ -203,8 +204,6 @@ const Settings = () => {
             onPerPageChange={handleSettingPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            // isSearchQuery={true}
-            // searchQuery={searchQuery}
             totalData={totalCompany}
           />
           {showConfirm && (

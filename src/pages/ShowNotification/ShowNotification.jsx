@@ -148,6 +148,7 @@ const ShowNotification = () => {
         </div>
       ) : (
         <CommonTable
+          tableName="ShowNofitciation"
           headers={headers}
           // data={filteredNotifications}
           data={notifications.map((notification) => ({
@@ -184,8 +185,6 @@ const ShowNotification = () => {
           onPerPageChange={handleNotificationPageChange}
           handleAction={handleAction}
           isPagination="true"
-          searchQuery={searchQuery}
-          isSearchQuery={true}
           totalData={totalNotifications}
         />
       )}

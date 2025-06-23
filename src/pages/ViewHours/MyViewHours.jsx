@@ -99,7 +99,9 @@ const MyViewHours = () => {
       setLoading(true);
       const filters = {
         userId,
-        clientId: selectedClient,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
       };
 
       const response = await PostCall(
@@ -203,6 +205,7 @@ const MyViewHours = () => {
     debouncedSearch,
     currentPage,
     timesheetEntryPerPage,
+    selectedLocation,
   ]);
 
   return (
@@ -363,7 +366,7 @@ const MyViewHours = () => {
 
       <div className="viewhour-searchbar-main">
         <TextField
-          label="Search"
+          placeholder="Search"
           variant="outlined"
           size="small"
           value={searchQuery}
@@ -379,6 +382,7 @@ const MyViewHours = () => {
       ) : (
         <div>
           <CommonTable
+            tableName="Myviewhour"
             headers={tableHeaders}
             data={AlltimesheetList?.map((timesheet) => {
               const dynamicKey =
@@ -407,7 +411,6 @@ const MyViewHours = () => {
             onPerPageChange={handleTimesheetEntryPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={true}
             totalData={totalTimesheets}
           />
         </div>

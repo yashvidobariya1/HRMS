@@ -220,6 +220,7 @@ const HolidayList = () => {
       ) : (
         <>
           <CommonTable
+            tableName="HolidayList"
             headers={headers}
             data={AllholidayList?.map((holidaylist) => ({
               _id: holidaylist._id,
@@ -241,7 +242,6 @@ const HolidayList = () => {
             onPerPageChange={handlePerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={false}
             totalData={totalHoliday}
           />
 

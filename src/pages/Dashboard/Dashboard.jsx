@@ -47,8 +47,11 @@ import {
   TableBody,
   TablePagination,
   TableFooter,
+  TableSortLabel,
+  IconButton,
 } from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
+import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 // import CommonTable from "../../SeparateCom/CommonTable";
 
 const Dashboard = () => {
@@ -116,6 +119,10 @@ const Dashboard = () => {
   const [absenceTotalPages, setabsenceTotalPages] = useState([]);
   const [absencecurrentPage, setabsencecurrentPage] = useState(1);
   const [absencePerPage, setabsencePerPage] = useState(5);
+  const [sortConfig, setSortConfig] = React.useState({
+    key: "",
+    direction: "asc",
+  });
   // const filteredLocationList = useMemo(() => {
   //   return locationList.filter((loc) =>
   //     loc?.locationName?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -731,6 +738,62 @@ const Dashboard = () => {
     navigate("/profile");
   };
 
+  const keyMap = {
+    "Absent Date": "date",
+    "Employee Name": "userName",
+    "client Name": "clientName",
+    "Location Name": "locationName",
+    totalWorkingHours: "totalWorkingHours",
+    "Job Title": "jobTitle",
+    status: "status",
+  };
+
+  const handleSort = (key) => {
+    const mappedKey = keyMap[key] || key;
+    // console.log("Sorting by:", mappedKey);
+
+    setSortConfig((prevSort) => {
+      let direction = "asc";
+      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+        direction = "desc";
+      }
+      return { key: mappedKey, direction };
+    });
+  };
+
+  const sortedData = React.useMemo(() => {
+    if (!Array.isArray(AbsenceData)) return [];
+    if (!sortConfig.key) return [...AbsenceData];
+    return [...AbsenceData].sort((a, b) => {
+      const valueA = a[sortConfig.key] ?? "";
+      const valueB = b[sortConfig.key] ?? "";
+      // console.log("statusList", statusList);
+      if (typeof valueA === "string") {
+        return sortConfig.direction === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return sortConfig.direction === "asc"
+          ? valueA - valueB
+          : valueB - valueA;
+      }
+    });
+  }, [AbsenceData, sortConfig]);
+
+  const filteredData = React.useMemo(() => {
+    return sortedData.filter((item) =>
+      Object.values(item).some(
+        (value) => value?.toString().toLowerCase().includes
+      )
+    );
+  }, [sortedData]);
+
+  const paginatedRows = React.useMemo(() => {
+    const start = (currentPage - 1) * absencePerPage;
+    const end = start + absencePerPage;
+    return filteredData.slice(start, end);
+  }, [filteredData, currentPage, absencePerPage]);
+
   useEffect(() => {
     GetNotification();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -952,38 +1015,153 @@ const Dashboard = () => {
                         <Table className="employeetimesheet-table">
                           <TableHead>
                             <TableRow>
-                              <TableCell>Absent Date</TableCell>
-                              <TableCell>Employee Name</TableCell>
-                              <TableCell>Client Name</TableCell>
-                              <TableCell>Location Name</TableCell>
-                              <TableCell>Job Title</TableCell>
-                              <TableCell>Status</TableCell>
+                              <TableCell
+                                sortDirection={
+                                  sortConfig.key === "Absent Date"
+                                    ? sortConfig.direction
+                                    : false
+                                }
+                              >
+                                <TableSortLabel
+                                  active={sortConfig.key === "Absent Date"}
+                                  direction={
+                                    sortConfig.key === "Absent Date"
+                                      ? sortConfig.direction
+                                      : "asc"
+                                  }
+                                  onClick={() => handleSort("Absent Date")}
+                                >
+                                  Absent Date
+                                </TableSortLabel>
+                              </TableCell>
+                              <TableCell
+                                sortDirection={
+                                  sortConfig.key === "Employee Name"
+                                    ? sortConfig.direction
+                                    : false
+                                }
+                              >
+                                <TableSortLabel
+                                  active={sortConfig.key === "Employee Name"}
+                                  direction={
+                                    sortConfig.key === "Employee Name"
+                                      ? sortConfig.direction
+                                      : "asc"
+                                  }
+                                  onClick={() => handleSort("Employee Name")}
+                                >
+                                  Employee Name
+                                </TableSortLabel>
+                              </TableCell>
+                              <TableCell
+                                sortDirection={
+                                  sortConfig.key === "client Name"
+                                    ? sortConfig.direction
+                                    : false
+                                }
+                              >
+                                <TableSortLabel
+                                  active={sortConfig.key === "client Name"}
+                                  direction={
+                                    sortConfig.key === "client Name"
+                                      ? sortConfig.direction
+                                      : "asc"
+                                  }
+                                  onClick={() => handleSort("client Name")}
+                                >
+                                  Client Name
+                                </TableSortLabel>
+                              </TableCell>
+                              <TableCell
+                                sortDirection={
+                                  sortConfig.key === "Location Name"
+                                    ? sortConfig.direction
+                                    : false
+                                }
+                              >
+                                <TableSortLabel
+                                  active={sortConfig.key === "Location Name"}
+                                  direction={
+                                    sortConfig.key === "Location Name"
+                                      ? sortConfig.direction
+                                      : "asc"
+                                  }
+                                  onClick={() => handleSort("Location Name")}
+                                >
+                                  Location Name
+                                </TableSortLabel>
+                              </TableCell>
+                              <TableCell
+                                sortDirection={
+                                  sortConfig.key === "Job Title"
+                                    ? sortConfig.direction
+                                    : false
+                                }
+                              >
+                                <TableSortLabel
+                                  active={sortConfig.key === "Job Title"}
+                                  direction={
+                                    sortConfig.key === "Job Title"
+                                      ? sortConfig.direction
+                                      : "asc"
+                                  }
+                                  onClick={() => handleSort("Job Title")}
+                                >
+                                  Job Title
+                                </TableSortLabel>
+                              </TableCell>
+                              <TableCell
+                                sortDirection={
+                                  sortConfig.key === "status"
+                                    ? sortConfig.direction
+                                    : false
+                                }
+                              >
+                                <TableSortLabel
+                                  active={sortConfig.key === "status"}
+                                  direction={
+                                    sortConfig.key === "status"
+                                      ? sortConfig.direction
+                                      : "asc"
+                                  }
+                                  onClick={() => handleSort("status")}
+                                >
+                                  Status
+                                </TableSortLabel>
+                              </TableCell>
                             </TableRow>
                           </TableHead>
-
                           <TableBody>
-                            {AbsenceData?.length === 0 ? (
+                            {paginatedRows?.length === 0 ? (
                               <TableRow>
-                                <TableCell colSpan={5} align="center">
+                                <TableCell colSpan={7} align="center">
                                   No data available
                                 </TableCell>
                               </TableRow>
                             ) : (
-                              AbsenceData.map((absence, index) => (
-                                <TableRow key={index}>
-                                  <TableCell>
-                                    {moment(absence.date).format("DD/MM/YYYY")}
-                                  </TableCell>
-                                  <TableCell>{absence?.userName}</TableCell>
-                                  <TableCell>{absence?.clientName}</TableCell>
-                                  <TableCell>{absence?.locationName}</TableCell>
-                                  <TableCell>{absence?.jobTitle}</TableCell>
-                                  <TableCell>{absence?.status}</TableCell>
-                                </TableRow>
-                              ))
+                              paginatedRows.map((absence, index) => {
+                                const actualIndex =
+                                  currentPage * absencePerPage + index;
+
+                                return (
+                                  <TableRow key={index}>
+                                    <TableCell>
+                                      {moment(absence.date).format(
+                                        "DD/MM/YYYY"
+                                      )}
+                                    </TableCell>
+                                    <TableCell>{absence?.userName}</TableCell>
+                                    <TableCell>{absence?.clientName}</TableCell>
+                                    <TableCell>
+                                      {absence?.locationName}
+                                    </TableCell>
+                                    <TableCell>{absence?.jobTitle}</TableCell>
+                                    <TableCell>{absence?.status}</TableCell>
+                                  </TableRow>
+                                );
+                              })
                             )}
                           </TableBody>
-
                           <TableFooter>
                             <TableRow>
                               <TableCell colSpan={6}>
@@ -1073,7 +1251,7 @@ const Dashboard = () => {
                 <div className="dashboard-absence-today">
                   <div className="dashbaord-heading-flex">
                     <div className="dashbaord-absence-heading">
-                      <h1>Time sheet</h1>
+                      <h1>Timesheet</h1>
                     </div>
                   </div>
 

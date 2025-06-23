@@ -2787,6 +2787,7 @@ const AddEmployee = () => {
             <div className="job-table">
               <h3>Job List</h3>
               <CommonTable
+                tableName="EmployeeJob"
                 headers={[
                   "Job Title",
                   "Annual Salary",
@@ -2806,7 +2807,6 @@ const AddEmployee = () => {
                 }}
                 isPagination="false"
                 handleAction={handleAction}
-                isSearchQuery={false}
               />
               {showConfirm && (
                 <DeleteConfirmation
@@ -3709,6 +3709,7 @@ const AddEmployee = () => {
               <div className="employee-document">
                 <h3>Upload Document Details</h3>
                 <CommonTable
+                  tableName="EmployeeDocument"
                   headers={["Document Type", "Document Name", "Action"]}
                   data={documentDetails?.map((document, id) => ({
                     _id: id,
@@ -3722,7 +3723,6 @@ const AddEmployee = () => {
                   }}
                   handleAction={handleAction}
                   isPagination="false"
-                  isSearchQuery={false}
                 />
                 {showConfirm && (
                   <DeleteConfirmation

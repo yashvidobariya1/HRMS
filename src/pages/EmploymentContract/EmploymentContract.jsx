@@ -447,6 +447,7 @@ const EmploymentContract = () => {
       ) : (
         <>
           <CommonTable
+            tableName="EmployeeContract"
             headers={tableHeaders}
             data={contractList?.map((contract) => ({
               _id: contract._id,
@@ -468,8 +469,6 @@ const EmploymentContract = () => {
             onPerPageChange={handleContractPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            // searchQuery={searchQuery}
-            // isSearchQuery={true}
             totalData={totalContracts}
           />
 

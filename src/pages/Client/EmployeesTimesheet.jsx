@@ -332,7 +332,6 @@ const EmployeesTimesheet = () => {
             onPerPageChange={handlereportPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={false}
             totalData={totalEmployee}
           /> */}
           <div className="scrollable-table-wrapper">

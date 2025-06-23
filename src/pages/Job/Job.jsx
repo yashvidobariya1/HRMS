@@ -106,9 +106,9 @@ const Job = () => {
   };
 
   const tableHeaders = [
-    "Title",
+    "Job Title",
     "Description",
-    "Client",
+    "Client Name",
     "Category",
     "Apply Date",
     "Email",
@@ -178,6 +178,7 @@ const Job = () => {
       ) : (
         <>
           <CommonTable
+            tableName="Job"
             headers={tableHeaders}
             data={jobList?.map((job) => ({
               _id: job._id,
@@ -200,8 +201,6 @@ const Job = () => {
             onPerPageChange={handlejobPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={true}
-            searchQuery={searchQuery}
             totalData={totalJobPost}
           />
           {showConfirm && (

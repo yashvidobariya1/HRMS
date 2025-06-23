@@ -502,6 +502,7 @@ const Templates = () => {
         <>
           <CommonTable
             headers={tableHeaders}
+            tableName="Templates"
             data={templateList?.map((template) => ({
               _id: template._id,
               Name: template?.templateName,
@@ -521,8 +522,6 @@ const Templates = () => {
             onPerPageChange={handletemplatePerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            searchQuery={searchQuery}
-            isSearchQuery={true}
             totalData={totalTemplates}
           />
           {showConfirm && (

@@ -408,6 +408,7 @@ const ReportList = () => {
         <>
           <CommonTable
             headers={tableHeaders}
+            tableName="ReportList"
             data={reportList?.map((report) => ({
               _id: report._id,
               clientName: report?.clientName,
@@ -429,7 +430,6 @@ const ReportList = () => {
             onPerPageChange={handlereportPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={false}
             totalData={totalReports}
           />
         </>

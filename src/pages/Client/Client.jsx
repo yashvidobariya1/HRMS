@@ -301,6 +301,7 @@ const Client = () => {
             <QRCode className="client-generated-code" value={QRvalue} />
           </div>
           <CommonTable
+            tableName="Client"
             headers={tableHeaders}
             data={clientList?.map((clients) => ({
               _id: clients._id,
@@ -342,8 +343,6 @@ const Client = () => {
             onPerPageChange={handleClientPerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={true}
-            searchQuery={searchQuery}
             totalData={totalClient}
           />
           {showConfirm && (

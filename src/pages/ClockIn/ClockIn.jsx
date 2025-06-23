@@ -1359,6 +1359,7 @@ const CheckIn = () => {
         </div>
       ) : timeSheetData?.length > 0 ? (
         <CommonTable
+          tableName="Clockinout"
           headers={["ClockIn Time", "ClockOut Time", "Working Time"]}
           data={timeSheetData?.map((timeSheet) => ({
             _id: timeSheet._id,
@@ -1376,7 +1377,6 @@ const CheckIn = () => {
               ),
           }))}
           isPagination="false"
-          isSearchQuery={false}
         />
       ) : (
         <div className="no-data-wrapper"></div>

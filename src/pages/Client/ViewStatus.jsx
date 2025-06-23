@@ -206,6 +206,13 @@ const ViewStatus = () => {
         <div className="status-list-title">
           <h1>View Status</h1>
         </div>
+        <CommonAddButton
+          label="Resend Link"
+          // icon={FaLocationDot}
+          onClick={handleGenerateReportLink}
+        />
+      </div>
+      <div className="viewstatus-action">
         <TextField
           placeholder="Search"
           variant="outlined"
@@ -213,13 +220,6 @@ const ViewStatus = () => {
           value={searchQuery}
           className="common-searchbar"
           onChange={handleSearchChange}
-        />
-      </div>
-      <div className="viewstatus-action">
-        <CommonAddButton
-          label="Resend Link"
-          // icon={FaLocationDot}
-          onClick={handleGenerateReportLink}
         />
       </div>
 
@@ -246,7 +246,6 @@ const ViewStatus = () => {
             showPerPage={reportPerPage}
             onPerPageChange={handlereportPerPageChange}
             isPagination="true"
-            isSearchQuery={false}
             totalData={totalEmployees}
           /> */}
           <div className="viewstatus-scrollable-table-wrapper">
@@ -312,7 +311,7 @@ const ViewStatus = () => {
                         }
                         onClick={() => handleSort("jobRole")}
                       >
-                        Job Title
+                        Job Role
                       </TableSortLabel>
                     </TableCell>
                     <TableCell

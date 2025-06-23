@@ -390,6 +390,7 @@ const MyViewTasks = () => {
       ) : (
         <>
           <CommonTable
+            tableName="MyViewTask"
             headers={[
               "Task Date",
               "Employee Name",
@@ -406,7 +407,7 @@ const MyViewTasks = () => {
                 : task.clientName,
               jobRole: task.jobRole,
               starttime: task.startTime,
-              enddtime: task.endTime,
+              endtime: task.endTime,
             }))}
             currentPage={currentPage}
             totalPages={totalPages}
@@ -414,7 +415,6 @@ const MyViewTasks = () => {
             showPerPage={perPage}
             onPerPageChange={handlePerPageChange}
             isPagination="true"
-            isSearchQuery={false}
             totalData={totalTask}
           />
 

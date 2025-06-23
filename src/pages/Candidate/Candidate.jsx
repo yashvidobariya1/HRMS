@@ -164,6 +164,7 @@ const Candidate = () => {
         <>
           <CommonTable
             headers={tableHeaders}
+            tableName="Candidate"
             data={candidateList?.map((candidate) => ({
               _id: candidate._id,
               Name: candidate?.firstName,
@@ -202,8 +203,6 @@ const Candidate = () => {
             onPerPageChange={handlecandidatePerPageChange}
             handleAction={handleAction}
             isPagination="true"
-            isSearchQuery={true}
-            searchQuery={searchQuery}
             totalData={totalcandidatePost}
           />
           {/* {showConfirm && (
