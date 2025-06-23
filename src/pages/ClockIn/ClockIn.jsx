@@ -1185,8 +1185,8 @@ const CheckIn = () => {
   };
 
   const handleLocationSelect = (selectedLocation) => {
-    setSelectedClientId(selectedLocation);
-    setOpenClientSelectModal(true);
+    setSelectedLocationId(selectedLocation);
+    setOpenLocationSelectModal(true);
   };
 
   useEffect(() => {
@@ -1329,7 +1329,7 @@ const CheckIn = () => {
           <AssignLocation
             onClose={handlePopupCloseForLocation}
             Locationdata={Locationdata}
-            onClientSelect={handleLocationSelect}
+            onLocationSelect={handleLocationSelect}
           />
         )}
 
