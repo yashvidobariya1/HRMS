@@ -58,6 +58,7 @@ import MyViewHours from "./pages/ViewHours/MyViewHours";
 import MyAbsenceReport from "./pages/AbsenceReport/MyAbsenceReport";
 import MyViewTasks from "./pages/ViewTasks/MyViewTasks";
 import AddTask from "./pages/ViewTasks/AddTask";
+import StaffTemplate from "./pages/Templates/StaffTemplate";
 
 // Layout wrapper
 function MainLayout({ children, path }) {
@@ -159,6 +160,11 @@ const protectedRoutes = [
     roles: ["Superadmin"],
   },
   { path: "/templates", component: <Templates />, roles: ["Superadmin"] },
+  {
+    path: "/stafftemplates",
+    component: <StaffTemplate />,
+    roles: ["Superadmin", "Administrator", "Manager"],
+  },
   {
     path: "/employees",
     component: <Employee />,

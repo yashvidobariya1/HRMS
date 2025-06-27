@@ -19,6 +19,17 @@ import { FaRegUser } from "react-icons/fa";
 
 export const SidebarData = [
   {
+    section: "",
+    items: [
+      {
+        title: "Staff Templates",
+        icon: <RiBookletLine />,
+        link: "/stafftemplates",
+        allowedRoles: ["Superadmin"],
+      },
+    ],
+  },
+  {
     section: "Company",
     items: [
       // {
@@ -55,12 +66,6 @@ export const SidebarData = [
         title: "Location",
         icon: <TiLocationOutline />,
         link: "/location",
-        allowedRoles: ["Superadmin"],
-      },
-      {
-        title: "Templates",
-        icon: <RiBookletLine />,
-        link: "/templates",
         allowedRoles: ["Superadmin"],
       },
     ],

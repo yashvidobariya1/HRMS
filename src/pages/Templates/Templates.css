@@ -8,6 +8,7 @@
 .template-flex {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .template-title {
@@ -16,24 +17,23 @@
   justify-content: space-between;
 }
 
+.template-title h1 {
+  margin-bottom: 10px;
+}
+
 .template-input input,
 .template-input select {
   margin-top: 0px !important;
 }
 
-.File-input {
-  border: none !important;
-  padding: 0 !important;
-}
-
-.custom-file-button-contract {
+/* .custom-file-button-contract {
   padding: 10px 20px;
   background-color: var(--primary-button);
   color: var(--primary-text-white);
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
-}
+} */
 
 .template-main-container h5 {
   color: var(--alert-yellow);
@@ -41,34 +41,34 @@
   font-weight: 400;
 }
 
-.employeecontract-action {
+/* .employeecontract-action {
   display: flex;
   justify-content: center;
   gap: 20px;
-}
+} */
 
-.template-cancel-edit-btn {
+/* .template-cancel-edit-btn {
   color: var(--primary-button) !important;
   border: 1px solid var(--primary-button) !important;
   cursor: pointer !important;
   background-color: var(--primary-text-white) !important;
   display: flex !important;
   align-items: center !important;
-  /* margin-top: 5px; */
-}
+  margin-top: 5px;
+} */
 
-.employeecontract-action-icon {
+/* .employeecontract-action-icon {
   margin-right: 10px;
   font-size: var(--font-size-small);
-}
+} */
 
-.no-data {
+/* .no-data {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-}
+} */
 
 .template-flex-file-action {
   display: flex;
@@ -77,13 +77,14 @@
   height: max-content;
   justify-content: space-between;
   /* align-items: center; */
+  margin-top: 10px;
 }
 
 .template-input {
   width: 100%;
 }
 
-.file-input {
+/* .file-input {
   background-color: var(--primary-button);
   color: var(--primary-text-white);
   padding: 10px;
@@ -91,15 +92,15 @@
 
 .file-input p {
   margin: 0;
-}
+} */
 
 .template-input input {
   width: calc(100% - 24px);
 }
 
-.template-contract-input {
+/* .template-contract-input {
   width: 100%;
-}
+} */
 
 .template-file-contract {
   display: flex;
@@ -124,9 +125,9 @@
   margin: 0;
 }
 
-.template-custom-file-upload:hover {
+/* .template-custom-file-upload:hover {
   background-color: var(--button-hover);
-}
+} */
 
 .template-fileupload-name {
   margin: 0px;
@@ -166,10 +167,71 @@
   border-radius: var(--border-radius) !important;
 }
 
-@media (max-width: 1400px) {
-  .template-flex {
-    flex-direction: column;
-  }
+.filter-template-main {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.template-input-dropdown {
+  padding: 10px;
+  width: 200px;
+  border-radius: var(--border-radius) !important;
+  color: var(--secondary-dark-gray);
+  outline: none;
+  height: max-content;
+}
+
+.template-input-dropdown .MuiSelect-select {
+  padding: 0px;
+  color: var(--secondary-dark-gray) !important;
+  border: none;
+  font-size: var(--font-size-small);
+  outline: none;
+}
+
+.template-input-dropdown .MuiSelect-icon {
+  color: var(--secondary-dark-gray);
+}
+
+.template-input-container input,
+.timesheet-input-container select {
+  margin: 0;
+  padding: 10px !important;
+}
+
+.template-searchbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.preview-template-button {
+  background-color: var(--primary-button);
+  color: var(--primary-text-white);
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.template-download {
+  color: var(--primary-button);
+  cursor: pointer;
+}
+
+.template-preview {
+  cursor: pointer;
+}
+
+.Pending-template {
+  background-color: var(--alert-green);
+}
+
+.disabled-icon {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: var(--sidebar-hover);
 }
 
 @media (min-width: 992px) and (max-width: 1400px) {
@@ -183,11 +245,6 @@
 }
 
 @media (max-width: 992px) {
-  .template-flex {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .template-title {
     flex-direction: column;
     align-items: flex-start;
@@ -200,7 +257,7 @@
   }
 
   .template-file-contract {
-    padding: 8px 12px;
+    padding: 10px 12px;
   }
 
   .template-custom-file-upload {
@@ -240,9 +297,20 @@
   .Employeecontract-file {
     padding: 12px 3px;
   }
+  .timesheet-report-download-container button {
+    margin-top: 14px;
+  }
 
-  .template-file-contract {
-    padding: 10px 12px;
+  .template-filter-container {
+    gap: 10px;
+  }
+
+  .template-input-dropdown {
+    padding: 8px;
+  }
+
+  .template-input-dropdown .MuiSelect-select {
+    font-size: 14px;
   }
 }
 
@@ -284,6 +352,24 @@
   .template-flex-file-action {
     flex-direction: column !important;
     width: 100%;
+  }
+  .template-filter-container {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .template-filter-container {
+    gap: 10px;
+  }
+  .filter-template-main {
+    gap: 10px;
+  }
+  .template-input-dropdown .MuiSelect-select,
+  .timesheet-input-container {
+    font-size: 12px;
+  }
+  .template-searchbar {
+    gap: 10px;
   }
 }
 
