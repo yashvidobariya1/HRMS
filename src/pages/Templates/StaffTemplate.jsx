@@ -138,7 +138,9 @@ const StaffTemplate = () => {
     if (
       ["pdf", "docx", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)
     ) {
-      setDocs([{ uri: uploadedURL }]);
+      const encodedUrl = encodeURI(uploadedURL);
+      setDocs([{ uri: encodedUrl }]);
+
       setIsOpen(true);
     } else {
       alert("Unsupported file type for preview");
