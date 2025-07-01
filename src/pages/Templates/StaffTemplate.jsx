@@ -9,6 +9,7 @@ import { Select, MenuItem, ListSubheader } from "@mui/material";
 import { useSelector } from "react-redux";
 import { FaDownload, FaEye, FaTrash } from "react-icons/fa";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
+import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 
 const StaffTemplate = () => {
   const { GetCall, PostCall } = useApiServices();
@@ -31,6 +32,8 @@ const StaffTemplate = () => {
   const [templateId, settemplateId] = useState("");
   const [userId, settuserId] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [docs, setDocs] = useState([]);
   const filteredEmployeeList = useMemo(() => {
     return employeeList.filter((user) =>
       user.userName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -105,21 +108,38 @@ const StaffTemplate = () => {
     }
   };
 
+  // const handlePreview = (uploadedURL) => {
+  //   if (!uploadedURL) {
+  //     showToast("not found Template", "error");
+  //     return;
+  //   }
+  //   const extension = uploadedURL.split(".").pop().toLowerCase();
+  //   if (["pdf", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
+  //     window.open(uploadedURL, "_blank");
+  //   } else if (extension === "docx") {
+  //     const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(
+  //       uploadedURL
+  //     )}&embedded=true`;
+  //     window.open(viewerUrl, "_blank");
+  //   } else {
+  //     showToast("Unsupported file type for preview", "error");
+  //   }
+  // };
+
   const handlePreview = (uploadedURL) => {
     if (!uploadedURL) {
-      showToast("not found Template", "error");
+      alert("File not found");
       return;
     }
+
     const extension = uploadedURL.split(".").pop().toLowerCase();
-    if (["pdf", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
-      window.open(uploadedURL, "_blank");
-    } else if (extension === "docx") {
-      const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(
-        uploadedURL
-      )}&embedded=true`;
-      window.open(viewerUrl, "_blank");
+    if (
+      ["pdf", "docx", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)
+    ) {
+      setDocs([{ uri: uploadedURL }]);
+      setIsOpen(true);
     } else {
-      showToast("Unsupported file type for preview", "error");
+      alert("Unsupported file type for preview");
     }
   };
 
@@ -411,6 +431,23 @@ const StaffTemplate = () => {
             />
           )}
         </>
+      )}
+      {isOpen && (
+        <div className="fullscreen-overlay">
+          <div className="fullscreen-modal">
+            <button
+              className="fullscreen-close-button"
+              onClick={() => setIsOpen(false)}
+            >
+              ×
+            </button>
+            <DocViewer
+              documents={docs}
+              pluginRenderers={DocViewerRenderers}
+              style={{ height: "100%", width: "100%" }}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
