@@ -194,38 +194,21 @@ const Client = () => {
     }, 0);
   };
 
-  const handleDownloadBase64 = async (e, qrURL, qrName) => {
+  const handleDownloadBase64 = (e, fileUrl) => {
     e.stopPropagation();
 
-    const timestamp = moment().format("YYYYMMDD-HHmmss");
-    const fileName = `${qrName || "qr-code"}-${timestamp}.png`.replace(
-      /\s+/g,
-      "_"
-    );
+    const link = document.createElement("a");
+    link.href = fileUrl;
 
-    try {
-      const response = await fetch(qrURL, { mode: "cors" });
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+    link.setAttribute("download", "");
 
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
+    link.setAttribute("target", "_blank");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-      // Append for Safari
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      showToast("QR Code downloaded successfully!", "success");
-    } catch (err) {
-      console.error("Download failed:", err);
-      showToast("Failed to download QR Code.", "error");
-    }
+    showToast("QR Download Successfully", "success");
   };
-
   useEffect(() => {
     GetClients();
     // eslint-disable-next-line react-hooks/exhaustive-deps
