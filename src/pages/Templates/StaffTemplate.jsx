@@ -127,7 +127,7 @@ const StaffTemplate = () => {
   // };
 
   const handlePreview = (uploadedURL) => {
-    console.log("uploadedURL");
+    console.log("uploadedURL:", uploadedURL);
 
     if (!uploadedURL) {
       alert("File not found");
@@ -139,8 +139,13 @@ const StaffTemplate = () => {
       ["pdf", "docx", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)
     ) {
       const encodedUrl = encodeURI(uploadedURL);
-      setDocs([{ uri: encodedUrl }]);
-
+      setDocs([
+        {
+          uri: encodedUrl,
+          fileType: extension, // optional, helps renderers
+          fileName: "Document Preview",
+        },
+      ]);
       setIsOpen(true);
     } else {
       alert("Unsupported file type for preview");
