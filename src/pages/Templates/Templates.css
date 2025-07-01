@@ -234,6 +234,40 @@
   color: var(--sidebar-hover);
 }
 
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fullscreen-modal {
+  background: white;
+  width: 90%;
+  height: 90%;
+  position: relative;
+  overflow: hidden;
+}
+
+.fullscreen-close-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  z-index: 1000;
+  color: var(--secondary-dark-gray);
+  border: none;
+  padding: 4px 10px;
+  font-size: 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 @media (min-width: 992px) and (max-width: 1400px) {
   .company-employee-contract-dropdown-menu {
     left: -15px;

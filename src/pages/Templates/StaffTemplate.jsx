@@ -127,6 +127,8 @@ const StaffTemplate = () => {
   // };
 
   const handlePreview = (uploadedURL) => {
+    console.log("uploadedURL");
+
     if (!uploadedURL) {
       alert("File not found");
       return;
