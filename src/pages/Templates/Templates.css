@@ -4,28 +4,29 @@
   margin: 0 auto;
   background-color: var(--primary-text-white);
 }
-
+.template-main-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
 .template-flex {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
 }
-
 .template-title {
   display: flex;
   gap: 20px;
   justify-content: space-between;
 }
-
 .template-title h1 {
   margin-bottom: 10px;
 }
-
 .template-input input,
 .template-input select {
   margin-top: 0px !important;
 }
-
 /* .custom-file-button-contract {
   padding: 10px 20px;
   background-color: var(--primary-button);
@@ -34,19 +35,16 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
 } */
-
-.template-main-container h5 {
+.template-placeholder-text {
   color: var(--alert-yellow);
   font-size: var(--font-size-body);
   font-weight: 400;
 }
-
 /* .employeecontract-action {
   display: flex;
   justify-content: center;
   gap: 20px;
 } */
-
 /* .template-cancel-edit-btn {
   color: var(--primary-button) !important;
   border: 1px solid var(--primary-button) !important;
@@ -56,12 +54,10 @@
   align-items: center !important;
   margin-top: 5px;
 } */
-
 /* .employeecontract-action-icon {
   margin-right: 10px;
   font-size: var(--font-size-small);
 } */
-
 /* .no-data {
   display: flex;
   flex-direction: column;
@@ -69,7 +65,6 @@
   align-items: center;
   height: 100vh;
 } */
-
 .template-flex-file-action {
   display: flex;
   gap: 10px;
@@ -79,29 +74,23 @@
   /* align-items: center; */
   margin-top: 10px;
 }
-
 .template-input {
   width: 100%;
 }
-
 /* .file-input {
   background-color: var(--primary-button);
   color: var(--primary-text-white);
   padding: 10px;
 }
-
 .file-input p {
   margin: 0;
 } */
-
 .template-input input {
   width: calc(100% - 24px);
 }
-
 /* .template-contract-input {
   width: 100%;
 } */
-
 .template-file-contract {
   display: flex;
   gap: 5px;
@@ -111,7 +100,6 @@
   border: 1px solid var(--neutral-light-gray);
   border-radius: var(--border-radius);
 }
-
 .template-custom-file-upload {
   border-radius: var(--border-radius);
   background-color: var(--primary-button);
@@ -124,11 +112,9 @@
   width: 80px;
   margin: 0;
 }
-
 /* .template-custom-file-upload:hover {
   background-color: var(--button-hover);
 } */
-
 .template-fileupload-name {
   margin: 0px;
   color: var(--secondary-dark-gray);
@@ -140,40 +126,33 @@
   white-space: nowrap;
   overflow: hidden;
 }
-
 .template-upload {
   display: flex;
   gap: 10px;
 }
-
 .custom-dialog {
   width: 700px !important;
   max-width: 700px !important;
   height: 300px;
 }
-
 .custom-select-menu {
   max-height: 250px !important;
   overflow-y: auto !important;
 }
-
 .Template-selection-chip {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
-
 .template-input-dropdwon {
   border-radius: var(--border-radius) !important;
 }
-
 .filter-template-main {
   display: flex;
   gap: 10px;
-  margin: 10px 0;
+  /* margin: 10px 0; */
   flex-wrap: wrap;
 }
-
 .template-input-dropdown {
   padding: 10px;
   width: 200px;
@@ -182,7 +161,6 @@
   outline: none;
   height: max-content;
 }
-
 .template-input-dropdown .MuiSelect-select {
   padding: 0px;
   color: var(--secondary-dark-gray) !important;
@@ -190,23 +168,20 @@
   font-size: var(--font-size-small);
   outline: none;
 }
-
 .template-input-dropdown .MuiSelect-icon {
   color: var(--secondary-dark-gray);
 }
-
 .template-input-container input,
 .timesheet-input-container select {
   margin: 0;
   padding: 10px !important;
 }
-
 .template-searchbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 10px;
 }
-
 .preview-template-button {
   background-color: var(--primary-button);
   color: var(--primary-text-white);
@@ -214,20 +189,16 @@
   padding: 5px;
   cursor: pointer;
 }
-
 .template-download {
   color: var(--primary-button);
   cursor: pointer;
 }
-
 .template-preview {
   cursor: pointer;
 }
-
 .Pending-template {
   background-color: var(--alert-green);
 }
-
 .disabled-icon {
   opacity: 0.4;
   cursor: not-allowed;
@@ -241,43 +212,66 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 10000;
+  z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .fullscreen-modal {
-  background: white;
+  background: var(--primary-text-white);
   width: 90%;
-  height: 90%;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
   position: relative;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .fullscreen-close-button {
   position: absolute;
-  top: 10px;
+  top: 5px;
   right: 20px;
   z-index: 1000;
-  color: var(--secondary-dark-gray);
+  color: var(--sidebar-secondary-dark-gray);
   border: none;
-  padding: 4px 10px;
-  font-size: 20px;
+  /* padding: 4px 7p; */
+  font-size: 24px;
   border-radius: 5px;
   cursor: pointer;
+  background: none;
+}
+
+.preview-footer {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 10px;
+  color: var(--secondary-dark-gray);
+}
+
+.preview-doc-flex {
+  flex: 1;
+  overflow: hidden;
+}
+
+.preview-signture {
+  padding: 0px 20px;
+}
+
+.preview-submit {
+  padding: 10px 20px;
 }
 
 @media (min-width: 992px) and (max-width: 1400px) {
   .company-employee-contract-dropdown-menu {
     left: -15px;
   }
-
   .template-title {
     gap: 5px;
   }
 }
-
 @media (max-width: 992px) {
   .template-title {
     flex-direction: column;
@@ -285,104 +279,89 @@
     gap: 10px !important;
     width: 100%;
   }
-
   .Employeecontract-file {
     padding: 6px;
   }
-
   .template-file-contract {
     padding: 10px 12px;
   }
-
   .template-custom-file-upload {
     padding: 4px;
   }
 }
-
 @media (max-width: 767px) {
   .company-employee-contract-dropdown-menu {
     left: -45px;
     padding: 8px;
   }
-
   .custom-file-button-file {
     font-size: 11px;
   }
-
   .template-title {
     gap: 10px !important;
   }
-
   .template-fileupload-name {
     font-size: 12px;
     font-size: 12px;
     padding: 0px;
   }
-
   .template-custom-file-upload {
     font-size: 12px;
     padding: 3px;
   }
-
   .selected-file-name {
     font-size: 12px;
   }
-
   .Employeecontract-file {
     padding: 12px 3px;
   }
   .timesheet-report-download-container button {
     margin-top: 14px;
   }
-
   .template-filter-container {
     gap: 10px;
   }
-
   .template-input-dropdown {
     padding: 8px;
   }
-
   .template-input-dropdown .MuiSelect-select {
     font-size: 14px;
   }
+  .preview-footer,
+  .preview-submit {
+    font-size: 14px;
+    padding: 15px;
+  }
+  .preview-signture {
+    padding: 0 15px;
+  }
 }
-
 @media (max-width: 575px) {
   .template-contract-input {
     width: 100% !important;
     box-sizing: border-box;
   }
-
-  .template-main-container h5,
+  .template-placeholder-text,
   .template-fileupload-name {
     font-size: 12px;
   }
-
   .template-custom-file-upload {
     padding: 4px;
   }
-
   .Employeecontract-file {
     padding: 7px 3px;
   }
-}
-
-@media (max-width: 575px) {
   .custom-file-button-file {
     padding: 11px !important;
   }
-
   .template-input input,
   .template-contract-input {
     width: 100%;
   }
-
   .template-file-contract {
     padding: 6px 10px;
     width: calc(100% - 20px);
   }
-
   .template-flex-file-action {
     flex-direction: column !important;
     width: 100%;
@@ -391,7 +370,6 @@
     flex-direction: column;
     gap: 5px;
   }
-
   .template-filter-container {
     gap: 10px;
   }
@@ -405,8 +383,16 @@
   .template-searchbar {
     gap: 10px;
   }
+  .preview-footer {
+    gap: 5px;
+  }
+  .preview-footer {
+    font-size: 12px;
+  }
+  .fullscreen-close-button {
+    font-size: 18px;
+  }
 }
-
 @media (max-width: 360px) {
   .template-flex-file-action {
     flex-direction: column;

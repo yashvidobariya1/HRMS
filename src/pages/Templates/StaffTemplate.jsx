@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Loader from "../Helper/Loader";
 import "../Templates/Templates.css";
 import CommonTable from "../../SeparateCom/CommonTable";
@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 import { FaDownload, FaEye, FaTrash } from "react-icons/fa";
 import DeleteConfirmation from "../../main/DeleteConfirmation";
 import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
+import SignatureCanvas from "react-signature-canvas";
+import CommonAddButton from "../../SeparateCom/CommonAddButton";
 
 const StaffTemplate = () => {
   const { GetCall, PostCall } = useApiServices();
@@ -31,9 +33,13 @@ const StaffTemplate = () => {
   const [templateName, setTemplateName] = useState("");
   const [templateId, settemplateId] = useState("");
   const [userId, settuserId] = useState("");
+  const [previewUserName, setpreviewUserName] = useState("");
+  const [assignAt, setassignAt] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [docs, setDocs] = useState([]);
+  const signatureRef = useRef(null);
+
   const filteredEmployeeList = useMemo(() => {
     return employeeList.filter((user) =>
       user.userName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -126,8 +132,9 @@ const StaffTemplate = () => {
   //   }
   // };
 
-  const handlePreview = (uploadedURL, templateName) => {
-    console.log("uploadedURL:", uploadedURL);
+  const handlePreview = (uploadedURL, userName, assignedAt, templateName) => {
+    setpreviewUserName(userName);
+    setassignAt(assignedAt);
 
     if (!uploadedURL) {
       alert("File not found");
@@ -202,6 +209,10 @@ const StaffTemplate = () => {
       console.error("Error deleting timesheets:", error);
       setLoading(false);
     }
+  };
+
+  const handleSaveSignature = () => {
+    alert("save");
   };
 
   useEffect(() => {
@@ -380,6 +391,8 @@ const StaffTemplate = () => {
                         template?.isTemplateUploaded &&
                         handlePreview(
                           template?.uploadedURL,
+                          template?.userName,
+                          template?.assignedAt,
                           template?.templateName
                         )
                       }
@@ -453,11 +466,37 @@ const StaffTemplate = () => {
             >
               ×
             </button>
-            <DocViewer
-              documents={docs}
-              pluginRenderers={DocViewerRenderers}
-              style={{ height: "100%", width: "100%" }}
-            />
+            <div className="preview-doc-flex">
+              <DocViewer
+                documents={docs}
+                pluginRenderers={DocViewerRenderers}
+                style={{ height: "100%", width: "100%" }}
+              />
+            </div>
+            <div className="footer-main-div">
+              <div className="preview-footer">
+                <div>
+                  <strong>Employee Name: </strong> {previewUserName}
+                </div>
+                <div>
+                  <strong>Date: </strong> {assignAt}
+                </div>
+              </div>
+              <div className="preview-signture">
+                <SignatureCanvas
+                  ref={signatureRef}
+                  canvasProps={{
+                    className: "signature-canvas",
+                  }}
+                />
+              </div>
+              <div className="preview-submit">
+                <CommonAddButton
+                  label="Save Signature"
+                  onClick={handleSaveSignature}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
