@@ -265,6 +265,14 @@
   padding: 10px 20px;
 }
 
+.document-controls__menu {
+  display: none !important;
+}
+
+.document-controls__fullscreen {
+  display: none !important;
+}
+
 @media (min-width: 992px) and (max-width: 1400px) {
   .company-employee-contract-dropdown-menu {
     left: -15px;
