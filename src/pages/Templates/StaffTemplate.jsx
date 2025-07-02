@@ -126,7 +126,7 @@ const StaffTemplate = () => {
   //   }
   // };
 
-  const handlePreview = (uploadedURL) => {
+  const handlePreview = (uploadedURL, templateName) => {
     console.log("uploadedURL:", uploadedURL);
 
     if (!uploadedURL) {
@@ -142,8 +142,8 @@ const StaffTemplate = () => {
       setDocs([
         {
           uri: encodedUrl,
-          fileType: extension, // optional, helps renderers
-          fileName: "Document Preview",
+          fileType: extension,
+          fileName: templateName,
         },
       ]);
       setIsOpen(true);
@@ -378,7 +378,10 @@ const StaffTemplate = () => {
                     <FaEye
                       onClick={() =>
                         template?.isTemplateUploaded &&
-                        handlePreview(template?.uploadedURL)
+                        handlePreview(
+                          template?.uploadedURL,
+                          template?.templateName
+                        )
                       }
                       style={{
                         cursor: template?.isTemplateUploaded
