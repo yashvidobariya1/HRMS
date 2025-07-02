@@ -273,6 +273,11 @@
   display: none !important;
 }
 
+button[title="Download"],
+button[title="Print"] {
+  display: none !important;
+}
+
 @media (min-width: 992px) and (max-width: 1400px) {
   .company-employee-contract-dropdown-menu {
     left: -15px;

@@ -470,6 +470,12 @@ const StaffTemplate = () => {
               <DocViewer
                 documents={docs}
                 pluginRenderers={DocViewerRenderers}
+                config={{
+                  header: {
+                    disableDownload: true,
+                    disablePrint: true,
+                  },
+                }}
                 style={{ height: "100%", width: "100%" }}
               />
             </div>
