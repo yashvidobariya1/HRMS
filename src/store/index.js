@@ -7,6 +7,7 @@ import themeColor from "./themeColorSlice";
 import jobRoleSelect from "./selectJobeRoleSlice";
 import companySelect from "./selectCompanySlice";
 import employeeformFilled from "./EmployeeFormSlice";
+import session from "./SessionSlice";
 
 // Step 1: Combine your reducers
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   jobRoleSelect: jobRoleSelect,
   companySelect: companySelect,
   employeeformFilled: employeeformFilled,
+  session: session,
 });
 
 // Step 2: Persist configuration
@@ -29,6 +31,7 @@ const persistConfig = {
     "jobRoleSelect",
     "companySelect",
     "employeeformFilled",
+    "session",
   ],
 };
 
