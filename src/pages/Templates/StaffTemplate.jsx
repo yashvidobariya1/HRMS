@@ -155,7 +155,7 @@ const StaffTemplate = () => {
       ]);
       setIsOpen(true);
     } else {
-      alert("Unsupported file type for preview");
+      showToast("Unsupported file type for preview");
     }
   };
 

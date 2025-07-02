@@ -146,7 +146,6 @@ const Client = () => {
     param4,
     qrValue
   ) => {
-    console.log("qrvalue", qrValue);
     const newQRName = `${qrValue}-${moment().format(
       "YYYYMMDDHHmmssSSS"
     )}${Math.floor(Math.random() * 1000)}`;
@@ -163,12 +162,9 @@ const Client = () => {
         img.onload = async () => {
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
-          const borderSize = 20;
-          canvas.width = img.width + borderSize * 2;
-          canvas.height = img.height + borderSize * 2;
-          ctx.fillStyle = "#FFFFFF";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, borderSize, borderSize);
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
           const pngBase64 = canvas.toDataURL("image/png");
           const formdata = {
             qrValue: newQRName,
@@ -198,52 +194,36 @@ const Client = () => {
     }, 0);
   };
 
-  // const handleDownloadBase64 = async (e, qrURL, qrName) => {
-  //   e.stopPropagation();
-
-  //   const timestamp = moment().format("YYYYMMDD-HHmmss");
-  //   const fileName = `${qrName || "qr-code"}-${timestamp}.png`.replace(
-  //     /\s+/g,
-  //     "_"
-  //   );
-
-  //   try {
-  //     const response = await fetch(qrURL, { mode: "cors" });
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-
-  //     const link = document.createElement("a");
-  //     link.href = url;
-  //     link.download = fileName;
-
-  //     // Append for Safari
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-
-  //     // Cleanup
-  //     window.URL.revokeObjectURL(url);
-  //     showToast("QR Code downloaded successfully!", "success");
-  //   } catch (err) {
-  //     console.error("Download failed:", err);
-  //     showToast("Failed to download QR Code.", "error");
-  //   }
-  // };
-
-  const handleDownloadBase64 = (e, fileUrl) => {
+  const handleDownloadBase64 = async (e, qrURL, qrName) => {
     e.stopPropagation();
 
-    const link = document.createElement("a");
-    link.href = fileUrl;
+    const timestamp = moment().format("YYYYMMDD-HHmmss");
+    const fileName = `${qrName || "qr-code"}-${timestamp}.png`.replace(
+      /\s+/g,
+      "_"
+    );
 
-    link.setAttribute("download", "");
+    try {
+      const response = await fetch(qrURL, { mode: "cors" });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
 
-    link.setAttribute("target", "_blank");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
 
-    showToast("QR Download Successfully", "success");
+      // Append for Safari
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      showToast("QR Code downloaded successfully!", "success");
+    } catch (err) {
+      console.error("Download failed:", err);
+      showToast("Failed to download QR Code.", "error");
+    }
   };
 
   useEffect(() => {
@@ -336,8 +316,8 @@ const Client = () => {
                   onClick={(event) =>
                     handleDownloadBase64(
                       event,
-                      clients?.latestQRCode
-                      // clients?.qrValue
+                      clients?.latestQRCode,
+                      clients?.qrValue
                     )
                   }
                 >

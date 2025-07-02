@@ -210,7 +210,7 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 9999;
   display: flex;
@@ -241,6 +241,7 @@
   border-radius: 5px;
   cursor: pointer;
   background: none;
+  font-weight: 600;
 }
 
 .preview-footer {

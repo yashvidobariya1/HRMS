@@ -25,7 +25,7 @@ export const SidebarData = [
         title: "Staff Templates",
         icon: <RiBookletLine />,
         link: "/stafftemplates",
-        allowedRoles: ["Superadmin"],
+        allowedRoles: ["Superadmin", "Administrator"],
       },
     ],
   },
