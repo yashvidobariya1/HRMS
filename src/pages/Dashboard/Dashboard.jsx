@@ -10,9 +10,6 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-// import FullCalendar from "@fullcalendar/react";
-// import dayGridPlugin from "@fullcalendar/daygrid";
-// import interactionPlugin from "@fullcalendar/interaction";
 import { FaUsers, FaUserTie, FaUmbrellaBeach } from "react-icons/fa";
 import { MdAddBusiness, MdOutlineNoteAlt } from "react-icons/md";
 import { RiContractFill } from "react-icons/ri";
@@ -27,18 +24,13 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { CiSquareQuestion } from "react-icons/ci";
 import Loader from "../Helper/Loader";
-import { renderAsync } from "docx-preview";
 import SignatureCanvas from "react-signature-canvas";
-import htmlDocx from "html-docx-js/dist/html-docx";
 import CommonAddButton from "../../SeparateCom/CommonAddButton";
 import { setNotificationCount } from "../../store/notificationCountSlice";
 import { useDispatch } from "react-redux";
 import {
   Select,
   MenuItem,
-  // ListSubheader,
-  // TextField,
-  // Paper,
   TableContainer,
   TableHead,
   TableRow,
@@ -51,34 +43,18 @@ import {
   IconButton,
 } from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-// import CommonTable from "../../SeparateCom/CommonTable";
+import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 
 const Dashboard = () => {
   const { PostCall, GetCall } = useApiServices();
-  const pdfRef = useRef(null);
-  const containerRef = useRef(null);
   const signatureRef = useRef(null);
   const navigate = useNavigate();
   const [DashboardData, setDashboardData] = useState([]);
   const [AllholidayList, setAllholidayList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [calenderloading, setcalenderloading] = useState(false);
-  // const [selectedLocationName, setSelectedLocationName] = useState("");
-  // const [selectedLocationId, setSelectedLocationId] = useState("");
   const [selectedYear, setSelectedYear] = useState(moment().year());
-  // const [selectedMonth, setSelectedMonth] = useState(moment().month() + 1);
   const currentYear = moment().year();
-  // const currentYearEnd = moment().endOf("year").format("YYYY-MM-DD");
-  // const currentYearEnd = "2027-01-01";
-  // const [events, setEvents] = useState([]);
-  // const [locationList, setLocationList] = useState([]);
-  // const [companyList, setcompanyList] = useState([]);
-  // const [selectedCompanyId, setSelectedCompanyId] = useState(null);
-  // const selectedCompanyId = useSelector(
-  //   (state) => state.companySelect.companySelect
-  // );
-  const [AbsenceData, setAbsenceData] = useState([]);
   const [timeSheetData, setTimeSheetData] = useState([]);
   const [userGrowth, setUserGrowth] = useState([]);
   const [GraphData, setGraphData] = useState([]);
@@ -87,15 +63,11 @@ const Dashboard = () => {
   const [isSignatureRequired, setIsSignatureRequired] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [checked, setChecked] = useState(false);
-  // const [AvailableLeave, setAvailableLeave] = useState([]);
-  // const [currentMonth, setCurrentMonth] = useState("");
   const user = useSelector((state) => state.userInfo.userInfo);
-  const [showPopup, setShowPopup] = useState(true);
   const [error, setError] = useState(null);
   const [docxUrl, setDocxUrl] = useState(null);
   const [userData, setUserData] = useState(null);
   const [isSignatureSaved, setIsSignatureSaved] = useState(false);
-  // const [selectedMonth, setSelectedMonth] = useState(moment().month());
   const jobRoleId = useSelector(
     (state) => state.jobRoleSelect?.jobRoleSelect?.jobId
   );
@@ -103,23 +75,32 @@ const Dashboard = () => {
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const dispatch = useDispatch();
   const startDate = process.env.REACT_APP_START_DATE || "2022-01-01";
-  // const startDate = "2022-01-01";
   const startYear = moment(startDate).year();
-  // const calendarRef = useRef(null);
   const allowedYears = Array.from(
     { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
   );
-  // const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [holidayPerPage, setholidayPerPage] = useState(5);
-  const [totalPages, setTotalPages] = useState(0);
   const [totalHoliday, setTotalHoliday] = useState(0);
   const [Totalabsencereport, setTotalabsencereport] = useState(0);
-  const [absenceTotalPages, setabsenceTotalPages] = useState([]);
   const [absencecurrentPage, setabsencecurrentPage] = useState(1);
   const [absencePerPage, setabsencePerPage] = useState(5);
+  const [signatureBase64, setSignatureBase64] = useState("");
+  const [docs, setDocs] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [showFooter, setShowFooter] = useState(true);
+  const [popupLoading, setPopupLoading] = useState(false);
+  const [AbsenceData, setAbsenceData] = useState([]);
   const [sortConfig, setSortConfig] = React.useState({
+    key: "",
+    direction: "asc",
+  });
+  const [sortConfigholiday, setsortConfigholiday] = React.useState({
+    key: "",
+    direction: "asc",
+  });
+  const [sortConfigtimesheet, setSortConfigtimesheet] = React.useState({
     key: "",
     direction: "asc",
   });
@@ -248,184 +229,121 @@ const Dashboard = () => {
     },
   ];
 
-  // const employeeData = [
-  //   { type: "Fulltime", percentage: 40, count: 112 },
-  //   { type: "Contract", percentage: 20, count: 112 },
-  //   { type: "Probation", percentage: 22, count: 12 },
-  //   { type: "WFH", percentage: 20, count: 4 },
-  // ];
-
   const saveSignature = () => {
-    if (!signatureRef.current || signatureRef.current.isEmpty()) {
-      showToast("Please add a signature before saving", "error");
-      return;
-    }
-
-    const dataURL = signatureRef.current.toDataURL("image/png");
-    setIsSignatureSaved(true);
-
-    const previewContainer = containerRef.current;
-    if (!previewContainer) {
-      console.error("Preview container not found!");
-      return;
-    }
-
-    const paragraphs = Array.from(previewContainer.getElementsByTagName("p"));
-
-    const signatureParagraph = paragraphs.find((p) =>
-      p.innerText.includes("SIGNATURE")
-    );
-
-    if (signatureParagraph) {
-      let existingSignatureSpan = signatureParagraph.querySelector("span");
-
-      if (existingSignatureSpan) {
-        // If a signature span exists, replace its content
-        existingSignatureSpan.innerHTML = `
-                  <img src="${dataURL}" style="width:100px; height:30px; padding-left: 15px; display:inline;" />
-              `;
-      } else {
-        // If no span exists, replace underscores or add a new span
-        signatureParagraph.innerHTML = signatureParagraph.innerHTML.replace(
-          /_+/,
-          `<span style="display: inline-block; border-bottom: 2px solid black; white-space: normal;">
-                      <img src="${dataURL}" style="width:100px; height:30px; padding-left: 15px; display:inline;" />
-                  </span>`
-        );
+    try {
+      if (!signatureRef.current || signatureRef.current.isEmpty()) {
+        showToast("Please add a signature before saving", "error");
+        return;
       }
-    } else {
-      console.error("Signature paragraph not found!");
-    }
-  };
 
-  const getBase64FromBlob = (blob) => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        resolve(reader.result);
-      };
-    });
+      const dataURL = signatureRef.current.toDataURL("image/png");
+      setIsSignatureSaved(true);
+      setSignatureBase64(dataURL);
+    } catch (error) {
+      console.error("Error saving signature:", error);
+    }
   };
 
   const submitSignedDocument = async () => {
+    if (popupLoading) return;
+    setPopupLoading(true);
     setLoading(true);
-    let htmlContent = `<html>
-          <head>
-              <style>
-                  body { background: white !important; }
-                  table, th, td, div, p, span { background: transparent !important; }
-              </style>
-          </head>
-          <body>
-              ${containerRef.current.innerHTML}
-          </body>
-      </html>`;
-
-    const docxBlob = htmlDocx.asBlob(htmlContent);
-
-    const base64Doc = await getBase64FromBlob(docxBlob);
-
-    const body = {
-      base64OfTemplate: base64Doc,
-      // jobId: jobRoleId,
-      templateId: template?.templateId,
-    };
-
-    const response = await PostCall("/signedTemplate", body);
-    if (response?.data?.status === 200) {
-      setShowPopup(true);
-      setTemplate(null);
-      showToast("Document signed successfully", "success");
-      DashboarDetails();
-    } else {
-      showToast(response?.data?.message, "error");
+    if (!signatureBase64) {
+      showToast("No signature available", "error");
+      return;
     }
-    setLoading(false);
+
+    try {
+      const body = {
+        signBase64: signatureBase64,
+        templateId: template?.templateId,
+      };
+
+      const response = await PostCall("/signedTemplate", body);
+      if (response?.data?.status === 200) {
+        setIsOpen(false);
+        setTemplate(null);
+        setDocxUrl(null);
+        setDocs([]);
+        setUserData(null);
+        setSignatureBase64("");
+        setIsSignatureSaved(false);
+        showToast("Document signed successfully", "success");
+        DashboarDetails();
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (err) {
+      console.error("Error in submitSignedDocument:", err);
+      showToast("Failed to submit document", "error");
+    } finally {
+      setPopupLoading(false);
+      setLoading(false);
+    }
   };
 
   const submitReadOnlyDocument = async () => {
+    if (popupLoading) return;
+    setPopupLoading(true);
     setLoading(true);
-    const response = await PostCall("/readTemplate", {
-      templateId: template?.templateId,
-    });
-    if (response?.data?.status === 200) {
-      showToast("Document saved successfully", "success");
-      setShowPopup(true);
-      setTemplate(null);
-      setChecked(false);
-      DashboarDetails();
-    } else {
-      showToast(response?.data?.message, "error");
+    try {
+      const response = await PostCall("/readTemplate", {
+        templateId: template?.templateId,
+      });
+      if (response?.data?.status === 200) {
+        showToast("Document saved successfully", "success");
+        setIsOpen(false);
+        setTemplate(null);
+        setDocxUrl(null);
+        setDocs([]);
+        setUserData(null);
+        setChecked(false);
+        DashboarDetails();
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (err) {
+      console.error("Error in submitReadOnlyDocument:", err);
+    } finally {
+      setLoading(false);
+      setPopupLoading(false);
     }
-    setLoading(false);
   };
 
   const loadDocx = async () => {
     try {
-      const response = await fetch(docxUrl);
-      const blob = await response.blob();
-      const arrayBuffer = await blob.arrayBuffer();
+      if (!docxUrl) {
+        showToast("File not found", "error");
+        return;
+      }
 
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
-        await renderAsync(arrayBuffer, containerRef.current);
-
-        let content = containerRef.current.innerHTML;
-
-        if (userData) {
-          Object.keys(userData).forEach((key) => {
-            // console.log("key", key, "value", userData[key]);
-            content = content.replace(
-              new RegExp(`{${key}}`, "g"),
-              userData[key]
-            );
-          });
-          containerRef.current.innerHTML = content;
-        }
+      const extension = docxUrl.split(".").pop().toLowerCase();
+      if (
+        ["pdf", "docx", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)
+      ) {
+        const encodedUrl = encodeURI(docxUrl);
+        const templateName = docxUrl.split("/").pop();
+        setDocs([
+          {
+            uri: encodedUrl,
+            fileType: extension,
+            fileName: templateName,
+          },
+        ]);
+        setIsOpen(true);
+      } else {
+        showToast("Unsupported file type for preview", "error");
       }
     } catch (err) {
       console.log("Error rendering DOCX: ", err.message);
-      setError(err.message);
+      setError("Error rendering document.", "error");
     }
   };
 
-  // const GetCompany = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await GetCall(`/getAllCompany`);
-
-  //     if (response?.data?.status === 200) {
-  //       const companies = response?.data?.companies;
-  //       setcompanyList(companies);
-  //       if (!selectedCompanyId && companies.length > 0) {
-  //         const defaultCompanyId = companies[0]._id;
-  //         // console.log("companyid", defaultCompanyId);
-  //         setSelectedCompanyId(defaultCompanyId);
-  //         DashboarDetails(defaultCompanyId);
-  //       }
-  //     } else {
-  //       showToast(response?.data?.message, "error");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching companies:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // const handleCompanyChange = (e) => {
-  //   const companyId = e.target.value;
-  //   setSelectedCompanyId(companyId);
-  //   DashboarDetails(companyId);
-  // };
-
-  const handleTempalateChange = (e) => {
-    // console.log("template", e.target.value);
+  const handleTemplateChange = (e) => {
     const selected = templateList.find(
       (template) => template._id === e.target.value
     );
-    // console.log("selected", selected);
     setTemplate(selected);
     setDocxUrl(selected?.templateUrl);
     setUserData(selected?.userData);
@@ -452,14 +370,6 @@ const Dashboard = () => {
         setTimeSheetData(response?.data?.responseData?.todaysClocking);
         setTemplateList(response?.data?.responseData?.templates);
         setUserData(response?.data?.userData);
-        // setAvailableLeave(response?.data?.responseData?.totalAvailableLeave);
-        // console.log("timesheet", timeSheetData);
-        // const signed = response?.data?.responseData?.isTemplateSigned;
-        // console.log("signed", signed);
-        // setShowPopup(signed);
-        // if (!signed) {
-        //   fetchData();
-        // }
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -472,7 +382,6 @@ const Dashboard = () => {
 
   const fetchData = async (selectedTemplate) => {
     setLoading(true);
-    // console.log("template", selectedTemplate);
     const response = await PostCall("/previewTemplate", {
       templateId: selectedTemplate?.templateId,
     });
@@ -481,34 +390,23 @@ const Dashboard = () => {
       setUserData(response?.data?.userData);
       setIsSignatureRequired(response?.data?.isSignActionRequired);
       setIsReadOnly(response?.data?.isTemplateReadActionRequired);
-      // setIsSignatureRequired(false);
-      // setIsReadOnly(false);
-      setShowPopup(false);
     } else {
       showToast(response?.data?.message, "error");
     }
     setLoading(false);
   };
 
-  const getAllHoliday = async () => {
+  const getAllHoliday = async (id) => {
+    setcalenderloading(true);
     try {
-      // setLoading(true);
       let response;
-      // console.log("locationId", id);
-      // if (userRole === "Superadmin" && id) {
-      //   response = await GetCall(
-      //     `/getAllHolidays?page=${currentPage}&limit=${holidayPerPage}&locationId=${id}&year=${selectedYear}&companyId=${companyId}`
-      //   );
-      // } else {
       response = await GetCall(
         `/getAllHolidays?year=${selectedYear}&page=${currentPage}&limit=${holidayPerPage}&companyId=${companyId}`
       );
-      // }
 
       if (response?.data?.status === 200) {
         setAllholidayList(response?.data?.holidays);
         setTotalHoliday(response.data?.totalHolidays);
-        setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -529,7 +427,7 @@ const Dashboard = () => {
       if (response?.data?.status === 200) {
         setAbsenceData(response?.data?.absentUser);
         setTotalabsencereport(response.data?.totalAbsentUsers);
-        setabsenceTotalPages(response?.data?.totalPages);
+        // setabsenceTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
       }
@@ -545,63 +443,6 @@ const Dashboard = () => {
     setSelectedYear(newYear);
   };
 
-  // const handleTodayClick = () => {
-  //   const now = moment();
-  //   const currentYear = now.year();
-  //   const currentMonth = now.month() + 1;
-  //   setSelectedYear(currentYear);
-  //   setSelectedMonth(currentMonth);
-
-  //   if (calendarRef.current) {
-  //     calendarRef.current.getApi().today();
-  //     setSelectedYear(currentYear);
-  //   }
-  // };
-
-  const previewClose = () => {
-    setShowPopup(true);
-    setTemplate(null);
-    setChecked(false);
-  };
-
-  // const handleLocation = (event) => {
-  //   const selectedLocationName = event.target.value;
-  //   setSelectedLocationName(selectedLocationName);
-  //   // console.log("Selected Location Name:", selectedLocationName);
-
-  //   const matchedLocation = locationList.find(
-  //     (location) => location.locationName === selectedLocationName
-  //   );
-
-  //   if (matchedLocation) {
-  //     const FindlocationId = matchedLocation._id;
-  //     setSelectedLocationId(FindlocationId);
-  //     // console.log("locationid", FindlocationId);
-  //     if (userRole === "Superadmin") {
-  //       getAllHoliday(FindlocationId);
-  //     }
-  //   } else {
-  //     console.log("Location not found in locationList");
-  //   }
-  // };
-
-  // const GetLocations = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await GetCall(`/getAllLocation?companyId=${companyId}`);
-
-  //     if (response?.data?.status === 200) {
-  //       setLocationList(response?.data?.locations);
-  //       // console.log("locationList", locationList);
-  //     } else {
-  //       showToast(response?.data?.message, "error");
-  //     }
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
   const formattedData = GraphData?.map((item) => ({
     ...item,
     totalHours: parseFloat(item.totalHours),
@@ -613,10 +454,7 @@ const Dashboard = () => {
       setLoading(true);
       const response = await GetCall(`/getNotifications`);
       if (response?.data?.status === 200) {
-        // setNotifications(response.data.notifications);
-        // setTotalPages(response.data.totalPages);/
         const unreadCount = response?.data?.unreadNotificationsCount;
-        // console.log("unreadCount", response.data.unreadNotificationsCount);
         dispatch(setNotificationCount(unreadCount));
       } else {
         showToast(response?.data?.message, "error");
@@ -643,20 +481,6 @@ const Dashboard = () => {
   const handleAbsencePageChange = (_, newPage) => {
     setabsencecurrentPage(newPage + 1);
   };
-
-  // useEffect(() => {
-  //   const transformedEvents = AllholidayList.map((holiday) => ({
-  //     title: holiday.occasion,
-  //     start: holiday.date,
-  //     allDay: true,
-  //     classNames: ["dashboard-holiday-event"],
-  //     extendedProps: {
-  //       description: ` ${holiday.occasion}`,
-  //     },
-  //   }));
-
-  //   setEvents(transformedEvents);
-  // }, [AllholidayList]);
 
   useEffect(() => {
     if (companyId && typeof companyId === "string") getAllHoliday();
@@ -700,39 +524,11 @@ const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId]);
 
-  // useEffect(() => {
-  //   const filtered = UserGrowth?.filter(
-  //     (item) => item.year.toString() === graphSelectedYear
-  //   );
-  //   console.log("filter", filtered);
-  //   setFilteredData(filtered);
-  // }, [graphSelectedYear, UserGrowth]);
-
-  // useEffect(() => {
-  //   setCurrentMonth(moment().format("MMMM"));
-  // }, []);
-
   useEffect(() => {
-    if (showPopup && pdfRef.current) {
-      pdfRef.current.scrollTop = 0;
-    }
-  }, [showPopup]);
-
-  useEffect(() => {
-    // console.log(docxUrl);
     if (!docxUrl) return;
-
     loadDocx();
-
-    const container = containerRef.current;
-
-    return () => {
-      if (container) {
-        container.innerHTML = "";
-      }
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [docxUrl, userData]);
+  }, [docxUrl]);
 
   const HandleviewProfile = () => {
     navigate("/profile");
@@ -746,6 +542,19 @@ const Dashboard = () => {
     totalWorkingHours: "totalWorkingHours",
     "Job Title": "jobTitle",
     status: "status",
+  };
+
+  const HolidaykeyMap = {
+    "Company Name": "companyName",
+    Date: "date",
+    Occasion: "occasion",
+    Day: "date",
+  };
+
+  const timesheetkeyMap = {
+    "Clock in": "companyName",
+    "Clock Out": "date",
+    "Total Timing": "occasion",
   };
 
   const handleSort = (key) => {
@@ -767,7 +576,7 @@ const Dashboard = () => {
     return [...AbsenceData].sort((a, b) => {
       const valueA = a[sortConfig.key] ?? "";
       const valueB = b[sortConfig.key] ?? "";
-      // console.log("statusList", statusList);
+      console.log("AbsenceData", AbsenceData);
       if (typeof valueA === "string") {
         return sortConfig.direction === "asc"
           ? valueA.localeCompare(valueB)
@@ -789,10 +598,102 @@ const Dashboard = () => {
   }, [sortedData]);
 
   const paginatedRows = React.useMemo(() => {
-    const start = (currentPage - 1) * absencePerPage;
-    const end = start + absencePerPage;
-    return filteredData.slice(start, end);
-  }, [filteredData, currentPage, absencePerPage]);
+    return filteredData;
+  }, [filteredData]);
+
+  const handleSortholiday = (key) => {
+    const mappedKey = HolidaykeyMap[key] || key;
+    console.log("Sorting by:", mappedKey);
+
+    setsortConfigholiday((prevSort) => {
+      let direction = "asc";
+      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+        direction = "desc";
+      }
+      return { key: mappedKey, direction };
+    });
+  };
+
+  const sortedDataholiday = React.useMemo(() => {
+    if (!Array.isArray(AllholidayList)) return [];
+    if (!sortConfigholiday.key) return [...AllholidayList];
+    return [...AllholidayList].sort((a, b) => {
+      const valueA = a[sortConfigholiday.key] ?? "";
+      const valueB = b[sortConfigholiday.key] ?? "";
+      // console.log("statusList", statusList);
+      if (typeof valueA === "string") {
+        return sortConfigholiday.direction === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return sortConfigholiday.direction === "asc"
+          ? valueA - valueB
+          : valueB - valueA;
+      }
+    });
+  }, [AllholidayList, sortConfigholiday]);
+
+  const filteredDataholiday = React.useMemo(() => {
+    return sortedDataholiday.filter((item) =>
+      Object.values(item).some(
+        (value) => value?.toString().toLowerCase().includes
+      )
+    );
+  }, [sortedDataholiday]);
+
+  // const paginatedRowsholiday = React.useMemo(() => {
+  //   const start = (currentPage - 1) * holidayPerPage;
+  //   const end = start + holidayPerPage;
+  //   return filteredDataholiday.slice(start, end);
+  // }, [filteredDataholiday, currentPage, holidayPerPage]);
+
+  const paginatedRowsholiday = React.useMemo(() => {
+    return filteredDataholiday;
+  }, [filteredDataholiday]);
+
+  const handleSorttimesheet = (key) => {
+    const mappedKey = keyMap[key] || key;
+    // console.log("Sorting by:", mappedKey);
+
+    setSortConfigtimesheet((prevSort) => {
+      let direction = "asc";
+      if (prevSort.key === mappedKey && prevSort.direction === "asc") {
+        direction = "desc";
+      }
+      return { key: mappedKey, direction };
+    });
+  };
+
+  const sortedDatatimesheet = React.useMemo(() => {
+    if (!Array.isArray(timeSheetData)) return [];
+    if (!sortConfigtimesheet.key) return [...timeSheetData];
+    return [...timeSheetData].sort((a, b) => {
+      const valueA = a[sortConfigtimesheet.key] ?? "";
+      const valueB = b[sortConfigtimesheet.key] ?? "";
+      // console.log("timeSheetData", timeSheetData);
+      if (typeof valueA === "string") {
+        return sortConfigtimesheet.direction === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      } else {
+        return sortConfigtimesheet.direction === "asc"
+          ? valueA - valueB
+          : valueB - valueA;
+      }
+    });
+  }, [timeSheetData, sortConfigtimesheet]);
+
+  const filteredDatatimesheet = React.useMemo(() => {
+    return sortedDatatimesheet.filter((item) =>
+      Object.values(item).some(
+        (value) => value?.toString().toLowerCase().includes
+      )
+    );
+  }, [sortedData]);
+
+  const paginatedRowstimesheet = React.useMemo(() => {
+    return filteredDatatimesheet;
+  }, [filteredDatatimesheet]);
 
   useEffect(() => {
     GetNotification();
@@ -807,52 +708,84 @@ const Dashboard = () => {
         </div>
       ) : (
         <>
-          {!showPopup && userRole !== "Superadmin" && (
-            <div className="popup-overlay" onClick={previewClose}>
-              {loading ? (
-                <div className="loader-wrapper">
-                  <Loader />
-                </div>
-              ) : (
-                <div
-                  className="popup-content"
-                  ref={pdfRef}
-                  onClick={(e) => e.stopPropagation()}
+          {isOpen && (
+            <div className="fullscreen-overlay">
+              <div className="fullscreen-modal">
+                <button
+                  className="fullscreen-close-button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setDocxUrl(null);
+                    setDocs([]);
+                    setIsSignatureSaved(false);
+                    setTemplate({});
+                    setUserData(null);
+                    setShowFooter(true);
+                    setSignatureBase64("");
+                  }}
                 >
-                  <button className="close-btn" onClick={previewClose}>
-                    ×
-                  </button>
-                  <div>
-                    {error ? (
-                      <p style={{ color: "red" }}>{error}</p>
-                    ) : docxUrl && userData ? (
-                      <div ref={containerRef} className="docs" />
-                    ) : (
-                      <p>Loading document...</p>
-                    )}
+                  ×
+                </button>
+                <div className="preview-doc-flex">
+                  <DocViewer
+                    documents={docs}
+                    pluginRenderers={DocViewerRenderers}
+                    config={{
+                      header: {
+                        disableDownload: true,
+                        disablePrint: true,
+                      },
+                    }}
+                    style={{ height: "100%", width: "100%" }}
+                  />
+                </div>
+                {error && <p className="error-message">{error}</p>}
+                {showFooter && (
+                  <div className="footer-main-div">
+                    <div className="preview-footer">
+                      <div>
+                        <strong>Employee Name: </strong>{" "}
+                        {userData?.EMPLOYEE_NAME || ""}
+                      </div>
+                      <div>
+                        <strong>Date: </strong> {userData?.DATE || ""}
+                      </div>
+                      {isSignatureSaved && (
+                        <div className="signature-preview">
+                          <strong>Signature: </strong>
+                          <img
+                            className="signature-image"
+                            src={signatureBase64}
+                            alt="Employee Signature"
+                          />
+                        </div>
+                      )}
+                    </div>
 
                     {isSignatureRequired && (
                       <>
                         {!isSignatureSaved ? (
-                          <div className="signature-container">
-                            <SignatureCanvas
-                              ref={signatureRef}
-                              canvasProps={{
-                                className: "signature-canvas",
-                              }}
-                            />
-                            <CommonAddButton
-                              label="Save Signature"
-                              onClick={saveSignature}
-                            />
+                          <div>
+                            <div className="preview-signature">
+                              <SignatureCanvas
+                                ref={signatureRef}
+                                canvasProps={{
+                                  className: "signature-canvas",
+                                }}
+                              />
+                            </div>
+                            <div className="preview-submit">
+                              <CommonAddButton
+                                label="Save Signature"
+                                onClick={saveSignature}
+                              />
+                            </div>
                           </div>
                         ) : (
-                          <div className="submit-signature-button">
-                            <CommonAddButton
-                              label="Submit"
-                              onClick={submitSignedDocument}
-                            />
-                          </div>
+                          <CommonAddButton
+                            label="Submit"
+                            onClick={submitSignedDocument}
+                          />
                         )}
                       </>
                     )}
@@ -867,20 +800,19 @@ const Dashboard = () => {
                           />
                           <label>I read carefully.</label>
                         </div>
-                        <div className="save-readOnly">
-                          <button
-                            className="common-button"
-                            onClick={submitReadOnlyDocument}
-                            disabled={!checked}
-                          >
-                            Read
-                          </button>
-                        </div>
+
+                        <button
+                          className="read-button"
+                          onClick={submitReadOnlyDocument}
+                          disabled={!checked}
+                        >
+                          Read
+                        </button>
                       </>
                     )}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           )}
 
@@ -909,7 +841,7 @@ const Dashboard = () => {
                 {/* <select
                   className="JobTitle-input"
                   value={template?._id || ""}
-                  onChange={handleTempalateChange}
+                  onChange={handleTemplateChange}
                 >
                   <option value="" disabled>
                     Select a Template
@@ -925,7 +857,7 @@ const Dashboard = () => {
                   defaultValue=""
                   className="dashboard-input-dropdown"
                   value={template?._id || ""}
-                  onChange={handleTempalateChange}
+                  onChange={handleTemplateChange}
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -1140,8 +1072,8 @@ const Dashboard = () => {
                               </TableRow>
                             ) : (
                               paginatedRows.map((absence, index) => {
-                                const actualIndex =
-                                  currentPage * absencePerPage + index;
+                                // const actualIndex =
+                                //   currentPage * absencePerPage + index;
 
                                 return (
                                   <TableRow key={index}>
@@ -1255,7 +1187,7 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className="dashboard-absence-table">
+                  {/* <div className="dashboard-absence-table">
                     <table>
                       <thead>
                         <tr>
@@ -1310,7 +1242,71 @@ const Dashboard = () => {
                     >
                       View Clock In
                     </button>
-                  </div>
+                  </div> */}
+                  <TableContainer>
+                    <Table className="employeetimesheet-table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>
+                            <TableSortLabel>Clock In</TableSortLabel>
+                          </TableCell>
+                          <TableCell>
+                            <TableSortLabel>Clock Out</TableSortLabel>
+                          </TableCell>
+                          <TableCell>
+                            <TableSortLabel>Working Time</TableSortLabel>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {paginatedRowstimesheet?.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={7} align="center">
+                              No data available
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          paginatedRowstimesheet.map((clock, index) => {
+                            // const actualIndex =
+                            //   currentPage * absencePerPage + index;
+
+                            return (
+                              <TableRow key={index}>
+                                <TableCell>
+                                  {moment(clock.date).format("DD/MM/YYYY")}
+                                </TableCell>
+                                <TableCell>
+                                  {clock.clockIn
+                                    ? moment(clock.clockIn).format(
+                                        "DD/MM/YYYY h:mm:ss A"
+                                      )
+                                    : "-"}
+                                </TableCell>
+                                <TableCell>
+                                  {" "}
+                                  {clock.clockOut ? (
+                                    moment(clock.clockOut).format(
+                                      "DD/MM/YYYY h:mm:ss A"
+                                    )
+                                  ) : (
+                                    <b className="active">Active</b>
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  {" "}
+                                  {clock.totalTiming !== "0" ? (
+                                    clock.totalTiming
+                                  ) : (
+                                    <BsHourglassSplit />
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </div>
               </div>
             )}
@@ -1618,21 +1614,97 @@ const Dashboard = () => {
                       <Table className="employeetimesheet-table">
                         <TableHead>
                           <TableRow>
-                            <TableCell>Company Name</TableCell>
-                            <TableCell>Date</TableCell>
-                            <TableCell>Occasion</TableCell>
-                            <TableCell>Day</TableCell>
+                            <TableCell
+                              sortDirection={
+                                sortConfigholiday.key === "Company Name"
+                                  ? sortConfigholiday.direction
+                                  : false
+                              }
+                            >
+                              <TableSortLabel
+                                active={
+                                  sortConfigholiday.key === "Company Name"
+                                }
+                                direction={
+                                  sortConfigholiday.key === "Company Name"
+                                    ? sortConfigholiday.direction
+                                    : "asc"
+                                }
+                                onClick={() =>
+                                  handleSortholiday("Company Name")
+                                }
+                              >
+                                Company Name
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell
+                              sortDirection={
+                                sortConfigholiday.key === "Date"
+                                  ? sortConfigholiday.direction
+                                  : false
+                              }
+                            >
+                              <TableSortLabel
+                                active={sortConfigholiday.key === "Date"}
+                                direction={
+                                  sortConfigholiday.key === "Date"
+                                    ? sortConfigholiday.direction
+                                    : "asc"
+                                }
+                                onClick={() => handleSortholiday("Date")}
+                              >
+                                Date
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell
+                              sortDirection={
+                                sortConfigholiday.key === "Occasion"
+                                  ? sortConfigholiday.direction
+                                  : false
+                              }
+                            >
+                              <TableSortLabel
+                                active={sortConfigholiday.key === "Occasion"}
+                                direction={
+                                  sortConfigholiday.key === "Occasion"
+                                    ? sortConfigholiday.direction
+                                    : "asc"
+                                }
+                                onClick={() => handleSortholiday("Occasion")}
+                              >
+                                Occasion
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell
+                              sortDirection={
+                                sortConfigholiday.key === "Day"
+                                  ? sortConfigholiday.direction
+                                  : false
+                              }
+                            >
+                              <TableSortLabel
+                                active={sortConfigholiday.key === "Day"}
+                                direction={
+                                  sortConfigholiday.key === "Day"
+                                    ? sortConfigholiday.direction
+                                    : "asc"
+                                }
+                                onClick={() => handleSortholiday("Day")}
+                              >
+                                Day
+                              </TableSortLabel>
+                            </TableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {AllholidayList.length === 0 ? (
+                          {paginatedRowsholiday.length === 0 ? (
                             <TableRow>
                               <TableCell colSpan={3} align="center">
                                 No data available
                               </TableCell>
                             </TableRow>
                           ) : (
-                            AllholidayList.map((holiday, index) => (
+                            paginatedRowsholiday.map((holiday, index) => (
                               <TableRow key={index}>
                                 <TableCell>{holiday.companyName}</TableCell>
                                 <TableCell>
@@ -1659,7 +1731,7 @@ const Dashboard = () => {
                                 }
                                 rowsPerPage={holidayPerPage}
                                 onRowsPerPageChange={handlePerPageChange}
-                                rowsPerPageOptions={[5, 10, 15, 20]}
+                                rowsPerPageOptions={[5, 10, 15]}
                               />
                             </TableCell>
                           </TableRow>

@@ -12,7 +12,6 @@
     "axios": "^1.7.9",
     "docx-preview": "^0.3.5",
     "docx4js": "^3.3.0",
-    "html-docx-js": "^0.3.1",
     "html5-qrcode": "^2.3.8",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.46",

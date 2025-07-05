@@ -22,10 +22,10 @@ export const SidebarData = [
     section: "",
     items: [
       {
-        title: "Staff Templates",
+        title: "Templates",
         icon: <RiBookletLine />,
-        link: "/stafftemplates",
-        allowedRoles: ["Superadmin", "Administrator"],
+        link: "/mytemplate",
+        allowedRoles: ["Employee"],
       },
     ],
   },
@@ -67,6 +67,47 @@ export const SidebarData = [
         icon: <TiLocationOutline />,
         link: "/location",
         allowedRoles: ["Superadmin"],
+      },
+      // {
+      //   title: "Templates",
+      //   icon: <RiBookletLine />,
+      //   link: "/templates",
+      //   allowedRoles: ["Superadmin"],
+      // },
+      // {
+      //   title: "Templates Upload",
+      //   icon: <RiBookletLine />,
+      //   link: "/TemplatesUpload",
+      //   allowedRoles: ["Administrator", "Manager", "Employee"],
+      // },
+      // {
+      //   title: "Templates Upload By",
+      //   icon: <RiBookletLine />,
+      //   link: "/TemplatesUploadbyemployee",
+      //   allowedRoles: ["Superadmin", "Administrator", "Manager"],
+      // },
+      {
+        title: "Template",
+        icon: <RiBookletLine />,
+        allowedRoles: ["Superadmin", "Administrator", "Manager"],
+        subItems: [
+          {
+            title: "Templates",
+            icon: <RiBookletLine />,
+            link: "/templates",
+            allowedRoles: ["Superadmin"],
+          },
+          {
+            title: "Staff Templates",
+            link: "/stafftemplate",
+            allowedRoles: ["Superadmin", "Administrator", "Manager"],
+          },
+          {
+            title: "My Templates",
+            link: "/mytemplate",
+            allowedRoles: ["Administrator", "Manager"],
+          },
+        ],
       },
     ],
   },
@@ -262,7 +303,7 @@ export const SidebarData = [
     section: "Job Titles",
     items: [
       {
-        title: "Jobs",
+        title: "Job Title",
         icon: <FaBriefcase />,
         link: "/jobtitles",
         allowedRoles: ["Superadmin"],

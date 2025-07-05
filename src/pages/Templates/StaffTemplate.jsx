@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Loader from "../Helper/Loader";
 import "../Templates/Templates.css";
 import CommonTable from "../../SeparateCom/CommonTable";
@@ -8,17 +8,15 @@ import { TextField } from "@mui/material";
 import { Select, MenuItem, ListSubheader } from "@mui/material";
 import { useSelector } from "react-redux";
 import { FaDownload, FaEye, FaTrash } from "react-icons/fa";
-import DeleteConfirmation from "../../main/DeleteConfirmation";
+import DeleteConfirmationWithPermission from "../../main/DeleteConfirmationWithPermission";
 import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
-import SignatureCanvas from "react-signature-canvas";
-import CommonAddButton from "../../SeparateCom/CommonAddButton";
 
 const StaffTemplate = () => {
   const { GetCall, PostCall } = useApiServices();
   const [loading, setLoading] = useState(false);
-  const [templateList, settemplateList] = useState([]);
+  const [templateList, setTemplateList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [templatePerPage, settemplatePerPage] = useState(50);
+  const [templatePerPage, setTemplatePerPage] = useState(50);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -26,20 +24,19 @@ const StaffTemplate = () => {
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [employeeList, setEmployeeList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
-  const [isuploaded, setisuploaded] = useState("allstatus");
+  const [isUploaded, setIsUploaded] = useState("allstatus");
   const [totalPages, setTotalPages] = useState(0);
-  const [totalTemplates, settotalTemplates] = useState([]);
-  const [EmployeeaName, setEmployeeaName] = useState("");
+  const [totalTemplates, setTotalTemplates] = useState([]);
+  const [employeeName, setEmployeeName] = useState("");
   const [templateName, setTemplateName] = useState("");
-  const [templateId, settemplateId] = useState("");
-  const [userId, settuserId] = useState("");
-  const [previewUserName, setpreviewUserName] = useState("");
-  const [assignAt, setassignAt] = useState("");
+  const [templateId, setTemplateId] = useState("");
+  const [userId, setUserId] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isReAssignTemplate, setIsReAssignTemplate] = useState(false);
+  const [docxUrl, setDocxUrl] = useState(null);
   const [docs, setDocs] = useState([]);
-  const signatureRef = useRef(null);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState("");
   const filteredEmployeeList = useMemo(() => {
     return employeeList.filter((user) =>
       user.userName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -50,12 +47,12 @@ const StaffTemplate = () => {
     try {
       setLoading(true);
       const response = await PostCall(
-        `/getAllUsersTemplates?page=${currentPage}&userId=${selectedEmployee}&limit=${templatePerPage}&search=${debouncedSearch}&status=${isuploaded}&companyId=${companyId}`
+        `/getAllUsersTemplates?page=${currentPage}&userId=${selectedEmployee}&limit=${templatePerPage}&search=${debouncedSearch}&status=${isUploaded}&companyId=${companyId}`
       );
 
       if (response?.data?.status === 200) {
-        settemplateList(response?.data?.templates);
-        settotalTemplates(response?.data?.totalTemplates);
+        setTemplateList(response?.data?.templates);
+        setTotalTemplates(response?.data?.totalTemplates);
         setTotalPages(response?.data?.totalPages);
       } else {
         showToast(response?.data?.message, "error");
@@ -69,9 +66,9 @@ const StaffTemplate = () => {
   };
 
   const tableHeaders = [
-    "Employee Name",
-    "Template Name",
-    "File Name",
+    "Employee Name   ",
+    "Template Name ",
+    "File Name  ",
     "Status",
     "Assign by",
     "Assigned At",
@@ -83,8 +80,8 @@ const StaffTemplate = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handletemplatePerPageChange = (e) => {
-    settemplatePerPage(e);
+  const handleTemplatePerPageChange = (e) => {
+    setTemplatePerPage(e);
     setCurrentPage(1);
   };
 
@@ -94,6 +91,10 @@ const StaffTemplate = () => {
 
   const handleEmployeeChange = (value) => {
     setSelectedEmployee(value);
+  };
+
+  const handleCheckboxChange = (e) => {
+    setIsReAssignTemplate(e.target.checked);
   };
 
   const getAllUsersOfClientOrLocation = async () => {
@@ -114,48 +115,11 @@ const StaffTemplate = () => {
     }
   };
 
-  // const handlePreview = (uploadedURL) => {
-  //   if (!uploadedURL) {
-  //     showToast("not found Template", "error");
-  //     return;
-  //   }
-  //   const extension = uploadedURL.split(".").pop().toLowerCase();
-  //   if (["pdf", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
-  //     window.open(uploadedURL, "_blank");
-  //   } else if (extension === "docx") {
-  //     const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(
-  //       uploadedURL
-  //     )}&embedded=true`;
-  //     window.open(viewerUrl, "_blank");
-  //   } else {
-  //     showToast("Unsupported file type for preview", "error");
-  //   }
-  // };
-
-  const handlePreview = (uploadedURL, userName, assignedAt, templateName) => {
-    setpreviewUserName(userName);
-    setassignAt(assignedAt);
-
-    if (!uploadedURL) {
-      alert("File not found");
-      return;
-    }
-
-    const extension = uploadedURL.split(".").pop().toLowerCase();
-    if (
-      ["pdf", "docx", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)
-    ) {
-      const encodedUrl = encodeURI(uploadedURL);
-      setDocs([
-        {
-          uri: encodedUrl,
-          fileType: extension,
-          fileName: templateName,
-        },
-      ]);
-      setIsOpen(true);
-    } else {
-      showToast("Unsupported file type for preview");
+  const handlePreview = (uploadedURL) => {
+    try {
+      setDocxUrl(uploadedURL);
+    } catch (error) {
+      showToast("An error occurred while previewing the template.", "error");
     }
   };
 
@@ -173,10 +137,10 @@ const StaffTemplate = () => {
   };
 
   const handleDelete = (templateId, templateName, employeeName, userId) => {
-    settemplateId(templateId);
+    setTemplateId(templateId);
     setTemplateName(templateName);
-    setEmployeeaName(employeeName);
-    settuserId(userId);
+    setEmployeeName(employeeName);
+    setUserId(userId);
     setShowConfirm(true);
   };
 
@@ -185,35 +149,68 @@ const StaffTemplate = () => {
   };
 
   const confirmDelete = async (templateId, userId) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const data = {
         templateId: templateId,
         userId: userId,
+        isReassign: isReAssignTemplate,
       };
-      console.log("data", data);
       const response = await PostCall(`/deleteSignedTemplateOfUser`, data);
       if (response?.data?.status === 200) {
         showToast(response?.data?.message, "success");
         setShowConfirm(false);
-        settemplateId("");
+        setTemplateId("");
         setTemplateName("");
-        setEmployeeaName("");
-        settuserId("");
+        setEmployeeName("");
+        setUserId("");
         getTemplate();
+        setIsReAssignTemplate(false);
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
     } catch (error) {
       console.error("Error deleting timesheets:", error);
+    } finally {
       setLoading(false);
     }
   };
 
-  const handleSaveSignature = () => {
-    alert("save");
+  const loadDocx = async () => {
+    try {
+      if (!docxUrl) {
+        showToast("File not found", "error");
+        return;
+      }
+
+      const extension = docxUrl.split(".").pop().toLowerCase();
+      if (
+        ["pdf", "docx", "jpg", "jpeg", "png", "gif", "webp"].includes(extension)
+      ) {
+        const encodedUrl = encodeURI(docxUrl);
+        const templateName = docxUrl.split("/").pop();
+        setDocs([
+          {
+            uri: encodedUrl,
+            fileType: extension,
+            fileName: templateName,
+          },
+        ]);
+        setIsOpen(true);
+      } else {
+        showToast("Unsupported file type for preview", "error");
+      }
+    } catch (err) {
+      console.log("Error rendering DOCX: ", err.message);
+      setError("Error rendering document.");
+    }
   };
+
+  useEffect(() => {
+    if (!docxUrl) return;
+    loadDocx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docxUrl]);
 
   useEffect(() => {
     getAllUsersOfClientOrLocation();
@@ -227,7 +224,7 @@ const StaffTemplate = () => {
     currentPage,
     templatePerPage,
     debouncedSearch,
-    isuploaded,
+    isUploaded,
     selectedEmployee,
     companyId,
   ]);
@@ -248,6 +245,42 @@ const StaffTemplate = () => {
 
   return (
     <div className="template-list-container">
+      {/* {loading ? (
+        <div className="loader-wrapper">
+          <Loader />
+        </div>
+      ) : ( */}
+      {/* <> */}
+      {isOpen && (
+        <div className="fullscreen-overlay">
+          <div className="fullscreen-modal">
+            <button
+              className="fullscreen-close-button"
+              onClick={() => {
+                setIsOpen(false);
+                setDocxUrl(null);
+                setDocs([]);
+              }}
+            >
+              ×
+            </button>
+            <div className="preview-doc-flex">
+              <DocViewer
+                documents={docs}
+                pluginRenderers={DocViewerRenderers}
+                config={{
+                  header: {
+                    disableDownload: true,
+                    disablePrint: true,
+                  },
+                }}
+                style={{ height: "100%", width: "100%" }}
+              />
+            </div>
+            {error && <p className="error-message">{error}</p>}
+          </div>
+        </div>
+      )}
       <div className="template-main-container">
         <div className="template-flex">
           <div className="template-title">
@@ -327,8 +360,8 @@ const StaffTemplate = () => {
               <label className="label">Status</label>
               <Select
                 className="template-input-dropdown"
-                value={isuploaded}
-                onChange={(e) => setisuploaded(e.target.value)}
+                value={isUploaded}
+                onChange={(e) => setIsUploaded(e.target.value)}
                 displayEmpty
               >
                 <MenuItem value="" disabled className="menu-item">
@@ -370,9 +403,9 @@ const StaffTemplate = () => {
             tableName="StaffTemplates"
             data={templateList?.map((template) => ({
               _id: template?.templateId,
-              EmployeeName: template?.userName,
-              Name: template?.templateName,
-              TemplateFileName: template?.templateFileName,
+              Employeename: template?.userName,
+              templatename: template?.templateName,
+              templatefilename: template?.templateFileName,
               uploadStatus: template?.isTemplateUploaded
                 ? "Uploaded"
                 : "Pending",
@@ -389,12 +422,7 @@ const StaffTemplate = () => {
                     <FaEye
                       onClick={() =>
                         template?.isTemplateUploaded &&
-                        handlePreview(
-                          template?.uploadedURL,
-                          template?.userName,
-                          template?.assignedAt,
-                          template?.templateName
-                        )
+                        handlePreview(template?.uploadedURL)
                       }
                       style={{
                         cursor: template?.isTemplateUploaded
@@ -421,7 +449,7 @@ const StaffTemplate = () => {
                     />
                   </span>
                   <span
-                    className={`action-icon template-download ${
+                    className={`action-icon template-delete ${
                       template.isTemplateUploaded ? "" : "disabled-icon"
                     }`}
                   >
@@ -444,68 +472,24 @@ const StaffTemplate = () => {
             totalPages={totalPages}
             onPageChange={handlePageChange}
             showPerPage={templatePerPage}
-            onPerPageChange={handletemplatePerPageChange}
+            onPerPageChange={handleTemplatePerPageChange}
             isPagination="true"
             totalData={totalTemplates}
           />
           {showConfirm && (
-            <DeleteConfirmation
-              confirmation={`Are you sure you want to delete the <b>${templateName}</b> of <b>${EmployeeaName}</b>?`}
+            <DeleteConfirmationWithPermission
+              confirmation={`Are you sure you want to delete <b>${templateName}</b> of <b>${employeeName}</b>?`}
               onConfirm={() => confirmDelete(templateId, userId)}
               onCancel={cancelDelete}
+              permissionMessage="Do you Re-assign the template to employee?"
+              isChecked={isReAssignTemplate}
+              onCheckboxChange={handleCheckboxChange}
             />
           )}
         </>
       )}
-      {isOpen && (
-        <div className="fullscreen-overlay">
-          <div className="fullscreen-modal">
-            <button
-              className="fullscreen-close-button"
-              onClick={() => setIsOpen(false)}
-            >
-              ×
-            </button>
-            <div className="preview-doc-flex">
-              <DocViewer
-                documents={docs}
-                pluginRenderers={DocViewerRenderers}
-                config={{
-                  header: {
-                    disableDownload: true,
-                    disablePrint: true,
-                  },
-                }}
-                style={{ height: "100%", width: "100%" }}
-              />
-            </div>
-            <div className="footer-main-div">
-              <div className="preview-footer">
-                <div>
-                  <strong>Employee Name: </strong> {previewUserName}
-                </div>
-                <div>
-                  <strong>Date: </strong> {assignAt}
-                </div>
-              </div>
-              <div className="preview-signture">
-                <SignatureCanvas
-                  ref={signatureRef}
-                  canvasProps={{
-                    className: "signature-canvas",
-                  }}
-                />
-              </div>
-              <div className="preview-submit">
-                <CommonAddButton
-                  label="Save Signature"
-                  onClick={handleSaveSignature}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* </> */}
+      {/* )} */}
     </div>
   );
 };

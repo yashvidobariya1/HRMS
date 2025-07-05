@@ -58,6 +58,7 @@ import MyViewHours from "./pages/ViewHours/MyViewHours";
 import MyAbsenceReport from "./pages/AbsenceReport/MyAbsenceReport";
 import MyViewTasks from "./pages/ViewTasks/MyViewTasks";
 import AddTask from "./pages/ViewTasks/AddTask";
+import MyTemplate from "./pages/Templates/MyTemplate";
 import StaffTemplate from "./pages/Templates/StaffTemplate";
 
 // Layout wrapper
@@ -161,7 +162,12 @@ const protectedRoutes = [
   },
   { path: "/templates", component: <Templates />, roles: ["Superadmin"] },
   {
-    path: "/stafftemplates",
+    path: "/mytemplate",
+    component: <MyTemplate />,
+    roles: ["Administrator", "Manager", "Employee"],
+  },
+  {
+    path: "/stafftemplate",
     component: <StaffTemplate />,
     roles: ["Superadmin", "Administrator", "Manager"],
   },

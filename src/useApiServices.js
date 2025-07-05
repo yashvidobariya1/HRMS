@@ -20,6 +20,7 @@ const useApiServices = () => {
   if (typeof window.sessionExpired === "undefined") {
     window.sessionExpired = false;
   }
+
   const BASE_URL = process.env.REACT_APP_API_URL;
 
   const getAuthToken = () => {
@@ -32,29 +33,12 @@ const useApiServices = () => {
     Authorization: `Bearer ${getAuthToken()}`,
   });
 
-  // const handleUnauthorized = async () => {
-  //   // if (sessionExpired) return;
-  //   console.warn("Session expired");
-  //   localStorage.clear();
-  //   dispatch(clearUserInfo());
-  //   dispatch(clearNotificationCount());
-  //   dispatch(clearThemeColor());
-  //   dispatch(clearJobRoleSelect());
-  //   dispatch(clearCompanySelect());
-  //   dispatch(clearEmployeeformFilled());
-  //   persistor.pause();
-  //   await persistor.purge();
-  //   persistor.persist();
-  //   navigate("/login");
-  // };
-
   const handleUnauthorized = async (errorMessage) => {
     if (unauthorizedCalled.current || window.sessionExpired) return;
     unauthorizedCalled.current = true;
     window.sessionExpired = true;
     showToast(errorMessage, "error");
     localStorage.clear();
-    // navigate("/login");
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     dispatch(clearUserInfo());
@@ -72,9 +56,7 @@ const useApiServices = () => {
   };
 
   const GetCall = async (endpoint, params = {}, headers = {}) => {
-    console.log(" before get call");
     if (sessionExpired || window.sessionExpired) return;
-    console.log("get call");
 
     try {
       const response = await axios.get(`${BASE_URL}${endpoint}`, {
@@ -86,7 +68,6 @@ const useApiServices = () => {
       });
       if (response?.data?.status === 5000) {
         dispatch(setSession(true));
-        console.log(response);
         await handleUnauthorized(response?.data?.message);
         // await handleUnauthorized();
         return;
@@ -100,9 +81,7 @@ const useApiServices = () => {
   };
 
   const PostCall = async (endpoint, body = {}, headers = {}) => {
-    console.log(" before post call");
     if (sessionExpired || window.sessionExpired) return;
-    console.log("poast call");
 
     try {
       const response = await axios.post(`${BASE_URL}${endpoint}`, body, {
@@ -113,7 +92,6 @@ const useApiServices = () => {
       });
       if (response?.data?.status === 5000) {
         dispatch(setSession(true));
-        console.log(response);
         await handleUnauthorized(response?.data?.message);
         return;
       }
