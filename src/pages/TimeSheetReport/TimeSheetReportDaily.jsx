@@ -176,6 +176,7 @@ const TimeSheetReportDaily = () => {
   const GetTimesheetReport = async () => {
     try {
       setLoading(true);
+      setTimesheetReportList([]);
       const filters = {
         userId: selectedEmployee,
         // locationId: selectedLocation,
