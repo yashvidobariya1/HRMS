@@ -44,14 +44,13 @@ const TimeSheetReportDaily = () => {
   const [selectedLocation, setselectedLocation] = useState("allLocations");
   const [locationSearchTerm, setlocationSearchTerm] = useState("");
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const minDate = moment("2024-01-01").format("YYYY-MM-DD");
-  const maxDate = moment().format("YYYY-MM-DD");
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [totalHourCount, settotalHourCount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [clientSearchTerm, setClientSearchTerm] = useState("");
+  const [dataFetched, setDataFetched] = useState(false);
 
   const filteredEmployeeList = useMemo(() => {
     return employeeList.filter((user) =>
@@ -104,7 +103,7 @@ const TimeSheetReportDaily = () => {
 
   const getAllClientsOfUser = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       // const formdata = {
       //   userId: selectedEmployee,
       //   isWorkFromOffice: isWorkFromOffice,
@@ -118,10 +117,10 @@ const TimeSheetReportDaily = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -135,7 +134,7 @@ const TimeSheetReportDaily = () => {
 
   const getAllUsersOfClientOrLocation = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       // const formdata = {
       //   clientId: selectedClient,
       //   isWorkFromOffice: isWorkFromOffice,
@@ -148,16 +147,16 @@ const TimeSheetReportDaily = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
   const getAllLocations = async () => {
+    // setLoading(true);
     try {
-      setLoading(true);
       const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
       );
@@ -166,17 +165,18 @@ const TimeSheetReportDaily = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setLoading(false);
+      // setLoading(false);
+    } finally {
+      // setLoading(false);
     }
   };
 
   const GetTimesheetReport = async () => {
+    setLoading(true);
+    setTimesheetReportList([]);
     try {
-      setLoading(true);
-      setTimesheetReportList([]);
       const filters = {
         userId: selectedEmployee,
         // locationId: selectedLocation,
@@ -199,10 +199,11 @@ const TimeSheetReportDaily = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
       setLoading(false);
+      setDataFetched(true);
     }
   };
 
@@ -324,6 +325,23 @@ const TimeSheetReportDaily = () => {
   }, [isWorkFromOffice, companyId, selectedEmployee]);
 
   useEffect(() => {
+    if (selectedStartDate && selectedEndDate) {
+      const isInvalid = moment(selectedEndDate).isBefore(
+        moment(selectedStartDate)
+      );
+
+      if (isInvalid) {
+        showToast(
+          "End date should be later than or equal to Start date",
+          "error"
+        );
+        return;
+      }
+    }
+    if (moment(selectedEndDate).isAfter(moment())) {
+      showToast("End date should not later than current date", "error");
+      return;
+    }
     GetTimesheetReport();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -550,37 +568,26 @@ const TimeSheetReportDaily = () => {
             </div>
           )}
 
-          <div className="timesheet-report-download-container">
-            <div className="timesheet-input-container">
-              <label className="label">Start Date</label>
-              <input
-                type="date"
-                name="startDate"
-                className="timesheet-input"
-                value={selectedStartDate}
-                onChange={handleChange}
-                min={minDate}
-                max={maxDate}
-              />
-              {/* {errors?.startDate && (
-                <p className="error-text">{errors?.startDate}</p>
-              )} */}
-            </div>
+          <div className="timesheet-input-container">
+            <label className="label">Start Date</label>
+            <input
+              type="date"
+              name="startDate"
+              className="timesheet-input"
+              value={selectedStartDate}
+              onChange={handleChange}
+            />
+          </div>
 
-            <div className="timesheet-input-container">
-              <label className="label">End Date</label>
-              <input
-                type="date"
-                name="endDate"
-                className="timesheet-input"
-                value={selectedEndDate}
-                onChange={handleChange}
-                min={minDate}
-                max={maxDate}
-              />
-            </div>
-
-            {/* <button onClick={handleFilter}>Filter</button> */}
+          <div className="timesheet-input-container">
+            <label className="label">End Date</label>
+            <input
+              type="date"
+              name="endDate"
+              className="timesheet-input"
+              value={selectedEndDate}
+              onChange={handleChange}
+            />
           </div>
         </div>
       </div>
@@ -735,14 +742,15 @@ const TimeSheetReportDaily = () => {
                       <TableCell>{row.totalHours}</TableCell>
                     </TableRow>
                   ))
-                ) : (
+                ) : dataFetched ? (
                   <TableRow>
                     <TableCell colSpan={8} align="center">
                       <p>No data found</p>
                     </TableCell>
                   </TableRow>
-                )}
+                ) : null}
               </TableBody>
+
               <TableFooter>
                 <TableRow>
                   <TableCell colSpan={10}>
