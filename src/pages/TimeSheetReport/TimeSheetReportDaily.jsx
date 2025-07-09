@@ -25,6 +25,7 @@ import {
   Paper,
 } from "@mui/material";
 import { BsHourglassSplit } from "react-icons/bs";
+import CommonAddButton from "../../SeparateCom/CommonAddButton";
 
 const TimeSheetReportDaily = () => {
   const { PostCall, GetCall } = useApiServices();
@@ -50,7 +51,6 @@ const TimeSheetReportDaily = () => {
   const [totalHourCount, settotalHourCount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [clientSearchTerm, setClientSearchTerm] = useState("");
-  const [dataFetched, setDataFetched] = useState(false);
 
   const filteredEmployeeList = useMemo(() => {
     return employeeList.filter((user) =>
@@ -175,7 +175,6 @@ const TimeSheetReportDaily = () => {
 
   const GetTimesheetReport = async () => {
     setLoading(true);
-    setTimesheetReportList([]);
     try {
       const filters = {
         userId: selectedEmployee,
@@ -203,7 +202,118 @@ const TimeSheetReportDaily = () => {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
-      setDataFetched(true);
+    }
+  };
+
+  const handlePdfDownload = async () => {
+    // setLoading(true);
+    try {
+      const filters = {
+        userId: selectedEmployee,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
+      };
+
+      const frequency = "Daily";
+      const response = await PostCall(
+        `/downloadTimesheet?companyId=${companyId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}&format=pdf`,
+        filters
+      );
+      if (response?.data?.status === 200) {
+        let fixedBase64 = response?.data?.pdfBase64
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+        while (fixedBase64.length % 4 !== 0) {
+          fixedBase64 += "=";
+        }
+
+        const binaryData = atob(fixedBase64);
+        const byteArray = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          byteArray[i] = binaryData.charCodeAt(i);
+        }
+
+        const blob = new Blob([byteArray], { type: response?.data?.mimeType });
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Programmatically trigger download
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = response?.data?.fileName || "Employee Report List.pdf";
+        a.style.display = "none";
+
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  const handleXlsDownload = async () => {
+    // setLoading(true);
+    try {
+      const filters = {
+        userId: selectedEmployee,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
+      };
+
+      const frequency = "Daily";
+      const response = await PostCall(
+        `/downloadTimesheet?companyId=${companyId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}&format=xls`,
+        filters
+      );
+      if (response?.data?.status === 200) {
+        let fixedBase64 = response?.data?.excelbase64
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+        while (fixedBase64.length % 4 !== 0) {
+          fixedBase64 += "=";
+        }
+
+        const binaryData = atob(fixedBase64);
+        const byteArray = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          byteArray[i] = binaryData.charCodeAt(i);
+        }
+
+        const blob = new Blob([byteArray], { type: response?.data?.mimeType });
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Programmatically trigger download
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = response?.data?.fileName || "Timesheet Report List.xls";
+        a.style.display = "none";
+
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
+      } else {
+        showToast(
+          response?.data?.message || "Failed to download file",
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error while downloading timesheet report:", error);
+      showToast("An error occurred while processing your request.", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -590,6 +700,26 @@ const TimeSheetReportDaily = () => {
             />
           </div>
         </div>
+        <div>
+          <div className="timesheet-report-list-action-button">
+            <button
+              className="timesheet-pdf-button"
+              label="PDF"
+              onClick={handlePdfDownload}
+              disabled={loading}
+            >
+              PDF
+            </button>
+            <button
+              className="timesheet-xls-button"
+              label="XLS"
+              onClick={handleXlsDownload}
+              disabled={loading}
+            >
+              XLS
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="timesheetreport-officework">
@@ -742,15 +872,14 @@ const TimeSheetReportDaily = () => {
                       <TableCell>{row.totalHours}</TableCell>
                     </TableRow>
                   ))
-                ) : dataFetched ? (
+                ) : (
                   <TableRow>
                     <TableCell colSpan={8} align="center">
                       <p>No data found</p>
                     </TableCell>
                   </TableRow>
-                ) : null}
+                )}
               </TableBody>
-
               <TableFooter>
                 <TableRow>
                   <TableCell colSpan={10}>

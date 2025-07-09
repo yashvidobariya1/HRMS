@@ -40,8 +40,6 @@ const TimesheetReportMy = () => {
   const [selectedClient, setselectedClient] = useState("allClients");
   const userId = useSelector((state) => state.userInfo.userInfo._id);
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const minDate = moment("2024-01-01").format("YYYY-MM-DD");
-  const maxDate = moment().format("YYYY-MM-DD");
   // const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -123,7 +121,7 @@ const TimesheetReportMy = () => {
 
   const getAllClientsOfUser = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       // const formdata = {
       //   userId: selectedEmployee,
       //   isWorkFromOffice: isWorkFromOffice,
@@ -137,7 +135,7 @@ const TimesheetReportMy = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -211,7 +209,7 @@ const TimesheetReportMy = () => {
 
   const getAllLocations = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${userId}`
       );
@@ -220,7 +218,7 @@ const TimesheetReportMy = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -261,6 +259,23 @@ const TimesheetReportMy = () => {
   }, [userId, companyId]);
 
   useEffect(() => {
+    if (selectedStartDate && selectedEndDate) {
+      const isInvalid = moment(selectedEndDate).isBefore(
+        moment(selectedStartDate)
+      );
+
+      if (isInvalid) {
+        showToast(
+          "End date should be later than or equal to Start date",
+          "error"
+        );
+        return;
+      }
+    }
+    if (moment(selectedEndDate).isAfter(moment())) {
+      showToast("End date should not later than current date", "error");
+      return;
+    }
     if (userId || selectedClient) {
       GetTimesheetReport();
     }
@@ -418,33 +433,26 @@ const TimesheetReportMy = () => {
             </div>
           )}
 
-          <div className="timesheet-report-download-container">
-            <div className="timesheet-input-container">
-              <label className="label">Start Date</label>
-              <input
-                type="date"
-                name="startDate"
-                className="timesheet-input"
-                value={selectedStartDate}
-                onChange={handleChange}
-                min={minDate}
-                max={maxDate}
-              />
-            </div>
+          <div className="timesheet-input-container">
+            <label className="label">Start Date</label>
+            <input
+              type="date"
+              name="startDate"
+              className="timesheet-input"
+              value={selectedStartDate}
+              onChange={handleChange}
+            />
+          </div>
 
-            <div className="timesheet-input-container">
-              <label className="label">End Date</label>
-              <input
-                type="date"
-                name="endDate"
-                className="timesheet-input"
-                value={selectedEndDate}
-                onChange={handleChange}
-                min={minDate}
-                max={maxDate}
-              />
-            </div>
-            {/* <button onClick={handleFilter}>Filter</button> */}
+          <div className="timesheet-input-container">
+            <label className="label">End Date</label>
+            <input
+              type="date"
+              name="endDate"
+              className="timesheet-input"
+              value={selectedEndDate}
+              onChange={handleChange}
+            />
           </div>
         </div>
       </div>

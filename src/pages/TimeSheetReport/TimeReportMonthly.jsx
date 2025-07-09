@@ -47,8 +47,6 @@ const TimeSheetReportDaily = () => {
   const [selectedEmployee, setSelectedEmployee] = useState("allUsers");
   const [selectedClient, setselectedClient] = useState("allClients");
   const companyId = useSelector((state) => state.companySelect.companySelect);
-  const minDate = moment("2024-01-01").format("YYYY-MM-DD");
-  const maxDate = moment().format("YYYY-MM-DD");
   const userRole = useSelector((state) => state.userInfo.userInfo.role);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
@@ -99,7 +97,7 @@ const TimeSheetReportDaily = () => {
 
   const getAllLocations = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await GetCall(
         `/getUsersJobLocations?companyId=${companyId}&userId=${selectedEmployee}`
       );
@@ -108,7 +106,7 @@ const TimeSheetReportDaily = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -132,7 +130,7 @@ const TimeSheetReportDaily = () => {
 
   const getAllClientsOfUser = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await GetCall(
         `/getAllClientsOfUser?companyId=${companyId}&userId=${selectedEmployee}&isWorkFromOffice=${isWorkFromOffice}`
       );
@@ -142,9 +140,122 @@ const TimeSheetReportDaily = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      // setLoading(false);
+    }
+  };
+
+  const handlePdfDownload = async () => {
+    // setLoading(true);
+    try {
+      const filters = {
+        userId: selectedEmployee,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
+      };
+
+      const frequency = "Monthly";
+      const response = await PostCall(
+        `/downloadTimesheet?companyId=${companyId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}&format=pdf`,
+        filters
+      );
+      if (response?.data?.status === 200) {
+        let fixedBase64 = response?.data?.pdfBase64
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+        while (fixedBase64.length % 4 !== 0) {
+          fixedBase64 += "=";
+        }
+
+        const binaryData = atob(fixedBase64);
+        const byteArray = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          byteArray[i] = binaryData.charCodeAt(i);
+        }
+
+        const blob = new Blob([byteArray], { type: response?.data?.mimeType });
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Programmatically trigger download
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = response?.data?.fileName || "Employee Report List.pdf";
+        a.style.display = "none";
+
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
+      } else {
+        showToast(response?.data?.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  const handleXlsDownload = async () => {
+    // setLoading(true);
+    try {
+      const filters = {
+        userId: selectedEmployee,
+        [isWorkFromOffice ? "locationId" : "clientId"]: isWorkFromOffice
+          ? selectedLocation
+          : selectedClient,
+      };
+
+      const frequency = "Monthly";
+      // const { year, month } = appliedFilters;
+      const response = await PostCall(
+        `/downloadTimesheet?companyId=${companyId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&timesheetFrequency=${frequency}&isWorkFromOffice=${isWorkFromOffice}&format=xls`,
+        filters
+      );
+      if (response?.data?.status === 200) {
+        let fixedBase64 = response?.data?.excelbase64
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+        while (fixedBase64.length % 4 !== 0) {
+          fixedBase64 += "=";
+        }
+
+        const binaryData = atob(fixedBase64);
+        const byteArray = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          byteArray[i] = binaryData.charCodeAt(i);
+        }
+
+        const blob = new Blob([byteArray], { type: response?.data?.mimeType });
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Programmatically trigger download
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = response?.data?.fileName || "Timesheet Report List.xls";
+        a.style.display = "none";
+
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
+      } else {
+        showToast(
+          response?.data?.message || "Failed to download file",
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Error while downloading timesheet report:", error);
+      showToast("An error occurred while processing your request.", "error");
+    } finally {
       setLoading(false);
     }
   };
@@ -155,7 +266,7 @@ const TimeSheetReportDaily = () => {
 
   const getAllUsersOfClientOrLocation = async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       // const formdata = {
       //   clientId: selectedClient,
       //   isWorkFromOffice: isWorkFromOffice,
@@ -168,10 +279,10 @@ const TimeSheetReportDaily = () => {
       } else {
         showToast(response?.data?.message, "error");
       }
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -308,6 +419,23 @@ const TimeSheetReportDaily = () => {
   }, [selectedClient, companyId, isWorkFromOffice, selectedLocation]);
 
   useEffect(() => {
+    if (selectedStartDate && selectedEndDate) {
+      const isInvalid = moment(selectedEndDate).isBefore(
+        moment(selectedStartDate)
+      );
+
+      if (isInvalid) {
+        showToast(
+          "End date should be later than or equal to Start date",
+          "error"
+        );
+        return;
+      }
+    }
+    if (moment(selectedEndDate).isAfter(moment())) {
+      showToast("End date should not later than current date", "error");
+      return;
+    }
     GetTimesheetReport();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -525,40 +653,46 @@ const TimeSheetReportDaily = () => {
             </div>
           )}
 
-          <div className="timesheet-report-download-container">
-            <div className="timesheet-input-container">
-              <label className="label">Start Date</label>
-              <input
-                type="date"
-                name="startDate"
-                className="timesheet-input"
-                value={selectedStartDate}
-                onChange={handleChange}
-                min={minDate}
-                max={maxDate}
-              />
-              {/* {errors?.startDate && (
-                <p className="error-text">{errors?.startDate}</p>
-              )} */}
-            </div>
+          <div className="timesheet-input-container">
+            <label className="label">Start Date</label>
+            <input
+              type="date"
+              name="startDate"
+              className="timesheet-input"
+              value={selectedStartDate}
+              onChange={handleChange}
+            />
+          </div>
 
-            <div className="timesheet-input-container">
-              <label className="label">End Date</label>
-              <input
-                type="date"
-                name="endDate"
-                className="timesheet-input"
-                value={selectedEndDate}
-                onChange={handleChange}
-                min={minDate}
-                max={maxDate}
-              />
-              {/* {errors?.endDate && (
-                <p className="error-text">{errors?.endDate}</p>
-              )} */}
-            </div>
-
-            {/* <button onClick={handleFilter}>Filter</button> */}
+          <div className="timesheet-input-container">
+            <label className="label">End Date</label>
+            <input
+              type="date"
+              name="endDate"
+              className="timesheet-input"
+              value={selectedEndDate}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+        <div>
+          <div className="timesheet-report-list-action-button">
+            <button
+              className="timesheet-pdf-button"
+              label="PDF"
+              onClick={handlePdfDownload}
+              disabled={loading}
+            >
+              PDF
+            </button>
+            <button
+              className="timesheet-xls-button"
+              label="XLS"
+              onClick={handleXlsDownload}
+              disabled={loading}
+            >
+              XLS
+            </button>
           </div>
         </div>
       </div>
